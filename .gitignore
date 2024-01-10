@@ -1,0 +1,14 @@
+*.pyc
+*.log
+public/media
+public/djangostatic
+.pytest_cache
+# open excel files
+~$*
+# pycharm
+celerybeat.pid
+celerybeat-schedule
+flower
+.coverage
+coverage.xml
+pylintrc
