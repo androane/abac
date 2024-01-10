@@ -12,7 +12,7 @@ repos:
     rev: 7.0.0
     hooks:
       - id: flake8
-        args: ["--config=eve/setup.cfg"]
+        args: ["--config=setup.cfg"]
   - repo: https://github.com/timothycrosley/isort
     rev: 5.13.2
     hooks:
