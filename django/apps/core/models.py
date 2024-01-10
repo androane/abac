@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import shortuuid
 from dirtyfields import DirtyFieldsMixin
 from django.conf import settings
