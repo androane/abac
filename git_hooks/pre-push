@@ -1,0 +1,23 @@
+#!/bin/sh
+
+BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+if [[ "$BRANCH" == "production" ]]; then
+  echo 'Preventing push to production: If you need to commit, run with --no-verify flag.';
+  exit 1;
+fi
+
+# Warn when a long branch name may cause pod names to exceed the 63 characters limit.
+# For example, a pod may look like <branch-name>-prepare-environment-<random-string>
+# where <random-string> is upto 16 characters long.
+# See https://stackoverflow.com/a/57962802 for more information.
+if [[ "${#BRANCH}" -gt 26 ]]; then
+  echo 'Preventing push: Please limit your branch name to 26 characters to limit pod names to 63 characters.';
+  exit 1;
+fi
+# Prevent using slashes in branch names
+if [[ "${BRANCH}" == *"/"* ]]; then
+  echo 'Preventing push: Branch names must not use slash characters.';
+  exit 1;
+fi
+
+exit 0;

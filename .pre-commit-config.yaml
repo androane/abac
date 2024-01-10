@@ -1,0 +1,33 @@
+# https://pre-commit.com/hooks.html
+default_language_version:
+  python: python3
+exclude: ".sql$"
+fail_fast: false
+repos:
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 23.12.1
+    hooks:
+      - id: black
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        args: ["--config=eve/setup.cfg"]
+  - repo: https://github.com/timothycrosley/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-ast
+      - id: check-byte-order-marker
+      - id: check-builtin-literals
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-executables-have-shebangs
+      - id: check-json
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: fix-encoding-pragma
+      - id: trailing-whitespace
