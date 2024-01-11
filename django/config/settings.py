@@ -22,7 +22,7 @@ APP_URL = env.str("APP_URL", "")
 DEBUG = env.bool("DEBUG")
 DEVELOPMENT_MODE = env.bool("DEVELOPMENT_MODE")
 
-DJANGO_ALLOWED_HOSTS = env.list(
+ALLOWED_HOSTS = env.list(
     "DJANGO_ALLOWED_HOSTS",
     cast=str,
     default=[
@@ -79,7 +79,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
-DISABLE_COLLECTSTATIC = 1
+
 DATABASE_URL = env.str("DATABASE_URL")
 if DEVELOPMENT_MODE:
     DATABASES = {
