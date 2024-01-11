@@ -82,7 +82,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-DATABASE_URL = env.str("DATABASE_URL", "")
+DATABASE_URL = env.str("DATABASE_URL")
 if DEVELOPMENT_MODE:
     DATABASES = {
         "default": {
@@ -91,7 +91,7 @@ if DEVELOPMENT_MODE:
         }
     }
 elif len(sys.argv) > 0 and sys.argv[1] != "collectstatic":
-    if DATABASE_URL:
+    if not DATABASE_URL:
         raise Exception("DATABASE_URL environment variable not defined")
     DATABASES = {
         "default": dj_database_url.parse(DATABASE_URL),
