@@ -15,12 +15,11 @@ sys.path.insert(1, apps_root())
 env = environ.Env(DEBUG=(bool, False))
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
-
 SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
 HOST = env.str("DJANGO_HOST", "")
+APP_DOMAIN = env.str("APP_DOMAIN", "")
+APP_URL = env.str("APP_URL", "")
 
 DEBUG = env.bool("DEBUG")
 DEVELOPMENT_MODE = env.bool("DEVELOPMENT_MODE")
