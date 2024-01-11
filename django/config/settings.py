@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
 import sys
 from socket import gethostbyname, gethostname
 
@@ -7,7 +6,6 @@ import dj_database_url
 import environ
 
 root = environ.Path(__file__) - 2
-SITE_ROOT = str(root)
 
 apps_root = root.path("apps")
 sys.path.insert(1, apps_root())
@@ -87,7 +85,7 @@ if DEVELOPMENT_MODE:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(SITE_ROOT, "db.sqlite3"),
+            "NAME": root.path("db.sqlite3"),
         }
     }
 elif len(sys.argv) > 0 and sys.argv[1] != "collectstatic":
@@ -132,6 +130,6 @@ USE_TZ = True
 
 
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(SITE_ROOT, "staticfiles")
+STATIC_ROOT = root.path("staticfiles")
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
