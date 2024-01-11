@@ -93,6 +93,9 @@ if DEVELOPMENT_MODE:
 elif len(sys.argv) > 0 and sys.argv[1] != "collectstatic":
     if not DATABASE_URL:
         raise Exception("DATABASE_URL environment variable not defined")
+    print(DATABASE_URL)
+    print(DATABASE_URL)
+    print(DATABASE_URL)
     DATABASES = {
         "default": dj_database_url.parse(DATABASE_URL),
     }
