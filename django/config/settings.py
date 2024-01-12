@@ -13,14 +13,14 @@ sys.path.insert(1, apps_root())
 env = environ.Env(DEBUG=(bool, False))
 
 
-SECRET_KEY = env.str("DJANGO_SECRET_KEY")
+SECRET_KEY = env.str("DJANGO_SECRET_KEY", "")
 
 # Built-in in Digital Ocean App
 HOST = env.str("APP_DOMAIN", "")
 APP_URL = env.str("APP_URL", "")
 
 DEBUG = env.bool("DEBUG")
-DEVELOPMENT_MODE = env.bool("DEVELOPMENT_MODE")
+DEVELOPMENT_MODE = env.bool("DEVELOPMENT_MODE", False)
 
 ALLOWED_HOSTS = env.list(
     "APP_DOMAIN",
@@ -80,7 +80,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-DATABASE_URL = env.str("DATABASE_URL")
+DATABASE_URL = env.str("DATABASE_URL", "")
 if DEVELOPMENT_MODE:
     DATABASES = {
         "default": {
