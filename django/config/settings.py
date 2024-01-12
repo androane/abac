@@ -23,7 +23,7 @@ DEBUG = env.bool("DEBUG")
 DEVELOPMENT_MODE = env.bool("DEVELOPMENT_MODE")
 
 ALLOWED_HOSTS = env.list(
-    "HOST",
+    "APP_DOMAIN",
     cast=str,
     default=[
         gethostname(),
