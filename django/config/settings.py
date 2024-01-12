@@ -43,11 +43,14 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Third parties
+    "django_extensions",
+    "graphene_django",
     "safedelete",
     "simple_history",
     # Apps
+    "api.apps.ApiConfig",
     "core.apps.CoreConfig",
-    "users.apps.UsersConfig",
+    "user.apps.UserConfig",
 ]
 
 MIDDLEWARE = [
@@ -99,7 +102,7 @@ elif len(sys.argv) > 0 and sys.argv[1] != "collectstatic":
     }
 
 
-AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = "user.User"
 # Silences the User model uniqueness check on email. We allow duplicate emails for deleted users.
 SILENCED_SYSTEM_CHECKS = ["auth.E003"]
 AUTH_PASSWORD_VALIDATORS = [
@@ -133,3 +136,9 @@ STATIC_URL = "/static/"
 STATIC_ROOT = str(root.path("staticfiles"))
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+SHELL_PLUS = "ipython"
+
+
+# GraphQL
+GRAPHQL_AUTH_SECRET = env.str("GRAPHQL_AUTH_SECRET", "")
+GRAPHQL_DEBUG = env.bool("GRAPHQL_DEBUG", DEBUG)
