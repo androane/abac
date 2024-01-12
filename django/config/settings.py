@@ -15,15 +15,15 @@ env = environ.Env(DEBUG=(bool, False))
 
 SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
-HOST = env.str("DJANGO_HOST", "")
-APP_DOMAIN = env.str("APP_DOMAIN", "")
+# Built-in in Digital Ocean App
+HOST = env.str("APP_DOMAIN", "")
 APP_URL = env.str("APP_URL", "")
 
 DEBUG = env.bool("DEBUG")
 DEVELOPMENT_MODE = env.bool("DEVELOPMENT_MODE")
 
 ALLOWED_HOSTS = env.list(
-    "DJANGO_ALLOWED_HOSTS",
+    "HOST",
     cast=str,
     default=[
         gethostname(),
