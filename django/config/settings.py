@@ -19,7 +19,7 @@ SECRET_KEY = env.str("DJANGO_SECRET_KEY", "")
 HOST = env.str("APP_DOMAIN", "")
 APP_URL = env.str("APP_URL", "")
 
-DEBUG = env.bool("DEBUG")
+DEBUG = env.bool("DEBUG", False)
 DEVELOPMENT_MODE = env.bool("DEVELOPMENT_MODE", False)
 
 ALLOWED_HOSTS = env.list(
