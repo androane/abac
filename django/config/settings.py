@@ -16,8 +16,10 @@ env = environ.Env(DEBUG=(bool, False))
 SECRET_KEY = env.str("DJANGO_SECRET_KEY", "")
 
 # Built-in in Digital Ocean App
-HOST = env.str("APP_DOMAIN", "")
+DJANGO_HOST = env.str("APP_DOMAIN", "")
 APP_URL = env.str("APP_URL", "")
+
+REACT_HOST = env.str("DJANGO_HOST", "")
 
 DEBUG = env.bool("DEBUG", False)
 DEVELOPMENT_MODE = env.bool("DEVELOPMENT_MODE", False)
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Third parties
+    "corsheaders",
     "django_extensions",
     "graphene_django",
     "safedelete",
@@ -137,6 +140,11 @@ STATIC_ROOT = str(root.path("staticfiles"))
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 SHELL_PLUS = "ipython"
+
+
+# django-cors-headers
+
+CORS_ORIGIN_WHITELIST = [REACT_HOST]
 
 
 # GraphQL
