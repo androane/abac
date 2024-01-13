@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import sys
-from socket import gethostbyname, gethostname
 
 import dj_database_url
 import environ
@@ -17,9 +16,9 @@ SECRET_KEY = env.str("DJANGO_SECRET_KEY", "")
 
 # Built-in in Digital Ocean App
 DJANGO_HOST = env.str("APP_DOMAIN", "")
-APP_URL = env.str("APP_URL", "")
+DJANGO_HOST_URL = env.str("APP_URL", "")
 
-REACT_HOST = env.str("DJANGO_HOST", "")
+REACT_HOST = env.str("REACT_HOST", "")
 
 DEBUG = env.bool("DEBUG", False)
 DEVELOPMENT_MODE = env.bool("DEVELOPMENT_MODE", False)
@@ -27,10 +26,7 @@ DEVELOPMENT_MODE = env.bool("DEVELOPMENT_MODE", False)
 ALLOWED_HOSTS = env.list(
     "APP_DOMAIN",
     cast=str,
-    default=[
-        gethostname(),
-        gethostbyname(gethostname()),
-    ],
+    default=["localhost"],
 )
 
 
@@ -57,6 +53,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -144,8 +141,7 @@ SHELL_PLUS = "ipython"
 
 # django-cors-headers
 
-CORS_ORIGIN_WHITELIST = [REACT_HOST]
-
+CORS_ORIGIN_WHITELIST = ["http://localhost:5173"]
 
 # GraphQL
 GRAPHQL_AUTH_SECRET = env.str("GRAPHQL_AUTH_SECRET", "")
