@@ -1,0 +1,68 @@
+version: "3.8"
+
+networks:
+  abac:
+
+volumes:
+  db-volume:
+    driver: local
+  code-volume:
+    driver: local
+
+services:
+  nginx:
+    container_name: abac-nginx
+    build:
+      context: ./nginx/docker
+      target: final
+    command: [nginx-debug, "-g", "daemon off;"]
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/docker:/etc/nginx/conf.d
+      - ./django/staticfiles:/etc/nginx/html/django/staticfiles/
+      - ./django/media:/etc/nginx/html/django/media/
+    environment:
+      VITE_GRAPHQL_ENDPOINT: http://abac.local/graphql/
+    networks:
+      - abac
+    platform: linux/arm64
+
+  postgres:
+    image: postgres:13.7
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-volume:/var/lib/postgresql/data
+    logging:
+      options:
+        max-size: "200k"
+        max-file: "2"
+    environment:
+      - POSTGRES_PASSWORD=abac123django
+      - POSTGRES_USER=django
+    networks:
+      - abac
+    platform: linux/arm64
+
+  django:
+    build:
+      context: ./django
+      dockerfile: docker/Dockerfile
+    container_name: abac-django
+    image: abac
+    env_file: django/.env
+    command: bash -c "/abac/django/manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./django:/abac/django:delegated
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    stdin_open: true
+    tty: true
+    networks:
+      - abac
+    links:
+      - postgres
+    platform: linux/arm64

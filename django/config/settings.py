@@ -21,7 +21,6 @@ DJANGO_HOST_URL = env.str("APP_URL", "")
 REACT_HOST = env.str("REACT_HOST", "")
 
 DEBUG = env.bool("DEBUG", False)
-DEVELOPMENT_MODE = env.bool("DEVELOPMENT_MODE", False)
 
 ALLOWED_HOSTS = env.list(
     "APP_DOMAIN",
@@ -84,19 +83,11 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASE_URL = env.str("DATABASE_URL", "")
-if DEVELOPMENT_MODE:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": root.path("db.sqlite3"),
-        }
-    }
-elif len(sys.argv) > 0 and sys.argv[1] != "collectstatic":
+
+if len(sys.argv) > 0 and sys.argv[1] != "collectstatic":
     if not DATABASE_URL:
         raise Exception("DATABASE_URL environment variable not defined")
-    print(DATABASE_URL)
-    print(DATABASE_URL)
-    print(DATABASE_URL)
+
     DATABASES = {
         "default": dj_database_url.parse(DATABASE_URL),
     }
@@ -134,6 +125,9 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = str(root.path("staticfiles"))
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+]
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 SHELL_PLUS = "ipython"

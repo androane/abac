@@ -4,14 +4,14 @@
 import dirtyfields.dirtyfields
 from django.db import migrations, models
 
-import core.models
+import core
 
 
 class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("auth", "0012_alter_user_first_name_max_length"),
+        ("core", "0001_initial"),
     ]
 
     operations = [
