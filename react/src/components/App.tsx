@@ -7,8 +7,8 @@ const App = () => {
 
   return (
     <ResponseHandler {...users}>
-      {() => {
-        return <Button variant="contained">Hello world</Button>
+      {({ users }) => {
+        return <Button variant="contained">{users?.length} Users</Button>
       }}
     </ResponseHandler>
   )

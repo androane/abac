@@ -135,7 +135,7 @@ SHELL_PLUS = "ipython"
 
 # django-cors-headers
 
-CORS_ORIGIN_WHITELIST = ["http://localhost:5173"]
+CORS_ORIGIN_WHITELIST = [REACT_HOST]
 
 # GraphQL
 GRAPHQL_AUTH_SECRET = env.str("GRAPHQL_AUTH_SECRET", "")
