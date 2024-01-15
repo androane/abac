@@ -1,7 +1,9 @@
 *.pyc
 *.log
-public/media
-public/djangostatic
+
+media
+staticfiles
+
 .pytest_cache
 # open excel files
 ~$*
