@@ -31,6 +31,6 @@ class BaseModel(DirtyFieldsMixin, SafeDeleteModel):
     def admin_absolute_url(self) -> str:
         return f'{settings.DJANGO_HOST}{reverse(f"admin:{self._meta.app_label}_{self._meta.model_name}_change", args=(self.id,))}'
 
-    def hard_delete(self, **kwargs):
+    def hard_delete(self, **kwargs) -> None:
         """Physically deletes object from the database.  Cannot undelete!"""
         super(BaseModel, self).delete(force_policy=HARD_DELETE, **kwargs)

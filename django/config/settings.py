@@ -58,6 +58,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "api.middleware.JWTAuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -84,10 +85,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASE_URL = env.str("DATABASE_URL", "")
 
-if len(sys.argv) > 0 and sys.argv[1] != "collectstatic":
-    if not DATABASE_URL:
-        raise Exception("DATABASE_URL environment variable not defined")
-
+if not (len(sys.argv) > 1 and sys.argv[1] == "collectstatic"):
     DATABASES = {
         "default": dj_database_url.parse(DATABASE_URL),
     }

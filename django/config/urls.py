@@ -4,9 +4,9 @@ from django.contrib import admin
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 
+from api.graphene.schema import schema
 from api.middleware import DisableIntrospectionMiddleware
-from api.schema import schema
-from apps.api.views import GraphQLView
+from api.views import GraphQLView
 
 urlpatterns = [
     path("admin/", admin.site.urls),

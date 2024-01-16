@@ -3,8 +3,9 @@
   "python.formatting.provider": "black",
   "editor.formatOnSave": true,
   "[html]": {
-    "editor.formatOnSave": true
+    "editor.formatOnSave": false
   },
+  "python.envFile": "config/.env",
   "python.linting.enabled": true,
   "python.analysis.diagnosticMode": "workspace",
   "python.linting.flake8Enabled": true,

@@ -16,7 +16,9 @@ RUN echo ". /root/django_bash_completion" >> /root/.bashrc
 # Bash shell for dockerfile.
 SHELL ["/bin/bash", "-l", "-c"]
 
-# Our code location
+RUN pip install --upgrade pip
+
+# Code location
 RUN mkdir -p /abac/django
 WORKDIR /abac/django
 COPY requirements.txt /abac/django/

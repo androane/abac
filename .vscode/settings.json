@@ -1,0 +1,53 @@
+{
+  "auto-close-tag.enableAutoCloseTag": true,
+  "editor.formatOnSave": false,
+  "files.insertFinalNewline": true,
+  "[plaintext]": {
+    "files.insertFinalNewline": false
+  },
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "editor.tabSize": 4
+  },
+  "[graphql]": {
+    "editor.formatOnSave": false
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  "python.linting.flake8Args": [
+    "--max-line-length=88"
+  ],
+  "eslint.packageManager": "yarn",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "workbench.statusBar.visible": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "javascript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "python.languageServer": "Pylance",
+  "python.formatting.provider": "black",
+  "python.analysis.diagnosticMode": "workspace",
+  "python.analysis.extraPaths": [
+    "apps"
+  ],
+  "explorer.confirmDelete": false,
+  "workbench.editorAssociations": {
+    "*.ipynb": "jupyter-notebook"
+  },
+  "python.dataScience.useNotebookEditor": false,
+  "editor.suggest.showInterfaces": false,
+  "files.exclude": {
+    "**/node_modules": true
+  }
+}

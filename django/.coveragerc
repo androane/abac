@@ -1,0 +1,13 @@
+[run]
+source = apps
+relative_files = True
+omit =
+    __init__.py
+    Dockerfile
+    */migrations/*
+    */tests/*
+    *docker*
+    *.md
+
+[report]
+show_missing = True

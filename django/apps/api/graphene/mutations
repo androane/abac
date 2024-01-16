@@ -1,0 +1,13 @@
+import graphene
+
+
+class ErrorType(graphene.ObjectType):
+    field = graphene.String(required=True)
+    error = graphene.String(required=True)
+
+
+class BaseMutation(graphene.Mutation):
+    class Meta:
+        abstract = True
+
+    errors = graphene.List(ErrorType)
