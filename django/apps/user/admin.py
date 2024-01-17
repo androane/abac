@@ -6,6 +6,8 @@ from user.models import User
 
 
 class UserAdmin(DjangoUserAdmin):
+    list_display = ("email",)
+
     ordering = (
         "last_name",
         "first_name",

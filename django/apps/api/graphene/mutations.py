@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 import graphene
 
 
 class ErrorType(graphene.ObjectType):
-    field = graphene.String(required=True)
+    field = graphene.String()
     error = graphene.String(required=True)
 
 

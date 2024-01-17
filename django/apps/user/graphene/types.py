@@ -8,4 +8,4 @@ UserModel = get_user_model()
 class UserType(DjangoObjectType):
     class Meta:
         model = UserModel
-        only_fields = ("uuid",)
+        only_fields = ("uuid", "email")

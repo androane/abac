@@ -2,8 +2,9 @@
 import logging
 
 from django.contrib.auth.base_user import AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.models import PermissionsMixin, UserManager
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 from core.models import BaseModel
 
@@ -12,6 +13,9 @@ logger = logging.getLogger(__name__)
 
 class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "email"
+
+    history = HistoricalRecords()
+    objects = UserManager()
 
     email = models.EmailField("email address", db_collation="case_insensitive")
     first_name = models.CharField("first name", max_length=64, blank=True)

@@ -5,13 +5,13 @@ from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 
 from api.graphene.schema import schema
-from api.middleware import DisableIntrospectionMiddleware
-from api.views import GraphQLView
+from api.graphql_views import GraphQLView
+from api.introspection_middleware import DisableIntrospectionMiddleware
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path(
-        "graphql/",
+        "graphql",
         csrf_exempt(
             GraphQLView.as_view(
                 graphiql=settings.GRAPHQL_DEBUG,

@@ -9,7 +9,11 @@ from user.tests.factories import UserF
 @pytest.mark.django_db
 def test_user_model(django_user_model):
     user: User = UserF()
-    print(user.id)
+
+    assert str(user) == "first last - test@test.com"
+    assert repr(user) == "test@test.com"
+    assert user.name == "first last"
+
     assert (
         user.admin_absolute_url
         == f"{settings.DJANGO_HOST}/admin/user/user/{user.id}/change/"
