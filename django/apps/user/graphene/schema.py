@@ -2,6 +2,7 @@
 import graphene
 from django.contrib.auth import get_user_model
 
+from user.decorators import logged_in_user_requried
 from user.graphene.mutations import LoginUser, LogoutUser
 from user.graphene.types import UserType
 
@@ -10,10 +11,15 @@ class Query(graphene.ObjectType):
     class Meta:
         abstract = True
 
+    current_user = graphene.Field(UserType, required=True)
     users = graphene.List(
         UserType,
         description="List all users",
     )
+
+    @logged_in_user_requried
+    def resolve_current_user(info, context):
+        return info, context.user
 
     def resolve_users(info, context):
         return get_user_model().objects.all()

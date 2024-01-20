@@ -7,7 +7,7 @@ from user.tests.factories import UserF
 logout_user_mutation = f"""
 mutation LogoutUser {{
   logout {{
-    errors {{
+    error {{
       field
       error
     }}
@@ -34,4 +34,4 @@ def test_logout_user(graphql_client, graphql_request_factory):
     )
 
     assert not request.user.is_authenticated
-    assert response["data"]["logout"] == {"errors": None}
+    assert response["data"]["logout"] == {"error": None}

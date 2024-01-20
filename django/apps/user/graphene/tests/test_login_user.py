@@ -12,7 +12,7 @@ mutation LoginUser(
     email: $email
     password: $password
   ) {{
-    errors {{
+    error {{
       field
       error
     }}
@@ -42,11 +42,11 @@ def user_to_login():
             "wrong_password",
             False,
             {
-                "errors": [{"field": None, "error": "USER_WRONG_EMAIL_OR_PASSWORD"}],
+                "error": {"field": None, "error": "USER_WRONG_EMAIL_OR_PASSWORD"},
                 "user": None,
             },
         ],
-        ["good_password", True, {"errors": None, "user": {"email": "email@test.com"}}],
+        ["good_password", True, {"error": None, "user": {"email": "email@test.com"}}],
     ],
 )
 def test_login_user(

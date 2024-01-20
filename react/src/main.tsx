@@ -1,19 +1,25 @@
-import { render } from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { ApolloProvider } from '@apollo/client'
+import { Suspense } from 'react';
+import { HelmetProvider } from 'react-helmet-async'
+import initClient from 'config/config-apollo-client'
 
-import initClient from 'config/configureClient'
-import App from 'components/App'
+import App from './app';
 
 const renderApp = () => {
+  const root = createRoot(document.getElementById('root')!)
   initClient().then(client => {
-    render(
+    root.render(
       <ApolloProvider client={client}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ApolloProvider>,
-      document.getElementById('root'),
+        <HelmetProvider>
+          <BrowserRouter>
+            <Suspense>
+              <App />
+            </Suspense>
+          </BrowserRouter>
+        </HelmetProvider>
+      </ApolloProvider>
     )
   })
 }

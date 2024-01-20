@@ -1,0 +1,9 @@
+#import "../fragments/Error.graphql"
+
+mutation Logout {
+  logout {
+    error {
+      ...Error
+    }
+  }
+}

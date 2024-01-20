@@ -2,6 +2,7 @@ version: "3.8"
 
 networks:
   abac:
+    name: abac
 
 volumes:
   db-volume:
@@ -22,8 +23,6 @@ services:
       - ./nginx/docker:/etc/nginx/conf.d
       - ./django/staticfiles:/etc/nginx/html/django/staticfiles/
       - ./django/media:/etc/nginx/html/django/media/
-    environment:
-      VITE_GRAPHQL_ENDPOINT: http://abac.local/graphql/
     networks:
       - abac
     platform: linux/arm64
@@ -38,9 +37,7 @@ services:
       options:
         max-size: "200k"
         max-file: "2"
-    environment:
-      - POSTGRES_PASSWORD=abac123django
-      - POSTGRES_USER=django
+    env_file: django/.env
     networks:
       - abac
     platform: linux/arm64

@@ -18,7 +18,7 @@ def graphql_client():
 def graphql_request(rf: RequestFactory):
     # rf is an instance of django.test.RequestFactory
     # https://pytest-django.readthedocs.io/en/latest/helpers.html#rf-requestfactory
-    return rf.get("/graphql/")
+    return rf.get("/graphql")
 
 
 @pytest.fixture()

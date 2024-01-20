@@ -14,18 +14,18 @@ def login_user(
     request: HttpRequest, email: str, password: str
 ) -> tuple[HttpRequest, Optional[str], Optional[str]]:
     user = django_auth(email=email, password=password)
-    error = None
+    error_message = None
     token = None
 
     if not user:
-        error = errors.USER_WRONG_EMAIL_OR_PASSWORD
+        error_message = errors.USER_WRONG_EMAIL_OR_PASSWORD
     else:
         user.last_login = django_now()
         user.save()
         token = generate_token_from_user(user)
 
     request.user = user or AnonymousUser()
-    return request, token, error
+    return request, token, error_message
 
 
 def logout_user(request: HttpRequest) -> HttpRequest:

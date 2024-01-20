@@ -24,7 +24,7 @@ class LoginUser(BaseMutation):
         return {
             "token": token,
             "user": request.user,
-            "errors": [{"error": error}] if error else None,
+            "error": {"message": error} if error else None,
         }
 
 

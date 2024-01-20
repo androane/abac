@@ -4,11 +4,11 @@ import graphene
 
 class ErrorType(graphene.ObjectType):
     field = graphene.String()
-    error = graphene.String(required=True)
+    message = graphene.String(required=True)
 
 
 class BaseMutation(graphene.Mutation):
     class Meta:
         abstract = True
 
-    errors = graphene.List(ErrorType)
+    error = graphene.Field(ErrorType)

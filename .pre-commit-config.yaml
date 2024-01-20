@@ -2,7 +2,7 @@
 default_language_version:
   python: python3
 exclude: ".sql$"
-fail_fast: true
+fail_fast: false
 repos:
   - repo: https://github.com/psf/black-pre-commit-mirror
     rev: 23.12.1
