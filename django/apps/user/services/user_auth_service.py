@@ -2,7 +2,6 @@
 from typing import Optional
 
 from django.contrib.auth import authenticate as django_auth
-from django.contrib.auth.models import AnonymousUser
 from django.http import HttpRequest
 from django.utils.timezone import now as django_now
 
@@ -24,10 +23,10 @@ def login_user(
         user.save()
         token = generate_token_from_user(user)
 
-    request.user = user or AnonymousUser()
+    request.user = user
     return request, token, error_message
 
 
 def logout_user(request: HttpRequest) -> HttpRequest:
-    request.user = AnonymousUser()
+    request.user = None
     return request

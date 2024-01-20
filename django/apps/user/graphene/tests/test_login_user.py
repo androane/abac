@@ -14,7 +14,7 @@ mutation LoginUser(
   ) {{
     error {{
       field
-      error
+      message
     }}
     user {{
       email
@@ -36,13 +36,13 @@ def user_to_login():
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    "password, is_authenticated, expected_response",
+    "password, user_found, expected_response",
     [
         [
             "wrong_password",
             False,
             {
-                "error": {"field": None, "error": "USER_WRONG_EMAIL_OR_PASSWORD"},
+                "error": {"field": None, "message": "USER_WRONG_EMAIL_OR_PASSWORD"},
                 "user": None,
             },
         ],
@@ -51,7 +51,7 @@ def user_to_login():
 )
 def test_login_user(
     user_to_login,
-    is_authenticated,
+    user_found,
     password,
     expected_response,
     graphql_client,
@@ -67,5 +67,5 @@ def test_login_user(
         ),
         context=request,
     )
-    assert request.user.is_authenticated is is_authenticated
+    assert bool(request.user) is user_found
     assert response["data"]["login"] == expected_response

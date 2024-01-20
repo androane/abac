@@ -17,8 +17,6 @@ export type AuthStateType = {
   user: AuthUserType;
 };
 
-// ----------------------------------------------------------------------
-
 type CanRemove = {
   login?: (email: string, password: string) => Promise<void>;
   forgotPassword?: (email: string) => Promise<void>;

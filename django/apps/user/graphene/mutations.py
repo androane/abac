@@ -21,6 +21,7 @@ class LoginUser(BaseMutation):
 
     def mutate(self, info, email, password, **kwargs):
         request, token, error = login_user(info.context, email, password)
+
         return {
             "token": token,
             "user": request.user,

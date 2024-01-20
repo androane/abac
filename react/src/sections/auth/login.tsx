@@ -1,64 +1,66 @@
-import * as Yup from 'yup';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import * as Yup from 'yup'
 
-import Link from '@mui/material/Link';
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
-import IconButton from '@mui/material/IconButton';
-import LoadingButton from '@mui/lab/LoadingButton';
-import InputAdornment from '@mui/material/InputAdornment';
+import LoadingButton from '@mui/lab/LoadingButton'
+import Alert from '@mui/material/Alert'
+import IconButton from '@mui/material/IconButton'
+import InputAdornment from '@mui/material/InputAdornment'
+import Link from '@mui/material/Link'
+import Stack from '@mui/material/Stack'
 
-import { useRouter, useSearchParams } from 'routes/hooks';
+import { useRouter, useSearchParams } from 'routes/hooks'
 
-import { useBoolean } from 'hooks/use-boolean';
+import { useBoolean } from 'hooks/use-boolean'
 
-import { PATH_AFTER_LOGIN } from 'config/config-global';
+import { PATH_AFTER_LOGIN } from 'config/config-global'
 
-import Iconify from 'components/iconify';
-import FormProvider, { RHFTextField } from 'components/hook-form';
-import { useAuthContext } from 'auth/hooks';
+import { useAuthContext } from 'auth/hooks'
+import FormProvider, { RHFTextField } from 'components/hook-form'
+import Iconify from 'components/iconify'
+import { API_CODES } from 'utils/api-codes'
 
 const Login = () => {
+  const { login } = useAuthContext()
 
-  const { login } = useAuthContext();
+  const router = useRouter()
 
-  const router = useRouter();
+  const [errorMsg, setErrorMsg] = useState('')
 
-  const [errorMsg, setErrorMsg] = useState('');
+  const searchParams = useSearchParams()
 
-  const searchParams = useSearchParams();
+  const returnTo = searchParams.get('returnTo')
 
-  const returnTo = searchParams.get('returnTo');
-
-  const password = useBoolean();
+  const password = useBoolean()
 
   const LoginSchema = Yup.object().shape({
-    email: Yup.string().required('Adresa de email este obligatorie').email('Adresa de email nu este valida'),
+    email: Yup.string()
+      .required('Adresa de email este obligatorie')
+      .email('Adresa de email nu este valida'),
     password: Yup.string().required('Parola este obligatorie'),
-  });
+  })
 
   const methods = useForm({
     resolver: yupResolver(LoginSchema),
-  });
+  })
 
   const {
     reset,
     handleSubmit,
-  } = methods;
+    formState: { isSubmitting },
+  } = methods
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = handleSubmit(async data => {
     try {
-      await login?.(data.email, data.password);
+      await login?.(data.email, data.password)
 
-      router.push(returnTo || PATH_AFTER_LOGIN);
+      router.push(returnTo || PATH_AFTER_LOGIN)
     } catch (error) {
-      console.error(error);
-      reset();
-      setErrorMsg(typeof error === 'string' ? error : 'Ceva a mers gresit');
+      reset()
+      setErrorMsg(error instanceof Error ? API_CODES[error.message] : 'Ceva a mers gresit')
     }
-  });
+  })
 
   const renderForm = (
     <Stack spacing={2.5}>
@@ -89,11 +91,12 @@ const Login = () => {
         size="large"
         type="submit"
         variant="contained"
+        loading={isSubmitting}
       >
         Intra in cont
       </LoadingButton>
     </Stack>
-  );
+  )
 
   return (
     <>
@@ -107,8 +110,7 @@ const Login = () => {
         {renderForm}
       </FormProvider>
     </>
-  );
+  )
 }
-
 
 export default Login

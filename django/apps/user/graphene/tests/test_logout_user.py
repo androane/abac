@@ -9,7 +9,7 @@ mutation LogoutUser {{
   logout {{
     error {{
       field
-      error
+      message
     }}
   }}
 }}
@@ -33,5 +33,5 @@ def test_logout_user(graphql_client, graphql_request_factory):
         context=request,
     )
 
-    assert not request.user.is_authenticated
+    assert not request.user
     assert response["data"]["logout"] == {"error": None}

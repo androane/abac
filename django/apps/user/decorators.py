@@ -2,7 +2,7 @@
 import functools
 
 
-def logged_in_user_requried(func):
+def logged_in_user_required(func):
     @functools.wraps(func)
     def decorator(self, info, *args, **kwargs):
         user = info.context.user

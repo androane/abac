@@ -1,11 +1,9 @@
-import { useMemo, useEffect, useReducer, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useReducer } from 'react'
 
-import { AuthContext } from './auth-context';
-import { setSession, isValidToken } from './utils';
-import { AuthUserType, ActionMapType, AuthStateType } from '../types';
-import { useLoginMutation } from 'generated/graphql';
-import { useLogoutMutation } from 'generated/graphql';
-import { useCurrentUserQuery } from 'generated/graphql';
+import { useCurrentUserQuery, useLoginMutation, useLogoutMutation } from 'generated/graphql'
+import { ActionMapType, AuthStateType, AuthUserType } from '../types'
+import { AuthContext } from './auth-context'
+import { isValidToken, setSession } from './utils'
 
 enum Types {
   INITIAL = 'INITIAL',
@@ -15,61 +13,61 @@ enum Types {
 
 type Payload = {
   [Types.INITIAL]: {
-    user: AuthUserType;
-  };
+    user: AuthUserType
+  }
   [Types.LOGIN]: {
-    user: AuthUserType;
-  };
-  [Types.LOGOUT]: undefined;
-};
+    user: AuthUserType
+  }
+  [Types.LOGOUT]: undefined
+}
 
-type ActionsType = ActionMapType<Payload>[keyof ActionMapType<Payload>];
+type ActionsType = ActionMapType<Payload>[keyof ActionMapType<Payload>]
 
 const initialState: AuthStateType = {
   user: null,
   loading: true,
-};
+}
 
 const reducer = (state: AuthStateType, action: ActionsType) => {
   if (action.type === Types.INITIAL) {
     return {
       loading: false,
       user: action.payload.user,
-    };
+    }
   }
   if (action.type === Types.LOGIN) {
     return {
       ...state,
       user: action.payload.user,
-    };
+    }
   }
   if (action.type === Types.LOGOUT) {
     return {
       ...state,
       user: null,
-    };
+    }
   }
-  return state;
-};
+  return state
+}
 
-const STORAGE_KEY = 'accessToken';
+export const STORAGE_KEY = 'abacAccessToken'
 
 type Props = {
-  children: React.ReactNode;
-};
+  children: React.ReactNode
+}
 
 export function AuthProvider({ children }: Props) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, initialState)
   const [loginMutation] = useLoginMutation()
   const [logoutMutation] = useLogoutMutation()
   const currentUserResponse = useCurrentUserQuery()
 
   const initialize = useCallback(async () => {
     try {
-      const accessToken = sessionStorage.getItem(STORAGE_KEY);
+      const accessToken = sessionStorage.getItem(STORAGE_KEY)
 
       if (accessToken && isValidToken(accessToken)) {
-        setSession(accessToken);
+        setSession(accessToken)
 
         dispatch({
           type: Types.INITIAL,
@@ -80,41 +78,44 @@ export function AuthProvider({ children }: Props) {
               loading: currentUserResponse.loading,
             },
           },
-        });
+        })
       } else {
         dispatch({
           type: Types.INITIAL,
           payload: {
             user: null,
           },
-        });
+        })
       }
     } catch (error) {
-      console.error(error);
+      console.error(error)
       dispatch({
         type: Types.INITIAL,
         payload: {
           user: null,
         },
-      });
+      })
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
-    initialize();
-  }, [initialize]);
+    initialize()
+  }, [initialize])
 
   // LOGIN
   const login = useCallback(async (email: string, password: string) => {
-    const res = await loginMutation({variables: {email, password}})
+    const res = await loginMutation({ variables: { email, password } })
 
-    const token = res.data?.login?.token;
-    const user = res.data?.login?.user;
-
-    if (!token) {
+    if (!res.data?.login) {
       return
     }
-    setSession(token);
+    const { token, user, error } = res.data.login
+
+    if (!token) {
+      throw new Error(error?.message)
+    }
+
+    setSession(token)
 
     dispatch({
       type: Types.LOGIN,
@@ -124,22 +125,22 @@ export function AuthProvider({ children }: Props) {
           token,
         },
       },
-    });
-  }, []);
+    })
+  }, [])
 
   // LOGOUT
   const logout = useCallback(async () => {
     await logoutMutation()
 
-    setSession(null);
+    setSession(null)
     dispatch({
       type: Types.LOGOUT,
-    });
-  }, []);
+    })
+  }, [])
 
-  const checkAuthenticated = state.user ? 'authenticated' : 'unauthenticated';
+  const checkAuthenticated = state.user ? 'authenticated' : 'unauthenticated'
 
-  const status = state.loading ? 'loading' : checkAuthenticated;
+  const status = state.loading ? 'loading' : checkAuthenticated
 
   const memoizedValue = useMemo(
     () => ({
@@ -151,8 +152,8 @@ export function AuthProvider({ children }: Props) {
       login,
       logout,
     }),
-    [login, logout, state.user, status]
-  );
+    [login, logout, state.user, status],
+  )
 
-  return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>
 }
