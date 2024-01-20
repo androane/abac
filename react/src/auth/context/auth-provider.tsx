@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useReducer } from 'react'
 
+import { AUTH_STORAGE_KEY } from 'config/config-global'
 import { useCurrentUserQuery, useLoginMutation, useLogoutMutation } from 'generated/graphql'
 import { ActionMapType, AuthStateType, AuthUserType } from '../types'
 import { AuthContext } from './auth-context'
@@ -64,8 +65,6 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
   return state
 }
 
-export const STORAGE_KEY = 'abacAccessToken'
-
 type Props = {
   children: React.ReactNode
 }
@@ -78,7 +77,7 @@ export function AuthProvider({ children }: Props) {
 
   const initialize = useCallback(async () => {
     try {
-      const accessToken = sessionStorage.getItem(STORAGE_KEY)
+      const accessToken = sessionStorage.getItem(AUTH_STORAGE_KEY)
 
       if (accessToken) {
         setSession(accessToken)
@@ -114,7 +113,7 @@ export function AuthProvider({ children }: Props) {
         },
       })
     }
-  }, [currentUserResponse.loading])
+  }, [currentUserResponse])
 
   useEffect(() => {
     initialize()
@@ -144,7 +143,7 @@ export function AuthProvider({ children }: Props) {
         },
       },
     })
-  }, [])
+  }, [loginMutation])
 
   // LOGOUT
   const logout = useCallback(async () => {
@@ -154,7 +153,7 @@ export function AuthProvider({ children }: Props) {
     dispatch({
       type: Types.LOGOUT,
     })
-  }, [])
+  }, [logoutMutation])
 
   const checkAuthenticated = state.user ? StatusEnum.AUTHENTICATED : StatusEnum.UNAUTHENTICATED
 

@@ -1,9 +1,9 @@
-import { STORAGE_KEY } from 'auth/context/auth-provider'
+import { AUTH_STORAGE_KEY } from "config/config-global"
 
 export const setSession = (accessToken: string | null) => {
   if (accessToken) {
-    sessionStorage.setItem(STORAGE_KEY, accessToken)
+    sessionStorage.setItem(AUTH_STORAGE_KEY, accessToken)
   } else {
-    sessionStorage.removeItem(STORAGE_KEY)
+    sessionStorage.removeItem(AUTH_STORAGE_KEY)
   }
 }

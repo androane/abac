@@ -2,16 +2,16 @@ import { ApolloClient, createHttpLink, from } from '@apollo/client'
 import { InMemoryCache } from '@apollo/client/cache'
 import { setContext } from '@apollo/link-context'
 import DebounceLink from 'apollo-link-debounce'
-import { STORAGE_KEY } from 'auth/context/auth-provider'
 
 import { GRAPHQL_ENDPOINT } from 'config/config-env'
+import { AUTH_STORAGE_KEY } from 'config/config-global'
 
 const httpLink = createHttpLink({ uri: GRAPHQL_ENDPOINT })
 
 // eslint-disable-next-line no-unused-vars
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
-  const token = sessionStorage.getItem(STORAGE_KEY)
+  const token = sessionStorage.getItem(AUTH_STORAGE_KEY)
   if (token) {
     // return the headers to the context so httpLink can read them
     const Authorization = `Bearer ${token}`
@@ -30,7 +30,7 @@ const cache = new InMemoryCache({
 })
 
 // await before instantiating ApolloClient, else queries might run before the cache is persisted
-const initClient = async () => {
+export const initClient = async () => {
   return new ApolloClient({
     link: from([authLink, new DebounceLink(100), httpLink]),
     cache,
@@ -38,5 +38,3 @@ const initClient = async () => {
     connectToDevTools: true,
   })
 }
-
-export default initClient

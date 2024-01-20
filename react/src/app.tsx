@@ -1,4 +1,5 @@
 /* eslint-disable perfectionist/sort-imports */
+
 import 'global.css'
 
 import Router from 'routes/sections'

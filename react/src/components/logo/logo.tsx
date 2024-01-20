@@ -5,11 +5,11 @@ import Box, { BoxProps } from '@mui/material/Box';
 
 import { RouterLink } from 'routes/components';
 
-export interface LogoProps extends BoxProps {
-  disabledLink?: boolean;
-}
+// export interface LogoProps extends BoxProps {
+//   disabledLink?: boolean;
+// }
 
-const Logo = forwardRef<HTMLDivElement, LogoProps>(
+const Logo = forwardRef<HTMLDivElement, BoxProps>(
   ({ sx }) => {
     const logo = (
       <Box

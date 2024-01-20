@@ -4,7 +4,7 @@ import { HelmetProvider } from 'react-helmet-async'
 import { BrowserRouter } from 'react-router-dom'
 
 import { ApolloProvider } from '@apollo/client'
-import initClient from 'auth/context/auth-apollo-config'
+import { initClient } from 'auth/context/auth-apollo-config'
 import App from './app'
 
 const renderApp = () => {
