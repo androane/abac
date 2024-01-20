@@ -1,11 +1,7 @@
-import { Theme, alpha } from '@mui/material/styles';
-import { ToggleButtonProps, toggleButtonClasses } from '@mui/material/ToggleButton';
+import { ToggleButtonProps, toggleButtonClasses } from '@mui/material/ToggleButton'
+import { Theme, alpha } from '@mui/material/styles'
 
-// ----------------------------------------------------------------------
-
-const COLORS = ['primary', 'secondary', 'info', 'success', 'warning', 'error'] as const;
-
-// ----------------------------------------------------------------------
+const COLORS = ['primary', 'secondary', 'info', 'success', 'warning', 'error'] as const
 
 export function toggleButton(theme: Theme) {
   const rootStyles = (ownerState: ToggleButtonProps) => {
@@ -14,16 +10,16 @@ export function toggleButton(theme: Theme) {
         borderColor: 'currentColor',
         boxShadow: '0 0 0 0.5px currentColor',
       },
-    };
+    }
 
-    const colorStyle = COLORS.map((color) => ({
+    const colorStyle = COLORS.map(color => ({
       ...(ownerState.color === color && {
         '&:hover': {
           borderColor: alpha(theme.palette[color].main, 0.48),
           backgroundColor: alpha(theme.palette[color].main, theme.palette.action.hoverOpacity),
         },
       }),
-    }));
+    }))
 
     const disabledState = {
       [`&.${toggleButtonClasses.disabled}`]: {
@@ -33,10 +29,10 @@ export function toggleButton(theme: Theme) {
           borderColor: theme.palette.action.disabledBackground,
         },
       },
-    };
+    }
 
-    return [defaultStyle, ...colorStyle, disabledState];
-  };
+    return [defaultStyle, ...colorStyle, disabledState]
+  }
 
   return {
     MuiToggleButton: {
@@ -63,5 +59,5 @@ export function toggleButton(theme: Theme) {
         },
       },
     },
-  };
+  }
 }

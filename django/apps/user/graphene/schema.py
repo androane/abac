@@ -18,8 +18,8 @@ class Query(graphene.ObjectType):
     )
 
     @logged_in_user_required
-    def resolve_current_user(info, context):
-        return info, context.user
+    def resolve_current_user(info, user):
+        return user
 
     def resolve_users(info, context):
         return get_user_model().objects.all()

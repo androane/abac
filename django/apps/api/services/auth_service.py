@@ -16,9 +16,8 @@ AUTHORIZATION_KEY = "HTTP_AUTHORIZATION"
 
 @dataclass
 class AuthPayload:
-    issued_at: int
+    iat: int
     user_id: int
-    is_active: bool
     is_impersonator: bool
     authenticated: Optional[bool] = None
 
@@ -32,9 +31,8 @@ class Authorization:
 
 def get_auth_payload_from_user(user: "User") -> dict:
     return AuthPayload(
-        issued_at=int(time.time()),  # UTC now
+        iat=int(time.time()),  # UTC now
         user_id=user.id,
-        is_active=user.is_active,
         is_impersonator=user.is_staff,
     )
 

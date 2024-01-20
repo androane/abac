@@ -1,12 +1,10 @@
-import { alpha, Theme } from '@mui/material/styles';
-import { DrawerProps, drawerClasses } from '@mui/material/Drawer';
+import { drawerClasses, DrawerProps } from '@mui/material/Drawer'
+import { alpha, Theme } from '@mui/material/styles'
 
-import { paper } from '../../css';
-
-// ----------------------------------------------------------------------
+import { paper } from '../../css'
 
 export function drawer(theme: Theme) {
-  const lightMode = theme.palette.mode === 'light';
+  const lightMode = theme.palette.mode === 'light'
 
   return {
     MuiDrawer: {
@@ -18,13 +16,13 @@ export function drawer(theme: Theme) {
               ...(ownerState.anchor === 'left' && {
                 boxShadow: `40px 40px 80px -8px ${alpha(
                   lightMode ? theme.palette.grey[500] : theme.palette.common.black,
-                  0.24
+                  0.24,
                 )}`,
               }),
               ...(ownerState.anchor === 'right' && {
                 boxShadow: `-40px 40px 80px -8px ${alpha(
                   lightMode ? theme.palette.grey[500] : theme.palette.common.black,
-                  0.24
+                  0.24,
                 )}`,
               }),
             },
@@ -32,5 +30,5 @@ export function drawer(theme: Theme) {
         }),
       },
     },
-  };
+  }
 }

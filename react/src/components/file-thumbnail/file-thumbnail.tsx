@@ -1,21 +1,19 @@
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import Tooltip from '@mui/material/Tooltip';
-import { Theme, SxProps } from '@mui/material/styles';
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import Tooltip from '@mui/material/Tooltip'
+import { SxProps, Theme } from '@mui/material/styles'
 
-import DownloadButton from './download-button';
-import { fileData, fileThumb, fileFormat } from './utils';
-
-// ----------------------------------------------------------------------
+import DownloadButton from './download-button'
+import { fileData, fileFormat, fileThumb } from './utils'
 
 type FileIconProps = {
-  file: File | string;
-  tooltip?: boolean;
-  imageView?: boolean;
-  onDownload?: VoidFunction;
-  sx?: SxProps<Theme>;
-  imgSx?: SxProps<Theme>;
-};
+  file: File | string
+  tooltip?: boolean
+  imageView?: boolean
+  onDownload?: VoidFunction
+  sx?: SxProps<Theme>
+  imgSx?: SxProps<Theme>
+}
 
 export default function FileThumbnail({
   file,
@@ -25,9 +23,9 @@ export default function FileThumbnail({
   sx,
   imgSx,
 }: FileIconProps) {
-  const { name = '', path = '', preview = '' } = fileData(file);
+  const { name = '', path = '', preview = '' } = fileData(file)
 
-  const format = fileFormat(path || preview);
+  const format = fileFormat(path || preview)
 
   const renderContent =
     format === 'image' && imageView ? (
@@ -53,7 +51,7 @@ export default function FileThumbnail({
           ...sx,
         }}
       />
-    );
+    )
 
   if (tooltip) {
     return (
@@ -72,7 +70,7 @@ export default function FileThumbnail({
           {onDownload && <DownloadButton onDownload={onDownload} />}
         </Stack>
       </Tooltip>
-    );
+    )
   }
 
   return (
@@ -80,5 +78,5 @@ export default function FileThumbnail({
       {renderContent}
       {onDownload && <DownloadButton onDownload={onDownload} />}
     </>
-  );
+  )
 }

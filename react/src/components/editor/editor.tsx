@@ -1,15 +1,13 @@
 /* eslint-disable perfectionist/sort-imports */
-import 'utils/highlight';
+import 'utils/highlight'
 
-import ReactQuill from 'react-quill';
+import ReactQuill from 'react-quill'
 
-import { alpha } from '@mui/material/styles';
+import { alpha } from '@mui/material/styles'
 
-import { EditorProps } from './types';
-import { StyledEditor } from './styles';
-import Toolbar, { formats } from './toolbar';
-
-// ----------------------------------------------------------------------
+import { StyledEditor } from './styles'
+import Toolbar, { formats } from './toolbar'
+import { EditorProps } from './types'
 
 export default function Editor({
   id = 'minimal-quill',
@@ -32,16 +30,16 @@ export default function Editor({
     clipboard: {
       matchVisual: false,
     },
-  };
+  }
 
   return (
     <>
       <StyledEditor
         sx={{
           ...(error && {
-            border: (theme) => `solid 1px ${theme.palette.error.main}`,
+            border: theme => `solid 1px ${theme.palette.error.main}`,
             '& .ql-editor': {
-              bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
+              bgcolor: theme => alpha(theme.palette.error.main, 0.08),
             },
           }),
           ...sx,
@@ -59,5 +57,5 @@ export default function Editor({
 
       {helperText && helperText}
     </>
-  );
+  )
 }

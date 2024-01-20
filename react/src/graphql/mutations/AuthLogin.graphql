@@ -8,7 +8,7 @@ mutation Login($email: String!, $password: String!) {
     }
     token
     user {
-      ...AuthUser
+      ...User
     }
   }
 }

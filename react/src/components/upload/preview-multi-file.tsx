@@ -1,26 +1,24 @@
-import { m, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion'
 
-import Stack from '@mui/material/Stack';
-import { alpha } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
-import ListItemText from '@mui/material/ListItemText';
+import IconButton from '@mui/material/IconButton'
+import ListItemText from '@mui/material/ListItemText'
+import Stack from '@mui/material/Stack'
+import { alpha } from '@mui/material/styles'
 
-import { fData } from 'utils/format-number';
+import { fData } from 'utils/format-number'
 
-import Iconify from '../iconify';
-import { varFade } from '../animate';
-import { UploadProps } from './types';
-import FileThumbnail, { fileData } from '../file-thumbnail';
-
-// ----------------------------------------------------------------------
+import { varFade } from '../animate'
+import FileThumbnail, { fileData } from '../file-thumbnail'
+import Iconify from '../iconify'
+import { UploadProps } from './types'
 
 export default function MultiFilePreview({ thumbnail, files, onRemove, sx }: UploadProps) {
   return (
     <AnimatePresence initial={false}>
-      {files?.map((file) => {
-        const { key, name = '', size = 0 } = fileData(file);
+      {files?.map(file => {
+        const { key, name = '', size = 0 } = fileData(file)
 
-        const isNotFormatFile = typeof file === 'string';
+        const isNotFormatFile = typeof file === 'string'
 
         if (thumbnail) {
           return (
@@ -38,7 +36,7 @@ export default function MultiFilePreview({ thumbnail, files, onRemove, sx }: Upl
                 borderRadius: 1.25,
                 overflow: 'hidden',
                 position: 'relative',
-                border: (theme) => `solid 1px ${alpha(theme.palette.grey[500], 0.16)}`,
+                border: theme => `solid 1px ${alpha(theme.palette.grey[500], 0.16)}`,
                 ...sx,
               }}
             >
@@ -60,9 +58,9 @@ export default function MultiFilePreview({ thumbnail, files, onRemove, sx }: Upl
                     right: 4,
                     position: 'absolute',
                     color: 'common.white',
-                    bgcolor: (theme) => alpha(theme.palette.grey[900], 0.48),
+                    bgcolor: theme => alpha(theme.palette.grey[900], 0.48),
                     '&:hover': {
-                      bgcolor: (theme) => alpha(theme.palette.grey[900], 0.72),
+                      bgcolor: theme => alpha(theme.palette.grey[900], 0.72),
                     },
                   }}
                 >
@@ -70,7 +68,7 @@ export default function MultiFilePreview({ thumbnail, files, onRemove, sx }: Upl
                 </IconButton>
               )}
             </Stack>
-          );
+          )
         }
 
         return (
@@ -86,7 +84,7 @@ export default function MultiFilePreview({ thumbnail, files, onRemove, sx }: Upl
               py: 1,
               px: 1.5,
               borderRadius: 1,
-              border: (theme) => `solid 1px ${alpha(theme.palette.grey[500], 0.16)}`,
+              border: theme => `solid 1px ${alpha(theme.palette.grey[500], 0.16)}`,
               ...sx,
             }}
           >
@@ -107,8 +105,8 @@ export default function MultiFilePreview({ thumbnail, files, onRemove, sx }: Upl
               </IconButton>
             )}
           </Stack>
-        );
+        )
       })}
     </AnimatePresence>
-  );
+  )
 }

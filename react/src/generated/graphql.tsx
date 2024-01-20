@@ -64,10 +64,11 @@ export type Query = {
 export type UserType = {
   __typename?: 'UserType';
   email: Scalars['String']['output'];
+  name: Scalars['String']['output'];
   uuid: Scalars['String']['output'];
 };
 
-export type AuthUserFragment = { __typename?: 'UserType', uuid: string, email: string };
+export type UserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string };
 
 export type ErrorFragment = { __typename?: 'ErrorType', field?: string | null, message: string };
 
@@ -77,7 +78,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginUser', token?: string | null, error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'UserType', uuid: string, email: string } | null } | null };
+export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginUser', token?: string | null, error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'UserType', uuid: string, email: string, name: string } | null } | null };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -87,17 +88,18 @@ export type LogoutMutation = { __typename?: 'Mutation', logout?: { __typename?: 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'UserType', uuid: string, email: string } };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'UserType', uuid: string, email: string, name: string } };
 
 export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type UsersQuery = { __typename?: 'Query', users?: Array<{ __typename?: 'UserType', uuid: string } | null> | null };
 
-export const AuthUserFragmentDoc = gql`
-    fragment AuthUser on UserType {
+export const UserFragmentDoc = gql`
+    fragment User on UserType {
   uuid
   email
+  name
 }
     `;
 export const ErrorFragmentDoc = gql`
@@ -114,12 +116,12 @@ export const LoginDocument = gql`
     }
     token
     user {
-      ...AuthUser
+      ...User
     }
   }
 }
     ${ErrorFragmentDoc}
-${AuthUserFragmentDoc}`;
+${UserFragmentDoc}`;
 export type LoginMutationFn = Apollo.MutationFunction<LoginMutation, LoginMutationVariables>;
 
 /**
@@ -184,10 +186,10 @@ export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, L
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {
-    ...AuthUser
+    ...User
   }
 }
-    ${AuthUserFragmentDoc}`;
+    ${UserFragmentDoc}`;
 
 /**
  * __useCurrentUserQuery__

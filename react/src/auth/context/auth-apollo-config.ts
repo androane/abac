@@ -1,6 +1,7 @@
 import { ApolloClient, createHttpLink, from } from '@apollo/client'
 import { InMemoryCache } from '@apollo/client/cache'
-import { setContext } from 'apollo-link-context'
+import { setContext } from '@apollo/link-context'
+import DebounceLink from 'apollo-link-debounce'
 import { STORAGE_KEY } from 'auth/context/auth-provider'
 
 import { GRAPHQL_ENDPOINT } from 'config/config-env'
@@ -31,7 +32,7 @@ const cache = new InMemoryCache({
 // await before instantiating ApolloClient, else queries might run before the cache is persisted
 const initClient = async () => {
   return new ApolloClient({
-    link: from([httpLink, authLink]),
+    link: from([authLink, new DebounceLink(100), httpLink]),
     cache,
     resolvers: {},
     connectToDevTools: true,

@@ -1,19 +1,17 @@
-import { listClasses } from '@mui/material/List';
-import { paperClasses } from '@mui/material/Paper';
-import { Theme, alpha } from '@mui/material/styles';
-import { buttonClasses } from '@mui/material/Button';
-import { iconButtonClasses } from '@mui/material/IconButton';
-import { inputLabelClasses } from '@mui/material/InputLabel';
-import { formControlClasses } from '@mui/material/FormControl';
-import { listItemIconClasses } from '@mui/material/ListItemIcon';
-import { circularProgressClasses } from '@mui/material/CircularProgress';
+import { buttonClasses } from '@mui/material/Button'
+import { circularProgressClasses } from '@mui/material/CircularProgress'
+import { formControlClasses } from '@mui/material/FormControl'
+import { iconButtonClasses } from '@mui/material/IconButton'
+import { inputLabelClasses } from '@mui/material/InputLabel'
+import { listClasses } from '@mui/material/List'
+import { listItemIconClasses } from '@mui/material/ListItemIcon'
+import { paperClasses } from '@mui/material/Paper'
+import { Theme, alpha } from '@mui/material/styles'
 
-import { paper } from '../../css';
-
-// ----------------------------------------------------------------------
+import { paper } from '../../css'
 
 export function dataGrid(theme: Theme) {
-  const paperStyles = paper({ theme, dropdown: true });
+  const paperStyles = paper({ theme, dropdown: true })
 
   return {
     MuiDataGrid: {
@@ -148,5 +146,5 @@ export function dataGrid(theme: Theme) {
         },
       },
     },
-  };
+  }
 }

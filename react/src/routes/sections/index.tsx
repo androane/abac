@@ -1,20 +1,19 @@
-import { Navigate, useRoutes } from 'react-router-dom';
+import { Navigate, useRoutes } from 'react-router-dom'
 
-import { authRoutes } from './auth';
-import HomePage from 'pages/dashboard/app'
+import { PATH_AFTER_LOGIN } from 'config/config-global'
+import { authRoutes } from './auth'
+import { dashboardRoutes } from './dashboard'
 
 export default function Router() {
   return useRoutes([
     {
       path: '/',
-      element: (
-          <HomePage />
-      ),
+      element: <Navigate to={PATH_AFTER_LOGIN} replace />,
     },
-    // Auth routes
     ...authRoutes,
+    ...dashboardRoutes,
 
     // No match 404
     { path: '*', element: <Navigate to="/404" replace /> },
-  ]);
+  ])
 }

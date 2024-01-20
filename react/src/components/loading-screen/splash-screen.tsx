@@ -1,22 +1,20 @@
-import { m } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { m } from 'framer-motion'
+import { useEffect, useState } from 'react'
 
-import { alpha } from '@mui/material/styles';
-import Box, { BoxProps } from '@mui/material/Box';
+import Box, { BoxProps } from '@mui/material/Box'
+import { alpha } from '@mui/material/styles'
 
-import Logo from '../logo';
-
-// ----------------------------------------------------------------------
+import Logo from '../logo'
 
 export default function SplashScreen({ sx, ...other }: BoxProps) {
-  const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    setMounted(true)
+  }, [])
 
   if (!mounted) {
-    return null;
+    return null
   }
 
   return (
@@ -65,7 +63,7 @@ export default function SplashScreen({ sx, ...other }: BoxProps) {
             width: 100,
             height: 100,
             position: 'absolute',
-            border: (theme) => `solid 3px ${alpha(theme.palette.primary.dark, 0.24)}`,
+            border: theme => `solid 3px ${alpha(theme.palette.primary.dark, 0.24)}`,
           }}
         />
 
@@ -86,10 +84,10 @@ export default function SplashScreen({ sx, ...other }: BoxProps) {
             width: 120,
             height: 120,
             position: 'absolute',
-            border: (theme) => `solid 8px ${alpha(theme.palette.primary.dark, 0.24)}`,
+            border: theme => `solid 8px ${alpha(theme.palette.primary.dark, 0.24)}`,
           }}
         />
       </>
     </Box>
-  );
+  )
 }

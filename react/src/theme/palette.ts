@@ -1,20 +1,18 @@
-import { alpha } from '@mui/material/styles';
+import { alpha } from '@mui/material/styles'
 
-// ----------------------------------------------------------------------
-
-export type ColorSchema = 'primary' | 'secondary' | 'info' | 'success' | 'warning' | 'error';
+export type ColorSchema = 'primary' | 'secondary' | 'info' | 'success' | 'warning' | 'error'
 
 declare module '@mui/material/styles/createPalette' {
   interface TypeBackground {
-    neutral: string;
+    neutral: string
   }
   interface SimplePaletteColorOptions {
-    lighter: string;
-    darker: string;
+    lighter: string
+    darker: string
   }
   interface PaletteColor {
-    lighter: string;
-    darker: string;
+    lighter: string
+    darker: string
   }
 }
 
@@ -31,7 +29,7 @@ export const grey = {
   700: '#454F5B',
   800: '#212B36',
   900: '#161C24',
-};
+}
 
 export const primary = {
   lighter: '#C8FAD6',
@@ -40,7 +38,7 @@ export const primary = {
   dark: '#007867',
   darker: '#004B50',
   contrastText: '#FFFFFF',
-};
+}
 
 export const secondary = {
   lighter: '#EFD6FF',
@@ -49,7 +47,7 @@ export const secondary = {
   dark: '#5119B7',
   darker: '#27097A',
   contrastText: '#FFFFFF',
-};
+}
 
 export const info = {
   lighter: '#CAFDF5',
@@ -58,7 +56,7 @@ export const info = {
   dark: '#006C9C',
   darker: '#003768',
   contrastText: '#FFFFFF',
-};
+}
 
 export const success = {
   lighter: '#D3FCD2',
@@ -67,7 +65,7 @@ export const success = {
   dark: '#118D57',
   darker: '#065E49',
   contrastText: '#ffffff',
-};
+}
 
 export const warning = {
   lighter: '#FFF5CC',
@@ -76,7 +74,7 @@ export const warning = {
   dark: '#B76E00',
   darker: '#7A4100',
   contrastText: grey[800],
-};
+}
 
 export const error = {
   lighter: '#FFE9D5',
@@ -85,12 +83,12 @@ export const error = {
   dark: '#B71D18',
   darker: '#7A0916',
   contrastText: '#FFFFFF',
-};
+}
 
 export const common = {
   black: '#000000',
   white: '#FFFFFF',
-};
+}
 
 export const action = {
   hover: alpha(grey[500], 0.08),
@@ -100,7 +98,7 @@ export const action = {
   focus: alpha(grey[500], 0.24),
   hoverOpacity: 0.08,
   disabledOpacity: 0.48,
-};
+}
 
 const base = {
   primary,
@@ -113,9 +111,7 @@ const base = {
   common,
   divider: alpha(grey[500], 0.2),
   action,
-};
-
-// ----------------------------------------------------------------------
+}
 
 export function palette(mode: 'light' | 'dark') {
   const light = {
@@ -135,7 +131,7 @@ export function palette(mode: 'light' | 'dark') {
       ...base.action,
       active: grey[600],
     },
-  };
+  }
 
   const dark = {
     ...base,
@@ -154,7 +150,7 @@ export function palette(mode: 'light' | 'dark') {
       ...base.action,
       active: grey[500],
     },
-  };
+  }
 
-  return mode === 'light' ? light : dark;
+  return mode === 'light' ? light : dark
 }

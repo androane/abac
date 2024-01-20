@@ -2,11 +2,12 @@
 import logging
 
 from django.contrib.auth.base_user import AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin, UserManager
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from simple_history.models import HistoricalRecords
 
 from core.models import BaseModel
+from user.managers import UserManager
 
 logger = logging.getLogger(__name__)
 

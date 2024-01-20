@@ -1,7 +1,5 @@
-import { Theme } from '@mui/material/styles';
-import { RadioProps, radioClasses } from '@mui/material/Radio';
-
-// ----------------------------------------------------------------------
+import { RadioProps, radioClasses } from '@mui/material/Radio'
+import { Theme } from '@mui/material/styles'
 
 export function radio(theme: Theme) {
   return {
@@ -16,7 +14,7 @@ export function radio(theme: Theme) {
     MuiRadio: {
       styleOverrides: {
         root: ({ ownerState }: { ownerState: RadioProps }) => {
-          const { color } = ownerState;
+          const { color } = ownerState
 
           return {
             padding: theme.spacing(1),
@@ -28,9 +26,9 @@ export function radio(theme: Theme) {
             [`&.${radioClasses.disabled}`]: {
               color: theme.palette.action.disabled,
             },
-          };
+          }
         },
       },
     },
-  };
+  }
 }

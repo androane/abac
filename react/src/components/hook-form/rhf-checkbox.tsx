@@ -1,24 +1,22 @@
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form'
 
-import Checkbox from '@mui/material/Checkbox';
-import FormGroup from '@mui/material/FormGroup';
-import FormLabel from '@mui/material/FormLabel';
-import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText';
+import Checkbox from '@mui/material/Checkbox'
+import FormControl from '@mui/material/FormControl'
 import FormControlLabel, {
   FormControlLabelProps,
   formControlLabelClasses,
-} from '@mui/material/FormControlLabel';
-
-// ----------------------------------------------------------------------
+} from '@mui/material/FormControlLabel'
+import FormGroup from '@mui/material/FormGroup'
+import FormHelperText from '@mui/material/FormHelperText'
+import FormLabel from '@mui/material/FormLabel'
 
 interface RHFCheckboxProps extends Omit<FormControlLabelProps, 'control'> {
-  name: string;
-  helperText?: React.ReactNode;
+  name: string
+  helperText?: React.ReactNode
 }
 
 export function RHFCheckbox({ name, helperText, ...other }: RHFCheckboxProps) {
-  const { control } = useFormContext();
+  const { control } = useFormContext()
 
   return (
     <Controller
@@ -34,18 +32,16 @@ export function RHFCheckbox({ name, helperText, ...other }: RHFCheckboxProps) {
         </div>
       )}
     />
-  );
+  )
 }
 
-// ----------------------------------------------------------------------
-
 interface RHFMultiCheckboxProps extends Omit<FormControlLabelProps, 'control' | 'label'> {
-  name: string;
-  options: { label: string; value: any }[];
-  row?: boolean;
-  label?: string;
-  spacing?: number;
-  helperText?: React.ReactNode;
+  name: string
+  options: { label: string; value: any }[]
+  row?: boolean
+  label?: string
+  spacing?: number
+  helperText?: React.ReactNode
 }
 
 export function RHFMultiCheckbox({
@@ -58,12 +54,12 @@ export function RHFMultiCheckbox({
   sx,
   ...other
 }: RHFMultiCheckboxProps) {
-  const { control } = useFormContext();
+  const { control } = useFormContext()
 
   const getSelected = (selectedItems: string[], item: string) =>
     selectedItems.includes(item)
-      ? selectedItems.filter((value) => value !== item)
-      : [...selectedItems, item];
+      ? selectedItems.filter(value => value !== item)
+      : [...selectedItems, item]
 
   return (
     <Controller
@@ -96,7 +92,7 @@ export function RHFMultiCheckbox({
               ...sx,
             }}
           >
-            {options.map((option) => (
+            {options.map(option => (
               <FormControlLabel
                 key={option.value}
                 control={
@@ -119,5 +115,5 @@ export function RHFMultiCheckbox({
         </FormControl>
       )}
     />
-  );
+  )
 }

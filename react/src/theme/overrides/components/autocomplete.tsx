@@ -1,10 +1,8 @@
-import { alpha, Theme } from '@mui/material/styles';
-import { svgIconClasses } from '@mui/material/SvgIcon';
-import { autocompleteClasses } from '@mui/material/Autocomplete';
+import { autocompleteClasses } from '@mui/material/Autocomplete'
+import { alpha, Theme } from '@mui/material/styles'
+import { svgIconClasses } from '@mui/material/SvgIcon'
 
-import { paper, menuItem } from '../../css';
-
-// ----------------------------------------------------------------------
+import { menuItem, paper } from '../../css'
 
 export function autocomplete(theme: Theme) {
   return {
@@ -40,5 +38,5 @@ export function autocomplete(theme: Theme) {
         },
       },
     },
-  };
+  }
 }

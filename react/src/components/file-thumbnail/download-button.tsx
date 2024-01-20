@@ -1,18 +1,16 @@
-import { useTheme } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
+import IconButton from '@mui/material/IconButton'
+import { useTheme } from '@mui/material/styles'
 
-import { bgBlur } from 'theme/css';
+import { bgBlur } from 'theme/css'
 
-import Iconify from '../iconify';
-
-// ----------------------------------------------------------------------
+import Iconify from '../iconify'
 
 type Props = {
-  onDownload?: VoidFunction;
-};
+  onDownload?: VoidFunction
+}
 
 export default function DownloadButton({ onDownload }: Props) {
-  const theme = useTheme();
+  const theme = useTheme()
 
   return (
     <IconButton
@@ -43,5 +41,5 @@ export default function DownloadButton({ onDownload }: Props) {
     >
       <Iconify icon="eva:arrow-circle-down-fill" width={24} />
     </IconButton>
-  );
+  )
 }

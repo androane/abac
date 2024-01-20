@@ -1,23 +1,21 @@
-import { FileRejection } from 'react-dropzone';
+import { FileRejection } from 'react-dropzone'
 
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import { alpha } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box'
+import Paper from '@mui/material/Paper'
+import { alpha } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 
-import { fData } from 'utils/format-number';
+import { fData } from 'utils/format-number'
 
-import { fileData } from '../file-thumbnail';
-
-// ----------------------------------------------------------------------
+import { fileData } from '../file-thumbnail'
 
 type Props = {
-  fileRejections: FileRejection[];
-};
+  fileRejections: FileRejection[]
+}
 
 export default function RejectionFiles({ fileRejections }: Props) {
   if (!fileRejections.length) {
-    return null;
+    return null
   }
 
   return (
@@ -30,11 +28,11 @@ export default function RejectionFiles({ fileRejections }: Props) {
         textAlign: 'left',
         borderStyle: 'dashed',
         borderColor: 'error.main',
-        bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
+        bgcolor: theme => alpha(theme.palette.error.main, 0.08),
       }}
     >
       {fileRejections.map(({ file, errors }) => {
-        const { path, size } = fileData(file);
+        const { path, size } = fileData(file)
 
         return (
           <Box key={path} sx={{ my: 1 }}>
@@ -42,14 +40,14 @@ export default function RejectionFiles({ fileRejections }: Props) {
               {path} - {size ? fData(size) : ''}
             </Typography>
 
-            {errors.map((error) => (
+            {errors.map(error => (
               <Box key={error.code} component="span" sx={{ typography: 'caption' }}>
                 - {error.message}
               </Box>
             ))}
           </Box>
-        );
+        )
       })}
     </Paper>
-  );
+  )
 }

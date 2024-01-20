@@ -1,8 +1,6 @@
-import { StyledEditorToolbar } from './styles';
+import { StyledEditorToolbar } from './styles'
 
-// ----------------------------------------------------------------------
-
-const HEADINGS = ['Heading 1', 'Heading 2', 'Heading 3', 'Heading 4', 'Heading 5', 'Heading 6'];
+const HEADINGS = ['Heading 1', 'Heading 2', 'Heading 3', 'Heading 4', 'Heading 5', 'Heading 6']
 
 export const formats = [
   'align',
@@ -28,12 +26,12 @@ export const formats = [
   'table',
   'underline',
   'video',
-];
+]
 
 type EditorToolbarProps = {
-  id: string;
-  simple?: boolean;
-};
+  id: string
+  simple?: boolean
+}
 
 export default function Toolbar({ id, simple, ...other }: EditorToolbarProps) {
   return (
@@ -102,5 +100,5 @@ export default function Toolbar({ id, simple, ...other }: EditorToolbarProps) {
         </div>
       </div>
     </StyledEditorToolbar>
-  );
+  )
 }

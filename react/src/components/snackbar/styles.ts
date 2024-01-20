@@ -1,11 +1,9 @@
-import { MaterialDesignContent } from 'notistack';
+import { MaterialDesignContent } from 'notistack'
 
-import { alpha, styled } from '@mui/material/styles';
-
-// ----------------------------------------------------------------------
+import { alpha, styled } from '@mui/material/styles'
 
 export const StyledNotistack = styled(MaterialDesignContent)(({ theme }) => {
-  const lightMode = theme.palette.mode === 'light';
+  const lightMode = theme.palette.mode === 'light'
 
   return {
     '& #notistack-snackbar': {
@@ -29,14 +27,12 @@ export const StyledNotistack = styled(MaterialDesignContent)(({ theme }) => {
     // '&.notistack-MuiContent-success': {},
     // '&.notistack-MuiContent-warning': {},
     // '&.notistack-MuiContent-error': {},
-  };
-});
-
-// ----------------------------------------------------------------------
+  }
+})
 
 type StyledIconProps = {
-  color: 'info' | 'success' | 'warning' | 'error';
-};
+  color: 'info' | 'success' | 'warning' | 'error'
+}
 
 export const StyledIcon = styled('span')<StyledIconProps>(({ color, theme }) => ({
   width: 44,
@@ -48,4 +44,4 @@ export const StyledIcon = styled('span')<StyledIconProps>(({ color, theme }) => 
   color: theme.palette[color].main,
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette[color].main, 0.16),
-}));
+}))

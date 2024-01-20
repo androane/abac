@@ -1,22 +1,20 @@
-import { memo } from 'react';
+import { memo } from 'react'
 
-import { useTheme } from '@mui/material/styles';
-import Box, { BoxProps } from '@mui/material/Box';
+import Box, { BoxProps } from '@mui/material/Box'
+import { useTheme } from '@mui/material/styles'
 
-import BackgroundShape from './background-shape';
-
-// ----------------------------------------------------------------------
+import BackgroundShape from './background-shape'
 
 function MaintenanceIllustration({ ...other }: BoxProps) {
-  const theme = useTheme();
+  const theme = useTheme()
 
-  const PRIMARY_LIGHT = theme.palette.primary.light;
+  const PRIMARY_LIGHT = theme.palette.primary.light
 
-  const PRIMARY_MAIN = theme.palette.primary.main;
+  const PRIMARY_MAIN = theme.palette.primary.main
 
-  const PRIMARY_DARK = theme.palette.primary.dark;
+  const PRIMARY_DARK = theme.palette.primary.dark
 
-  const PRIMARY_DARKER = theme.palette.primary.darker;
+  const PRIMARY_DARKER = theme.palette.primary.darker
 
   return (
     <Box
@@ -209,7 +207,7 @@ function MaintenanceIllustration({ ...other }: BoxProps) {
 
       <image href="/assets/illustrations/characters/character_5.png" height="300" x="245" y="30" />
     </Box>
-  );
+  )
 }
 
-export default memo(MaintenanceIllustration);
+export default memo(MaintenanceIllustration)

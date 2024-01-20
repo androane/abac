@@ -1,4 +1,5 @@
-fragment AuthUser on UserType {
+fragment User on UserType {
   uuid
   email
+  name
 }

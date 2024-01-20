@@ -1,11 +1,9 @@
-// ----------------------------------------------------------------------
-
 export function remToPx(value: string) {
-  return Math.round(parseFloat(value) * 16);
+  return Math.round(parseFloat(value) * 16)
 }
 
 export function pxToRem(value: number) {
-  return `${value / 16}rem`;
+  return `${value / 16}rem`
 }
 
 export function responsiveFontSizes({ sm, md, lg }: { sm: number; md: number; lg: number }) {
@@ -19,20 +17,18 @@ export function responsiveFontSizes({ sm, md, lg }: { sm: number; md: number; lg
     '@media (min-width:1200px)': {
       fontSize: pxToRem(lg),
     },
-  };
+  }
 }
 
 declare module '@mui/material/styles' {
   interface TypographyVariants {
-    fontSecondaryFamily: React.CSSProperties['fontFamily'];
-    fontWeightSemiBold: React.CSSProperties['fontWeight'];
+    fontSecondaryFamily: React.CSSProperties['fontFamily']
+    fontWeightSemiBold: React.CSSProperties['fontWeight']
   }
 }
 
-export const primaryFont = 'Public Sans, sans-serif';
-export const secondaryFont = 'Barlow, sans-serif';
-
-// ----------------------------------------------------------------------
+export const primaryFont = 'Public Sans, sans-serif'
+export const secondaryFont = 'Barlow, sans-serif'
 
 export const typography = {
   fontFamily: primaryFont,
@@ -111,4 +107,4 @@ export const typography = {
     fontSize: pxToRem(14),
     textTransform: 'unset',
   },
-} as const;
+} as const

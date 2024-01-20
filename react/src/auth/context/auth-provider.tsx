@@ -3,18 +3,26 @@ import { useCallback, useEffect, useMemo, useReducer } from 'react'
 import { useCurrentUserQuery, useLoginMutation, useLogoutMutation } from 'generated/graphql'
 import { ActionMapType, AuthStateType, AuthUserType } from '../types'
 import { AuthContext } from './auth-context'
-import { isValidToken, setSession } from './utils'
+import { setSession } from './utils'
+
+enum StatusEnum {
+  LOADING = 'loading',
+  AUTHENTICATED = 'authenticated',
+  UNAUTHENTICATED = 'unauthenticated',
+}
 
 enum Types {
   INITIAL = 'INITIAL',
   LOGIN = 'LOGIN',
   LOGOUT = 'LOGOUT',
+  FETCHING_CURRENT_USER = 'FETCHING_CURRENT_USER',
 }
 
 type Payload = {
   [Types.INITIAL]: {
     user: AuthUserType
   }
+  [Types.FETCHING_CURRENT_USER]: undefined
   [Types.LOGIN]: {
     user: AuthUserType
   }
@@ -33,6 +41,12 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
     return {
       loading: false,
       user: action.payload.user,
+    }
+  }
+  if (action.type === Types.FETCHING_CURRENT_USER) {
+    return {
+      loading: true,
+      user: null,
     }
   }
   if (action.type === Types.LOGIN) {
@@ -66,19 +80,23 @@ export function AuthProvider({ children }: Props) {
     try {
       const accessToken = sessionStorage.getItem(STORAGE_KEY)
 
-      if (accessToken && isValidToken(accessToken)) {
+      if (accessToken) {
         setSession(accessToken)
-
-        dispatch({
-          type: Types.INITIAL,
-          payload: {
-            user: {
-              ...currentUserResponse.data?.currentUser,
-              accessToken,
-              loading: currentUserResponse.loading,
+        if (currentUserResponse.loading) {
+          dispatch({
+            type: Types.FETCHING_CURRENT_USER,
+          })
+        } else {
+          dispatch({
+            type: Types.INITIAL,
+            payload: {
+              user: {
+                ...currentUserResponse.data?.currentUser,
+                accessToken,
+              },
             },
-          },
-        })
+          })
+        }
       } else {
         dispatch({
           type: Types.INITIAL,
@@ -96,7 +114,7 @@ export function AuthProvider({ children }: Props) {
         },
       })
     }
-  }, [])
+  }, [currentUserResponse.loading])
 
   useEffect(() => {
     initialize()
@@ -138,16 +156,16 @@ export function AuthProvider({ children }: Props) {
     })
   }, [])
 
-  const checkAuthenticated = state.user ? 'authenticated' : 'unauthenticated'
+  const checkAuthenticated = state.user ? StatusEnum.AUTHENTICATED : StatusEnum.UNAUTHENTICATED
 
-  const status = state.loading ? 'loading' : checkAuthenticated
+  const status = state.loading ? StatusEnum.LOADING : checkAuthenticated
 
   const memoizedValue = useMemo(
     () => ({
       user: state.user,
-      loading: status === 'loading',
-      authenticated: status === 'authenticated',
-      unauthenticated: status === 'unauthenticated',
+      loading: status === StatusEnum.LOADING,
+      authenticated: status === StatusEnum.AUTHENTICATED,
+      unauthenticated: status === StatusEnum.UNAUTHENTICATED,
       //
       login,
       logout,

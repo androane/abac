@@ -1,35 +1,33 @@
-import isEqual from 'lodash/isEqual';
-import { useMemo, useState, useCallback } from 'react';
+import isEqual from 'lodash/isEqual'
+import { useCallback, useMemo, useState } from 'react'
 
-import { useLocalStorage } from 'hooks/use-local-storage';
+import { useLocalStorage } from 'hooks/use-local-storage'
 
-import { SettingsValueProps } from '../types';
-import { SettingsContext } from './settings-context';
+import { SettingsValueProps } from '../types'
+import { SettingsContext } from './settings-context'
 
-// ----------------------------------------------------------------------
-
-const STORAGE_KEY = 'settings';
+const STORAGE_KEY = 'settings'
 
 type SettingsProviderProps = {
-  children: React.ReactNode;
-  defaultSettings: SettingsValueProps;
-};
+  children: React.ReactNode
+  defaultSettings: SettingsValueProps
+}
 
 export function SettingsProvider({ children, defaultSettings }: SettingsProviderProps) {
-  const { state, update, reset } = useLocalStorage(STORAGE_KEY, defaultSettings);
+  const { state, update, reset } = useLocalStorage(STORAGE_KEY, defaultSettings)
 
-  const [openDrawer, setOpenDrawer] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false)
 
   // Drawer
   const onToggleDrawer = useCallback(() => {
-    setOpenDrawer((prev) => !prev);
-  }, []);
+    setOpenDrawer(prev => !prev)
+  }, [])
 
   const onCloseDrawer = useCallback(() => {
-    setOpenDrawer(false);
-  }, []);
+    setOpenDrawer(false)
+  }, [])
 
-  const canReset = !isEqual(state, defaultSettings);
+  const canReset = !isEqual(state, defaultSettings)
 
   const memoizedValue = useMemo(
     () => ({
@@ -43,16 +41,8 @@ export function SettingsProvider({ children, defaultSettings }: SettingsProvider
       onToggle: onToggleDrawer,
       onClose: onCloseDrawer,
     }),
-    [
-      reset,
-      update,
-      state,
-      canReset,
-      openDrawer,
-      onCloseDrawer,
-      onToggleDrawer,
-    ]
-  );
+    [reset, update, state, canReset, openDrawer, onCloseDrawer, onToggleDrawer],
+  )
 
-  return <SettingsContext.Provider value={memoizedValue}>{children}</SettingsContext.Provider>;
+  return <SettingsContext.Provider value={memoizedValue}>{children}</SettingsContext.Provider>
 }

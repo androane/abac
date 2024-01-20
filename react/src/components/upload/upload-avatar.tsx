@@ -1,16 +1,14 @@
-import { useDropzone } from 'react-dropzone';
+import { useDropzone } from 'react-dropzone'
 
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import { alpha } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import { alpha } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 
-import Image from '../image';
-import Iconify from '../iconify';
-import { UploadProps } from './types';
-import RejectionFiles from './errors-rejection-files';
-
-// ----------------------------------------------------------------------
+import Iconify from '../iconify'
+import Image from '../image'
+import RejectionFiles from './errors-rejection-files'
+import { UploadProps } from './types'
 
 export default function UploadAvatar({
   error,
@@ -27,13 +25,13 @@ export default function UploadAvatar({
       'image/*': [],
     },
     ...other,
-  });
+  })
 
-  const hasFile = !!file;
+  const hasFile = !!file
 
-  const hasError = isDragReject || !!error;
+  const hasError = isDragReject || !!error
 
-  const imgUrl = typeof file === 'string' ? file : file?.preview;
+  const imgUrl = typeof file === 'string' ? file : file?.preview
 
   const renderPreview = hasFile && (
     <Image
@@ -45,7 +43,7 @@ export default function UploadAvatar({
         borderRadius: '50%',
       }}
     />
-  );
+  )
 
   const renderPlaceholder = (
     <Stack
@@ -62,8 +60,8 @@ export default function UploadAvatar({
         borderRadius: '50%',
         position: 'absolute',
         color: 'text.disabled',
-        bgcolor: (theme) => alpha(theme.palette.grey[500], 0.08),
-        transition: (theme) =>
+        bgcolor: theme => alpha(theme.palette.grey[500], 0.08),
+        transition: theme =>
           theme.transitions.create(['opacity'], {
             duration: theme.transitions.duration.shorter,
           }),
@@ -72,13 +70,13 @@ export default function UploadAvatar({
         },
         ...(hasError && {
           color: 'error.main',
-          bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
+          bgcolor: theme => alpha(theme.palette.error.main, 0.08),
         }),
         ...(hasFile && {
           zIndex: 9,
           opacity: 0,
           color: 'common.white',
-          bgcolor: (theme) => alpha(theme.palette.grey[900], 0.64),
+          bgcolor: theme => alpha(theme.palette.grey[900], 0.64),
         }),
       }}
     >
@@ -86,7 +84,7 @@ export default function UploadAvatar({
 
       <Typography variant="caption">{file ? 'Update photo' : 'Upload photo'}</Typography>
     </Stack>
-  );
+  )
 
   const renderContent = (
     <Box
@@ -101,7 +99,7 @@ export default function UploadAvatar({
       {renderPreview}
       {renderPlaceholder}
     </Box>
-  );
+  )
 
   return (
     <>
@@ -115,7 +113,7 @@ export default function UploadAvatar({
           cursor: 'pointer',
           overflow: 'hidden',
           borderRadius: '50%',
-          border: (theme) => `1px dashed ${alpha(theme.palette.grey[500], 0.2)}`,
+          border: theme => `1px dashed ${alpha(theme.palette.grey[500], 0.2)}`,
           ...(isDragActive && {
             opacity: 0.72,
           }),
@@ -128,7 +126,7 @@ export default function UploadAvatar({
           }),
           ...(hasFile && {
             ...(hasError && {
-              bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
+              bgcolor: theme => alpha(theme.palette.error.main, 0.08),
             }),
             '&:hover .upload-placeholder': {
               opacity: 1,
@@ -146,5 +144,5 @@ export default function UploadAvatar({
 
       <RejectionFiles fileRejections={fileRejections} />
     </>
-  );
+  )
 }

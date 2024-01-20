@@ -10,15 +10,12 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 
-import { useRouter, useSearchParams } from 'routes/hooks'
-
-import { useBoolean } from 'hooks/use-boolean'
-
-import { PATH_AFTER_LOGIN } from 'config/config-global'
-
 import { useAuthContext } from 'auth/hooks'
 import FormProvider, { RHFTextField } from 'components/hook-form'
 import Iconify from 'components/iconify'
+import { PATH_AFTER_LOGIN } from 'config/config-global'
+import { useBoolean } from 'hooks/use-boolean'
+import { useRouter, useSearchParams } from 'routes/hooks'
 import { API_CODES } from 'utils/api-codes'
 
 const Login = () => {

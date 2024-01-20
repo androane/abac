@@ -1,22 +1,20 @@
-import { memo } from 'react';
+import { memo } from 'react'
 
-import { useTheme } from '@mui/material/styles';
-import Box, { BoxProps } from '@mui/material/Box';
+import Box, { BoxProps } from '@mui/material/Box'
+import { useTheme } from '@mui/material/styles'
 
-import BackgroundShape from './background-shape';
-
-// ----------------------------------------------------------------------
+import BackgroundShape from './background-shape'
 
 function ComingSoonIllustration({ ...other }: BoxProps) {
-  const theme = useTheme();
+  const theme = useTheme()
 
-  const PRIMARY_LIGHT = theme.palette.primary.light;
+  const PRIMARY_LIGHT = theme.palette.primary.light
 
-  const PRIMARY_MAIN = theme.palette.primary.main;
+  const PRIMARY_MAIN = theme.palette.primary.main
 
-  const PRIMARY_DARK = theme.palette.primary.dark;
+  const PRIMARY_DARK = theme.palette.primary.dark
 
-  const PRIMARY_DARKER = theme.palette.primary.darker;
+  const PRIMARY_DARKER = theme.palette.primary.darker
 
   return (
     <Box
@@ -112,7 +110,7 @@ function ComingSoonIllustration({ ...other }: BoxProps) {
         </linearGradient>
       </defs>
     </Box>
-  );
+  )
 }
 
-export default memo(ComingSoonIllustration);
+export default memo(ComingSoonIllustration)
