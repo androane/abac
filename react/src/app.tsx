@@ -1,8 +1,4 @@
-/* eslint-disable perfectionist/sort-imports */
-
 import 'global.css'
-
-import Router from 'routes/sections'
 
 import { useScrollToTop } from 'hooks/use-scroll-to-top'
 
@@ -13,6 +9,7 @@ import { MotionLazy } from 'components/animate/motion-lazy'
 import ProgressBar from 'components/progress-bar'
 import { SettingsDrawer, SettingsProvider } from 'components/settings'
 import SnackbarProvider from 'components/snackbar/snackbar-provider'
+import Router from 'routes/sections'
 
 export default function App() {
   useScrollToTop()

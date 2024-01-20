@@ -30,7 +30,7 @@ const cache = new InMemoryCache({
 })
 
 // await before instantiating ApolloClient, else queries might run before the cache is persisted
-export const initClient = async () => {
+const initClient = async () => {
   return new ApolloClient({
     link: from([authLink, new DebounceLink(100), httpLink]),
     cache,
@@ -38,3 +38,5 @@ export const initClient = async () => {
     connectToDevTools: true,
   })
 }
+
+export default initClient
