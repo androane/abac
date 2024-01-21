@@ -10,8 +10,9 @@ export const paths = {
   },
   dashboard: {
     client: {
+      root: `${ROOTS.DASHBOARD}/client`,
       list: `${ROOTS.DASHBOARD}/client/list`,
-      create: `${ROOTS.DASHBOARD}/client/create`,
+      new: `${ROOTS.DASHBOARD}/client/new`,
     },
   },
 }

@@ -58,7 +58,7 @@ export type Query = {
   __typename?: 'Query';
   currentUser: UserType;
   /** List all users */
-  users?: Maybe<Array<Maybe<UserType>>>;
+  users: Array<UserType>;
 };
 
 export type UserType = {
@@ -93,7 +93,7 @@ export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename
 export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type UsersQuery = { __typename?: 'Query', users?: Array<{ __typename?: 'UserType', uuid: string } | null> | null };
+export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'UserType', uuid: string, name: string, email: string }> };
 
 export const UserFragmentDoc = gql`
     fragment User on UserType {
@@ -226,6 +226,8 @@ export const UsersDocument = gql`
     query Users {
   users {
     uuid
+    name
+    email
   }
 }
     `;

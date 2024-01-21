@@ -7,8 +7,12 @@ UserModel = get_user_model()
 
 
 class UserType(DjangoObjectType):
-    name = graphene.String(required=True)
-
     class Meta:
         model = UserModel
-        only_fields = ("uuid", "email")
+        only_fields = (
+            "uuid",
+            "email",
+        )
+
+    # properties
+    name = graphene.String(required=True)

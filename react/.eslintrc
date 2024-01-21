@@ -2,35 +2,26 @@
   "root": true,
   "env": {
     "browser": true,
-    "es2021": true
+    "es2021": true,
   },
-  "plugins": [
-    "unused-imports",
-    "@typescript-eslint",
-    "prettier"
-  ],
-  "extends": [
-    "airbnb",
-    "airbnb-typescript",
-    "airbnb/hooks",
-    "prettier",
-  ],
+  "plugins": ["unused-imports", "@typescript-eslint", "prettier"],
+  "extends": ["airbnb", "airbnb-typescript", "airbnb/hooks", "prettier"],
   "ignorePatterns": ["**/graphql.tsx"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module",
     "ecmaFeatures": {
-      "jsx": true
+      "jsx": true,
     },
-    "project": "./tsconfig.json"
+    "project": "./tsconfig.json",
   },
   "settings": {
     "import/resolver": {
       "typescript": {
-        "alwaysTryTypes": true
-      }
-    }
+        "alwaysTryTypes": true,
+      },
+    },
   },
   "rules": {
     "arrow-body-style": 0,
@@ -47,6 +38,7 @@
     "react/no-array-index-key": 0,
     "no-promise-executor-return": 0,
     "react/require-default-props": 0,
+    "react/prop-types": 0,
     "react/jsx-props-no-spreading": 0,
     "import/prefer-default-export": 0,
     "react/function-component-definition": 0,
@@ -56,33 +48,33 @@
     "react/jsx-no-useless-fragment": [
       1,
       {
-        "allowExpressions": true
-      }
+        "allowExpressions": true,
+      },
     ],
     "prefer-destructuring": [
       1,
       {
         "object": true,
-        "array": false
-      }
+        "array": false,
+      },
     ],
     "react/no-unstable-nested-components": [
       1,
       {
-        "allowAsProps": true
-      }
+        "allowAsProps": true,
+      },
     ],
     "@typescript-eslint/no-unused-vars": [
       1,
       {
-        "args": "none"
-      }
+        "args": "none",
+      },
     ],
     "react/jsx-no-duplicate-props": [
       1,
       {
-        "ignoreCase": false
-      }
+        "ignoreCase": false,
+      },
     ],
     // unused-imports
     // https://www.npmjs.com/package/eslint-plugin-unused-imports
@@ -93,8 +85,8 @@
         "vars": "all",
         "varsIgnorePattern": "^_",
         "args": "after-used",
-        "argsIgnorePattern": "^_"
-      }
-    ]
-  }
+        "argsIgnorePattern": "^_",
+      },
+    ],
+  },
 }

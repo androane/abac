@@ -17,11 +17,11 @@ export function useNavData() {
       items: [
         {
           title: 'Clienti',
-          path: paths.dashboard.client.list,
+          path: paths.dashboard.client.root,
           icon: ICONS.client,
           children: [
             { title: 'Lista', path: paths.dashboard.client.list },
-            { title: 'Adauga', path: paths.dashboard.client.create },
+            { title: 'Adauga', path: paths.dashboard.client.new },
           ],
         },
       ],

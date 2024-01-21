@@ -13,7 +13,8 @@ class Query(graphene.ObjectType):
 
     current_user = graphene.Field(UserType, required=True)
     users = graphene.List(
-        UserType,
+        graphene.NonNull(UserType),
+        required=True,
         description="List all users",
     )
 
