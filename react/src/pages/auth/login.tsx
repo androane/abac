@@ -6,7 +6,7 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title>Login</title>
+        <title>ABAC Soft</title>
       </Helmet>
 
       <Login />

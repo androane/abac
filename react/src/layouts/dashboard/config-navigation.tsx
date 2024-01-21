@@ -7,18 +7,22 @@ const icon = (name: string) => (
 )
 
 const ICONS = {
-  user: icon('ic_user'),
+  client: icon('ic_user'),
 }
 
 export function useNavData() {
   const data = [
     {
-      subheader: 'Management',
+      subheader: 'Gestiune',
       items: [
         {
           title: 'Clienti',
-          path: paths.clients.root,
-          icon: ICONS.user,
+          path: paths.dashboard.client.list,
+          icon: ICONS.client,
+          children: [
+            { title: 'Lista', path: paths.dashboard.client.list },
+            { title: 'Adauga', path: paths.dashboard.client.create },
+          ],
         },
       ],
     },

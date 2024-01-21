@@ -80,7 +80,6 @@ export function AuthProvider({ children }: Props) {
       const accessToken = sessionStorage.getItem(AUTH_STORAGE_KEY)
 
       if (accessToken) {
-        setSession(accessToken)
         if (currentUserResponse.loading) {
           dispatch({
             type: Types.FETCHING_CURRENT_USER,

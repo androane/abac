@@ -2,7 +2,7 @@ import Button from '@mui/material/Button'
 import ResponseHandler from 'components/response-handler'
 import { useUsersQuery } from 'generated/graphql'
 
-const ClientsListPage = () => {
+const ClientCreateView = () => {
   const result = useUsersQuery()
 
   return (
@@ -14,4 +14,4 @@ const ClientsListPage = () => {
   )
 }
 
-export default ClientsListPage
+export default ClientCreateView

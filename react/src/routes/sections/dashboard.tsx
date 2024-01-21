@@ -6,13 +6,15 @@ import DashboardLayout from 'layouts/dashboard'
 
 import { LoadingScreen } from 'components/loading-screen'
 
-const ClientsListPage = lazy(() => import('pages/dashboard/clients/list'))
+const ClientsListPage = lazy(() => import('pages/dashboard/client/list'))
+const ClientCreatePage = lazy(() => import('pages/dashboard/client/create'))
 
 const clients = {
-  path: 'clients',
+  path: 'client',
   children: [
     { element: <ClientsListPage />, index: true },
     { path: 'list', element: <ClientsListPage /> },
+    { path: 'create', element: <ClientCreatePage /> },
   ],
 }
 
