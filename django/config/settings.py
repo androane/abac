@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     # Apps
     "api.apps.ApiConfig",
     "core.apps.CoreConfig",
+    "organization.apps.OrganizationConfig",
     "user.apps.UserConfig",
 ]
 

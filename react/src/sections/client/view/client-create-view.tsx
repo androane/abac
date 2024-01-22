@@ -1,17 +1,36 @@
-import Button from '@mui/material/Button'
-import ResponseHandler from 'components/response-handler'
-import { useUsersQuery } from 'generated/graphql'
+import Container from '@mui/material/Container'
 
-const ClientCreateView = () => {
-  const result = useUsersQuery()
+import { paths } from 'routes/paths'
+
+import CustomBreadcrumbs from 'components/custom-breadcrumbs'
+import { useSettingsContext } from 'components/settings'
+
+import ClientNewEditForm from '../client-new-edit-form'
+
+export default function ClientCreateView() {
+  const settings = useSettingsContext()
 
   return (
-    <ResponseHandler {...result}>
-      {({ users }) => {
-        return <Button variant="contained">{users?.length} Users</Button>
-      }}
-    </ResponseHandler>
+    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+      <CustomBreadcrumbs
+        heading="Adauga un Client Nou"
+        links={[
+          {
+            name: 'Panou Principal',
+            href: paths.dashboard.client.root,
+          },
+          {
+            name: 'Clienti',
+            href: paths.dashboard.client.root,
+          },
+          { name: 'Client Nou' },
+        ]}
+        sx={{
+          mb: { xs: 3, md: 5 },
+        }}
+      />
+
+      <ClientNewEditForm />
+    </Container>
   )
 }
-
-export default ClientCreateView

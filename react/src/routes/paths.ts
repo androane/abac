@@ -13,6 +13,7 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/client`,
       list: `${ROOTS.DASHBOARD}/client/list`,
       new: `${ROOTS.DASHBOARD}/client/new`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/client/${id}/edit`,
     },
   },
 }

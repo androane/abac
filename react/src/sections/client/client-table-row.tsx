@@ -1,4 +1,5 @@
 import Avatar from '@mui/material/Avatar'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import ListItemText from '@mui/material/ListItemText'
@@ -21,7 +22,7 @@ type Props = {
 }
 
 export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
-  const { name } = row
+  const { name, programManagerName, monthlyInvoice } = row
 
   const confirm = useBoolean()
 
@@ -33,8 +34,32 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar alt={name} src="" sx={{ mr: 2 }} />
 
+          <Box
+            onClick={onEditRow}
+            sx={{
+              cursor: 'pointer',
+              '&:hover': {
+                textDecoration: 'underline',
+              },
+            }}
+          >
+            {name}
+          </Box>
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={name}
+            primary={programManagerName}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <ListItemText
+            primary={monthlyInvoice}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

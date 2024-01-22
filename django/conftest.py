@@ -13,6 +13,7 @@ def collect_factories():
     factories = [
         "api.tests.factories",
         "core.tests.factories",
+        "organization.tests.factories",
         "user.tests.factories",
     ]
 

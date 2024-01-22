@@ -5,15 +5,17 @@ from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from user.models import User
 
 
+@admin.register(User)
 class UserAdmin(DjangoUserAdmin):
-    list_display = ("email",)
+    list_display = ("email", "organization")
 
     ordering = (
+        "organization",
         "last_name",
         "first_name",
     )
     fieldsets = (
-        (None, {"fields": ("email", "password")}),
+        (None, {"fields": ("email", "password", "organization")}),
         (
             "Personal info",
             {
@@ -45,16 +47,3 @@ class UserAdmin(DjangoUserAdmin):
             },
         ),
     )
-
-    def get_list_display(self, request):
-        return (
-            "email",
-            "first_name",
-            "last_name",
-            "is_active",
-            "is_staff",
-            "is_superuser",
-        )
-
-
-admin.site.register(User, UserAdmin)

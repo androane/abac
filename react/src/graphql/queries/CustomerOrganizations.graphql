@@ -1,0 +1,13 @@
+query CustomerOrganizations {
+  customerOrganizations {
+    uuid
+    name
+    description
+    monthlyInvoiceAmmount
+    monthlyInvoiceCurrency
+    programManager {
+      uuid
+      name
+    }
+  }
+}

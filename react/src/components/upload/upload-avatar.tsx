@@ -82,7 +82,9 @@ export default function UploadAvatar({
     >
       <Iconify icon="solar:camera-add-bold" width={32} />
 
-      <Typography variant="caption">{file ? 'Update photo' : 'Upload photo'}</Typography>
+      <Typography variant="caption">
+        {file ? 'Actualizeaza fotografie' : 'Adauga fotografie'}
+      </Typography>
     </Stack>
   )
 

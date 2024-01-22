@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import graphene
 
+from organization.graphene import schema as organization_schema
 from user.graphene import schema as user_schema
 
 
 class Query(
+    organization_schema.Query,
     user_schema.Query,
     graphene.ObjectType,
 ):
@@ -15,6 +17,7 @@ class Query(
 
 
 class Mutation(
+    organization_schema.Mutation,
     user_schema.Mutation,
     graphene.ObjectType,
 ):

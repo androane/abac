@@ -31,6 +31,7 @@ class JWTAuthenticationMiddleware:
                 user = User.objects.get(
                     id=authorization.claims["user_id"],
                     is_active=True,
+                    organization__isnull=False,
                 )
             except User.DoesNotExist:
                 return HttpResponseUnauthorized()

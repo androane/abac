@@ -4,7 +4,6 @@ import logging
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
-from simple_history.models import HistoricalRecords
 
 from core.models import BaseModel
 from user.managers import UserManager
@@ -15,7 +14,6 @@ logger = logging.getLogger(__name__)
 class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "email"
 
-    history = HistoricalRecords()
     objects = UserManager()
 
     email = models.EmailField("email address", db_collation="case_insensitive")
@@ -34,6 +32,12 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
             "Designates whether this user should be treated as "
             "active. Unselect this instead of deleting accounts."
         ),
+    )
+    organization = models.ForeignKey(
+        "organization.Organization", null=True, on_delete=models.CASCADE
+    )
+    customer_organization = models.ForeignKey(
+        "organization.CustomerOrganization", null=True, on_delete=models.CASCADE
     )
 
     class Meta:

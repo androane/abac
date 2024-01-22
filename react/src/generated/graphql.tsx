@@ -17,6 +17,29 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+/** Create a new customer organization */
+export type CreateCustomerOrganization = {
+  __typename?: 'CreateCustomerOrganization';
+  error?: Maybe<ErrorType>;
+};
+
+/** An enumeration. */
+export enum CurrencyEnum {
+  EUR = 'EUR',
+  RON = 'RON',
+  USD = 'USD'
+}
+
+export type CustomerOrganizationType = {
+  __typename?: 'CustomerOrganizationType';
+  description?: Maybe<Scalars['String']['output']>;
+  monthlyInvoiceAmmount?: Maybe<Scalars['Int']['output']>;
+  monthlyInvoiceCurrency?: Maybe<OrganizationCustomerOrganizationMonthlyInvoiceCurrencyChoices>;
+  name: Scalars['String']['output'];
+  programManager?: Maybe<UserType>;
+  uuid: Scalars['String']['output'];
+};
+
 export type ErrorType = {
   __typename?: 'ErrorType';
   field?: Maybe<Scalars['String']['output']>;
@@ -42,10 +65,21 @@ export type LogoutUser = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Create a new customer organization */
+  createCustomerOrganization?: Maybe<CreateCustomerOrganization>;
   /** Log the user in with email and password. */
   login?: Maybe<LoginUser>;
   /** Log out user. */
   logout?: Maybe<LogoutUser>;
+};
+
+
+export type MutationCreateCustomerOrganizationArgs = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  monthlyInvoiceAmmount?: InputMaybe<Scalars['Int']['input']>;
+  monthlyInvoiceCurrency?: InputMaybe<CurrencyEnum>;
+  name: Scalars['String']['input'];
+  programManagerUuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -54,9 +88,21 @@ export type MutationLoginArgs = {
   password: Scalars['String']['input'];
 };
 
+/** An enumeration. */
+export enum OrganizationCustomerOrganizationMonthlyInvoiceCurrencyChoices {
+  /** Eur */
+  EUR = 'EUR',
+  /** Ron */
+  RON = 'RON',
+  /** Usd */
+  USD = 'USD'
+}
+
 export type Query = {
   __typename?: 'Query';
   currentUser: UserType;
+  /** List all customers */
+  customerOrganizations: Array<CustomerOrganizationType>;
   /** List all users */
   users: Array<UserType>;
 };
@@ -85,15 +131,26 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type LogoutMutation = { __typename?: 'Mutation', logout?: { __typename?: 'LogoutUser', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
 
+export type CreateCustomerOrganizationMutationVariables = Exact<{
+  name: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  monthlyInvoiceAmmount?: InputMaybe<Scalars['Int']['input']>;
+  monthlyInvoiceCurrency?: InputMaybe<CurrencyEnum>;
+  programManagerUuid?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type CreateCustomerOrganizationMutation = { __typename?: 'Mutation', createCustomerOrganization?: { __typename?: 'CreateCustomerOrganization', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
+
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'UserType', uuid: string, email: string, name: string } };
 
-export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
+export type CustomerOrganizationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'UserType', uuid: string, name: string, email: string }> };
+export type CustomerOrganizationsQuery = { __typename?: 'Query', customerOrganizations: Array<{ __typename?: 'CustomerOrganizationType', uuid: string, name: string, description?: string | null, monthlyInvoiceAmmount?: number | null, monthlyInvoiceCurrency?: OrganizationCustomerOrganizationMonthlyInvoiceCurrencyChoices | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null }> };
 
 export const UserFragmentDoc = gql`
     fragment User on UserType {
@@ -183,6 +240,51 @@ export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<Logou
 export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
 export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
 export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
+export const CreateCustomerOrganizationDocument = gql`
+    mutation CreateCustomerOrganization($name: String!, $description: String, $monthlyInvoiceAmmount: Int, $monthlyInvoiceCurrency: CurrencyEnum, $programManagerUuid: String) {
+  createCustomerOrganization(
+    name: $name
+    description: $description
+    monthlyInvoiceAmmount: $monthlyInvoiceAmmount
+    monthlyInvoiceCurrency: $monthlyInvoiceCurrency
+    programManagerUuid: $programManagerUuid
+  ) {
+    error {
+      ...Error
+    }
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type CreateCustomerOrganizationMutationFn = Apollo.MutationFunction<CreateCustomerOrganizationMutation, CreateCustomerOrganizationMutationVariables>;
+
+/**
+ * __useCreateCustomerOrganizationMutation__
+ *
+ * To run a mutation, you first call `useCreateCustomerOrganizationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateCustomerOrganizationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createCustomerOrganizationMutation, { data, loading, error }] = useCreateCustomerOrganizationMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      description: // value for 'description'
+ *      monthlyInvoiceAmmount: // value for 'monthlyInvoiceAmmount'
+ *      monthlyInvoiceCurrency: // value for 'monthlyInvoiceCurrency'
+ *      programManagerUuid: // value for 'programManagerUuid'
+ *   },
+ * });
+ */
+export function useCreateCustomerOrganizationMutation(baseOptions?: Apollo.MutationHookOptions<CreateCustomerOrganizationMutation, CreateCustomerOrganizationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateCustomerOrganizationMutation, CreateCustomerOrganizationMutationVariables>(CreateCustomerOrganizationDocument, options);
+      }
+export type CreateCustomerOrganizationMutationHookResult = ReturnType<typeof useCreateCustomerOrganizationMutation>;
+export type CreateCustomerOrganizationMutationResult = Apollo.MutationResult<CreateCustomerOrganizationMutation>;
+export type CreateCustomerOrganizationMutationOptions = Apollo.BaseMutationOptions<CreateCustomerOrganizationMutation, CreateCustomerOrganizationMutationVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {
@@ -222,44 +324,50 @@ export type CurrentUserQueryHookResult = ReturnType<typeof useCurrentUserQuery>;
 export type CurrentUserLazyQueryHookResult = ReturnType<typeof useCurrentUserLazyQuery>;
 export type CurrentUserSuspenseQueryHookResult = ReturnType<typeof useCurrentUserSuspenseQuery>;
 export type CurrentUserQueryResult = Apollo.QueryResult<CurrentUserQuery, CurrentUserQueryVariables>;
-export const UsersDocument = gql`
-    query Users {
-  users {
+export const CustomerOrganizationsDocument = gql`
+    query CustomerOrganizations {
+  customerOrganizations {
     uuid
     name
-    email
+    description
+    monthlyInvoiceAmmount
+    monthlyInvoiceCurrency
+    programManager {
+      uuid
+      name
+    }
   }
 }
     `;
 
 /**
- * __useUsersQuery__
+ * __useCustomerOrganizationsQuery__
  *
- * To run a query within a React component, call `useUsersQuery` and pass it any options that fit your needs.
- * When your component renders, `useUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useCustomerOrganizationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCustomerOrganizationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useUsersQuery({
+ * const { data, loading, error } = useCustomerOrganizationsQuery({
  *   variables: {
  *   },
  * });
  */
-export function useUsersQuery(baseOptions?: Apollo.QueryHookOptions<UsersQuery, UsersQueryVariables>) {
+export function useCustomerOrganizationsQuery(baseOptions?: Apollo.QueryHookOptions<CustomerOrganizationsQuery, CustomerOrganizationsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<UsersQuery, UsersQueryVariables>(UsersDocument, options);
+        return Apollo.useQuery<CustomerOrganizationsQuery, CustomerOrganizationsQueryVariables>(CustomerOrganizationsDocument, options);
       }
-export function useUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UsersQuery, UsersQueryVariables>) {
+export function useCustomerOrganizationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CustomerOrganizationsQuery, CustomerOrganizationsQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<UsersQuery, UsersQueryVariables>(UsersDocument, options);
+          return Apollo.useLazyQuery<CustomerOrganizationsQuery, CustomerOrganizationsQueryVariables>(CustomerOrganizationsDocument, options);
         }
-export function useUsersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<UsersQuery, UsersQueryVariables>) {
+export function useCustomerOrganizationsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<CustomerOrganizationsQuery, CustomerOrganizationsQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<UsersQuery, UsersQueryVariables>(UsersDocument, options);
+          return Apollo.useSuspenseQuery<CustomerOrganizationsQuery, CustomerOrganizationsQueryVariables>(CustomerOrganizationsDocument, options);
         }
-export type UsersQueryHookResult = ReturnType<typeof useUsersQuery>;
-export type UsersLazyQueryHookResult = ReturnType<typeof useUsersLazyQuery>;
-export type UsersSuspenseQueryHookResult = ReturnType<typeof useUsersSuspenseQuery>;
-export type UsersQueryResult = Apollo.QueryResult<UsersQuery, UsersQueryVariables>;
+export type CustomerOrganizationsQueryHookResult = ReturnType<typeof useCustomerOrganizationsQuery>;
+export type CustomerOrganizationsLazyQueryHookResult = ReturnType<typeof useCustomerOrganizationsLazyQuery>;
+export type CustomerOrganizationsSuspenseQueryHookResult = ReturnType<typeof useCustomerOrganizationsSuspenseQuery>;
+export type CustomerOrganizationsQueryResult = Apollo.QueryResult<CustomerOrganizationsQuery, CustomerOrganizationsQueryVariables>;

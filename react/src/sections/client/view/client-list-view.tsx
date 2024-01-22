@@ -27,7 +27,7 @@ import {
 } from 'components/table'
 
 import ResponseHandler from 'components/response-handler'
-import { useUsersQuery } from 'generated/graphql'
+import { CustomerOrganizationsQuery, useCustomerOrganizationsQuery } from 'generated/graphql'
 import { useRouter } from 'routes/hooks'
 import ClientTableFiltersResult from '../client-table-filters-result'
 import ClientTableRow from '../client-table-row'
@@ -40,14 +40,22 @@ const defaultFilters = {
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Nume' },
+  { id: 'programManagerName', label: 'Responsabil' },
+  { id: 'monthlyInvoice', label: 'Tarif Lunar de Baza' },
   { id: '', width: 88 },
 ]
 
 type Props = {
-  clients: ClientItem[]
+  customerOrganizations: CustomerOrganizationsQuery['customerOrganizations']
 }
 
-const ClientListCard: React.FC<Props> = ({ clients }) => {
+const ClientListCard: React.FC<Props> = ({ customerOrganizations }) => {
+  const clients = customerOrganizations?.map(client => ({
+    id: client.uuid,
+    name: client.name,
+    programManagerName: client.programManager?.name,
+    monthlyInvoice: `${client.monthlyInvoiceAmmount} ${client.monthlyInvoiceCurrency}`,
+  }))
   const { enqueueSnackbar } = useSnackbar()
   const [tableData, setTableData] = useState(clients)
 
@@ -93,7 +101,7 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
     (id: string) => {
       const deleteRow = tableData.filter(row => row.id !== id)
 
-      enqueueSnackbar('Delete success!')
+      enqueueSnackbar('Clientul a fost sters cu success!')
 
       setTableData(deleteRow)
 
@@ -104,8 +112,7 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
 
   const handleEditRow = useCallback(
     (id: string) => {
-      // router.push(paths.dashboard.client.edit(id))
-      router.push('/')
+      router.push(paths.dashboard.client.edit(id))
     },
     [router],
   )
@@ -180,14 +187,14 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
 
 export default function ClientListView() {
   const settings = useSettingsContext()
-  const result = useUsersQuery()
+  const result = useCustomerOrganizationsQuery()
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
         heading="Lista Clienti"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.client.root },
+          { name: 'Panou Principal', href: paths.dashboard.client.root },
           { name: 'Clienti', href: paths.dashboard.client.root },
           { name: 'Lista' },
         ]}
@@ -207,12 +214,8 @@ export default function ClientListView() {
       />
 
       <ResponseHandler {...result}>
-        {({ users }) => {
-          const clients = users?.map(client => ({
-            id: client.uuid,
-            name: client.name,
-          }))
-          return <ClientListCard clients={clients} />
+        {({ customerOrganizations }) => {
+          return <ClientListCard customerOrganizations={customerOrganizations} />
         }}
       </ResponseHandler>
     </Container>

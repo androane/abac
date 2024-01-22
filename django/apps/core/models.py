@@ -16,7 +16,7 @@ class BaseModel(DirtyFieldsMixin, SafeDeleteModel):
     class Meta:
         abstract = True
 
-    history = HistoricalRecords()
+    history = HistoricalRecords(inherit=True)
 
     uuid = models.CharField(max_length=32, default=generate_uuid, editable=False)
     created = models.DateTimeField(auto_now_add=True, blank=True)
