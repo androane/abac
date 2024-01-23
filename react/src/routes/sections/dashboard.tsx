@@ -9,6 +9,9 @@ import { LoadingScreen } from 'components/loading-screen'
 const ClientsListPage = lazy(() => import('pages/dashboard/client/list'))
 const ClientCreatePage = lazy(() => import('pages/dashboard/client/new'))
 const ClientEditPage = lazy(() => import('pages/dashboard/client/edit'))
+const InvoiceListPage = lazy(() => import('pages/dashboard/client/invoice/list'))
+const InvoiceCreatePage = lazy(() => import('pages/dashboard/client/invoice/new'))
+const InvoiceEditPage = lazy(() => import('pages/dashboard/client/invoice/edit'))
 
 const clients = {
   path: 'client',
@@ -17,6 +20,14 @@ const clients = {
     { path: 'list', element: <ClientsListPage /> },
     { path: 'new', element: <ClientCreatePage /> },
     { path: ':id/edit', element: <ClientEditPage /> },
+    {
+      path: 'invoice',
+      children: [
+        { path: 'list', element: <ClientsListPage /> },
+        { path: 'new', element: <InvoiceCreatePage /> },
+        { path: ':id/edit', element: <ClientEditPage /> },
+      ],
+    },
   ],
 }
 

@@ -2,7 +2,7 @@
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 
-from organization.models import CustomerOrganization, Organization
+from organization.models import CustomerOrganization, InvoiceItem, Organization
 
 
 @admin.register(Organization)
@@ -21,9 +21,17 @@ class CustomerOrganizationAdmin(SimpleHistoryAdmin):
         "name",
         "organization",
         "program_manager",
-        "monthly_invoice_ammount",
-        "monthly_invoice_currency",
+        "phone_number_1",
+        "phone_number_2",
     )
     history_list_display = [
         "name",
+    ]
+
+
+@admin.register(InvoiceItem)
+class InvoiceItemAdmin(SimpleHistoryAdmin):
+    list_display = ("description",)
+    history_list_display = [
+        "description",
     ]

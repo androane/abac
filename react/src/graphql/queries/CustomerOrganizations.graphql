@@ -3,8 +3,8 @@ query CustomerOrganizations {
     uuid
     name
     description
-    monthlyInvoiceAmmount
-    monthlyInvoiceCurrency
+    phoneNumber1
+    phoneNumber2
     programManager {
       uuid
       name

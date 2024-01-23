@@ -1,0 +1,20 @@
+mutation UpdateCustomerOrganization(
+  $uuid: String
+  $name: String!
+  $description: String
+  $phoneNumber1: String
+  $phoneNumber2: String
+  $programManagerUuid: String
+) {
+  updateCustomerOrganization(
+    uuid: $uuid
+    name: $name
+    phoneNumber1: $phoneNumber1
+    phoneNumber2: $phoneNumber2
+    programManagerUuid: $programManagerUuid
+  ) {
+    error {
+      ...Error
+    }
+  }
+}

@@ -9,8 +9,8 @@ import { useCustomerOrganizationsQuery } from 'generated/graphql'
 import { useCallback, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { paths } from 'routes/paths'
-import ClientBilling from '../client-billing'
 import ClientNewEditForm from '../client-new-edit-form'
+import InvoiceListView from './invoice-list-view'
 
 type Props = {
   id: string
@@ -23,7 +23,7 @@ const TABS = [
     icon: <Iconify icon="solar:user-id-bold" width={24} />,
   },
   {
-    value: 'billing',
+    value: 'invoicing',
     label: 'Facturare',
     icon: <Iconify icon="solar:bill-list-bold" width={24} />,
   },
@@ -34,7 +34,7 @@ export default function UserEditView({ id }: Props) {
 
   const result = useCustomerOrganizationsQuery()
 
-  const [currentTab, setCurrentTab] = useState('general')
+  const [currentTab, setCurrentTab] = useState('invoicing')
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue)
@@ -44,8 +44,8 @@ export default function UserEditView({ id }: Props) {
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <ResponseHandler {...result}>
         {({ customerOrganizations }) => {
-          const currentClient = customerOrganizations.find(client => client.uuid === id)
-          if (!currentClient) {
+          const client = customerOrganizations.find(_ => _.uuid === id)
+          if (!client) {
             return <Navigate to={paths.page404} replace />
           }
           return (
@@ -61,7 +61,7 @@ export default function UserEditView({ id }: Props) {
                     name: 'Clienti',
                     href: paths.dashboard.client.list,
                   },
-                  { name: currentClient?.name },
+                  { name: client?.name },
                 ]}
                 sx={{
                   mb: { xs: 3, md: 5 },
@@ -80,8 +80,8 @@ export default function UserEditView({ id }: Props) {
                 ))}
               </Tabs>
 
-              {currentTab === 'general' && <ClientNewEditForm currentClient={currentClient} />}
-              {currentTab === 'billing' && <ClientBilling currentClient={currentClient} />}
+              {currentTab === 'general' && <ClientNewEditForm client={client} />}
+              {currentTab === 'invoicing' && <InvoiceListView client={client} />}
             </>
           )
         }}

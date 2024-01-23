@@ -1,0 +1,14 @@
+query CustomerOrganizationInvoiceItems($uuid: String!) {
+  customerOrganization(uuid: $uuid) {
+    uuid
+    invoiceItems {
+      uuid
+      description
+      unitPrice
+      unitPriceCurrency
+      dateSent
+      minutesAllocated
+      isFixedCost
+    }
+  }
+}

@@ -1,21 +1,14 @@
 import isEqual from 'lodash/isEqual'
 import { useCallback, useState } from 'react'
 
-import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
-import Container from '@mui/material/Container'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableContainer from '@mui/material/TableContainer'
 
 import { useSnackbar } from 'components/snackbar'
-import { RouterLink } from 'routes/components'
-import { paths } from 'routes/paths'
 
-import CustomBreadcrumbs from 'components/custom-breadcrumbs'
-import Iconify from 'components/iconify'
 import Scrollbar from 'components/scrollbar'
-import { useSettingsContext } from 'components/settings'
 import {
   TableEmptyRows,
   TableHeadCustom,
@@ -27,45 +20,49 @@ import {
 } from 'components/table'
 
 import ResponseHandler from 'components/response-handler'
-import { CustomerOrganizationsQuery, useCustomerOrganizationsQuery } from 'generated/graphql'
-import { useRouter } from 'routes/hooks'
-import ClientTableFiltersResult from '../client-table-filters-result'
-import ClientTableRow from '../client-table-row'
-import ClientTableToolbar from '../client-table-toolbar'
-import { ClientItem, ClientTableFilters } from '../types'
+import { useCustomerOrganizationInvoiceItemsQuery } from 'generated/graphql'
+import { useBoolean } from 'hooks/use-boolean'
+import InvoiceNewEditForm from 'sections/client/invoice-item-new-edit-form'
+import InvoiceTableFiltersResult from '../invoice-table-filters-result'
+import InvoiceTableRow from '../invoice-table-row'
+import InvoiceTableToolbar from '../invoice-table-toolbar'
+import { APIClient, APIInvoiceItem, InvoiceItem, InvoiceTableFilters } from '../types'
 
 const defaultFilters = {
-  name: '',
+  description: '',
 }
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Nume' },
-  { id: 'programManagerName', label: 'Responsabil' },
-  { id: 'phoneNumber1', label: 'Telefon 1' },
-  { id: 'phoneNumber2', label: 'Telefon 2' },
+  { id: 'description', label: 'Descriere' },
+  { id: 'dateSent', label: 'Data' },
+  { id: 'unitPrice', label: 'Suma' },
+  { id: 'unitPriceCurrency', label: 'Moneda' },
   { id: '', width: 88 },
 ]
 
-type Props = {
-  customerOrganizations: CustomerOrganizationsQuery['customerOrganizations']
+type InvoiceListCardProps = {
+  invoiceItems: APIInvoiceItem[]
 }
 
-const ClientListCard: React.FC<Props> = ({ customerOrganizations }) => {
-  const clients = customerOrganizations?.map(client => ({
-    id: client.uuid,
-    name: client.name,
-    programManagerName: client.programManager?.name,
-    phoneNumber1: client.phoneNumber1,
-    phoneNumber2: client.phoneNumber2,
+const InvoiceListCard: React.FC<InvoiceListCardProps> = ({ invoiceItems: initialInvoiceItems }) => {
+  const invoiceItems = initialInvoiceItems?.map(invoice => ({
+    id: invoice.uuid,
+    description: invoice.description,
+    dateSent: invoice?.dateSent,
+    unitPrice: invoice?.unitPrice,
+    unitPriceCurrency: invoice?.unitPriceCurrency,
+    minutesAllocated: invoice?.minutesAllocated,
   }))
+
+  const showCreateInvoiceItem = useBoolean()
+  const [invoiceItemIdToEdit, setInvoiceItemIdToEdit] = useState<null | String>(null)
+
   const { enqueueSnackbar } = useSnackbar()
-  const [tableData, setTableData] = useState(clients)
+  const [tableData, setTableData] = useState(invoiceItems)
 
   const table = useTable()
 
   const denseHeight = table.dense ? 56 : 56 + 20
-
-  const router = useRouter()
 
   const [filters, setFilters] = useState(defaultFilters)
 
@@ -103,7 +100,7 @@ const ClientListCard: React.FC<Props> = ({ customerOrganizations }) => {
     (id: string) => {
       const deleteRow = tableData.filter(row => row.id !== id)
 
-      enqueueSnackbar('Clientul a fost sters cu success!')
+      enqueueSnackbar('Factura a fost stersa cu success!')
 
       setTableData(deleteRow)
 
@@ -114,17 +111,31 @@ const ClientListCard: React.FC<Props> = ({ customerOrganizations }) => {
 
   const handleEditRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.client.edit(id))
+      showCreateInvoiceItem.onTrue()
+      setInvoiceItemIdToEdit(id)
     },
-    [router],
+    [showCreateInvoiceItem, setInvoiceItemIdToEdit],
   )
+
+  if (showCreateInvoiceItem.value) {
+    return (
+      <InvoiceNewEditForm
+        invoiceItem={invoiceItems.find(_ => _.id === invoiceItemIdToEdit)}
+        onBack={showCreateInvoiceItem.onFalse}
+      />
+    )
+  }
 
   return (
     <Card>
-      <ClientTableToolbar filters={filters} onFilters={handleFilters} />
+      <InvoiceTableToolbar
+        filters={filters}
+        onFilters={handleFilters}
+        onAddInvoiceItem={showCreateInvoiceItem.onTrue}
+      />
 
       {canReset && (
-        <ClientTableFiltersResult
+        <InvoiceTableFiltersResult
           filters={filters}
           onFilters={handleFilters}
           //
@@ -154,7 +165,7 @@ const ClientListCard: React.FC<Props> = ({ customerOrganizations }) => {
                   table.page * table.rowsPerPage + table.rowsPerPage,
                 )
                 .map(row => (
-                  <ClientTableRow
+                  <InvoiceTableRow
                     key={row.id}
                     row={row}
                     onDeleteRow={() => handleDeleteRow(row.id)}
@@ -187,40 +198,23 @@ const ClientListCard: React.FC<Props> = ({ customerOrganizations }) => {
   )
 }
 
-export default function ClientListView() {
-  const settings = useSettingsContext()
-  const result = useCustomerOrganizationsQuery()
+type Props = {
+  client: APIClient
+}
+
+export default function InvoiceListView({ client }: Props) {
+  const result = useCustomerOrganizationInvoiceItemsQuery({
+    variables: {
+      uuid: client.uuid,
+    },
+  })
 
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      <CustomBreadcrumbs
-        heading="Lista Clienti"
-        links={[
-          { name: 'Panou Principal', href: paths.dashboard.client.root },
-          { name: 'Clienti', href: paths.dashboard.client.root },
-          { name: 'Lista' },
-        ]}
-        action={
-          <Button
-            component={RouterLink}
-            href={paths.dashboard.client.new}
-            variant="contained"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-          >
-            Client Nou
-          </Button>
-        }
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
-      />
-
-      <ResponseHandler {...result}>
-        {({ customerOrganizations }) => {
-          return <ClientListCard customerOrganizations={customerOrganizations} />
-        }}
-      </ResponseHandler>
-    </Container>
+    <ResponseHandler {...result}>
+      {({ customerOrganization }) => {
+        return <InvoiceListCard invoiceItems={customerOrganization.invoiceItems} />
+      }}
+    </ResponseHandler>
   )
 }
 
@@ -229,11 +223,11 @@ function applyFilter({
   comparator,
   filters,
 }: {
-  inputData: ClientItem[]
+  inputData: InvoiceItem[]
   comparator: (a: any, b: any) => number
-  filters: ClientTableFilters
+  filters: InvoiceTableFilters
 }) {
-  const { name } = filters
+  const { description } = filters
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const)
 
@@ -245,9 +239,9 @@ function applyFilter({
 
   inputData = stabilizedThis.map(el => el[0])
 
-  if (name) {
+  if (description) {
     inputData = inputData.filter(
-      client => client.name.toLowerCase().indexOf(name.toLowerCase()) !== -1,
+      invoice => invoice.description.toLowerCase().indexOf(description.toLowerCase()) !== -1,
     )
   }
 

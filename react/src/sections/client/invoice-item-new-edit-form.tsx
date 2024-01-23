@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import Button from '@mui/material/Button'
 import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
@@ -9,37 +10,40 @@ import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Grid from '@mui/material/Unstable_Grid2'
 
-import { useRouter } from 'routes/hooks'
-import { paths } from 'routes/paths'
-
 import FormProvider, { RHFSelect, RHFTextField } from 'components/hook-form'
 import { useSnackbar } from 'components/snackbar'
-import { CurrencyEnum, CustomerOrganizationsQuery } from 'generated/graphql'
+import { CurrencyEnum } from 'generated/graphql'
+import { InvoiceItem } from './types'
 
 type Props = {
-  currentClient?: CustomerOrganizationsQuery['customerOrganizations'][0]
+  onBack: () => void
+  invoiceItem?: InvoiceItem
 }
 
-export default function UserNewEditForm({ currentClient }: Props) {
-  const router = useRouter()
-
+export default function InvoiceNewEditForm({ invoiceItem, onBack }: Props) {
   const { enqueueSnackbar } = useSnackbar()
 
-  const NewUserSchema = Yup.object().shape({
-    monthlyInvoiceAmmount: Yup.number().nullable(),
-    monthlyInvoiceCurrency: Yup.string().nullable(),
+  const NewInvoiceSchema = Yup.object().shape({
+    description: Yup.string().required('Descrierea este obligatorie'),
+    unitPrice: Yup.number().nullable(),
+    unitPriceCurrency: Yup.string().nullable(),
+    dateSent: Yup.date().nullable(),
+    minutesAllocated: Yup.number().nullable(),
   })
 
   const defaultValues = useMemo(
     () => ({
-      monthlyInvoiceAmmount: currentClient?.monthlyInvoiceAmmount,
-      monthlyInvoiceCurrency: currentClient?.monthlyInvoiceCurrency,
+      description: invoiceItem?.description || '',
+      unitPrice: invoiceItem?.unitPrice,
+      unitPriceCurrency: invoiceItem?.unitPriceCurrency,
+      dateSent: invoiceItem?.dateSent,
+      minutesAllocated: invoiceItem?.minutesAllocated,
     }),
-    [currentClient],
+    [invoiceItem],
   )
 
   const methods = useForm({
-    resolver: yupResolver(NewUserSchema),
+    resolver: yupResolver(NewInvoiceSchema),
     defaultValues,
   })
 
@@ -53,9 +57,9 @@ export default function UserNewEditForm({ currentClient }: Props) {
     try {
       await new Promise(resolve => setTimeout(resolve, 500))
       reset()
-      enqueueSnackbar('Client actualizat cu succes!')
-      router.push(paths.dashboard.client.list)
-      console.info('DATA', data)
+      enqueueSnackbar(invoiceItem ? 'Factura actualizata cu succes!' : 'Factura creata cu succes!')
+
+      onBack()
     } catch (error) {
       console.error(error)
     }
@@ -75,10 +79,11 @@ export default function UserNewEditForm({ currentClient }: Props) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="monthlyInvoiceAmmount" label="Tarif Lunar Fix" />
+              <RHFTextField name="description" label="Descriere" />
+              <RHFTextField name="unitPrice" label="Cost" />
               <RHFSelect
                 native
-                name="monthlyInvoiceCurrency"
+                name="unitPriceCurrency"
                 label="Moneda"
                 InputLabelProps={{ shrink: true }}
               >
@@ -89,9 +94,14 @@ export default function UserNewEditForm({ currentClient }: Props) {
                   </option>
                 ))}
               </RHFSelect>
+              <RHFTextField name="dateSent" label="Data" />
+              <RHFTextField name="minutesAllocated" label="Numar de minute alocate" />
             </Box>
 
-            <Stack alignItems="flex-end" sx={{ mt: 3 }}>
+            <Stack justifyContent="flex-end" direction="row" spacing={2} sx={{ mt: 3 }}>
+              <Button color="inherit" variant="outlined" onClick={onBack}>
+                {'<'} Inapoi
+              </Button>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 Salveaza Schimbarile
               </LoadingButton>

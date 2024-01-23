@@ -17,18 +17,18 @@ import { fData } from 'utils/format-number'
 
 import FormProvider, { RHFTextField, RHFUploadAvatar } from 'components/hook-form'
 import { useSnackbar } from 'components/snackbar'
-import { CustomerOrganizationsQuery } from 'generated/graphql'
+import { APIClient } from './types'
 
 type Props = {
-  currentClient?: CustomerOrganizationsQuery['customerOrganizations'][0]
+  client?: APIClient
 }
 
-export default function UserNewEditForm({ currentClient }: Props) {
+export default function ClientNewEditForm({ client }: Props) {
   const router = useRouter()
 
   const { enqueueSnackbar } = useSnackbar()
 
-  const NewUserSchema = Yup.object().shape({
+  const NewClientSchema = Yup.object().shape({
     name: Yup.string().required('Numele este obligatoriu'),
     description: Yup.string().nullable(),
     imageUrl: Yup.mixed<any>().nullable(),
@@ -36,15 +36,15 @@ export default function UserNewEditForm({ currentClient }: Props) {
 
   const defaultValues = useMemo(
     () => ({
-      name: currentClient?.name || '',
-      description: currentClient?.description,
+      name: client?.name || '',
+      description: client?.description,
       imageUrl: null,
     }),
-    [currentClient],
+    [client],
   )
 
   const methods = useForm({
-    resolver: yupResolver(NewUserSchema),
+    resolver: yupResolver(NewClientSchema),
     defaultValues,
   })
 
@@ -59,7 +59,7 @@ export default function UserNewEditForm({ currentClient }: Props) {
     try {
       await new Promise(resolve => setTimeout(resolve, 500))
       reset()
-      enqueueSnackbar(currentClient ? 'Client actualizat cu succes!' : 'Client creat cu succes!')
+      enqueueSnackbar(client ? 'Client actualizat cu succes!' : 'Client creat cu succes!')
       router.push(paths.dashboard.client.list)
       console.info('DATA', data)
     } catch (error) {
@@ -129,7 +129,7 @@ export default function UserNewEditForm({ currentClient }: Props) {
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {!currentClient ? 'Adauga Client' : 'Salveaza Schimbarile'}
+                {!client ? 'Adauga Client' : 'Salveaza Schimbarile'}
               </LoadingButton>
             </Stack>
           </Card>

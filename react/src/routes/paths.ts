@@ -14,6 +14,11 @@ export const paths = {
       list: `${ROOTS.DASHBOARD}/client/list`,
       new: `${ROOTS.DASHBOARD}/client/new`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/client/${id}/edit`,
+      invoice: {
+        list: `${ROOTS.DASHBOARD}/client/invoice/list`,
+        new: `${ROOTS.DASHBOARD}/client/invoice/new`,
+        edit: (id: string) => `${ROOTS.DASHBOARD}/client/invoice/${id}/edit`,
+      },
     },
   },
 }

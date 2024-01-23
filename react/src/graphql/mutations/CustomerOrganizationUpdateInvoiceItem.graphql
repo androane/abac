@@ -1,0 +1,13 @@
+mutation UpdateCustomerOrganizationInvoiceItem(
+  $customerOrganizationUuid: String!
+  $invoiceItem: InvoiceItemInput!
+) {
+  updateCustomerOrganizationInvoiceItem(
+    customerOrganizationUuid: $customerOrganizationUuid
+    invoiceItem: $invoiceItem
+  ) {
+    error {
+      ...Error
+    }
+  }
+}

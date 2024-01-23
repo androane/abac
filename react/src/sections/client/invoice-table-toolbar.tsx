@@ -1,19 +1,22 @@
 import { useCallback } from 'react'
 
+import Button from '@mui/material/Button'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
+import { RouterLink } from 'routes/components'
 
 import Iconify from 'components/iconify'
 
-import { ClientTableFilters } from './types'
+import { InvoiceTableFilters } from './types'
 
 type Props = {
-  filters: ClientTableFilters
+  filters: InvoiceTableFilters
   onFilters: (name: string, value: string) => void
+  onAddInvoiceItem: () => void
 }
 
-export default function UserTableToolbar({ filters, onFilters }: Props) {
+export default function UserTableToolbar({ filters, onFilters, onAddInvoiceItem }: Props) {
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       onFilters('name', event.target.value)
@@ -34,10 +37,15 @@ export default function UserTableToolbar({ filters, onFilters }: Props) {
         pr: { xs: 2.5, md: 1 },
       }}
     >
-      <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        flexGrow={1}
+        sx={{ width: 1 }}
+      >
         <TextField
-          fullWidth
-          value={filters.name}
+          value={filters.description}
           onChange={handleFilterName}
           placeholder="Cauta..."
           InputProps={{
@@ -48,6 +56,14 @@ export default function UserTableToolbar({ filters, onFilters }: Props) {
             ),
           }}
         />
+        <Button
+          onClick={onAddInvoiceItem}
+          component={RouterLink}
+          variant="contained"
+          startIcon={<Iconify icon="mingcute:add-line" />}
+        >
+          Factura Noua
+        </Button>
       </Stack>
     </Stack>
   )

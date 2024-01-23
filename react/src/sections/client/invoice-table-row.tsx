@@ -1,4 +1,3 @@
-import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
@@ -13,16 +12,16 @@ import { ConfirmDialog } from 'components/custom-dialog'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
 
-import { ClientItem } from './types'
+import { InvoiceItem } from './types'
 
 type Props = {
   onEditRow: VoidFunction
-  row: ClientItem
+  row: InvoiceItem
   onDeleteRow: VoidFunction
 }
 
 export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
-  const { name, programManagerName, phoneNumber1, phoneNumber2 } = row
+  const { description, unitPrice, unitPriceCurrency, dateSent } = row
 
   const confirm = useBoolean()
 
@@ -32,8 +31,6 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
     <>
       <TableRow hover>
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={name} src="" sx={{ mr: 2 }} />
-
           <Box
             onClick={onEditRow}
             sx={{
@@ -43,12 +40,12 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
               },
             }}
           >
-            {name}
+            {description}
           </Box>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={programManagerName}
+            primary={dateSent}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -59,7 +56,7 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={phoneNumber1}
+            primary={unitPrice}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -70,7 +67,7 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={phoneNumber2}
+            primary={unitPriceCurrency}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -117,8 +114,8 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Stergere Client"
-        content="Esti sigur ca vrei sa stergi acest client?"
+        title="Stergere Intrare"
+        content="Esti sigur ca vrei sa stergi acesta intrare?"
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
             Sterge

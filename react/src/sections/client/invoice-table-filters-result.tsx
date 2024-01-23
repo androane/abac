@@ -7,10 +7,10 @@ import Paper from '@mui/material/Paper'
 import Stack, { StackProps } from '@mui/material/Stack'
 
 import Iconify from 'components/iconify'
-import { ClientTableFilters } from './types'
+import { InvoiceTableFilters } from './types'
 
 type Props = StackProps & {
-  filters: ClientTableFilters
+  filters: InvoiceTableFilters
   onFilters: (name: string, value: string) => void
   //
   onResetFilters: VoidFunction
@@ -41,9 +41,9 @@ export default function ClientTableFiltersResult({
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
-        {!!filters.name && (
+        {!!filters.description && (
           <Block label="Keyword:">
-            <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
+            <Chip label={filters.description} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}
 
