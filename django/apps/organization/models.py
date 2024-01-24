@@ -47,35 +47,83 @@ class CustomerOrganization(BaseModel):
         return self.name
 
 
-class InvoiceItem(BaseModel):
+class Invoice(BaseModel):
     """
-    CustomerOrganizationInvoiceItem is a line item on a customer organization invoice.
+    Invoice is an invoice for a customer organization.
     """
+
+    constraints = [
+        models.UniqueConstraint(
+            fields=["customer_organization", "name"],
+            condition=models.Q(deleted__isnull=True),
+            name="organization_invoice_customer_organization_month_year_unique",
+        )
+    ]
 
     customer_organization = models.ForeignKey(
         CustomerOrganization,
         on_delete=models.CASCADE,
-        related_name="customer_organization_invoice_items",
+        related_name="invoices",
     )
+
+    month = models.SmallIntegerField(help_text="Month of the invoice")
+    year = models.SmallIntegerField(help_text="Year of the invoice")
+    date_sent = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Date when the invoice was sent to the customer",
+    )
+    date_paid = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Date when the invoice was paid by the customer",
+    )
+    date_due = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Date when the invoice is due to be paid by the customer",
+    )
+
+    def __str__(self):
+        return (
+            f"Invoice on {self.month}/{self.year} for {self.customer_organization.name}"
+        )
+
+    def __repr__(self):
+        return (
+            f"Invoice on {self.month}/{self.year} for {self.customer_organization.name}"
+        )
+
+    @property
+    def is_locked(self) -> bool:
+        return self.date_sent is not None
+
+
+class InvoiceItem(BaseModel):
+    """
+    InvoiceItem is a line item on a customer organization invoice.
+    """
+
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="items")
 
     description = models.TextField()
     unit_price = models.IntegerField(blank=True, null=True)
     unit_price_currency = models.CharField(
         max_length=3, choices=CurrencyEnum.choices, blank=True, null=True
     )
-    date_sent = models.DateField(
+    item_date = models.DateField(
         null=True,
         blank=True,
-        help_text="Date when the invoice was sent to the customer",
+        help_text="Date when the invoice item was executed",
     )
     minutes_allocated = models.SmallIntegerField(
         blank=True,
         null=True,
         help_text="Number of minutes allocated to the customer for this invoice item",
     )
-    is_fixed_cost = models.BooleanField(
+    is_recurring = models.BooleanField(
         default=False,
-        help_text="Boolean indicating if this invoice item is a fixed cost or not. For example monthly recurring invoices are fixed",
+        help_text="Boolean indicating if this invoice item is a recurring item every month",
     )
 
     def __str__(self):
@@ -83,3 +131,7 @@ class InvoiceItem(BaseModel):
 
     def __repr__(self):
         return self.description
+
+    @property
+    def is_locked(self) -> bool:
+        return self.invoice.is_locked

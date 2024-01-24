@@ -2,7 +2,7 @@
 from typing import Optional
 
 from organization.graphene.types import InvoiceItemInput
-from organization.models import CustomerOrganization, InvoiceItem
+from organization.models import CustomerOrganization, Invoice, InvoiceItem
 from user.models import User
 
 
@@ -29,24 +29,29 @@ def update_or_create_customer_organization(
     )
 
 
-def update_or_create_customer_organization_invoice_item(
+def update_customer_organization_invoice_item(
     user: User,
     customer_organization_uuid: str,
-    invoice_item: InvoiceItemInput,
+    invoice_uuid: str,
+    invoice_item_input: InvoiceItemInput,
 ) -> CustomerOrganization:
     customer_organization = CustomerOrganization.objects.get(
         organization=user.organization,
         uuid=customer_organization_uuid,
     )
-    InvoiceItem.objects.update_or_create(
+    invoice = Invoice.objects.get(
         customer_organization=customer_organization,
-        uuid=invoice_item.uuid,
+        uuid=invoice_uuid,
+    )
+    InvoiceItem.objects.update_or_create(
+        invoice=invoice,
+        uuid=invoice_item_input.uuid,
         defaults={
-            "description": invoice_item.description,
-            "unit_price": invoice_item.unit_price,
-            "unit_price_currency": invoice_item.unit_price_currency,
-            "date_sent": invoice_item.date_sent,
-            "minutes_allocated": invoice_item.minutes_allocated,
-            "is_fixed_cost": invoice_item.is_fixed_cost,
+            "description": invoice_item_input.description,
+            "unit_price": invoice_item_input.unit_price,
+            "unit_price_currency": invoice_item_input.unit_price_currency,
+            "item_date": invoice_item_input.item_date,
+            "minutes_allocated": invoice_item_input.minutes_allocated,
+            "is_recurring": invoice_item_input.is_recurring,
         },
     )

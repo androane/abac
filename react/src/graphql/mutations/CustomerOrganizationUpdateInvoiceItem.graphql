@@ -1,10 +1,12 @@
 mutation UpdateCustomerOrganizationInvoiceItem(
   $customerOrganizationUuid: String!
-  $invoiceItem: InvoiceItemInput!
+  $invoiceUuid: String!
+  $invoiceItemInput: InvoiceItemInput!
 ) {
   updateCustomerOrganizationInvoiceItem(
     customerOrganizationUuid: $customerOrganizationUuid
-    invoiceItem: $invoiceItem
+    invoiceUuid: $invoiceUuid
+    invoiceItemInput: $invoiceItemInput
   ) {
     error {
       ...Error

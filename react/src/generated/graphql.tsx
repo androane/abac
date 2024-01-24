@@ -44,9 +44,9 @@ export type ErrorType = {
 };
 
 export type InvoiceItemInput = {
-  dateSent?: InputMaybe<Scalars['Date']['input']>;
   description: Scalars['String']['input'];
-  isFixedCost?: InputMaybe<Scalars['Boolean']['input']>;
+  isRecurring?: InputMaybe<Scalars['Boolean']['input']>;
+  itemDate?: InputMaybe<Scalars['Date']['input']>;
   minutesAllocated?: InputMaybe<Scalars['Int']['input']>;
   unitPrice?: InputMaybe<Scalars['Int']['input']>;
   unitPriceCurrency?: InputMaybe<CurrencyEnum>;
@@ -55,16 +55,28 @@ export type InvoiceItemInput = {
 
 export type InvoiceItemType = {
   __typename?: 'InvoiceItemType';
-  /** Date when the invoice was sent to the customer */
-  dateSent?: Maybe<Scalars['Date']['output']>;
   description: Scalars['String']['output'];
-  /** Boolean indicating if this invoice item is a fixed cost or not. For example monthly recurring invoices are fixed */
-  isFixedCost: Scalars['Boolean']['output'];
+  /** Boolean indicating if this invoice item is a recurring item every month */
+  isRecurring: Scalars['Boolean']['output'];
+  /** Date when the invoice item was executed */
+  itemDate?: Maybe<Scalars['Date']['output']>;
   /** Number of minutes allocated to the customer for this invoice item */
   minutesAllocated?: Maybe<Scalars['Int']['output']>;
   unitPrice?: Maybe<Scalars['Int']['output']>;
   unitPriceCurrency?: Maybe<CurrencyEnum>;
   uuid: Scalars['String']['output'];
+};
+
+export type InvoiceType = {
+  __typename?: 'InvoiceType';
+  /** Date when the invoice was sent to the customer */
+  dateSent?: Maybe<Scalars['Date']['output']>;
+  items: Array<InvoiceItemType>;
+  /** Month of the invoice */
+  month: Scalars['Int']['output'];
+  uuid: Scalars['String']['output'];
+  /** Year of the invoice */
+  year: Scalars['Int']['output'];
 };
 
 /**
@@ -90,9 +102,9 @@ export type Mutation = {
   login?: Maybe<LoginUser>;
   /** Log out user. */
   logout?: Maybe<LogoutUser>;
-  /** Create a new customer organization */
+  /** Update or Create a New Customer Organization */
   updateCustomerOrganization?: Maybe<UpdateCustomerOrganization>;
-  /** Create a new customer organization invoice items */
+  /** Update or Create a New Customer Organization Invoice Item */
   updateCustomerOrganizationInvoiceItem?: Maybe<UpdateCustomerOrganizationInvoiceItem>;
 };
 
@@ -115,7 +127,8 @@ export type MutationUpdateCustomerOrganizationArgs = {
 
 export type MutationUpdateCustomerOrganizationInvoiceItemArgs = {
   customerOrganizationUuid: Scalars['String']['input'];
-  invoiceItem: InvoiceItemInput;
+  invoiceItemInput: InvoiceItemInput;
+  invoiceUuid: Scalars['String']['input'];
 };
 
 export type Query = {
@@ -123,6 +136,7 @@ export type Query = {
   currentUser: UserType;
   /** Get an individual Customer Organization */
   customerOrganization: CustomerOrganizationType;
+  customerOrganizationInvoice: InvoiceType;
   /** List all Customer Organization */
   customerOrganizations: Array<CustomerOrganizationType>;
   /** List all users */
@@ -132,6 +146,13 @@ export type Query = {
 
 export type QueryCustomerOrganizationArgs = {
   uuid: Scalars['String']['input'];
+};
+
+
+export type QueryCustomerOrganizationInvoiceArgs = {
+  customerOrganizationUuid: Scalars['String']['input'];
+  month?: InputMaybe<Scalars['Int']['input']>;
+  year?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** Update or Create a new customer organization */
@@ -183,7 +204,8 @@ export type UpdateCustomerOrganizationMutation = { __typename?: 'Mutation', upda
 
 export type UpdateCustomerOrganizationInvoiceItemMutationVariables = Exact<{
   customerOrganizationUuid: Scalars['String']['input'];
-  invoiceItem: InvoiceItemInput;
+  invoiceUuid: Scalars['String']['input'];
+  invoiceItemInput: InvoiceItemInput;
 }>;
 
 
@@ -194,12 +216,14 @@ export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'UserType', uuid: string, email: string, name: string } };
 
-export type CustomerOrganizationInvoiceItemsQueryVariables = Exact<{
-  uuid: Scalars['String']['input'];
+export type CustomerOrganizationInvoiceQueryVariables = Exact<{
+  customerOrganizationUuid: Scalars['String']['input'];
+  year?: InputMaybe<Scalars['Int']['input']>;
+  month?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
-export type CustomerOrganizationInvoiceItemsQuery = { __typename?: 'Query', customerOrganization: { __typename?: 'CustomerOrganizationType', uuid: string, invoiceItems: Array<{ __typename?: 'InvoiceItemType', uuid: string, description: string, unitPrice?: number | null, unitPriceCurrency?: CurrencyEnum | null, dateSent?: DateString | null, minutesAllocated?: number | null, isFixedCost: boolean }> } };
+export type CustomerOrganizationInvoiceQuery = { __typename?: 'Query', customerOrganizationInvoice: { __typename?: 'InvoiceType', uuid: string, month: number, year: number, items: Array<{ __typename?: 'InvoiceItemType', uuid: string, description: string, unitPrice?: number | null, unitPriceCurrency?: CurrencyEnum | null, itemDate?: DateString | null, minutesAllocated?: number | null, isRecurring: boolean }> } };
 
 export type CustomerOrganizationsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -341,10 +365,11 @@ export type UpdateCustomerOrganizationMutationHookResult = ReturnType<typeof use
 export type UpdateCustomerOrganizationMutationResult = Apollo.MutationResult<UpdateCustomerOrganizationMutation>;
 export type UpdateCustomerOrganizationMutationOptions = Apollo.BaseMutationOptions<UpdateCustomerOrganizationMutation, UpdateCustomerOrganizationMutationVariables>;
 export const UpdateCustomerOrganizationInvoiceItemDocument = gql`
-    mutation UpdateCustomerOrganizationInvoiceItem($customerOrganizationUuid: String!, $invoiceItem: InvoiceItemInput!) {
+    mutation UpdateCustomerOrganizationInvoiceItem($customerOrganizationUuid: String!, $invoiceUuid: String!, $invoiceItemInput: InvoiceItemInput!) {
   updateCustomerOrganizationInvoiceItem(
     customerOrganizationUuid: $customerOrganizationUuid
-    invoiceItem: $invoiceItem
+    invoiceUuid: $invoiceUuid
+    invoiceItemInput: $invoiceItemInput
   ) {
     error {
       ...Error
@@ -368,7 +393,8 @@ export type UpdateCustomerOrganizationInvoiceItemMutationFn = Apollo.MutationFun
  * const [updateCustomerOrganizationInvoiceItemMutation, { data, loading, error }] = useUpdateCustomerOrganizationInvoiceItemMutation({
  *   variables: {
  *      customerOrganizationUuid: // value for 'customerOrganizationUuid'
- *      invoiceItem: // value for 'invoiceItem'
+ *      invoiceUuid: // value for 'invoiceUuid'
+ *      invoiceItemInput: // value for 'invoiceItemInput'
  *   },
  * });
  */
@@ -418,55 +444,63 @@ export type CurrentUserQueryHookResult = ReturnType<typeof useCurrentUserQuery>;
 export type CurrentUserLazyQueryHookResult = ReturnType<typeof useCurrentUserLazyQuery>;
 export type CurrentUserSuspenseQueryHookResult = ReturnType<typeof useCurrentUserSuspenseQuery>;
 export type CurrentUserQueryResult = Apollo.QueryResult<CurrentUserQuery, CurrentUserQueryVariables>;
-export const CustomerOrganizationInvoiceItemsDocument = gql`
-    query CustomerOrganizationInvoiceItems($uuid: String!) {
-  customerOrganization(uuid: $uuid) {
+export const CustomerOrganizationInvoiceDocument = gql`
+    query CustomerOrganizationInvoice($customerOrganizationUuid: String!, $year: Int, $month: Int) {
+  customerOrganizationInvoice(
+    customerOrganizationUuid: $customerOrganizationUuid
+    year: $year
+    month: $month
+  ) {
     uuid
-    invoiceItems {
+    month
+    year
+    items {
       uuid
       description
       unitPrice
       unitPriceCurrency
-      dateSent
+      itemDate
       minutesAllocated
-      isFixedCost
+      isRecurring
     }
   }
 }
     `;
 
 /**
- * __useCustomerOrganizationInvoiceItemsQuery__
+ * __useCustomerOrganizationInvoiceQuery__
  *
- * To run a query within a React component, call `useCustomerOrganizationInvoiceItemsQuery` and pass it any options that fit your needs.
- * When your component renders, `useCustomerOrganizationInvoiceItemsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useCustomerOrganizationInvoiceQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCustomerOrganizationInvoiceQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useCustomerOrganizationInvoiceItemsQuery({
+ * const { data, loading, error } = useCustomerOrganizationInvoiceQuery({
  *   variables: {
- *      uuid: // value for 'uuid'
+ *      customerOrganizationUuid: // value for 'customerOrganizationUuid'
+ *      year: // value for 'year'
+ *      month: // value for 'month'
  *   },
  * });
  */
-export function useCustomerOrganizationInvoiceItemsQuery(baseOptions: Apollo.QueryHookOptions<CustomerOrganizationInvoiceItemsQuery, CustomerOrganizationInvoiceItemsQueryVariables>) {
+export function useCustomerOrganizationInvoiceQuery(baseOptions: Apollo.QueryHookOptions<CustomerOrganizationInvoiceQuery, CustomerOrganizationInvoiceQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<CustomerOrganizationInvoiceItemsQuery, CustomerOrganizationInvoiceItemsQueryVariables>(CustomerOrganizationInvoiceItemsDocument, options);
+        return Apollo.useQuery<CustomerOrganizationInvoiceQuery, CustomerOrganizationInvoiceQueryVariables>(CustomerOrganizationInvoiceDocument, options);
       }
-export function useCustomerOrganizationInvoiceItemsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CustomerOrganizationInvoiceItemsQuery, CustomerOrganizationInvoiceItemsQueryVariables>) {
+export function useCustomerOrganizationInvoiceLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CustomerOrganizationInvoiceQuery, CustomerOrganizationInvoiceQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<CustomerOrganizationInvoiceItemsQuery, CustomerOrganizationInvoiceItemsQueryVariables>(CustomerOrganizationInvoiceItemsDocument, options);
+          return Apollo.useLazyQuery<CustomerOrganizationInvoiceQuery, CustomerOrganizationInvoiceQueryVariables>(CustomerOrganizationInvoiceDocument, options);
         }
-export function useCustomerOrganizationInvoiceItemsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<CustomerOrganizationInvoiceItemsQuery, CustomerOrganizationInvoiceItemsQueryVariables>) {
+export function useCustomerOrganizationInvoiceSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<CustomerOrganizationInvoiceQuery, CustomerOrganizationInvoiceQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<CustomerOrganizationInvoiceItemsQuery, CustomerOrganizationInvoiceItemsQueryVariables>(CustomerOrganizationInvoiceItemsDocument, options);
+          return Apollo.useSuspenseQuery<CustomerOrganizationInvoiceQuery, CustomerOrganizationInvoiceQueryVariables>(CustomerOrganizationInvoiceDocument, options);
         }
-export type CustomerOrganizationInvoiceItemsQueryHookResult = ReturnType<typeof useCustomerOrganizationInvoiceItemsQuery>;
-export type CustomerOrganizationInvoiceItemsLazyQueryHookResult = ReturnType<typeof useCustomerOrganizationInvoiceItemsLazyQuery>;
-export type CustomerOrganizationInvoiceItemsSuspenseQueryHookResult = ReturnType<typeof useCustomerOrganizationInvoiceItemsSuspenseQuery>;
-export type CustomerOrganizationInvoiceItemsQueryResult = Apollo.QueryResult<CustomerOrganizationInvoiceItemsQuery, CustomerOrganizationInvoiceItemsQueryVariables>;
+export type CustomerOrganizationInvoiceQueryHookResult = ReturnType<typeof useCustomerOrganizationInvoiceQuery>;
+export type CustomerOrganizationInvoiceLazyQueryHookResult = ReturnType<typeof useCustomerOrganizationInvoiceLazyQuery>;
+export type CustomerOrganizationInvoiceSuspenseQueryHookResult = ReturnType<typeof useCustomerOrganizationInvoiceSuspenseQuery>;
+export type CustomerOrganizationInvoiceQueryResult = Apollo.QueryResult<CustomerOrganizationInvoiceQuery, CustomerOrganizationInvoiceQueryVariables>;
 export const CustomerOrganizationsDocument = gql`
     query CustomerOrganizations {
   customerOrganizations {

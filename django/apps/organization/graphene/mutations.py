@@ -4,8 +4,8 @@ import graphene
 from api.graphene.mutations import BaseMutation, ErrorType
 from organization.graphene.types import InvoiceItemInput
 from organization.services.customer_organization_service import (
+    update_customer_organization_invoice_item,
     update_or_create_customer_organization,
-    update_or_create_customer_organization_invoice_item,
 )
 from user.decorators import logged_in_user_required
 
@@ -34,13 +34,14 @@ class UpdateCustomerOrganization(BaseMutation):
 class UpdateCustomerOrganizationInvoiceItem(BaseMutation):
     class Arguments:
         customer_organization_uuid = graphene.String(required=True)
-        invoice_item = graphene.NonNull(InvoiceItemInput)
+        invoice_uuid = graphene.String(required=True)
+        invoice_item_input = graphene.NonNull(InvoiceItemInput)
 
     error = graphene.Field(ErrorType)
 
     @logged_in_user_required
     def mutate(self, user, **kwargs):
         try:
-            update_or_create_customer_organization_invoice_item(user, **kwargs)
+            update_customer_organization_invoice_item(user, **kwargs)
         except Exception as e:
             return {"error": str(e)}

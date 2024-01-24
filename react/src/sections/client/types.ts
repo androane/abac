@@ -21,7 +21,7 @@ export type InvoiceItem = {
   description: string
   unitPrice?: null | number
   unitPriceCurrency?: null | CurrencyEnum
-  dateSent?: null | Date
+  itemDate?: null | Date
   minutesAllocated?: number
 }
 

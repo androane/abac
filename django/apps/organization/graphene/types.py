@@ -3,7 +3,7 @@ import graphene
 from graphene_django import DjangoObjectType
 
 from organization.constants import CurrencyEnum
-from organization.models import CustomerOrganization, InvoiceItem
+from organization.models import CustomerOrganization, Invoice, InvoiceItem
 
 CurrencyEnumType = graphene.Enum.from_enum(CurrencyEnum)
 
@@ -16,17 +16,31 @@ class InvoiceItemType(DjangoObjectType):
             "description",
             "unit_price",
             "unit_price_currency",
-            "date_sent",
+            "item_date",
             "minutes_allocated",
-            "is_fixed_cost",
+            "is_recurring",
         )
 
     unit_price_currency = CurrencyEnumType()
 
 
-class CustomerOrganizationType(DjangoObjectType):
-    invoice_items = graphene.List(graphene.NonNull(InvoiceItemType), required=True)
+class InvoiceType(DjangoObjectType):
+    class Meta:
+        model = Invoice
+        only_fields = (
+            "uuid",
+            "month",
+            "year",
+            "date_sent",
+        )
 
+    items = graphene.List(graphene.NonNull(InvoiceItemType), required=True)
+
+    def resolve_items(self, info, **kwargs):
+        return self.items.all()
+
+
+class CustomerOrganizationType(DjangoObjectType):
     class Meta:
         model = CustomerOrganization
         only_fields = (
@@ -36,11 +50,8 @@ class CustomerOrganizationType(DjangoObjectType):
             "phone_number_1",
             "phone_number_2",
             "program_manager",
-            "invoice_items",
+            "invoice",
         )
-
-    def resolve_invoice_items(self, info, **kwargs):
-        return self.customer_organization_invoice_items.all()
 
 
 class InvoiceItemInput(graphene.InputObjectType):
@@ -48,6 +59,6 @@ class InvoiceItemInput(graphene.InputObjectType):
     description = graphene.String(required=True)
     unit_price = graphene.Int()
     unit_price_currency = CurrencyEnumType()
-    date_sent = graphene.Date()
+    item_date = graphene.Date()
     minutes_allocated = graphene.Int()
-    is_fixed_cost = graphene.Boolean()
+    is_recurring = graphene.Boolean()

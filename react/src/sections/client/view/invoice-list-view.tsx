@@ -20,7 +20,7 @@ import {
 } from 'components/table'
 
 import ResponseHandler from 'components/response-handler'
-import { useCustomerOrganizationInvoiceItemsQuery } from 'generated/graphql'
+import { useCustomerOrganizationInvoiceQuery } from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import InvoiceNewEditForm from 'sections/client/invoice-item-new-edit-form'
 import InvoiceTableFiltersResult from '../invoice-table-filters-result'
@@ -34,7 +34,7 @@ const defaultFilters = {
 
 const TABLE_HEAD = [
   { id: 'description', label: 'Descriere' },
-  { id: 'dateSent', label: 'Data' },
+  { id: 'itemDate', label: 'Data' },
   { id: 'unitPrice', label: 'Suma' },
   { id: 'unitPriceCurrency', label: 'Moneda' },
   { id: '', width: 88 },
@@ -48,7 +48,7 @@ const InvoiceListCard: React.FC<InvoiceListCardProps> = ({ invoiceItems: initial
   const invoiceItems = initialInvoiceItems?.map(invoice => ({
     id: invoice.uuid,
     description: invoice.description,
-    dateSent: invoice?.dateSent,
+    itemDate: invoice?.itemDate,
     unitPrice: invoice?.unitPrice,
     unitPriceCurrency: invoice?.unitPriceCurrency,
     minutesAllocated: invoice?.minutesAllocated,
@@ -203,16 +203,16 @@ type Props = {
 }
 
 export default function InvoiceListView({ client }: Props) {
-  const result = useCustomerOrganizationInvoiceItemsQuery({
+  const result = useCustomerOrganizationInvoiceQuery({
     variables: {
-      uuid: client.uuid,
+      customerOrganizationUuid: client.uuid,
     },
   })
 
   return (
     <ResponseHandler {...result}>
-      {({ customerOrganization }) => {
-        return <InvoiceListCard invoiceItems={customerOrganization.invoiceItems} />
+      {({ customerOrganizationInvoice }) => {
+        return <InvoiceListCard invoiceItems={customerOrganizationInvoice.items} />
       }}
     </ResponseHandler>
   )

@@ -21,7 +21,7 @@ type Props = {
 }
 
 export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
-  const { description, unitPrice, unitPriceCurrency, dateSent } = row
+  const { description, unitPrice, unitPriceCurrency, itemDate } = row
 
   const confirm = useBoolean()
 
@@ -45,7 +45,7 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={dateSent}
+            primary={itemDate}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

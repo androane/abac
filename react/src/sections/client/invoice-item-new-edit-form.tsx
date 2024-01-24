@@ -27,7 +27,7 @@ export default function InvoiceNewEditForm({ invoiceItem, onBack }: Props) {
     description: Yup.string().required('Descrierea este obligatorie'),
     unitPrice: Yup.number().nullable(),
     unitPriceCurrency: Yup.string().nullable(),
-    dateSent: Yup.date().nullable(),
+    itemDate: Yup.date().nullable(),
     minutesAllocated: Yup.number().nullable(),
   })
 
@@ -36,7 +36,7 @@ export default function InvoiceNewEditForm({ invoiceItem, onBack }: Props) {
       description: invoiceItem?.description || '',
       unitPrice: invoiceItem?.unitPrice,
       unitPriceCurrency: invoiceItem?.unitPriceCurrency,
-      dateSent: invoiceItem?.dateSent,
+      itemDate: invoiceItem?.itemDate,
       minutesAllocated: invoiceItem?.minutesAllocated,
     }),
     [invoiceItem],
@@ -94,7 +94,7 @@ export default function InvoiceNewEditForm({ invoiceItem, onBack }: Props) {
                   </option>
                 ))}
               </RHFSelect>
-              <RHFTextField name="dateSent" label="Data" />
+              <RHFTextField name="itemDate" label="Data" />
               <RHFTextField name="minutesAllocated" label="Numar de minute alocate" />
             </Box>
 
