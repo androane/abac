@@ -9,8 +9,8 @@ import { useCustomerOrganizationsQuery } from 'generated/graphql'
 import { useCallback, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { paths } from 'routes/paths'
-import ClientNewEditForm from '../client-new-edit-form'
-import InvoiceListView from './invoice-list-view'
+import CustomerOrganizationNewEditForm from '../client-new-edit-form'
+import InvoiceDetailsView from './invoice-details-view'
 
 type Props = {
   id: string
@@ -80,8 +80,10 @@ export default function UserEditView({ id }: Props) {
                 ))}
               </Tabs>
 
-              {currentTab === 'general' && <ClientNewEditForm client={client} />}
-              {currentTab === 'invoicing' && <InvoiceListView client={client} />}
+              {currentTab === 'general' && <CustomerOrganizationNewEditForm client={client} />}
+              {currentTab === 'invoicing' && (
+                <InvoiceDetailsView customerOrganizationUuid={client.uuid} />
+              )}
             </>
           )
         }}

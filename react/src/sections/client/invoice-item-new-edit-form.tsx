@@ -57,7 +57,7 @@ export default function InvoiceNewEditForm({ invoiceItem, onBack }: Props) {
     try {
       await new Promise(resolve => setTimeout(resolve, 500))
       reset()
-      enqueueSnackbar(invoiceItem ? 'Factura actualizata cu succes!' : 'Factura creata cu succes!')
+      enqueueSnackbar('Factura actualizata cu succes!')
 
       onBack()
     } catch (error) {

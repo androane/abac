@@ -13,7 +13,7 @@ type Props = {
   onFilters: (name: string, value: string) => void
 }
 
-export default function UserTableToolbar({ filters, onFilters }: Props) {
+export default function CustomerTableToolbar({ filters, onFilters }: Props) {
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       onFilters('name', event.target.value)

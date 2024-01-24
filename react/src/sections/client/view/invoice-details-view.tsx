@@ -26,7 +26,7 @@ import InvoiceNewEditForm from 'sections/client/invoice-item-new-edit-form'
 import InvoiceTableFiltersResult from '../invoice-table-filters-result'
 import InvoiceTableRow from '../invoice-table-row'
 import InvoiceTableToolbar from '../invoice-table-toolbar'
-import { APIClient, APIInvoiceItem, InvoiceItem, InvoiceTableFilters } from '../types'
+import { InvoiceItem, InvoiceTableFilters } from '../types'
 
 const defaultFilters = {
   description: '',
@@ -40,20 +40,17 @@ const TABLE_HEAD = [
   { id: '', width: 88 },
 ]
 
-type InvoiceListCardProps = {
-  invoiceItems: APIInvoiceItem[]
+type InvoiceDetailsCardProps = {
+  invoiceItems: InvoiceItem[]
+  invoiceDate: null | Date
+  onChangeInvoiceDate: (newDate: null | Date) => void
 }
 
-const InvoiceListCard: React.FC<InvoiceListCardProps> = ({ invoiceItems: initialInvoiceItems }) => {
-  const invoiceItems = initialInvoiceItems?.map(invoice => ({
-    id: invoice.uuid,
-    description: invoice.description,
-    itemDate: invoice?.itemDate,
-    unitPrice: invoice?.unitPrice,
-    unitPriceCurrency: invoice?.unitPriceCurrency,
-    minutesAllocated: invoice?.minutesAllocated,
-  }))
-
+const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
+  invoiceItems,
+  invoiceDate,
+  onChangeInvoiceDate,
+}) => {
   const showCreateInvoiceItem = useBoolean()
   const [invoiceItemIdToEdit, setInvoiceItemIdToEdit] = useState<null | String>(null)
 
@@ -132,6 +129,8 @@ const InvoiceListCard: React.FC<InvoiceListCardProps> = ({ invoiceItems: initial
         filters={filters}
         onFilters={handleFilters}
         onAddInvoiceItem={showCreateInvoiceItem.onTrue}
+        invoiceDate={invoiceDate}
+        onChangeInvoiceDate={onChangeInvoiceDate}
       />
 
       {canReset && (
@@ -199,20 +198,38 @@ const InvoiceListCard: React.FC<InvoiceListCardProps> = ({ invoiceItems: initial
 }
 
 type Props = {
-  client: APIClient
+  customerOrganizationUuid: string
 }
 
-export default function InvoiceListView({ client }: Props) {
+export default function InvoiceDetailsView({ customerOrganizationUuid }: Props) {
+  const [invoiceDate, setInvoiceDate] = useState<null | Date>(new Date())
+
   const result = useCustomerOrganizationInvoiceQuery({
     variables: {
-      customerOrganizationUuid: client.uuid,
+      customerOrganizationUuid,
+      month: invoiceDate ? invoiceDate.getMonth() + 1 : null,
+      year: invoiceDate?.getFullYear(),
     },
   })
 
   return (
     <ResponseHandler {...result}>
       {({ customerOrganizationInvoice }) => {
-        return <InvoiceListCard invoiceItems={customerOrganizationInvoice.items} />
+        const invoiceItems = customerOrganizationInvoice.items?.map(invoice => ({
+          id: invoice.uuid,
+          description: invoice.description,
+          itemDate: invoice?.itemDate,
+          unitPrice: invoice?.unitPrice,
+          unitPriceCurrency: invoice?.unitPriceCurrency,
+          minutesAllocated: invoice?.minutesAllocated,
+        }))
+        return (
+          <InvoiceDetailsCard
+            invoiceItems={invoiceItems}
+            invoiceDate={invoiceDate}
+            onChangeInvoiceDate={setInvoiceDate}
+          />
+        )
       }}
     </ResponseHandler>
   )

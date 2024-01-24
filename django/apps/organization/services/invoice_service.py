@@ -29,19 +29,22 @@ def get_customer_organization_invoice(
     try:
         return customer_organization.invoices.get(month=now.month, year=now.year)
     except Invoice.DoesNotExist:
-        last_invoice = (
-            Invoice.objects.filter(customer_organization=customer_organization)
-            .order_by("-year", "-month")
-            .first()
-        )
         # Create invoice for current month
         invoice = Invoice.objects.create(
             customer_organization=customer_organization, month=now.month, year=now.year
         )
-        if last_invoice:
-            # Copy recurring invoice items from last invoice
-            for invoice_item in last_invoice.items.filter(is_recurring=True).all():
-                invoice_item.pk = None
-                invoice_item.invoice = invoice
-                invoice_item.save()
+
+    last_month = now.subtract(months=1)
+    try:
+        last_month_invoice = customer_organization.invoices.get(
+            year=last_month.year, month=last_month.month
+        )
+    except Invoice.DoesNotExist:
+        pass
+    else:
+        # Copy recurring invoice items from last invoice
+        for invoice_item in last_month_invoice.items.filter(is_recurring=True).all():
+            invoice_item.pk = None
+            invoice_item.invoice = invoice
+            invoice_item.save()
         return invoice

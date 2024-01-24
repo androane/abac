@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import date
+
 from django.db import models
 
 from core.models import BaseModel
@@ -98,6 +100,10 @@ class Invoice(BaseModel):
     def is_locked(self) -> bool:
         return self.date_sent is not None
 
+    @property
+    def date(self) -> date:
+        return date(self.year, self.month, 1)
+
 
 class InvoiceItem(BaseModel):
     """
@@ -127,10 +133,10 @@ class InvoiceItem(BaseModel):
     )
 
     def __str__(self):
-        return self.description
+        return f'{self.invoice.date.strftime("%m/%Y")} / {self.description}'
 
     def __repr__(self):
-        return self.description
+        return f'{self.invoice.date.strftime("%m/%Y")} / {self.description}'
 
     @property
     def is_locked(self) -> bool:

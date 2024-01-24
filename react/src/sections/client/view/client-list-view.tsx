@@ -32,7 +32,7 @@ import { useRouter } from 'routes/hooks'
 import ClientTableFiltersResult from '../client-table-filters-result'
 import ClientTableRow from '../client-table-row'
 import ClientTableToolbar from '../client-table-toolbar'
-import { ClientItem, ClientTableFilters } from '../types'
+import { ClientTableFilters, CustomerOrganizationItem } from '../types'
 
 const defaultFilters = {
   name: '',
@@ -229,7 +229,7 @@ function applyFilter({
   comparator,
   filters,
 }: {
-  inputData: ClientItem[]
+  inputData: CustomerOrganizationItem[]
   comparator: (a: any, b: any) => number
   filters: ClientTableFilters
 }) {

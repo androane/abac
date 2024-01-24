@@ -1,6 +1,7 @@
 import 'global.css'
 
 import { useScrollToTop } from 'hooks/use-scroll-to-top'
+import { LocalizationProvider } from 'locales'
 
 import ThemeProvider from 'theme'
 
@@ -16,27 +17,29 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <SettingsProvider
-        defaultSettings={{
-          themeMode: 'light', // 'light' | 'dark'
-          themeDirection: 'ltr', //  'rtl' | 'ltr'
-          themeContrast: 'default', // 'default' | 'bold'
-          themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
-          themeColorPresets: 'default', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
-          themeStretch: false,
-        }}
-      >
-        <ThemeProvider>
-          <MotionLazy>
-            <SnackbarProvider>
-              <SettingsDrawer />
-              <ProgressBar />
+      <LocalizationProvider>
+        <SettingsProvider
+          defaultSettings={{
+            themeMode: 'light', // 'light' | 'dark'
+            themeDirection: 'ltr', //  'rtl' | 'ltr'
+            themeContrast: 'default', // 'default' | 'bold'
+            themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
+            themeColorPresets: 'default', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
+            themeStretch: false,
+          }}
+        >
+          <ThemeProvider>
+            <MotionLazy>
+              <SnackbarProvider>
+                <SettingsDrawer />
+                <ProgressBar />
 
-              <Router />
-            </SnackbarProvider>
-          </MotionLazy>
-        </ThemeProvider>
-      </SettingsProvider>
+                <Router />
+              </SnackbarProvider>
+            </MotionLazy>
+          </ThemeProvider>
+        </SettingsProvider>
+      </LocalizationProvider>
     </AuthProvider>
   )
 }

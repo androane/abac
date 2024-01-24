@@ -17,13 +17,13 @@ import { fData } from 'utils/format-number'
 
 import FormProvider, { RHFTextField, RHFUploadAvatar } from 'components/hook-form'
 import { useSnackbar } from 'components/snackbar'
-import { APIClient } from './types'
+import { APICustomerOrganization } from './types'
 
 type Props = {
-  client?: APIClient
+  client?: APICustomerOrganization
 }
 
-export default function ClientNewEditForm({ client }: Props) {
+export default function CustomerOrganizationNewEditForm({ client }: Props) {
   const router = useRouter()
 
   const { enqueueSnackbar } = useSnackbar()

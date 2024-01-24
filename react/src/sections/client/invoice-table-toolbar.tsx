@@ -4,6 +4,7 @@ import Button from '@mui/material/Button'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { RouterLink } from 'routes/components'
 
 import Iconify from 'components/iconify'
@@ -14,9 +15,17 @@ type Props = {
   filters: InvoiceTableFilters
   onFilters: (name: string, value: string) => void
   onAddInvoiceItem: () => void
+  invoiceDate: null | Date
+  onChangeInvoiceDate: (newDate: null | Date) => void
 }
 
-export default function UserTableToolbar({ filters, onFilters, onAddInvoiceItem }: Props) {
+export default function InvoiceTableToolbar({
+  filters,
+  onFilters,
+  onAddInvoiceItem,
+  invoiceDate,
+  onChangeInvoiceDate,
+}: Props) {
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       onFilters('name', event.target.value)
@@ -37,6 +46,18 @@ export default function UserTableToolbar({ filters, onFilters, onAddInvoiceItem 
         pr: { xs: 2.5, md: 1 },
       }}
     >
+      <DatePicker
+        label="Data facturii"
+        minDate={new Date('2024-01-01')}
+        disableFuture
+        value={invoiceDate}
+        onChange={onChangeInvoiceDate}
+        slotProps={{ textField: { fullWidth: true } }}
+        views={['month', 'year']}
+        sx={{
+          maxWidth: { md: 180 },
+        }}
+      />
       <Stack
         direction="row"
         alignItems="center"
@@ -62,7 +83,7 @@ export default function UserTableToolbar({ filters, onFilters, onAddInvoiceItem 
           variant="contained"
           startIcon={<Iconify icon="mingcute:add-line" />}
         >
-          Factura Noua
+          Adauga la Factura
         </Button>
       </Stack>
     </Stack>
