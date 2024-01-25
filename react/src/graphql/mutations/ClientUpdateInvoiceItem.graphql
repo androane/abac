@@ -1,10 +1,10 @@
-mutation UpdateCustomerOrganizationInvoiceItem(
-  $customerOrganizationUuid: String!
+mutation UpdateClientInvoiceItem(
+  $clientUuid: String!
   $invoiceUuid: String!
   $invoiceItemInput: InvoiceItemInput!
 ) {
-  updateCustomerOrganizationInvoiceItem(
-    customerOrganizationUuid: $customerOrganizationUuid
+  updateClientInvoiceItem(
+    clientUuid: $clientUuid
     invoiceUuid: $invoiceUuid
     invoiceItemInput: $invoiceItemInput
   ) {

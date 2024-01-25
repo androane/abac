@@ -1,4 +1,7 @@
-mutation UpdateCustomerOrganization(
+#import "../fragments/Error.graphql"
+#import "../fragments/Client.graphql"
+
+mutation UpdateClient(
   $uuid: String
   $name: String!
   $description: String
@@ -6,15 +9,19 @@ mutation UpdateCustomerOrganization(
   $phoneNumber2: String
   $programManagerUuid: String
 ) {
-  updateCustomerOrganization(
+  updateClient(
     uuid: $uuid
     name: $name
+    description: $description
     phoneNumber1: $phoneNumber1
     phoneNumber2: $phoneNumber2
     programManagerUuid: $programManagerUuid
   ) {
     error {
       ...Error
+    }
+    client {
+      ...Client
     }
   }
 }

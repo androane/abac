@@ -40,7 +40,7 @@ class InvoiceType(DjangoObjectType):
         return self.items.all()
 
 
-class CustomerOrganizationType(DjangoObjectType):
+class ClientType(DjangoObjectType):
     class Meta:
         model = CustomerOrganization
         only_fields = (

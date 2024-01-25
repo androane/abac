@@ -8,35 +8,33 @@ from organization.models import CustomerOrganization, Invoice
 from user.models import User
 
 
-def get_customer_organization_invoice(
+def get_client_invoice(
     user: User,
-    customer_organization_uuid: str,
+    client_uuid: str,
     month: Optional[int] = None,
     year: Optional[int] = None,
 ) -> Invoice:
     assert (year and month) or (not year and not month)
 
-    customer_organization = CustomerOrganization.objects.get(
-        uuid=customer_organization_uuid, organization=user.organization
+    client = CustomerOrganization.objects.get(
+        uuid=client_uuid, organization=user.organization
     )
+
+    if year and month:
+        return client.invoices.get_or_create(month=month, year=year)[0]
 
     now = pendulum.now(settings.DEFAULT_TIMEZONE)
 
-    if year and month:
-        return customer_organization.invoices.get(month=now.month, year=now.year)
-
     # If year and month are not given, it means we need to create an invoice for the current month
     try:
-        return customer_organization.invoices.get(month=now.month, year=now.year)
+        return client.invoices.get(month=now.month, year=now.year)
     except Invoice.DoesNotExist:
         # Create invoice for current month
-        invoice = Invoice.objects.create(
-            customer_organization=customer_organization, month=now.month, year=now.year
-        )
+        invoice = Invoice.objects.create(client=client, month=now.month, year=now.year)
 
     last_month = now.subtract(months=1)
     try:
-        last_month_invoice = customer_organization.invoices.get(
+        last_month_invoice = client.invoices.get(
             year=last_month.year, month=last_month.month
         )
     except Invoice.DoesNotExist:

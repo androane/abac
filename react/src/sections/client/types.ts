@@ -1,10 +1,6 @@
-import {
-  CurrencyEnum,
-  CustomerOrganizationInvoiceQuery,
-  CustomerOrganizationsQuery,
-} from 'generated/graphql'
+import { ClientInvoiceQuery, ClientsQuery, CurrencyEnum } from 'generated/graphql'
 
-export type CustomerOrganizationItem = {
+export type ClientItem = {
   id: string
   name: string
   programManagerName?: string
@@ -29,6 +25,5 @@ export type InvoiceTableFilters = {
   description: string
 }
 
-export type APICustomerOrganization = CustomerOrganizationsQuery['customerOrganizations'][0]
-export type APIInvoiceItem =
-  CustomerOrganizationInvoiceQuery['customerOrganizationInvoice']['items'][0]
+export type APIClient = ClientsQuery['clients'][0]
+export type APIInvoiceItem = ClientInvoiceQuery['clientInvoice']['items'][0]

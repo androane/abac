@@ -13,11 +13,11 @@ import { ConfirmDialog } from 'components/custom-dialog'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
 
-import { CustomerOrganizationItem } from './types'
+import { ClientItem } from './types'
 
 type Props = {
   onEditRow: VoidFunction
-  row: CustomerOrganizationItem
+  row: ClientItem
   onDeleteRow: VoidFunction
 }
 

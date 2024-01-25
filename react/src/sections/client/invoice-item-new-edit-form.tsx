@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import Button from '@mui/material/Button'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
@@ -16,11 +17,12 @@ import { CurrencyEnum } from 'generated/graphql'
 import { InvoiceItem } from './types'
 
 type Props = {
+  invoiceDate: null | Date
   onBack: () => void
   invoiceItem?: InvoiceItem
 }
 
-export default function InvoiceNewEditForm({ invoiceItem, onBack }: Props) {
+export default function InvoiceNewEditForm({ invoiceDate, invoiceItem, onBack }: Props) {
   const { enqueueSnackbar } = useSnackbar()
 
   const NewInvoiceSchema = Yup.object().shape({
@@ -79,7 +81,17 @@ export default function InvoiceNewEditForm({ invoiceItem, onBack }: Props) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="description" label="Descriere" />
+              <RHFTextField name="description" label="Descriere" multiline rows={5} />
+              <DatePicker
+                label="Ziua din luna"
+                minDate={invoiceDate}
+                disableFuture
+                slotProps={{ textField: { fullWidth: true } }}
+                views={['day']}
+                sx={{
+                  maxWidth: { md: 180 },
+                }}
+              />
               <RHFTextField name="unitPrice" label="Cost" />
               <RHFSelect
                 native
@@ -94,7 +106,6 @@ export default function InvoiceNewEditForm({ invoiceItem, onBack }: Props) {
                   </option>
                 ))}
               </RHFSelect>
-              <RHFTextField name="itemDate" label="Data" />
               <RHFTextField name="minutesAllocated" label="Numar de minute alocate" />
             </Box>
 

@@ -33,14 +33,14 @@ class CustomerOrganization(BaseModel):
     organization = models.ForeignKey(
         Organization, on_delete=models.CASCADE, related_name="customer_organizations"
     )
+
+    name = models.CharField(max_length=128)
+    description = models.TextField(blank=True, null=True)
     phone_number_1 = models.CharField(max_length=12, blank=True)
     phone_number_2 = models.CharField(max_length=12, blank=True)
     program_manager = models.ForeignKey(
         "user.User", on_delete=models.SET_NULL, blank=True, null=True
     )
-
-    name = models.CharField(max_length=128)
-    description = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name

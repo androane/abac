@@ -1,0 +1,5 @@
+fragment ProgramManager on UserType {
+  uuid
+  name
+  email
+}

@@ -5,8 +5,8 @@ import Card from '@mui/material/Card'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableContainer from '@mui/material/TableContainer'
-
 import { useSnackbar } from 'components/snackbar'
+import { startOfMonth } from 'date-fns'
 
 import Scrollbar from 'components/scrollbar'
 import {
@@ -20,7 +20,7 @@ import {
 } from 'components/table'
 
 import ResponseHandler from 'components/response-handler'
-import { useCustomerOrganizationInvoiceQuery } from 'generated/graphql'
+import { useClientInvoiceQuery } from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import InvoiceNewEditForm from 'sections/client/invoice-item-new-edit-form'
 import InvoiceTableFiltersResult from '../invoice-table-filters-result'
@@ -117,6 +117,7 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
   if (showCreateInvoiceItem.value) {
     return (
       <InvoiceNewEditForm
+        invoiceDate={invoiceDate}
         invoiceItem={invoiceItems.find(_ => _.id === invoiceItemIdToEdit)}
         onBack={showCreateInvoiceItem.onFalse}
       />
@@ -198,15 +199,15 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
 }
 
 type Props = {
-  customerOrganizationUuid: string
+  clientUuid: string
 }
 
-export default function InvoiceDetailsView({ customerOrganizationUuid }: Props) {
-  const [invoiceDate, setInvoiceDate] = useState<null | Date>(new Date())
+export default function InvoiceDetailsView({ clientUuid }: Props) {
+  const [invoiceDate, setInvoiceDate] = useState<null | Date>(startOfMonth(new Date()))
 
-  const result = useCustomerOrganizationInvoiceQuery({
+  const result = useClientInvoiceQuery({
     variables: {
-      customerOrganizationUuid,
+      clientUuid,
       month: invoiceDate ? invoiceDate.getMonth() + 1 : null,
       year: invoiceDate?.getFullYear(),
     },
@@ -214,8 +215,8 @@ export default function InvoiceDetailsView({ customerOrganizationUuid }: Props) 
 
   return (
     <ResponseHandler {...result}>
-      {({ customerOrganizationInvoice }) => {
-        const invoiceItems = customerOrganizationInvoice.items?.map(invoice => ({
+      {({ clientInvoice }) => {
+        const invoiceItems = clientInvoice.items?.map(invoice => ({
           id: invoice.uuid,
           description: invoice.description,
           itemDate: invoice?.itemDate,

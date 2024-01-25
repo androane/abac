@@ -1,0 +1,7 @@
+#import "../fragments/ProgramManager.graphql"
+
+query ClientProgramManagers {
+  programManagers {
+    ...ProgramManager
+  }
+}

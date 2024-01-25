@@ -27,12 +27,12 @@ import {
 } from 'components/table'
 
 import ResponseHandler from 'components/response-handler'
-import { CustomerOrganizationsQuery, useCustomerOrganizationsQuery } from 'generated/graphql'
+import { useClientsQuery } from 'generated/graphql'
 import { useRouter } from 'routes/hooks'
 import ClientTableFiltersResult from '../client-table-filters-result'
 import ClientTableRow from '../client-table-row'
 import ClientTableToolbar from '../client-table-toolbar'
-import { ClientTableFilters, CustomerOrganizationItem } from '../types'
+import { ClientItem, ClientTableFilters } from '../types'
 
 const defaultFilters = {
   name: '',
@@ -47,17 +47,10 @@ const TABLE_HEAD = [
 ]
 
 type Props = {
-  customerOrganizations: CustomerOrganizationsQuery['customerOrganizations']
+  clients: ClientItem[]
 }
 
-const ClientListCard: React.FC<Props> = ({ customerOrganizations }) => {
-  const clients = customerOrganizations?.map(client => ({
-    id: client.uuid,
-    name: client.name,
-    programManagerName: client.programManager?.name,
-    phoneNumber1: client.phoneNumber1,
-    phoneNumber2: client.phoneNumber2,
-  }))
+const ClientListCard: React.FC<Props> = ({ clients }) => {
   const { enqueueSnackbar } = useSnackbar()
   const [tableData, setTableData] = useState(clients)
 
@@ -189,7 +182,7 @@ const ClientListCard: React.FC<Props> = ({ customerOrganizations }) => {
 
 export default function ClientListView() {
   const settings = useSettingsContext()
-  const result = useCustomerOrganizationsQuery()
+  const result = useClientsQuery()
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -216,8 +209,15 @@ export default function ClientListView() {
       />
 
       <ResponseHandler {...result}>
-        {({ customerOrganizations }) => {
-          return <ClientListCard customerOrganizations={customerOrganizations} />
+        {({ clients: apiClient }) => {
+          const clients = apiClient?.map(client => ({
+            id: client.uuid,
+            name: client.name,
+            programManagerName: client.programManager?.name,
+            phoneNumber1: client.phoneNumber1,
+            phoneNumber2: client.phoneNumber2,
+          }))
+          return <ClientListCard clients={clients} />
         }}
       </ResponseHandler>
     </Container>
@@ -229,7 +229,7 @@ function applyFilter({
   comparator,
   filters,
 }: {
-  inputData: CustomerOrganizationItem[]
+  inputData: ClientItem[]
   comparator: (a: any, b: any) => number
   filters: ClientTableFilters
 }) {

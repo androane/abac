@@ -5,7 +5,7 @@ import { paths } from 'routes/paths'
 import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 import { useSettingsContext } from 'components/settings'
 
-import CustomerOrganizationNewEditForm from '../client-new-edit-form'
+import ClientNewEditForm from '../client-new-edit-form'
 
 export default function ClientCreateView() {
   const settings = useSettingsContext()
@@ -30,7 +30,7 @@ export default function ClientCreateView() {
         }}
       />
 
-      <CustomerOrganizationNewEditForm />
+      <ClientNewEditForm />
     </Container>
   )
 }

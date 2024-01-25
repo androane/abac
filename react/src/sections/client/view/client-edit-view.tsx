@@ -5,11 +5,11 @@ import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 import Iconify from 'components/iconify'
 import ResponseHandler from 'components/response-handler'
 import { useSettingsContext } from 'components/settings'
-import { useCustomerOrganizationsQuery } from 'generated/graphql'
+import { useClientsQuery } from 'generated/graphql'
 import { useCallback, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { paths } from 'routes/paths'
-import CustomerOrganizationNewEditForm from '../client-new-edit-form'
+import ClientNewEditForm from '../client-new-edit-form'
 import InvoiceDetailsView from './invoice-details-view'
 
 type Props = {
@@ -32,7 +32,7 @@ const TABS = [
 export default function UserEditView({ id }: Props) {
   const settings = useSettingsContext()
 
-  const result = useCustomerOrganizationsQuery()
+  const result = useClientsQuery()
 
   const [currentTab, setCurrentTab] = useState('invoicing')
 
@@ -43,8 +43,8 @@ export default function UserEditView({ id }: Props) {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <ResponseHandler {...result}>
-        {({ customerOrganizations }) => {
-          const client = customerOrganizations.find(_ => _.uuid === id)
+        {({ clients }) => {
+          const client = clients.find(_ => _.uuid === id)
           if (!client) {
             return <Navigate to={paths.page404} replace />
           }
@@ -80,10 +80,8 @@ export default function UserEditView({ id }: Props) {
                 ))}
               </Tabs>
 
-              {currentTab === 'general' && <CustomerOrganizationNewEditForm client={client} />}
-              {currentTab === 'invoicing' && (
-                <InvoiceDetailsView customerOrganizationUuid={client.uuid} />
-              )}
+              {currentTab === 'general' && <ClientNewEditForm client={client} />}
+              {currentTab === 'invoicing' && <InvoiceDetailsView clientUuid={client.uuid} />}
             </>
           )
         }}

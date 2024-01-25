@@ -1,55 +1,58 @@
 # -*- coding: utf-8 -*-
 import graphene
+from django.contrib.auth import get_user_model
 
-from organization.graphene.mutations import (
-    UpdateCustomerOrganization,
-    UpdateCustomerOrganizationInvoiceItem,
-)
-from organization.graphene.types import CustomerOrganizationType, InvoiceType
-from organization.services.invoice_service import get_customer_organization_invoice
+from organization.graphene.mutations import UpdateClient, UpdateClientInvoiceItem
+from organization.graphene.types import ClientType, InvoiceType
+from organization.services.client_invoice_service import get_client_invoice
 from user.decorators import logged_in_user_required
+from user.graphene.types import UserType
 
 
 class Query(graphene.ObjectType):
     class Meta:
         abstract = True
 
-    customer_organizations = graphene.List(
-        graphene.NonNull(CustomerOrganizationType),
+    clients = graphene.List(
+        graphene.NonNull(ClientType),
         required=True,
-        description="List all Customer Organization",
+        description="List all Clients",
     )
-    customer_organization = graphene.Field(
-        graphene.NonNull(CustomerOrganizationType),
-        description="Get an individual Customer Organization",
+    client = graphene.Field(
+        graphene.NonNull(ClientType),
+        description="Get an individual Client",
         uuid=graphene.String(required=True),
     )
-    customer_organization_invoice = graphene.Field(
+    client_invoice = graphene.Field(
         graphene.NonNull(InvoiceType),
-        customer_organization_uuid=graphene.String(required=True),
+        client_uuid=graphene.String(required=True),
         month=graphene.Int(),
         year=graphene.Int(),
     )
+    program_managers = graphene.List(
+        graphene.NonNull(UserType),
+        description="List all Program Managers",
+    )
 
     @logged_in_user_required
-    def resolve_customer_organizations(info, user, **kwargs):
+    def resolve_clients(info, user, **kwargs):
         return user.organization.customer_organizations.all()
 
     @logged_in_user_required
-    def resolve_customer_organization(info, user, **kwargs):
+    def resolve_client(info, user, **kwargs):
         return user.organization.customer_organizations.get(uuid=kwargs["uuid"])
 
     @logged_in_user_required
-    def resolve_customer_organization_invoice(info, user, **kwargs):
-        return get_customer_organization_invoice(user, **kwargs)
+    def resolve_client_invoice(info, user, **kwargs):
+        return get_client_invoice(user, **kwargs)
+
+    @logged_in_user_required
+    def resolve_program_managers(info, user, **kwargs):
+        return get_user_model().objects.filter(is_staff=False)
 
 
 class Mutation(graphene.ObjectType):
-    update_customer_organization = UpdateCustomerOrganization.Field(
-        description="Update or Create a New Customer Organization"
-    )
-    update_customer_organization_invoice_item = (
-        UpdateCustomerOrganizationInvoiceItem.Field(
-            description="Update or Create a New Customer Organization Invoice Item"
-        )
+    update_client = UpdateClient.Field(description="Update or Create a New Client")
+    update_client_invoice_item = UpdateClientInvoiceItem.Field(
+        description="Update or Create a New Client Invoice Item"
     )
