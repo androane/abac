@@ -32,8 +32,9 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
     <>
       <TableRow hover>
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={name} src="" sx={{ mr: 2 }} />
-
+          <Avatar alt={name} sx={{ mr: 2 }}>
+            {name.charAt(0).toUpperCase()}
+          </Avatar>
           <Box
             onClick={onEditRow}
             sx={{

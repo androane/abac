@@ -1,0 +1,9 @@
+fragment InvoiceItem on InvoiceItemType {
+  uuid
+  description
+  unitPrice
+  unitPriceCurrency
+  itemDate
+  minutesAllocated
+  isRecurring
+}

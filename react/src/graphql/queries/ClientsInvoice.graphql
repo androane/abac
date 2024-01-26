@@ -1,16 +1,13 @@
+#import "./fragments/InvoiceItem.graphql"
+
 query ClientInvoice($clientUuid: String!, $year: Int, $month: Int) {
   clientInvoice(clientUuid: $clientUuid, year: $year, month: $month) {
     uuid
     month
     year
+    dateSent
     items {
-      uuid
-      description
-      unitPrice
-      unitPriceCurrency
-      itemDate
-      minutesAllocated
-      isRecurring
+      ...InvoiceItem
     }
   }
 }

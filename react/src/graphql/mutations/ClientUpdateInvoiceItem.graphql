@@ -1,15 +1,12 @@
-mutation UpdateClientInvoiceItem(
-  $clientUuid: String!
-  $invoiceUuid: String!
-  $invoiceItemInput: InvoiceItemInput!
-) {
-  updateClientInvoiceItem(
-    clientUuid: $clientUuid
-    invoiceUuid: $invoiceUuid
-    invoiceItemInput: $invoiceItemInput
-  ) {
+#import "./fragments/InvoiceItem.graphql"
+
+mutation UpdateClientInvoiceItem($invoiceUuid: String!, $invoiceItemInput: InvoiceItemInput!) {
+  updateClientInvoiceItem(invoiceUuid: $invoiceUuid, invoiceItemInput: $invoiceItemInput) {
     error {
       ...Error
+    }
+    invoiceItem {
+      ...InvoiceItem
     }
   }
 }

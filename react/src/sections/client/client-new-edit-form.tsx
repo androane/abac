@@ -17,7 +17,12 @@ import { paths } from 'routes/paths'
 
 import ResponseHandler from 'components/response-handler'
 import { useSnackbar } from 'components/snackbar'
-import { useClientProgramManagersQuery, useUpdateClientMutation } from 'generated/graphql'
+import {
+  useClientProgramManagersQuery,
+  useUpdateClientMutation,
+  ClientsQuery,
+  ClientsDocument,
+} from 'generated/graphql'
 import { fData } from 'utils/format-number'
 import { APIClient } from './types'
 
@@ -77,6 +82,21 @@ export default function ClientNewEditForm({ client }: Props) {
           phoneNumber1: data.phoneNumber1,
           phoneNumber2: data.phoneNumber2,
           programManagerUuid: data.programManagerUuid,
+        },
+        update: (cache, { data: responseData }) => {
+          const cacheClientsQuery = {
+            query: ClientsDocument,
+            variables: {
+              uuid: client?.uuid,
+            },
+          }
+          if (!responseData?.updateClient?.client) return
+          const cachedData = cache.readQuery<ClientsQuery>(cacheClientsQuery)
+          if (!cachedData?.clients) return
+          cache.writeQuery({
+            ...cacheClientsQuery,
+            data: { clients: cachedData.clients.concat([responseData.updateClient.client]) },
+          })
         },
       })
       reset()

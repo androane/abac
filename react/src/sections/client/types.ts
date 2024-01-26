@@ -17,7 +17,7 @@ export type InvoiceItem = {
   description: string
   unitPrice?: null | number
   unitPriceCurrency?: null | CurrencyEnum
-  itemDate?: null | Date
+  itemDate?: null | string
   minutesAllocated?: null | number
 }
 
@@ -26,4 +26,5 @@ export type InvoiceTableFilters = {
 }
 
 export type APIClient = ClientsQuery['clients'][0]
+export type APIClientInvoice = ClientInvoiceQuery['clientInvoice']
 export type APIInvoiceItem = ClientInvoiceQuery['clientInvoice']['items'][0]

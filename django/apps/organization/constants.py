@@ -8,3 +8,8 @@ class CurrencyEnum(BaseEnum):
     RON = enum.auto()
     EUR = enum.auto()
     USD = enum.auto()
+
+
+class InvoiceStatusEnum(BaseEnum):
+    DRAFT = enum.auto()
+    SENT = enum.auto()

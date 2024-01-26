@@ -1,37 +1,54 @@
-import { useCallback } from 'react'
-
 import Button from '@mui/material/Button'
-import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
+import LoadingButton from '@mui/lab/LoadingButton'
+
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { RouterLink } from 'routes/components'
+import MenuItem from '@mui/material/MenuItem'
+import CustomPopover, { usePopover } from 'components/custom-popover'
 
 import Iconify from 'components/iconify'
-
-import { InvoiceTableFilters } from './types'
+import { InvoiceStatusEnum, useUpdateClientInvoiceStatusMutation } from 'generated/graphql'
+import { enqueueSnackbar } from 'components/snackbar'
 
 type Props = {
-  filters: InvoiceTableFilters
-  onFilters: (name: string, value: string) => void
   onAddInvoiceItem: () => void
+  invoiceId: string
   invoiceDate: null | Date
+  invoiceDateSent: null | Date
   onChangeInvoiceDate: (newDate: null | Date) => void
 }
 
 export default function InvoiceTableToolbar({
-  filters,
-  onFilters,
   onAddInvoiceItem,
+  invoiceId,
   invoiceDate,
+  invoiceDateSent,
   onChangeInvoiceDate,
 }: Props) {
-  const handleFilterName = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      onFilters('name', event.target.value)
-    },
-    [onFilters],
-  )
+  const [updateInvoiceStatus, { loading }] = useUpdateClientInvoiceStatusMutation()
+  const popover = usePopover()
+
+  const status = invoiceDateSent ? InvoiceStatusEnum.SENT : InvoiceStatusEnum.DRAFT
+
+  const onChangeStatus = async (newStatus: InvoiceStatusEnum) => {
+    try {
+      await updateInvoiceStatus({
+        variables: {
+          invoiceUuid: invoiceId,
+          status: newStatus,
+        },
+      })
+      enqueueSnackbar('Status actualizat cu success')
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const statusToLabel = {
+    [InvoiceStatusEnum.DRAFT]: 'Draft',
+    [InvoiceStatusEnum.SENT]: 'Trimisa',
+  }
 
   return (
     <Stack
@@ -47,7 +64,7 @@ export default function InvoiceTableToolbar({
       }}
     >
       <DatePicker
-        label="Data facturii"
+        label="Vezi factura pentru luna"
         minDate={new Date('2024-01-01')}
         disableFuture
         value={invoiceDate}
@@ -58,26 +75,40 @@ export default function InvoiceTableToolbar({
           maxWidth: { md: 180 },
         }}
       />
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        flexGrow={1}
-        sx={{ width: 1 }}
+      <LoadingButton
+        size="large"
+        color={status === InvoiceStatusEnum.SENT ? 'success' : 'warning'}
+        variant="contained"
+        loading={loading}
+        loadingIndicator="…"
+        endIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
+        onClick={popover.onOpen}
+        sx={{ textTransform: 'capitalize' }}
       >
-        <TextField
-          value={filters.description}
-          onChange={handleFilterName}
-          placeholder="Cauta..."
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-              </InputAdornment>
-            ),
-          }}
-        />
+        {statusToLabel[status]}
+      </LoadingButton>
+      <CustomPopover
+        open={popover.open}
+        onClose={popover.onClose}
+        arrow="top-right"
+        sx={{ width: 140 }}
+      >
+        {Object.keys(InvoiceStatusEnum).map(st => (
+          <MenuItem
+            key={st}
+            selected={st === status}
+            onClick={() => {
+              onChangeStatus(st as InvoiceStatusEnum)
+              popover.onClose()
+            }}
+          >
+            {statusToLabel[st as InvoiceStatusEnum]}
+          </MenuItem>
+        ))}
+      </CustomPopover>
+      <Stack spacing={1} flexGrow={1} direction="row" alignItems="center" justifyContent="flex-end">
         <Button
+          disabled={status === InvoiceStatusEnum.SENT}
           onClick={onAddInvoiceItem}
           component={RouterLink}
           variant="contained"

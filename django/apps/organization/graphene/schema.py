@@ -2,7 +2,11 @@
 import graphene
 from django.contrib.auth import get_user_model
 
-from organization.graphene.mutations import UpdateClient, UpdateClientInvoiceItem
+from organization.graphene.mutations import (
+    UpdateClient,
+    UpdateClientInvoiceItem,
+    UpdateClientInvoiceStatus,
+)
 from organization.graphene.types import ClientType, InvoiceType
 from organization.services.client_invoice_service import get_client_invoice
 from user.decorators import logged_in_user_required
@@ -53,6 +57,9 @@ class Query(graphene.ObjectType):
 
 class Mutation(graphene.ObjectType):
     update_client = UpdateClient.Field(description="Update or Create a New Client")
+    update_client_invoice_status = UpdateClientInvoiceStatus.Field(
+        description="Update Client Invoice Status"
+    )
     update_client_invoice_item = UpdateClientInvoiceItem.Field(
         description="Update or Create a New Client Invoice Item"
     )

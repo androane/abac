@@ -1,35 +1,52 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import Button from '@mui/material/Button'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
-
+import Dialog from '@mui/material/Dialog'
 import LoadingButton from '@mui/lab/LoadingButton'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
 import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import Stack from '@mui/material/Stack'
-import Grid from '@mui/material/Unstable_Grid2'
+import DialogActions from '@mui/material/DialogActions'
+import { format } from 'date-fns'
 
 import FormProvider, { RHFSelect, RHFTextField } from 'components/hook-form'
 import { useSnackbar } from 'components/snackbar'
-import { CurrencyEnum } from 'generated/graphql'
+import {
+  CurrencyEnum,
+  useUpdateClientInvoiceItemMutation,
+  ClientInvoiceQuery,
+  ClientInvoiceDocument,
+} from 'generated/graphql'
 import { InvoiceItem } from './types'
 
 type Props = {
+  clientId: string
+  invoiceId: string
   invoiceDate: null | Date
-  onBack: () => void
+  onClose: () => void
   invoiceItem?: InvoiceItem
 }
 
-export default function InvoiceNewEditForm({ invoiceDate, invoiceItem, onBack }: Props) {
+export default function InvoiceItemNewEditForm({
+  clientId,
+  invoiceId,
+  invoiceDate,
+  invoiceItem,
+  onClose,
+}: Props) {
+  const [updateInvoiceItem] = useUpdateClientInvoiceItemMutation()
+
   const { enqueueSnackbar } = useSnackbar()
 
+  const [itemDate, setItemDate] = useState(invoiceItem?.itemDate)
+
   const NewInvoiceSchema = Yup.object().shape({
-    description: Yup.string().required('Descrierea este obligatorie'),
+    description: Yup.string().required('Acest camp este obligatorie'),
     unitPrice: Yup.number().nullable(),
-    unitPriceCurrency: Yup.string().nullable(),
-    itemDate: Yup.date().nullable(),
+    unitPriceCurrency: Yup.mixed<CurrencyEnum>().oneOf(Object.values(CurrencyEnum)).nullable(),
     minutesAllocated: Yup.number().nullable(),
   })
 
@@ -38,7 +55,6 @@ export default function InvoiceNewEditForm({ invoiceDate, invoiceItem, onBack }:
       description: invoiceItem?.description || '',
       unitPrice: invoiceItem?.unitPrice,
       unitPriceCurrency: invoiceItem?.unitPriceCurrency,
-      itemDate: invoiceItem?.itemDate,
       minutesAllocated: invoiceItem?.minutesAllocated,
     }),
     [invoiceItem],
@@ -57,69 +73,134 @@ export default function InvoiceNewEditForm({ invoiceDate, invoiceItem, onBack }:
 
   const onSubmit = handleSubmit(async data => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await updateInvoiceItem({
+        variables: {
+          invoiceUuid: invoiceId,
+          invoiceItemInput: {
+            uuid: invoiceItem?.id,
+            description: data.description,
+            unitPrice: data.unitPrice,
+            unitPriceCurrency: data.unitPriceCurrency,
+            minutesAllocated: data.minutesAllocated,
+            itemDate,
+          },
+        },
+        // update(cache) {
+        //   cache.modify({
+        //     fields: {
+        //       clientInvoice(result: ClientInvoiceQuery['clientInvoice'], { readField }) {
+        //         return {
+        //           ...result,
+        //           items: result.items.map(item =>
+        //             readField('uuid', item) === invoiceItem?.id ? item : invoiceItem,
+        //           ),
+        //         }
+        //       },
+        //     },
+        //   })
+        // },
+        update: (cache, { data: responseData }) => {
+          const cacheClientsInvoiceQuery = {
+            query: ClientInvoiceDocument,
+            variables: {
+              uuid: clientId,
+              month: 1,
+              year: 2024,
+            },
+          }
+          if (!responseData?.updateClientInvoiceItem?.invoiceItem) return
+          const cachedData = cache.readQuery<ClientInvoiceQuery>(cacheClientsInvoiceQuery)
+
+          console.log('cachedData', cachedData)
+
+          if (!cachedData?.clientInvoice) return
+          cache.writeQuery({
+            ...cacheClientsInvoiceQuery,
+            data: {
+              ...cachedData.clientInvoice,
+              items: cachedData.clientInvoice.items.map(item =>
+                item.uuid === invoiceItem?.id
+                  ? responseData?.updateClientInvoiceItem?.invoiceItem
+                  : item,
+              ),
+            },
+          })
+        },
+      })
       reset()
       enqueueSnackbar('Factura actualizata cu succes!')
-
-      onBack()
+      onClose()
     } catch (error) {
       console.error(error)
     }
   })
 
   return (
-    <FormProvider methods={methods} onSubmit={onSubmit}>
-      <Grid container spacing={3}>
-        <Grid xs={12} md={8}>
-          <Card sx={{ p: 3 }}>
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
+    <Dialog
+      fullWidth
+      open
+      maxWidth={false}
+      onClose={onClose}
+      PaperProps={{
+        sx: { maxWidth: 720 },
+      }}
+    >
+      <FormProvider methods={methods} onSubmit={onSubmit}>
+        <DialogTitle>Factura</DialogTitle>
+        <DialogContent>
+          <br />
+          <Box
+            rowGap={3}
+            columnGap={2}
+            display="grid"
+            gridTemplateColumns={{
+              xs: 'repeat(1, 1fr)',
+              sm: 'repeat(2, 1fr)',
+            }}
+          >
+            <RHFTextField name="description" label="Descriere" multiline rows={5} />
+            <DatePicker
+              label="Ziua din luna"
+              minDate={invoiceDate}
+              value={itemDate && new Date(itemDate)}
+              onChange={newItemDate =>
+                newItemDate && setItemDate(format(newItemDate, 'yyyy-MM-dd'))
+              }
+              disableFuture
+              name="itemDate"
+              slotProps={{ textField: { fullWidth: true } }}
+              views={['day']}
+              sx={{
+                maxWidth: { md: 180 },
               }}
+            />
+            <RHFTextField name="unitPrice" label="Cost" />
+            <RHFSelect
+              native
+              name="unitPriceCurrency"
+              label="Moneda"
+              InputLabelProps={{ shrink: true }}
             >
-              <RHFTextField name="description" label="Descriere" multiline rows={5} />
-              <DatePicker
-                label="Ziua din luna"
-                minDate={invoiceDate}
-                disableFuture
-                slotProps={{ textField: { fullWidth: true } }}
-                views={['day']}
-                sx={{
-                  maxWidth: { md: 180 },
-                }}
-              />
-              <RHFTextField name="unitPrice" label="Cost" />
-              <RHFSelect
-                native
-                name="unitPriceCurrency"
-                label="Moneda"
-                InputLabelProps={{ shrink: true }}
-              >
-                <option key="null" value="" />
-                {Object.keys(CurrencyEnum).map(currency => (
-                  <option key={currency} value={currency}>
-                    {currency}
-                  </option>
-                ))}
-              </RHFSelect>
-              <RHFTextField name="minutesAllocated" label="Numar de minute alocate" />
-            </Box>
+              <option key="null" value="" />
+              {Object.keys(CurrencyEnum).map(currency => (
+                <option key={currency} value={currency}>
+                  {currency}
+                </option>
+              ))}
+            </RHFSelect>
+            <RHFTextField name="minutesAllocated" label="Numar de minute alocate" />
+          </Box>
 
-            <Stack justifyContent="flex-end" direction="row" spacing={2} sx={{ mt: 3 }}>
-              <Button color="inherit" variant="outlined" onClick={onBack}>
-                {'<'} Inapoi
-              </Button>
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                Salveaza Schimbarile
-              </LoadingButton>
-            </Stack>
-          </Card>
-        </Grid>
-      </Grid>
-    </FormProvider>
+          <DialogActions>
+            <Button color="inherit" variant="outlined" onClick={onClose}>
+              {'<'} Inapoi
+            </Button>
+            <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+              Salveaza Schimbarile
+            </LoadingButton>
+          </DialogActions>
+        </DialogContent>
+      </FormProvider>
+    </Dialog>
   )
 }

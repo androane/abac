@@ -61,6 +61,10 @@ export default function UserEditView({ id }: Props) {
                     name: 'Clienti',
                     href: paths.dashboard.client.list,
                   },
+                  {
+                    name: 'Lista',
+                    href: paths.dashboard.client.list,
+                  },
                   { name: client?.name },
                 ]}
                 sx={{
@@ -81,7 +85,7 @@ export default function UserEditView({ id }: Props) {
               </Tabs>
 
               {currentTab === 'general' && <ClientNewEditForm client={client} />}
-              {currentTab === 'invoicing' && <InvoiceDetailsView clientUuid={client.uuid} />}
+              {currentTab === 'invoicing' && <InvoiceDetailsView clientId={client.uuid} />}
             </>
           )
         }}

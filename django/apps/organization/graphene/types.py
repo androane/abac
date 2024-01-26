@@ -2,10 +2,11 @@
 import graphene
 from graphene_django import DjangoObjectType
 
-from organization.constants import CurrencyEnum
+from organization.constants import CurrencyEnum, InvoiceStatusEnum
 from organization.models import CustomerOrganization, Invoice, InvoiceItem
 
 CurrencyEnumType = graphene.Enum.from_enum(CurrencyEnum)
+InvoiceStatusEnumType = graphene.Enum.from_enum(InvoiceStatusEnum)
 
 
 class InvoiceItemType(DjangoObjectType):

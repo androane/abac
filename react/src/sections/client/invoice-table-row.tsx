@@ -5,13 +5,13 @@ import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
-
-import { useBoolean } from 'hooks/use-boolean'
-
 import { ConfirmDialog } from 'components/custom-dialog'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
+import { ro as roROAdapter } from 'date-fns/locale'
+import { format } from 'date-fns'
 
+import { useBoolean } from 'hooks/use-boolean'
 import { InvoiceItem } from './types'
 
 type Props = {
@@ -20,8 +20,8 @@ type Props = {
   onDeleteRow: VoidFunction
 }
 
-export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
-  const { description, unitPrice, unitPriceCurrency, itemDate } = row
+export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) {
+  const { description, unitPrice, unitPriceCurrency, itemDate, minutesAllocated } = row
 
   const confirm = useBoolean()
 
@@ -30,7 +30,7 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
   return (
     <>
       <TableRow hover>
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Box
             onClick={onEditRow}
             sx={{
@@ -45,7 +45,7 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={itemDate}
+            primary={itemDate && format(new Date(itemDate), 'd MMMM yyyy', { locale: roROAdapter })}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -56,7 +56,7 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={unitPrice}
+            primary={`${unitPrice} ${unitPriceCurrency}`}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -67,7 +67,7 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={unitPriceCurrency}
+            primary={minutesAllocated}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

@@ -4,7 +4,9 @@ from typing import Optional
 import pendulum
 from django.conf import settings
 
-from organization.models import CustomerOrganization, Invoice
+from organization.constants import InvoiceStatusEnum
+from organization.graphene.types import InvoiceItemInput
+from organization.models import CustomerOrganization, Invoice, InvoiceItem
 from user.models import User
 
 
@@ -46,3 +48,48 @@ def get_client_invoice(
             invoice_item.invoice = invoice
             invoice_item.save()
         return invoice
+
+
+def update_client_invoice_status(
+    user: User, invoice_uuid: str, status: InvoiceStatusEnum
+) -> Invoice:
+    invoice = Invoice.objects.get(
+        uuid=invoice_uuid,
+        customer_organization__organization=user.organization,
+    )
+    print("???")
+    if status == InvoiceStatusEnum.SENT.value:
+        invoice.date_sent = pendulum.now()
+    elif status == InvoiceStatusEnum.DRAFT.value:
+        invoice.date_sent = None
+
+    invoice.save()
+    return invoice
+
+
+def update_client_invoice_item(
+    user: User,
+    invoice_uuid: str,
+    invoice_item_input: InvoiceItemInput,
+) -> InvoiceItem:
+    invoice = Invoice.objects.get(
+        uuid=invoice_uuid, customer_organization=user.customer_organization
+    )
+    if invoice_item_input.uuid:
+        invoice_item = invoice.items.get(uuid=invoice_item_input.uuid)
+    else:
+        invoice_item = InvoiceItem(invoice=invoice)
+
+    for field in (
+        "description",
+        "unit_price",
+        "unit_price_currency",
+        "item_date",
+        "minutes_allocated",
+    ):
+        setattr(invoice_item, field, getattr(invoice_item_input, field))
+    if invoice_item_input.is_recurring:
+        invoice_item.is_recurring = True
+
+    invoice_item.save()
+    return invoice_item

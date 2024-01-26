@@ -66,6 +66,12 @@ export type InvoiceItemType = {
   uuid: Scalars['String']['output'];
 };
 
+/** An enumeration. */
+export enum InvoiceStatusEnum {
+  DRAFT = 'DRAFT',
+  SENT = 'SENT'
+}
+
 export type InvoiceType = {
   __typename?: 'InvoiceType';
   /** Date when the invoice was sent to the customer */
@@ -105,6 +111,8 @@ export type Mutation = {
   updateClient?: Maybe<UpdateClient>;
   /** Update or Create a New Client Invoice Item */
   updateClientInvoiceItem?: Maybe<UpdateClientInvoiceItem>;
+  /** Update Client Invoice Status */
+  updateClientInvoiceStatus?: Maybe<UpdateClientInvoiceStatus>;
 };
 
 
@@ -125,9 +133,14 @@ export type MutationUpdateClientArgs = {
 
 
 export type MutationUpdateClientInvoiceItemArgs = {
-  clientUuid: Scalars['String']['input'];
   invoiceItemInput: InvoiceItemInput;
   invoiceUuid: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateClientInvoiceStatusArgs = {
+  invoiceUuid: Scalars['String']['input'];
+  status: InvoiceStatusEnum;
 };
 
 export type Query = {
@@ -156,7 +169,6 @@ export type QueryClientInvoiceArgs = {
   year?: InputMaybe<Scalars['Int']['input']>;
 };
 
-/** Update or Create a New Client */
 export type UpdateClient = {
   __typename?: 'UpdateClient';
   client?: Maybe<ClientType>;
@@ -169,6 +181,12 @@ export type UpdateClientInvoiceItem = {
   invoiceItem?: Maybe<InvoiceItemType>;
 };
 
+export type UpdateClientInvoiceStatus = {
+  __typename?: 'UpdateClientInvoiceStatus';
+  error?: Maybe<ErrorType>;
+  invoice?: Maybe<InvoiceType>;
+};
+
 export type UserType = {
   __typename?: 'UserType';
   email: Scalars['String']['output'];
@@ -179,6 +197,8 @@ export type UserType = {
 export type UserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string };
 
 export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
+
+export type InvoiceItemFragment = { __typename?: 'InvoiceItemType', uuid: string, description: string, unitPrice?: number | null, unitPriceCurrency?: CurrencyEnum | null, itemDate?: DateString | null, minutesAllocated?: number | null, isRecurring: boolean };
 
 export type ErrorFragment = { __typename?: 'ErrorType', field?: string | null, message: string };
 
@@ -210,13 +230,20 @@ export type UpdateClientMutationVariables = Exact<{
 export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { __typename?: 'UpdateClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null } | null } | null };
 
 export type UpdateClientInvoiceItemMutationVariables = Exact<{
-  clientUuid: Scalars['String']['input'];
   invoiceUuid: Scalars['String']['input'];
   invoiceItemInput: InvoiceItemInput;
 }>;
 
 
-export type UpdateClientInvoiceItemMutation = { __typename?: 'Mutation', updateClientInvoiceItem?: { __typename?: 'UpdateClientInvoiceItem', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
+export type UpdateClientInvoiceItemMutation = { __typename?: 'Mutation', updateClientInvoiceItem?: { __typename?: 'UpdateClientInvoiceItem', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, invoiceItem?: { __typename?: 'InvoiceItemType', uuid: string, description: string, unitPrice?: number | null, unitPriceCurrency?: CurrencyEnum | null, itemDate?: DateString | null, minutesAllocated?: number | null, isRecurring: boolean } | null } | null };
+
+export type UpdateClientInvoiceStatusMutationVariables = Exact<{
+  invoiceUuid: Scalars['String']['input'];
+  status: InvoiceStatusEnum;
+}>;
+
+
+export type UpdateClientInvoiceStatusMutation = { __typename?: 'Mutation', updateClientInvoiceStatus?: { __typename?: 'UpdateClientInvoiceStatus', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, invoice?: { __typename?: 'InvoiceType', uuid: string, dateSent?: DateString | null } | null } | null };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -240,7 +267,7 @@ export type ClientInvoiceQueryVariables = Exact<{
 }>;
 
 
-export type ClientInvoiceQuery = { __typename?: 'Query', clientInvoice: { __typename?: 'InvoiceType', uuid: string, month: number, year: number, items: Array<{ __typename?: 'InvoiceItemType', uuid: string, description: string, unitPrice?: number | null, unitPriceCurrency?: CurrencyEnum | null, itemDate?: DateString | null, minutesAllocated?: number | null, isRecurring: boolean }> } };
+export type ClientInvoiceQuery = { __typename?: 'Query', clientInvoice: { __typename?: 'InvoiceType', uuid: string, month: number, year: number, dateSent?: DateString | null, items: Array<{ __typename?: 'InvoiceItemType', uuid: string, description: string, unitPrice?: number | null, unitPriceCurrency?: CurrencyEnum | null, itemDate?: DateString | null, minutesAllocated?: number | null, isRecurring: boolean }> } };
 
 export const UserFragmentDoc = gql`
     fragment User on UserType {
@@ -260,6 +287,17 @@ export const ClientFragmentDoc = gql`
     uuid
     name
   }
+}
+    `;
+export const InvoiceItemFragmentDoc = gql`
+    fragment InvoiceItem on InvoiceItemType {
+  uuid
+  description
+  unitPrice
+  unitPriceCurrency
+  itemDate
+  minutesAllocated
+  isRecurring
 }
     `;
 export const ErrorFragmentDoc = gql`
@@ -402,18 +440,21 @@ export type UpdateClientMutationHookResult = ReturnType<typeof useUpdateClientMu
 export type UpdateClientMutationResult = Apollo.MutationResult<UpdateClientMutation>;
 export type UpdateClientMutationOptions = Apollo.BaseMutationOptions<UpdateClientMutation, UpdateClientMutationVariables>;
 export const UpdateClientInvoiceItemDocument = gql`
-    mutation UpdateClientInvoiceItem($clientUuid: String!, $invoiceUuid: String!, $invoiceItemInput: InvoiceItemInput!) {
+    mutation UpdateClientInvoiceItem($invoiceUuid: String!, $invoiceItemInput: InvoiceItemInput!) {
   updateClientInvoiceItem(
-    clientUuid: $clientUuid
     invoiceUuid: $invoiceUuid
     invoiceItemInput: $invoiceItemInput
   ) {
     error {
       ...Error
     }
+    invoiceItem {
+      ...InvoiceItem
+    }
   }
 }
-    ${ErrorFragmentDoc}`;
+    ${ErrorFragmentDoc}
+${InvoiceItemFragmentDoc}`;
 export type UpdateClientInvoiceItemMutationFn = Apollo.MutationFunction<UpdateClientInvoiceItemMutation, UpdateClientInvoiceItemMutationVariables>;
 
 /**
@@ -429,7 +470,6 @@ export type UpdateClientInvoiceItemMutationFn = Apollo.MutationFunction<UpdateCl
  * @example
  * const [updateClientInvoiceItemMutation, { data, loading, error }] = useUpdateClientInvoiceItemMutation({
  *   variables: {
- *      clientUuid: // value for 'clientUuid'
  *      invoiceUuid: // value for 'invoiceUuid'
  *      invoiceItemInput: // value for 'invoiceItemInput'
  *   },
@@ -442,6 +482,46 @@ export function useUpdateClientInvoiceItemMutation(baseOptions?: Apollo.Mutation
 export type UpdateClientInvoiceItemMutationHookResult = ReturnType<typeof useUpdateClientInvoiceItemMutation>;
 export type UpdateClientInvoiceItemMutationResult = Apollo.MutationResult<UpdateClientInvoiceItemMutation>;
 export type UpdateClientInvoiceItemMutationOptions = Apollo.BaseMutationOptions<UpdateClientInvoiceItemMutation, UpdateClientInvoiceItemMutationVariables>;
+export const UpdateClientInvoiceStatusDocument = gql`
+    mutation UpdateClientInvoiceStatus($invoiceUuid: String!, $status: InvoiceStatusEnum!) {
+  updateClientInvoiceStatus(invoiceUuid: $invoiceUuid, status: $status) {
+    error {
+      ...Error
+    }
+    invoice {
+      uuid
+      dateSent
+    }
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type UpdateClientInvoiceStatusMutationFn = Apollo.MutationFunction<UpdateClientInvoiceStatusMutation, UpdateClientInvoiceStatusMutationVariables>;
+
+/**
+ * __useUpdateClientInvoiceStatusMutation__
+ *
+ * To run a mutation, you first call `useUpdateClientInvoiceStatusMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateClientInvoiceStatusMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateClientInvoiceStatusMutation, { data, loading, error }] = useUpdateClientInvoiceStatusMutation({
+ *   variables: {
+ *      invoiceUuid: // value for 'invoiceUuid'
+ *      status: // value for 'status'
+ *   },
+ * });
+ */
+export function useUpdateClientInvoiceStatusMutation(baseOptions?: Apollo.MutationHookOptions<UpdateClientInvoiceStatusMutation, UpdateClientInvoiceStatusMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateClientInvoiceStatusMutation, UpdateClientInvoiceStatusMutationVariables>(UpdateClientInvoiceStatusDocument, options);
+      }
+export type UpdateClientInvoiceStatusMutationHookResult = ReturnType<typeof useUpdateClientInvoiceStatusMutation>;
+export type UpdateClientInvoiceStatusMutationResult = Apollo.MutationResult<UpdateClientInvoiceStatusMutation>;
+export type UpdateClientInvoiceStatusMutationOptions = Apollo.BaseMutationOptions<UpdateClientInvoiceStatusMutation, UpdateClientInvoiceStatusMutationVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {
@@ -565,18 +645,13 @@ export const ClientInvoiceDocument = gql`
     uuid
     month
     year
+    dateSent
     items {
-      uuid
-      description
-      unitPrice
-      unitPriceCurrency
-      itemDate
-      minutesAllocated
-      isRecurring
+      ...InvoiceItem
     }
   }
 }
-    `;
+    ${InvoiceItemFragmentDoc}`;
 
 /**
  * __useClientInvoiceQuery__
