@@ -15,8 +15,9 @@ packaging==23.2
 psycopg2-binary==2.9.9
 pendulum==3.0.0
 PyJWT==2.8.0
-shortuuid==1.0.11
+sentry-sdk==1.39.2
 setuptools==69.0.3
+shortuuid==1.0.11
 sqlparse==0.4.4
 typing_extensions==4.9.0
 
