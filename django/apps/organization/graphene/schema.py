@@ -7,8 +7,10 @@ from organization.graphene.mutations import (
     UpdateClientInvoiceItem,
     UpdateClientInvoiceStatus,
 )
-from organization.graphene.types import ClientType, InvoiceType
+from organization.graphene.types import ClientDocumentType, ClientType, InvoiceType
+from organization.services.client_documents_service import get_client_documents
 from organization.services.client_invoice_service import get_client_invoice
+from organization.services.client_service import get_client, get_clients
 from user.decorators import logged_in_user_required
 from user.graphene.types import UserType
 
@@ -33,6 +35,12 @@ class Query(graphene.ObjectType):
         month=graphene.Int(),
         year=graphene.Int(),
     )
+    client_documents = graphene.List(
+        graphene.NonNull(ClientDocumentType),
+        description="List all Documents of a Client",
+        client_uuid=graphene.String(required=True),
+        required=True,
+    )
     program_managers = graphene.List(
         graphene.NonNull(UserType),
         description="List all Program Managers",
@@ -41,15 +49,19 @@ class Query(graphene.ObjectType):
 
     @logged_in_user_required
     def resolve_clients(info, user, **kwargs):
-        return user.organization.customer_organizations.all()
+        return get_clients(user, **kwargs)
 
     @logged_in_user_required
     def resolve_client(info, user, **kwargs):
-        return user.organization.customer_organizations.get(uuid=kwargs["uuid"])
+        return get_client(user, **kwargs)
 
     @logged_in_user_required
     def resolve_client_invoice(info, user, **kwargs):
         return get_client_invoice(user, **kwargs)
+
+    @logged_in_user_required
+    def resolve_client_documents(info, user, **kwargs):
+        return get_client_documents(user, **kwargs)
 
     @logged_in_user_required
     def resolve_program_managers(info, user, **kwargs):

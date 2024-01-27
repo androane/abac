@@ -11,23 +11,35 @@ import { Navigate } from 'react-router-dom'
 import { paths } from 'routes/paths'
 import ClientNewEditForm from '../client-new-edit-form'
 import InvoiceDetailsView from './invoice-details-view'
+import DocumentsDetailsView from './documents-details-view'
 
-type Props = {
-  id: string
+enum TABS_VALUES {
+  GENERAL = 'general',
+  INVOICING = 'invoicing',
+  DOCUMENTS = 'documents',
 }
 
 const TABS = [
   {
-    value: 'general',
+    value: TABS_VALUES.GENERAL,
     label: 'Informatii Generale',
     icon: <Iconify icon="solar:user-id-bold" width={24} />,
   },
   {
-    value: 'invoicing',
+    value: TABS_VALUES.INVOICING,
     label: 'Facturare',
     icon: <Iconify icon="solar:bill-list-bold" width={24} />,
   },
+  {
+    value: TABS_VALUES.DOCUMENTS,
+    label: 'Documente',
+    icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
+  },
 ]
+
+type Props = {
+  id: string
+}
 
 export default function UserEditView({ id }: Props) {
   const settings = useSettingsContext()
@@ -84,8 +96,13 @@ export default function UserEditView({ id }: Props) {
                 ))}
               </Tabs>
 
-              {currentTab === 'general' && <ClientNewEditForm client={client} />}
-              {currentTab === 'invoicing' && <InvoiceDetailsView clientId={client.uuid} />}
+              {currentTab === TABS_VALUES.GENERAL && <ClientNewEditForm client={client} />}
+              {currentTab === TABS_VALUES.INVOICING && (
+                <InvoiceDetailsView clientId={client.uuid} />
+              )}
+              {currentTab === TABS_VALUES.DOCUMENTS && (
+                <DocumentsDetailsView clientId={client.uuid} />
+              )}
             </>
           )
         }}

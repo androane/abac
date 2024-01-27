@@ -2,9 +2,18 @@
 from typing import Optional
 
 from django.contrib.auth import get_user_model
+from django.db.models import QuerySet
 
 from organization.models import CustomerOrganization
 from user.models import User
+
+
+def get_clients(user: User) -> QuerySet[CustomerOrganization]:
+    return user.organization.customer_organizations.all()
+
+
+def get_client(user: User, uuid: str) -> CustomerOrganization:
+    return user.organization.customer_organizations.get(uuid=uuid)
 
 
 def update_or_create_client(

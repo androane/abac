@@ -141,10 +141,9 @@ if DEBUG:
 else:
     MEDIA_URL = f"https://{MEDIA_BUCKET}.{REGION}.digitaloceanspaces.com/"
     DEFAULT_FILE_STORAGE = "core.aws_s3_storages.MediaFilesS3Boto3Storage"
-
-
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    CSRF_TRUSTED_ORIGINS = [DJANGO_HOST_URL]
 
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",

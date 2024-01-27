@@ -183,3 +183,7 @@ class CustomerOrganizationDocument(BaseModel):
 
     def __repr__(self):
         return f"{self.customer_organization.name} - {self.name}"
+
+    @property
+    def url(self):
+        return self.document.url

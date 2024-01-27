@@ -3,7 +3,12 @@ import graphene
 from graphene_django import DjangoObjectType
 
 from organization.constants import CurrencyEnum, InvoiceStatusEnum
-from organization.models import CustomerOrganization, Invoice, InvoiceItem
+from organization.models import (
+    CustomerOrganization,
+    CustomerOrganizationDocument,
+    Invoice,
+    InvoiceItem,
+)
 
 CurrencyEnumType = graphene.Enum.from_enum(CurrencyEnum)
 InvoiceStatusEnumType = graphene.Enum.from_enum(InvoiceStatusEnum)
@@ -63,3 +68,15 @@ class InvoiceItemInput(graphene.InputObjectType):
     item_date = graphene.Date()
     minutes_allocated = graphene.Int()
     is_recurring = graphene.Boolean()
+
+
+class ClientDocumentType(DjangoObjectType):
+    class Meta:
+        model = CustomerOrganizationDocument
+        only_fields = (
+            "name",
+            "description",
+        )
+
+    # Model properties
+    url = graphene.NonNull(graphene.String)
