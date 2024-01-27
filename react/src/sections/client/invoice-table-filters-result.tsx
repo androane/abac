@@ -52,7 +52,7 @@ export default function ClientTableFiltersResult({
           onClick={onResetFilters}
           startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
         >
-          Clear
+          Reseteaza
         </Button>
       </Stack>
     </Stack>

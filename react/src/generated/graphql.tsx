@@ -152,7 +152,7 @@ export type Query = {
   clients: Array<ClientType>;
   currentUser: UserType;
   /** List all Program Managers */
-  programManagers?: Maybe<Array<UserType>>;
+  programManagers: Array<UserType>;
   /** List all users */
   users: Array<UserType>;
 };
@@ -253,7 +253,7 @@ export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename
 export type ClientProgramManagersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ClientProgramManagersQuery = { __typename?: 'Query', programManagers?: Array<{ __typename?: 'UserType', uuid: string, name: string, email: string }> | null };
+export type ClientProgramManagersQuery = { __typename?: 'Query', programManagers: Array<{ __typename?: 'UserType', uuid: string, name: string, email: string }> };
 
 export type ClientsQueryVariables = Exact<{ [key: string]: never; }>;
 

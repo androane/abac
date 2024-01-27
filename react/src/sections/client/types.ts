@@ -3,13 +3,17 @@ import { ClientInvoiceQuery, ClientsQuery, CurrencyEnum } from 'generated/graphq
 export type ClientItem = {
   id: string
   name: string
-  programManagerName?: string
+  programManager?: null | {
+    id: string
+    name: string
+  }
   phoneNumber1?: string
   phoneNumber2?: string
 }
 
 export type ClientTableFilters = {
   name: string
+  programManagerId: string
 }
 
 export type InvoiceItem = {

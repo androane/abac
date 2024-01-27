@@ -22,7 +22,7 @@ type Props = {
 }
 
 export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
-  const { name, programManagerName, phoneNumber1, phoneNumber2 } = row
+  const { name, programManager, phoneNumber1, phoneNumber2 } = row
 
   const confirm = useBoolean()
 
@@ -49,7 +49,7 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={programManagerName}
+            primary={programManager?.name}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

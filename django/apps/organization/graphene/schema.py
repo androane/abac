@@ -36,6 +36,7 @@ class Query(graphene.ObjectType):
     program_managers = graphene.List(
         graphene.NonNull(UserType),
         description="List all Program Managers",
+        required=True,
     )
 
     @logged_in_user_required

@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
@@ -27,16 +27,13 @@ import {
 } from 'components/table'
 
 import ResponseHandler from 'components/response-handler'
-import { useClientsQuery } from 'generated/graphql'
+import { useClientProgramManagersQuery, useClientsQuery } from 'generated/graphql'
 import { useRouter } from 'routes/hooks'
+import { useAuthContext } from 'auth/hooks'
 import ClientTableFiltersResult from '../client-table-filters-result'
 import ClientTableRow from '../client-table-row'
 import ClientTableToolbar from '../client-table-toolbar'
 import { ClientItem, ClientTableFilters } from '../types'
-
-const defaultFilters = {
-  name: '',
-}
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Nume' },
@@ -51,6 +48,9 @@ type Props = {
 }
 
 const ClientListCard: React.FC<Props> = ({ clients }) => {
+  const { user } = useAuthContext()
+  const result = useClientProgramManagersQuery()
+
   const { enqueueSnackbar } = useSnackbar()
   const [tableData, setTableData] = useState(clients)
 
@@ -60,6 +60,13 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
 
   const router = useRouter()
 
+  const defaultFilters = useMemo(
+    () => ({
+      name: '',
+      programManagerId: user?.uuid,
+    }),
+    [user?.uuid],
+  )
   const [filters, setFilters] = useState(defaultFilters)
 
   const dataFiltered = applyFilter({
@@ -90,7 +97,7 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters)
-  }, [])
+  }, [defaultFilters])
 
   const handleDeleteRow = useCallback(
     (id: string) => {
@@ -114,7 +121,20 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
 
   return (
     <Card>
-      <ClientTableToolbar filters={filters} onFilters={handleFilters} />
+      <ResponseHandler {...result}>
+        {({ programManagers }) => {
+          return (
+            <ClientTableToolbar
+              filters={filters}
+              programManagers={programManagers.map(programManager => ({
+                id: programManager.uuid,
+                label: programManager.name,
+              }))}
+              onFilters={handleFilters}
+            />
+          )
+        }}
+      </ResponseHandler>
 
       {canReset && (
         <ClientTableFiltersResult
@@ -209,11 +229,14 @@ export default function ClientListView() {
       />
 
       <ResponseHandler {...result}>
-        {({ clients: apiClient }) => {
-          const clients = apiClient?.map(client => ({
+        {({ clients: apiClients }) => {
+          const clients = apiClients?.map(client => ({
             id: client.uuid,
             name: client.name,
-            programManagerName: client.programManager?.name,
+            programManager: client.programManager && {
+              id: client.programManager.uuid,
+              name: client.programManager.name,
+            },
             phoneNumber1: client.phoneNumber1,
             phoneNumber2: client.phoneNumber2,
           }))
@@ -233,7 +256,7 @@ function applyFilter({
   comparator: (a: any, b: any) => number
   filters: ClientTableFilters
 }) {
-  const { name } = filters
+  const { name, programManagerId } = filters
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const)
 
@@ -249,6 +272,10 @@ function applyFilter({
     inputData = inputData.filter(
       client => client.name.toLowerCase().indexOf(name.toLowerCase()) !== -1,
     )
+  }
+
+  if (programManagerId) {
+    inputData = inputData.filter(client => programManagerId === client.programManager?.id)
   }
 
   return inputData

@@ -177,7 +177,7 @@ export default function ClientNewEditForm({ client }: Props) {
                       InputLabelProps={{ shrink: true }}
                     >
                       <option key="null" value="" />
-                      {programManagers?.map(pm => (
+                      {programManagers.map(pm => (
                         <option key={pm.uuid} value={pm.uuid}>
                           {pm.name}
                         </option>
