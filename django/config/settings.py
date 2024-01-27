@@ -141,7 +141,7 @@ if DEBUG:
     MEDIA_URL = "/media/"
     MEDIA_ROOT = str(root.path("media"))
 else:
-    MEDIA_URL = f"https://{MEDIA_BUCKET}.nyc3.digitaloceanspaces.com/"
+    MEDIA_URL = f"https://{MEDIA_BUCKET}.fra1.digitaloceanspaces.com/"
     DEFAULT_FILE_STORAGE = "core.aws_s3_storages.MediaFilesS3Boto3Storage"
 
 
@@ -175,8 +175,6 @@ if SENTRY_DSN:
         # If you wish to associate users to errors (assuming you are using
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True,
-        attach_stacktrace=True,
-        with_locals=True,
     )
 
 # Custom settings
