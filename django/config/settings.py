@@ -129,19 +129,17 @@ STATIC_ROOT = str(root.path("staticfiles"))
 
 # AWS
 
+MEDIA_BUCKET = "abac-media"
+REGION = "fra1"
 AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID", "")
 AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY", "")
-AWS_S3_ENDPOINT_URL = "https://nyc3.digitaloceanspaces.com"
-AWS_S3_OBJECT_PARAMETERS = {
-    "CacheControl": "max-age=86400",
-}
-MEDIA_BUCKET = "abac-media"
+AWS_S3_ENDPOINT_URL = "https://${REGION}.digitaloceanspaces.com"
 
 if DEBUG:
     MEDIA_URL = "/media/"
     MEDIA_ROOT = str(root.path("media"))
 else:
-    MEDIA_URL = f"https://{MEDIA_BUCKET}.fra1.digitaloceanspaces.com/"
+    MEDIA_URL = f"https://{MEDIA_BUCKET}.{REGION}.digitaloceanspaces.com/"
     DEFAULT_FILE_STORAGE = "core.aws_s3_storages.MediaFilesS3Boto3Storage"
 
 
