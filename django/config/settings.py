@@ -28,8 +28,7 @@ ALLOWED_HOSTS = env.list(
     default=["localhost"],
 )
 
-
-# Application definition
+ADMINS = (("Andi", "mihai.zamfir90@proton.me"),)
 
 INSTALLED_APPS = [
     # Django
