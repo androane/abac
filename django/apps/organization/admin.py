@@ -2,7 +2,12 @@
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 
-from organization.models import CustomerOrganization, Invoice, Organization
+from organization.models import (
+    CustomerOrganization,
+    CustomerOrganizationDocument,
+    Invoice,
+    Organization,
+)
 
 
 @admin.register(Organization)
@@ -12,6 +17,20 @@ class OrganizationAdmin(SimpleHistoryAdmin):
     history_list_display = [
         "name",
     ]
+
+
+class InvoiceAdmin(admin.TabularInline):
+    model = Invoice
+    list_display = ("year", "month", "date_sent")
+    history_list_display = [
+        "date_sent",
+    ]
+
+
+class CustomerOrganizationDocumentAdmin(admin.TabularInline):
+    model = CustomerOrganizationDocument
+    fields = ("name", "description", "document")
+    extra = 1
 
 
 @admin.register(CustomerOrganization)
@@ -28,10 +47,4 @@ class CustomerOrganizationAdmin(SimpleHistoryAdmin):
         "name",
     ]
 
-
-@admin.register(Invoice)
-class InvoiceAdmin(SimpleHistoryAdmin):
-    list_display = ("year", "month", "date_sent")
-    history_list_display = [
-        "date_sent",
-    ]
+    inlines = [CustomerOrganizationDocumentAdmin, InvoiceAdmin]

@@ -16,11 +16,11 @@ django :
 
 .PHONY: makemigrations
 makemigrations :
-	docker-compose exec django /bin/bash ./manage.py makemigrations
+	docker-compose exec django ./manage.py makemigrations
 
 .PHONY: migrate
 migrate :
-	docker-compose exec django /bin/bash ./manage.py migrate
+	docker-compose exec django ./manage.py migrate
 
 .PHONY: sp
 sp :

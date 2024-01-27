@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "graphene_django",
     "safedelete",
     "simple_history",
+    "storages",
     # Apps
     "api.apps.ApiConfig",
     "core.apps.CoreConfig",
@@ -124,6 +125,28 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = str(root.path("staticfiles"))
+
+# AWS
+
+AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID", "")
+AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY", "")
+AWS_S3_ENDPOINT_URL = "https://nyc3.digitaloceanspaces.com"
+AWS_S3_OBJECT_PARAMETERS = {
+    "CacheControl": "max-age=86400",
+}
+MEDIA_BUCKET = "abac-media"
+
+if DEBUG:
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = str(root.path("media"))
+else:
+    MEDIA_URL = f"https://{MEDIA_BUCKET}.nyc3.digitaloceanspaces.com/"
+    DEFAULT_FILE_STORAGE = "core.aws_s3_storages.MediaFilesS3Boto3Storage"
+
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
@@ -136,9 +159,9 @@ SHELL_PLUS = "ipython"
 
 CORS_ORIGIN_WHITELIST = [REACT_HOST]
 
-# GraphQL
-GRAPHQL_AUTH_SECRET = env.str("GRAPHQL_AUTH_SECRET", "")
-GRAPHQL_DEBUG = env.bool("GRAPHQL_DEBUG", DEBUG)
 
 # Custom settings
 DEFAULT_TIMEZONE = "Europe/Bucharest"
+
+GRAPHQL_AUTH_SECRET = env.str("GRAPHQL_AUTH_SECRET", "")
+GRAPHQL_DEBUG = env.bool("GRAPHQL_DEBUG", DEBUG)

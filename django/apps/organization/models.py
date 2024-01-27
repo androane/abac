@@ -4,6 +4,7 @@ from datetime import date
 from django.db import models
 
 from core.models import BaseModel
+from core.utils import get_filename
 from organization.constants import CurrencyEnum
 
 
@@ -44,6 +45,10 @@ class CustomerOrganization(BaseModel):
     cui = models.CharField(
         max_length=32, blank=True, null=True, help_text="CUI - Cod Unic de Identificare"
     )
+
+    # Accounting specific fields
+    # inventory_app = models.CharField(max_length=128, blank=True, null=True, help_text="Application they use to manage inventory")
+    # accounting_app = models.CharField(max_length=128, choices=AccountingAppEnum.choices, blank=True, null=True, help_text="Application they use for accounting")
 
     def __str__(self):
         return self.name
@@ -146,6 +151,16 @@ class InvoiceItem(BaseModel):
         return self.invoice.is_locked
 
 
+def document_path(instance, filename):
+    return "/".join(
+        [
+            str(instance.customer_organization.organization.pk),
+            str(instance.customer_organization.pk),
+            get_filename(filename),
+        ]
+    )
+
+
 class CustomerOrganizationDocument(BaseModel):
     """
     CustomerOrganizationDocument is a document for a customer organization.
@@ -159,6 +174,9 @@ class CustomerOrganizationDocument(BaseModel):
 
     name = models.CharField(max_length=128)
     description = models.TextField(blank=True, null=True)
+    document = models.FileField(
+        upload_to=document_path, help_text="Document resource", null=True, blank=True
+    )
 
     def __str__(self):
         return f"{self.customer_organization.name} - {self.name}"

@@ -13,3 +13,7 @@ class CurrencyEnum(BaseEnum):
 class InvoiceStatusEnum(BaseEnum):
     DRAFT = enum.auto()
     SENT = enum.auto()
+
+
+# class AccountingAppEnum(BaseEnum):
+#     OneC = enum.auto()
