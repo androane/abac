@@ -41,6 +41,9 @@ class CustomerOrganization(BaseModel):
     program_manager = models.ForeignKey(
         "user.User", on_delete=models.SET_NULL, blank=True, null=True
     )
+    cui = models.CharField(
+        max_length=32, blank=True, null=True, help_text="CUI - Cod Unic de Identificare"
+    )
 
     def __str__(self):
         return self.name
@@ -141,3 +144,24 @@ class InvoiceItem(BaseModel):
     @property
     def is_locked(self) -> bool:
         return self.invoice.is_locked
+
+
+class CustomerOrganizationDocument(BaseModel):
+    """
+    CustomerOrganizationDocument is a document for a customer organization.
+    """
+
+    customer_organization = models.ForeignKey(
+        CustomerOrganization,
+        on_delete=models.CASCADE,
+        related_name="documents",
+    )
+
+    name = models.CharField(max_length=128)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.customer_organization.name} - {self.name}"
+
+    def __repr__(self):
+        return f"{self.customer_organization.name} - {self.name}"

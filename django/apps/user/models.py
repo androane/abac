@@ -6,6 +6,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 
 from core.models import BaseModel
+from user.constants import CustomerOrganizationUserRoleEnum
 from user.managers import UserManager
 
 logger = logging.getLogger(__name__)
@@ -36,8 +37,11 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     organization = models.ForeignKey(
         "organization.Organization", null=True, on_delete=models.CASCADE
     )
-    customer_organization = models.ForeignKey(
-        "organization.CustomerOrganization", null=True, on_delete=models.CASCADE
+    customer_organization_profile = models.ForeignKey(
+        "user.CustomerOrganizationUserProfile",
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="user",
     )
 
     class Meta:
@@ -60,3 +64,35 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     @property
     def name(self):
         return f"{self.first_name} {self.last_name}"
+
+
+class CustomerOrganizationUserProfile(BaseModel):
+    customer_organization = models.ForeignKey(
+        "organization.CustomerOrganization", on_delete=models.CASCADE
+    )
+    ownership_percentage = models.SmallIntegerField(
+        null=True,
+        blank=True,
+        help_text="What percentage of the organization does this user own?",
+    )
+    role = models.CharField(
+        max_length=64,
+        choices=CustomerOrganizationUserRoleEnum.choices,
+        blank=True,
+        null=True,
+        help_text="Role in the organization",
+    )
+
+    # Accounting Specific Fields
+    spv_username = models.CharField(
+        max_length=64, blank=True, null=True, help_text="SPV Username"
+    )
+    spv_password = models.CharField(
+        max_length=64, blank=True, null=True, help_text="SPV Password"
+    )
+
+    def __str__(self):
+        return f"{self.customer_organization.name} - {self.user.name}"
+
+    def __repr__(self):
+        return f"{self.customer_organization.name} - {self.user.name}"

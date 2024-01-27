@@ -51,7 +51,7 @@ class ClientType(DjangoObjectType):
             "phone_number_1",
             "phone_number_2",
             "program_manager",
-            "invoice",
+            "cui",
         )
 
 
