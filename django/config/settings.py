@@ -133,7 +133,7 @@ MEDIA_BUCKET = "abac-media"
 REGION = "fra1"
 AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID", "")
 AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY", "")
-AWS_S3_ENDPOINT_URL = "https://${REGION}.digitaloceanspaces.com"
+AWS_S3_ENDPOINT_URL = f"https://{REGION}.digitaloceanspaces.com"
 
 if DEBUG:
     MEDIA_URL = "/media/"
