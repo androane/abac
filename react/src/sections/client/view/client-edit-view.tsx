@@ -36,7 +36,7 @@ export default function UserEditView({ id }: Props) {
 
   const [currentTab, setCurrentTab] = useState('invoicing')
 
-  const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
+  const handleChangeTab = useCallback((_: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue)
   }, [])
 

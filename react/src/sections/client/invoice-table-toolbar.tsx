@@ -15,7 +15,7 @@ type Props = {
   onAddInvoiceItem: () => void
   invoiceId: string
   invoiceDate: null | Date
-  invoiceDateSent: null | Date
+  invoiceDateSent?: null | string
   onChangeInvoiceDate: (newDate: null | Date) => void
 }
 

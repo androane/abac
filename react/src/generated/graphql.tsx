@@ -1,4 +1,4 @@
-import { DateString } from 'utils/types';
+import { DateString } from 'graphql/types';
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
@@ -21,6 +21,8 @@ export type Scalars = {
 
 export type ClientType = {
   __typename?: 'ClientType';
+  /** CUI - Cod Unic de Identificare */
+  cui?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   phoneNumber1: Scalars['String']['output'];

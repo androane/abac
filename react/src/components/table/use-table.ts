@@ -65,7 +65,7 @@ export default function useTable(props?: UseTableProps): ReturnType {
     setSelected([])
   }, [])
 
-  const onChangePage = useCallback((event: unknown, newPage: number) => {
+  const onChangePage = useCallback((_: unknown, newPage: number) => {
     setPage(newPage)
   }, [])
 

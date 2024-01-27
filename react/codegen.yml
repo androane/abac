@@ -5,8 +5,8 @@ generates:
   src/generated/graphql.tsx:
     config:
       scalars:
-        Date: utils/types#DateString
-        DateTime: utils/types#DateTimeString
+        Date: graphql/types#DateString
+        DateTime: graphql/types#DateTimeString
     plugins:
       - typescript
       - typescript-operations
