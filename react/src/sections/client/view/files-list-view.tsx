@@ -1,0 +1,116 @@
+import ResponseHandler from 'components/response-handler'
+import Stack from '@mui/material/Stack'
+import Paper from '@mui/material/Paper'
+import Box from '@mui/material/Box'
+import Collapse from '@mui/material/Collapse'
+import Typography from '@mui/material/Typography'
+import { useBoolean } from 'hooks/use-boolean'
+import TextMaxLine from 'components/text-max-line'
+import { fDateTime } from 'utils/format-time'
+import { fData } from 'utils/format-number'
+import FileThumbnail, { fileFormat } from 'components/file-thumbnail'
+import { useClientFilesQuery } from 'generated/graphql'
+import { APIClientFile } from '../types'
+
+type FileDetailsProps = {
+  clientId: string
+  file: APIClientFile
+}
+
+const FileDetails: React.FC<FileDetailsProps> = ({ clientId, file, ...other }) => {
+  const checkbox = useBoolean()
+
+  return (
+    <Stack
+      component={Paper}
+      variant="outlined"
+      alignItems="flex-start"
+      sx={{
+        p: 2.5,
+        borderRadius: 2,
+        bgcolor: 'unset',
+        cursor: 'pointer',
+        position: 'relative',
+        maxWidth: 'auto',
+      }}
+      {...other}
+    >
+      <Box onMouseEnter={checkbox.onTrue} onMouseLeave={checkbox.onFalse}>
+        <FileThumbnail file={fileFormat(file.url)} sx={{ width: 36, height: 36 }} />
+      </Box>
+
+      <TextMaxLine persistent variant="subtitle2" sx={{ width: 1, mt: 2, mb: 0.5 }}>
+        {file.name}
+      </TextMaxLine>
+
+      <TextMaxLine persistent variant="subtitle2" sx={{ width: 1, mt: 2, mb: 0.5 }}>
+        {file.description}
+      </TextMaxLine>
+
+      <Stack
+        direction="row"
+        alignItems="center"
+        sx={{
+          maxWidth: 0.99,
+          whiteSpace: 'nowrap',
+          typography: 'caption',
+          color: 'text.disabled',
+        }}
+      >
+        {fData(file.size)}
+
+        <Box
+          component="span"
+          sx={{
+            mx: 0.75,
+            width: 2,
+            height: 2,
+            flexShrink: 0,
+            borderRadius: '50%',
+            bgcolor: 'currentColor',
+          }}
+        />
+        <Typography noWrap component="span" variant="caption">
+          {fDateTime(file.updated)}
+        </Typography>
+      </Stack>
+    </Stack>
+  )
+}
+
+type Props = {
+  clientId: string
+}
+
+export default function FilesListView({ clientId }: Props) {
+  const result = useClientFilesQuery({
+    variables: {
+      clientUuid: clientId,
+    },
+  })
+
+  return (
+    <ResponseHandler {...result}>
+      {({ clientFiles }) => {
+        return (
+          <Collapse in={Boolean(clientFiles.length)} unmountOnExit>
+            <Box
+              display="grid"
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(2, 1fr)',
+                md: 'repeat(3, 1fr)',
+                lg: 'repeat(4, 1fr)',
+              }}
+              gap={3}
+            >
+              {clientFiles.map(file => (
+                <FileDetails key={file.url} clientId={clientId} file={file} />
+              ))}
+            </Box>
+          </Collapse>
+        )
+      }}
+    </ResponseHandler>
+  )
+}

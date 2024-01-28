@@ -1,9 +1,4 @@
-import {
-  ClientDocumentsQuery,
-  ClientInvoiceQuery,
-  ClientsQuery,
-  CurrencyEnum,
-} from 'generated/graphql'
+import { ClientFilesQuery, ClientInvoiceQuery, ClientsQuery, CurrencyEnum } from 'generated/graphql'
 
 export type ClientItem = {
   id: string
@@ -37,4 +32,4 @@ export type InvoiceTableFilters = {
 export type APIClient = ClientsQuery['clients'][0]
 export type APIClientInvoice = ClientInvoiceQuery['clientInvoice']
 export type APIInvoiceItem = ClientInvoiceQuery['clientInvoice']['items'][0]
-export type APIClientDocument = ClientDocumentsQuery['clientDocuments'][0]
+export type APIClientFile = ClientFilesQuery['clientFiles'][0]

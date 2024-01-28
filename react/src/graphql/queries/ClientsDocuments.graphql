@@ -1,7 +1,0 @@
-query ClientDocuments($clientUuid: String!) {
-  clientDocuments(clientUuid: $clientUuid) {
-    name
-    description
-    url
-  }
-}

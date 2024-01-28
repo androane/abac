@@ -5,7 +5,7 @@ from organization.models import CustomerOrganizationDocument
 from user.models import User
 
 
-def get_client_documents(
+def get_client_files(
     user: User,
     client_uuid: str,
 ) -> QuerySet[CustomerOrganizationDocument]:

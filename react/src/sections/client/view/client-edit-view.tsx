@@ -9,14 +9,14 @@ import { useClientsQuery } from 'generated/graphql'
 import { useCallback, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { paths } from 'routes/paths'
+import FilesListView from './files-list-view'
 import ClientNewEditForm from '../client-new-edit-form'
 import InvoiceDetailsView from './invoice-details-view'
-import DocumentsDetailsView from './documents-details-view'
 
 enum TABS_VALUES {
   GENERAL = 'general',
   INVOICING = 'invoicing',
-  DOCUMENTS = 'documents',
+  FILES = 'files',
 }
 
 const TABS = [
@@ -31,7 +31,7 @@ const TABS = [
     icon: <Iconify icon="solar:bill-list-bold" width={24} />,
   },
   {
-    value: TABS_VALUES.DOCUMENTS,
+    value: TABS_VALUES.FILES,
     label: 'Documente',
     icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
   },
@@ -100,9 +100,7 @@ export default function UserEditView({ id }: Props) {
               {currentTab === TABS_VALUES.INVOICING && (
                 <InvoiceDetailsView clientId={client.uuid} />
               )}
-              {currentTab === TABS_VALUES.DOCUMENTS && (
-                <DocumentsDetailsView clientId={client.uuid} />
-              )}
+              {currentTab === TABS_VALUES.FILES && <FilesListView clientId={client.uuid} />}
             </>
           )
         }}

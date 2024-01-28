@@ -7,8 +7,8 @@ from organization.graphene.mutations import (
     UpdateClientInvoiceItem,
     UpdateClientInvoiceStatus,
 )
-from organization.graphene.types import ClientDocumentType, ClientType, InvoiceType
-from organization.services.client_documents_service import get_client_documents
+from organization.graphene.types import ClientFileType, ClientType, InvoiceType
+from organization.services.client_documents_service import get_client_files
 from organization.services.client_invoice_service import get_client_invoice
 from organization.services.client_service import get_client, get_clients
 from user.decorators import logged_in_user_required
@@ -35,8 +35,8 @@ class Query(graphene.ObjectType):
         month=graphene.Int(),
         year=graphene.Int(),
     )
-    client_documents = graphene.List(
-        graphene.NonNull(ClientDocumentType),
+    client_files = graphene.List(
+        graphene.NonNull(ClientFileType),
         description="List all Documents of a Client",
         client_uuid=graphene.String(required=True),
         required=True,
@@ -60,8 +60,8 @@ class Query(graphene.ObjectType):
         return get_client_invoice(user, **kwargs)
 
     @logged_in_user_required
-    def resolve_client_documents(info, user, **kwargs):
-        return get_client_documents(user, **kwargs)
+    def resolve_client_files(info, user, **kwargs):
+        return get_client_files(user, **kwargs)
 
     @logged_in_user_required
     def resolve_program_managers(info, user, **kwargs):

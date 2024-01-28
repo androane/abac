@@ -1,4 +1,5 @@
 import { DateString } from 'graphql/types';
+import { DateTimeString } from 'graphql/types';
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
@@ -17,12 +18,15 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   Date: { input: DateString; output: DateString; }
+  DateTime: { input: DateTimeString; output: DateTimeString; }
 };
 
-export type ClientDocumentType = {
-  __typename?: 'ClientDocumentType';
+export type ClientFileType = {
+  __typename?: 'ClientFileType';
   description?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+  size: Scalars['Int']['output'];
+  updated: Scalars['DateTime']['output'];
   url: Scalars['String']['output'];
 };
 
@@ -157,7 +161,7 @@ export type Query = {
   /** Get an individual Client */
   client: ClientType;
   /** List all Documents of a Client */
-  clientDocuments: Array<ClientDocumentType>;
+  clientFiles: Array<ClientFileType>;
   clientInvoice: InvoiceType;
   /** List all Clients */
   clients: Array<ClientType>;
@@ -174,7 +178,7 @@ export type QueryClientArgs = {
 };
 
 
-export type QueryClientDocumentsArgs = {
+export type QueryClientFilesArgs = {
   clientUuid: Scalars['String']['input'];
 };
 
@@ -276,12 +280,12 @@ export type ClientsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type ClientsQuery = { __typename?: 'Query', clients: Array<{ __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null }> };
 
-export type ClientDocumentsQueryVariables = Exact<{
+export type ClientFilesQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
 }>;
 
 
-export type ClientDocumentsQuery = { __typename?: 'Query', clientDocuments: Array<{ __typename?: 'ClientDocumentType', name: string, description?: string | null, url: string }> };
+export type ClientFilesQuery = { __typename?: 'Query', clientFiles: Array<{ __typename?: 'ClientFileType', name: string, description?: string | null, updated: DateTimeString, url: string, size: number }> };
 
 export type ClientInvoiceQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -662,48 +666,50 @@ export type ClientsQueryHookResult = ReturnType<typeof useClientsQuery>;
 export type ClientsLazyQueryHookResult = ReturnType<typeof useClientsLazyQuery>;
 export type ClientsSuspenseQueryHookResult = ReturnType<typeof useClientsSuspenseQuery>;
 export type ClientsQueryResult = Apollo.QueryResult<ClientsQuery, ClientsQueryVariables>;
-export const ClientDocumentsDocument = gql`
-    query ClientDocuments($clientUuid: String!) {
-  clientDocuments(clientUuid: $clientUuid) {
+export const ClientFilesDocument = gql`
+    query ClientFiles($clientUuid: String!) {
+  clientFiles(clientUuid: $clientUuid) {
     name
     description
+    updated
     url
+    size
   }
 }
     `;
 
 /**
- * __useClientDocumentsQuery__
+ * __useClientFilesQuery__
  *
- * To run a query within a React component, call `useClientDocumentsQuery` and pass it any options that fit your needs.
- * When your component renders, `useClientDocumentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useClientFilesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useClientFilesQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useClientDocumentsQuery({
+ * const { data, loading, error } = useClientFilesQuery({
  *   variables: {
  *      clientUuid: // value for 'clientUuid'
  *   },
  * });
  */
-export function useClientDocumentsQuery(baseOptions: Apollo.QueryHookOptions<ClientDocumentsQuery, ClientDocumentsQueryVariables>) {
+export function useClientFilesQuery(baseOptions: Apollo.QueryHookOptions<ClientFilesQuery, ClientFilesQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ClientDocumentsQuery, ClientDocumentsQueryVariables>(ClientDocumentsDocument, options);
+        return Apollo.useQuery<ClientFilesQuery, ClientFilesQueryVariables>(ClientFilesDocument, options);
       }
-export function useClientDocumentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ClientDocumentsQuery, ClientDocumentsQueryVariables>) {
+export function useClientFilesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ClientFilesQuery, ClientFilesQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ClientDocumentsQuery, ClientDocumentsQueryVariables>(ClientDocumentsDocument, options);
+          return Apollo.useLazyQuery<ClientFilesQuery, ClientFilesQueryVariables>(ClientFilesDocument, options);
         }
-export function useClientDocumentsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ClientDocumentsQuery, ClientDocumentsQueryVariables>) {
+export function useClientFilesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ClientFilesQuery, ClientFilesQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<ClientDocumentsQuery, ClientDocumentsQueryVariables>(ClientDocumentsDocument, options);
+          return Apollo.useSuspenseQuery<ClientFilesQuery, ClientFilesQueryVariables>(ClientFilesDocument, options);
         }
-export type ClientDocumentsQueryHookResult = ReturnType<typeof useClientDocumentsQuery>;
-export type ClientDocumentsLazyQueryHookResult = ReturnType<typeof useClientDocumentsLazyQuery>;
-export type ClientDocumentsSuspenseQueryHookResult = ReturnType<typeof useClientDocumentsSuspenseQuery>;
-export type ClientDocumentsQueryResult = Apollo.QueryResult<ClientDocumentsQuery, ClientDocumentsQueryVariables>;
+export type ClientFilesQueryHookResult = ReturnType<typeof useClientFilesQuery>;
+export type ClientFilesLazyQueryHookResult = ReturnType<typeof useClientFilesLazyQuery>;
+export type ClientFilesSuspenseQueryHookResult = ReturnType<typeof useClientFilesSuspenseQuery>;
+export type ClientFilesQueryResult = Apollo.QueryResult<ClientFilesQuery, ClientFilesQueryVariables>;
 export const ClientInvoiceDocument = gql`
     query ClientInvoice($clientUuid: String!, $year: Int, $month: Int) {
   clientInvoice(clientUuid: $clientUuid, year: $year, month: $month) {

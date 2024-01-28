@@ -1,0 +1,9 @@
+query ClientFiles($clientUuid: String!) {
+  clientFiles(clientUuid: $clientUuid) {
+    name
+    description
+    updated
+    url
+    size
+  }
+}

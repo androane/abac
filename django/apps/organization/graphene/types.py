@@ -70,13 +70,15 @@ class InvoiceItemInput(graphene.InputObjectType):
     is_recurring = graphene.Boolean()
 
 
-class ClientDocumentType(DjangoObjectType):
+class ClientFileType(DjangoObjectType):
     class Meta:
         model = CustomerOrganizationDocument
         only_fields = (
+            "updated",
             "name",
             "description",
         )
 
     # Model properties
     url = graphene.NonNull(graphene.String)
+    size = graphene.NonNull(graphene.Int)
