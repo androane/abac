@@ -9,7 +9,7 @@ type Props = {
   sx?: SxProps<Theme>
 }
 
-export default function TableNoData({ notFound, sx }: Props) {
+export default function F({ notFound, sx }: Props) {
   return (
     <TableRow>
       {notFound ? (

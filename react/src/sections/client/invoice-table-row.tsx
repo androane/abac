@@ -8,10 +8,9 @@ import TableRow from '@mui/material/TableRow'
 import { ConfirmDialog } from 'components/custom-dialog'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
-import { ro as roROAdapter } from 'date-fns/locale'
-import { format } from 'date-fns'
 
 import { useBoolean } from 'hooks/use-boolean'
+import { fDateTime } from 'utils/format-time'
 import { InvoiceItem } from './types'
 
 type Props = {
@@ -45,7 +44,7 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={itemDate && format(new Date(itemDate), 'd MMMM yyyy', { locale: roROAdapter })}
+            primary={itemDate && fDateTime(itemDate, 'd MMMM yyyy')}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

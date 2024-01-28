@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import mimetypes
 from datetime import date
 
 from django.db import models
@@ -192,7 +191,3 @@ class CustomerOrganizationDocument(BaseModel):
     @property
     def size(self):
         return self.document.size
-
-    @property
-    def type(self):
-        return mimetypes.guess_type(self.document.name)
