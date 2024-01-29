@@ -4,7 +4,6 @@ from datetime import date
 from django.db import models
 
 from core.models import BaseModel
-from core.utils import get_filename
 from organization.constants import CurrencyEnum
 
 
@@ -156,14 +155,14 @@ def client_file_path(instance, filename):
         [
             str(instance.customer_organization.organization.pk),
             str(instance.customer_organization.pk),
-            get_filename(filename),
+            filename,
         ]
     )
 
 
 class CustomerOrganizationDocument(BaseModel):
     """
-    CustomerOrganizationDocument is a document for a customer organization.
+    CustomerOrganizationClient is a document file for a Client
     """
 
     customer_organization = models.ForeignKey(
@@ -172,7 +171,7 @@ class CustomerOrganizationDocument(BaseModel):
         related_name="documents",
     )
 
-    name = models.CharField(max_length=128)
+    name = models.CharField(max_length=128, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     document = models.FileField(
         upload_to=client_file_path, help_text="Document resource", null=True, blank=True

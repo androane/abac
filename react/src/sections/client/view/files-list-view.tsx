@@ -18,8 +18,8 @@ import Iconify from 'components/iconify'
 import IconButton from '@mui/material/IconButton'
 import EmptyContent from 'components/empty-content'
 import CreateFilesDialog from 'sections/client/files-new-files-dialog'
+import { Link } from 'react-router-dom'
 import { APIClientFile } from '../types'
-import FileManagerPanel from '../files-manager-panel'
 
 type FileDetailsProps = {
   clientId: string
@@ -49,22 +49,18 @@ const FileDetails: React.FC<FileDetailsProps> = ({ clientId, file, ...other }) =
           p: 2.5,
           borderRadius: 2,
           bgcolor: 'unset',
-          cursor: 'pointer',
           position: 'relative',
           maxWidth: 'auto',
         }}
         {...other}
       >
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <FileThumbnail file={fileFormat(file.url)} sx={{ width: 36, height: 36 }} />
-
-          <TextMaxLine persistent variant="subtitle2" sx={{ width: 1, mt: 2, mb: 0.5 }}>
-            {file.name}
-          </TextMaxLine>
-        </Stack>
-
-        <TextMaxLine persistent variant="subtitle2" sx={{ width: 1, mt: 1, mb: 0.5 }}>
-          {file.description}
+        <Link to={file.url} download={file.name} target="_blank" rel="noreferrer">
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <FileThumbnail file={fileFormat(file.url)} sx={{ width: 36, height: 36 }} />
+          </Stack>
+        </Link>
+        <TextMaxLine persistent variant="subtitle2" sx={{ width: 1, mt: 2, mb: 0.5 }}>
+          {file.name}
         </TextMaxLine>
 
         <Stack
@@ -135,8 +131,6 @@ type Props = {
 export default function FilesListView({ clientId }: Props) {
   const upload = useBoolean()
 
-  const showFiles = useBoolean()
-
   const result = useClientFilesQuery({
     variables: {
       clientUuid: clientId,
@@ -146,42 +140,62 @@ export default function FilesListView({ clientId }: Props) {
   return (
     <ResponseHandler {...result}>
       {({ client: { files } }) => {
-        if (!files.length) {
-          return (
-            <EmptyContent
-              filled
-              title="Nu exista documente"
-              sx={{
-                py: 10,
-              }}
-            />
-          )
-        }
         return (
           <>
-            <FileManagerPanel
-              title="Fisiere"
-              subTitle={`${files.length} fisere`}
-              onOpen={upload.onTrue}
-              collapse={showFiles.value}
-              onCollapse={showFiles.onToggle}
-            />
-            <Collapse in={Boolean(files.length)} unmountOnExit>
-              <Box
-                display="grid"
-                gridTemplateColumns={{
-                  xs: 'repeat(1, 1fr)',
-                  sm: 'repeat(2, 1fr)',
-                  md: 'repeat(3, 1fr)',
-                  lg: 'repeat(4, 1fr)',
+            <Stack direction="row" alignItems="center" sx={{ mb: 3 }}>
+              <Stack flexGrow={1}>
+                <Stack direction="row" alignItems="center" spacing={1} flexGrow={1}>
+                  <Typography variant="h6"> Fisiere </Typography>
+
+                  <IconButton
+                    size="small"
+                    color="primary"
+                    onClick={upload.onTrue}
+                    sx={{
+                      width: 24,
+                      height: 24,
+                      bgcolor: 'primary.main',
+                      color: 'primary.contrastText',
+                      '&:hover': {
+                        bgcolor: 'primary.dark',
+                      },
+                    }}
+                  >
+                    <Iconify icon="mingcute:add-line" />
+                  </IconButton>
+                </Stack>
+
+                <Box
+                  sx={{ typography: 'body2', color: 'text.disabled', mt: 0.5 }}
+                >{`${files.length} fisere`}</Box>
+              </Stack>
+            </Stack>
+            {files.length ? (
+              <Collapse in={Boolean(files.length)} unmountOnExit>
+                <Box
+                  display="grid"
+                  gridTemplateColumns={{
+                    xs: 'repeat(1, 1fr)',
+                    sm: 'repeat(2, 1fr)',
+                    md: 'repeat(3, 1fr)',
+                    lg: 'repeat(4, 1fr)',
+                  }}
+                  gap={3}
+                >
+                  {files.map(file => (
+                    <FileDetails key={file.name} clientId={clientId} file={file} />
+                  ))}
+                </Box>
+              </Collapse>
+            ) : (
+              <EmptyContent
+                filled
+                title="Nu exista documente"
+                sx={{
+                  py: 10,
                 }}
-                gap={3}
-              >
-                {files.map(file => (
-                  <FileDetails key={file.url} clientId={clientId} file={file} />
-                ))}
-              </Box>
-            </Collapse>
+              />
+            )}
             <CreateFilesDialog clientId={clientId} open={upload.value} onClose={upload.onFalse} />
           </>
         )

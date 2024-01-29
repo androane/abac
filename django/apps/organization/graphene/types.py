@@ -60,20 +60,18 @@ class InvoiceItemInput(graphene.InputObjectType):
 class ClientFileType(DjangoObjectType):
     class Meta:
         model = CustomerOrganizationDocument
-        only_fields = (
-            "updated",
-            "name",
-            "description",
-        )
+        only_fields = ("updated",)
 
     # Model properties
     url = graphene.NonNull(graphene.String)
     size = graphene.NonNull(graphene.Int)
+    name = graphene.NonNull(graphene.String)
+
+    def resolve_name(self, info):
+        return self.document.name
 
 
 class ClientFileInput(graphene.InputObjectType):
-    name = graphene.String(required=True)
-    description = graphene.String(required=True)
     file = Upload(required=True)
 
 

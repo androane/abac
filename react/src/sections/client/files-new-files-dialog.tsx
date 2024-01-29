@@ -9,6 +9,7 @@ import Dialog, { DialogProps } from '@mui/material/Dialog'
 import Iconify from 'components/iconify'
 import { Upload } from 'components/upload'
 import { useCreateClientFilesMutation } from 'generated/graphql'
+import { useSnackbar } from 'notistack'
 
 interface Props extends DialogProps {
   title?: string
@@ -25,6 +26,8 @@ export default function CreateFilesDialog({
   ...other
 }: Props) {
   const [createFiles] = useCreateClientFilesMutation()
+
+  const { enqueueSnackbar } = useSnackbar()
 
   const [files, setFiles] = useState<(File | string)[]>([])
 
@@ -47,19 +50,17 @@ export default function CreateFilesDialog({
     [files],
   )
 
-  const handleUpload = () => {
-    createFiles({
+  const handleUpload = async () => {
+    await createFiles({
       variables: {
         clientUuid: clientId,
-        clientFilesInput: files.map(file => {
-          return {
-            file,
-            name: 'AAA',
-            description: 'BBB',
-          }
-        }),
+        clientFilesInput: files.map(file => ({
+          file,
+        })),
       },
     })
+    enqueueSnackbar('Fisierele au fost incarcate cu success')
+
     onClose()
   }
 
