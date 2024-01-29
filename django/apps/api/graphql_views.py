@@ -3,13 +3,13 @@ import logging
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotAllowed
-from graphene_django.views import GraphQLView as BaseGraphQLView
 from graphene_django.views import HttpError
+from graphene_file_upload.django import FileUploadGraphQLView
 
 logger = logging.getLogger(__name__)
 
 
-class GraphQLView(BaseGraphQLView):
+class GraphQLView(FileUploadGraphQLView):
     def get_context(self, request):
         return request
 

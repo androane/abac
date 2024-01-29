@@ -2,10 +2,12 @@ import ResponseHandler from 'components/response-handler'
 import Stack from '@mui/material/Stack'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Collapse from '@mui/material/Collapse'
 import Typography from '@mui/material/Typography'
 import TextMaxLine from 'components/text-max-line'
 import { fDateTime } from 'utils/format-time'
+import { ConfirmDialog } from 'components/custom-dialog'
 import { fData } from 'utils/format-number'
 import FileThumbnail, { fileFormat } from 'components/file-thumbnail'
 import { useClientFilesQuery } from 'generated/graphql'
@@ -15,7 +17,9 @@ import { useBoolean } from 'hooks/use-boolean'
 import Iconify from 'components/iconify'
 import IconButton from '@mui/material/IconButton'
 import EmptyContent from 'components/empty-content'
+import CreateFilesDialog from 'sections/client/files-new-files-dialog'
 import { APIClientFile } from '../types'
+import FileManagerPanel from '../files-manager-panel'
 
 type FileDetailsProps = {
   clientId: string
@@ -24,6 +28,7 @@ type FileDetailsProps = {
 
 const FileDetails: React.FC<FileDetailsProps> = ({ clientId, file, ...other }) => {
   const popover = usePopover()
+
   const confirm = useBoolean()
 
   const renderAction = (
@@ -105,9 +110,20 @@ const FileDetails: React.FC<FileDetailsProps> = ({ clientId, file, ...other }) =
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          Sterge
         </MenuItem>
       </CustomPopover>
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title="Sterge"
+        content="Esti sigur ca vrei sa stergi acest fisier?"
+        action={
+          <Button variant="contained" color="error" onClick={() => {}}>
+            Sterge
+          </Button>
+        }
+      />
     </>
   )
 }
@@ -117,6 +133,10 @@ type Props = {
 }
 
 export default function FilesListView({ clientId }: Props) {
+  const upload = useBoolean()
+
+  const showFiles = useBoolean()
+
   const result = useClientFilesQuery({
     variables: {
       clientUuid: clientId,
@@ -125,8 +145,8 @@ export default function FilesListView({ clientId }: Props) {
 
   return (
     <ResponseHandler {...result}>
-      {({ clientFiles }) => {
-        if (!clientFiles.length) {
+      {({ client: { files } }) => {
+        if (!files.length) {
           return (
             <EmptyContent
               filled
@@ -138,22 +158,32 @@ export default function FilesListView({ clientId }: Props) {
           )
         }
         return (
-          <Collapse in={Boolean(clientFiles.length)} unmountOnExit>
-            <Box
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
-                md: 'repeat(3, 1fr)',
-                lg: 'repeat(4, 1fr)',
-              }}
-              gap={3}
-            >
-              {clientFiles.map(file => (
-                <FileDetails key={file.url} clientId={clientId} file={file} />
-              ))}
-            </Box>
-          </Collapse>
+          <>
+            <FileManagerPanel
+              title="Fisiere"
+              subTitle={`${files.length} fisere`}
+              onOpen={upload.onTrue}
+              collapse={showFiles.value}
+              onCollapse={showFiles.onToggle}
+            />
+            <Collapse in={Boolean(files.length)} unmountOnExit>
+              <Box
+                display="grid"
+                gridTemplateColumns={{
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(2, 1fr)',
+                  md: 'repeat(3, 1fr)',
+                  lg: 'repeat(4, 1fr)',
+                }}
+                gap={3}
+              >
+                {files.map(file => (
+                  <FileDetails key={file.url} clientId={clientId} file={file} />
+                ))}
+              </Box>
+            </Collapse>
+            <CreateFilesDialog clientId={clientId} open={upload.value} onClose={upload.onFalse} />
+          </>
         )
       }}
     </ResponseHandler>

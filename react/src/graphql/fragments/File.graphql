@@ -1,0 +1,7 @@
+fragment File on ClientFileType {
+  name
+  description
+  updated
+  url
+  size
+}

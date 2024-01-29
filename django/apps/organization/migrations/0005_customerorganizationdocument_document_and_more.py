@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 help_text="Document resource",
                 null=True,
-                upload_to=organization.models.document_path,
+                upload_to=organization.models.client_file_path,
             ),
         ),
         migrations.AddField(

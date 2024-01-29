@@ -1,12 +1,14 @@
-import { ApolloClient, createHttpLink, from } from '@apollo/client'
+import { ApolloClient, from } from '@apollo/client'
 import { InMemoryCache } from '@apollo/client/cache'
+import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import { setContext } from '@apollo/link-context'
 import DebounceLink from 'apollo-link-debounce'
 
 import { GRAPHQL_ENDPOINT } from 'config/config-env'
 import { AUTH_STORAGE_KEY } from 'config/config-global'
 
-const httpLink = createHttpLink({ uri: GRAPHQL_ENDPOINT })
+// const httpLink = createHttpLink({ uri: GRAPHQL_ENDPOINT })
+const httpLink = createUploadLink({ uri: GRAPHQL_ENDPOINT })
 
 // eslint-disable-next-line no-unused-vars
 const authLink = setContext((_, { headers }) => {

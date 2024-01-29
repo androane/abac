@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import graphene
 from graphene_django import DjangoObjectType
+from graphene_file_upload.scalars import Upload
 
 from organization.constants import CurrencyEnum, InvoiceStatusEnum
 from organization.models import (
@@ -46,20 +47,6 @@ class InvoiceType(DjangoObjectType):
         return self.items.all()
 
 
-class ClientType(DjangoObjectType):
-    class Meta:
-        model = CustomerOrganization
-        only_fields = (
-            "uuid",
-            "name",
-            "description",
-            "phone_number_1",
-            "phone_number_2",
-            "program_manager",
-            "cui",
-        )
-
-
 class InvoiceItemInput(graphene.InputObjectType):
     uuid = graphene.String()
     description = graphene.String(required=True)
@@ -82,3 +69,28 @@ class ClientFileType(DjangoObjectType):
     # Model properties
     url = graphene.NonNull(graphene.String)
     size = graphene.NonNull(graphene.Int)
+
+
+class ClientFileInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+    description = graphene.String(required=True)
+    file = Upload(required=True)
+
+
+class ClientType(DjangoObjectType):
+    class Meta:
+        model = CustomerOrganization
+        only_fields = (
+            "uuid",
+            "name",
+            "description",
+            "phone_number_1",
+            "phone_number_2",
+            "program_manager",
+            "cui",
+        )
+
+    files = graphene.List(graphene.NonNull(ClientFileType), required=True)
+
+    def resolve_files(self, info, **kwargs):
+        return self.documents.all()

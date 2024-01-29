@@ -57,7 +57,6 @@ def update_client_invoice_status(
         uuid=invoice_uuid,
         customer_organization__organization=user.organization,
     )
-    print("???")
     if status == InvoiceStatusEnum.SENT.value:
         invoice.date_sent = pendulum.now()
     elif status == InvoiceStatusEnum.DRAFT.value:

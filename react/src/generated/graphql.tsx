@@ -19,6 +19,13 @@ export type Scalars = {
   Float: { input: number; output: number; }
   Date: { input: DateString; output: DateString; }
   DateTime: { input: DateTimeString; output: DateTimeString; }
+  Upload: { input: any; output: any; }
+};
+
+export type ClientFileInput = {
+  description: Scalars['String']['input'];
+  file: Scalars['Upload']['input'];
+  name: Scalars['String']['input'];
 };
 
 export type ClientFileType = {
@@ -35,11 +42,18 @@ export type ClientType = {
   /** CUI - Cod Unic de Identificare */
   cui?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  files: Array<ClientFileType>;
   name: Scalars['String']['output'];
   phoneNumber1: Scalars['String']['output'];
   phoneNumber2: Scalars['String']['output'];
   programManager?: Maybe<UserType>;
   uuid: Scalars['String']['output'];
+};
+
+export type CreateClientFiles = {
+  __typename?: 'CreateClientFiles';
+  client?: Maybe<ClientType>;
+  error?: Maybe<ErrorType>;
 };
 
 /** An enumeration. */
@@ -116,6 +130,8 @@ export type LogoutUser = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Create new Client Files */
+  createClientFiles?: Maybe<CreateClientFiles>;
   /** Log the user in with email and password. */
   login?: Maybe<LoginUser>;
   /** Log out user. */
@@ -126,6 +142,12 @@ export type Mutation = {
   updateClientInvoiceItem?: Maybe<UpdateClientInvoiceItem>;
   /** Update Client Invoice Status */
   updateClientInvoiceStatus?: Maybe<UpdateClientInvoiceStatus>;
+};
+
+
+export type MutationCreateClientFilesArgs = {
+  clientFilesInput?: InputMaybe<Array<ClientFileInput>>;
+  clientUuid: Scalars['String']['input'];
 };
 
 
@@ -222,6 +244,8 @@ export type InvoiceItemFragment = { __typename?: 'InvoiceItemType', uuid: string
 
 export type ErrorFragment = { __typename?: 'ErrorType', field?: string | null, message: string };
 
+export type FileFragment = { __typename?: 'ClientFileType', name: string, description?: string | null, updated: DateTimeString, url: string, size: number };
+
 export type ProgramManagerFragment = { __typename?: 'UserType', uuid: string, name: string, email: string };
 
 export type LoginMutationVariables = Exact<{
@@ -236,6 +260,14 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
 
 export type LogoutMutation = { __typename?: 'Mutation', logout?: { __typename?: 'LogoutUser', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
+
+export type CreateClientFilesMutationVariables = Exact<{
+  clientUuid: Scalars['String']['input'];
+  clientFilesInput: Array<ClientFileInput> | ClientFileInput;
+}>;
+
+
+export type CreateClientFilesMutation = { __typename?: 'Mutation', createClientFiles?: { __typename?: 'CreateClientFiles', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, files: Array<{ __typename?: 'ClientFileType', name: string, description?: string | null, updated: DateTimeString, url: string, size: number }> } | null } | null };
 
 export type UpdateClientMutationVariables = Exact<{
   uuid?: InputMaybe<Scalars['String']['input']>;
@@ -285,7 +317,7 @@ export type ClientFilesQueryVariables = Exact<{
 }>;
 
 
-export type ClientFilesQuery = { __typename?: 'Query', clientFiles: Array<{ __typename?: 'ClientFileType', name: string, description?: string | null, updated: DateTimeString, url: string, size: number }> };
+export type ClientFilesQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, files: Array<{ __typename?: 'ClientFileType', name: string, description?: string | null, updated: DateTimeString, url: string, size: number }> } };
 
 export type ClientInvoiceQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -331,6 +363,15 @@ export const ErrorFragmentDoc = gql`
     fragment Error on ErrorType {
   field
   message
+}
+    `;
+export const FileFragmentDoc = gql`
+    fragment File on ClientFileType {
+  name
+  description
+  updated
+  url
+  size
 }
     `;
 export const ProgramManagerFragmentDoc = gql`
@@ -415,6 +456,49 @@ export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<Logou
 export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
 export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
 export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
+export const CreateClientFilesDocument = gql`
+    mutation CreateClientFiles($clientUuid: String!, $clientFilesInput: [ClientFileInput!]!) {
+  createClientFiles(clientUuid: $clientUuid, clientFilesInput: $clientFilesInput) {
+    error {
+      ...Error
+    }
+    client {
+      uuid
+      files {
+        ...File
+      }
+    }
+  }
+}
+    ${ErrorFragmentDoc}
+${FileFragmentDoc}`;
+export type CreateClientFilesMutationFn = Apollo.MutationFunction<CreateClientFilesMutation, CreateClientFilesMutationVariables>;
+
+/**
+ * __useCreateClientFilesMutation__
+ *
+ * To run a mutation, you first call `useCreateClientFilesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateClientFilesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createClientFilesMutation, { data, loading, error }] = useCreateClientFilesMutation({
+ *   variables: {
+ *      clientUuid: // value for 'clientUuid'
+ *      clientFilesInput: // value for 'clientFilesInput'
+ *   },
+ * });
+ */
+export function useCreateClientFilesMutation(baseOptions?: Apollo.MutationHookOptions<CreateClientFilesMutation, CreateClientFilesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateClientFilesMutation, CreateClientFilesMutationVariables>(CreateClientFilesDocument, options);
+      }
+export type CreateClientFilesMutationHookResult = ReturnType<typeof useCreateClientFilesMutation>;
+export type CreateClientFilesMutationResult = Apollo.MutationResult<CreateClientFilesMutation>;
+export type CreateClientFilesMutationOptions = Apollo.BaseMutationOptions<CreateClientFilesMutation, CreateClientFilesMutationVariables>;
 export const UpdateClientDocument = gql`
     mutation UpdateClient($uuid: String, $name: String!, $description: String, $phoneNumber1: String, $phoneNumber2: String, $programManagerUuid: String) {
   updateClient(
@@ -668,15 +752,14 @@ export type ClientsSuspenseQueryHookResult = ReturnType<typeof useClientsSuspens
 export type ClientsQueryResult = Apollo.QueryResult<ClientsQuery, ClientsQueryVariables>;
 export const ClientFilesDocument = gql`
     query ClientFiles($clientUuid: String!) {
-  clientFiles(clientUuid: $clientUuid) {
-    name
-    description
-    updated
-    url
-    size
+  client(uuid: $clientUuid) {
+    uuid
+    files {
+      ...File
+    }
   }
 }
-    `;
+    ${FileFragmentDoc}`;
 
 /**
  * __useClientFilesQuery__

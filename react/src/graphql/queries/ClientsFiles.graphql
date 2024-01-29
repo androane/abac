@@ -1,9 +1,10 @@
+#import "../fragments/Client.graphql"
+
 query ClientFiles($clientUuid: String!) {
-  clientFiles(clientUuid: $clientUuid) {
-    name
-    description
-    updated
-    url
-    size
+  client(uuid: $clientUuid) {
+    uuid
+    files {
+      ...File
+    }
   }
 }

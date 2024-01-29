@@ -3,12 +3,14 @@ import graphene
 
 from api.graphene.mutations import BaseMutation, get_graphene_error
 from organization.graphene.types import (
+    ClientFileInput,
     ClientType,
     InvoiceItemInput,
     InvoiceItemType,
     InvoiceStatusEnumType,
     InvoiceType,
 )
+from organization.services.client_files_service import create_client_files
 from organization.services.client_invoice_service import (
     update_client_invoice_item,
     update_client_invoice_status,
@@ -75,4 +77,23 @@ class UpdateClientInvoiceItem(BaseMutation):
 
         return {
             "invoice_item": invoice_item,
+        }
+
+
+class CreateClientFiles(BaseMutation):
+    class Arguments:
+        client_uuid = graphene.String(required=True)
+        client_files_input = graphene.List(graphene.NonNull(ClientFileInput))
+
+    client = graphene.Field(ClientType)
+
+    @logged_in_user_required
+    def mutate(self, user, **kwargs):
+        try:
+            client = create_client_files(user, **kwargs)
+        except Exception as e:
+            return get_graphene_error(str(e))
+
+        return {
+            "client": client,
         }

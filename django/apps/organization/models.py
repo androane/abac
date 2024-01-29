@@ -151,7 +151,7 @@ class InvoiceItem(BaseModel):
         return self.invoice.is_locked
 
 
-def document_path(instance, filename):
+def client_file_path(instance, filename):
     return "/".join(
         [
             str(instance.customer_organization.organization.pk),
@@ -175,7 +175,7 @@ class CustomerOrganizationDocument(BaseModel):
     name = models.CharField(max_length=128)
     description = models.TextField(blank=True, null=True)
     document = models.FileField(
-        upload_to=document_path, help_text="Document resource", null=True, blank=True
+        upload_to=client_file_path, help_text="Document resource", null=True, blank=True
     )
 
     def __str__(self):
