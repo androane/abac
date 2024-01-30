@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+
 import graphene
 from graphene_django import DjangoObjectType
 from graphene_file_upload.scalars import Upload
@@ -63,7 +65,8 @@ class ClientFileType(DjangoObjectType):
     name = graphene.NonNull(graphene.String)
 
     def resolve_name(self, info):
-        return self.file.name
+        # Using os.path.basename to get rid of the path and onyl return the actual file name
+        return os.path.basename(self.file.name)
 
 
 class ClientFileInput(graphene.InputObjectType):

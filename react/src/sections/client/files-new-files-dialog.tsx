@@ -10,6 +10,7 @@ import Iconify from 'components/iconify'
 import { Upload } from 'components/upload'
 import { useCreateClientFilesMutation } from 'generated/graphql'
 import { useSnackbar } from 'notistack'
+import LoadingButton from '@mui/lab/LoadingButton'
 
 interface Props extends DialogProps {
   title?: string
@@ -25,7 +26,7 @@ export default function CreateFilesDialog({
   onClose,
   ...other
 }: Props) {
-  const [createFiles] = useCreateClientFilesMutation()
+  const [createFiles, { loading }] = useCreateClientFilesMutation()
 
   const { enqueueSnackbar } = useSnackbar()
 
@@ -82,14 +83,15 @@ export default function CreateFilesDialog({
       </DialogContent>
 
       <DialogActions>
-        <Button
+        <LoadingButton
+          loading={loading}
           disabled={!files.length}
           variant="contained"
           startIcon={<Iconify icon="eva:cloud-upload-fill" />}
           onClick={handleUpload}
         >
           Incarca
-        </Button>
+        </LoadingButton>
 
         {!!files.length && (
           <Button variant="outlined" color="inherit" onClick={handleRemoveAllFiles}>
