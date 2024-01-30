@@ -56,7 +56,7 @@ const FileDetails: React.FC<FileDetailsProps> = ({ clientId, file, ...other }) =
       >
         <Link to={file.url} download={file.name} target="_blank" rel="noreferrer">
           <Stack direction="row" alignItems="center" spacing={1}>
-            <FileThumbnail file={fileFormat(file.url)} sx={{ width: 36, height: 36 }} />
+            <FileThumbnail file={fileFormat(file.name)} sx={{ width: 36, height: 36 }} />
           </Stack>
         </Link>
         <TextMaxLine persistent variant="subtitle2" sx={{ width: 1, mt: 2, mb: 0.5 }}>
