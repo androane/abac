@@ -6,7 +6,7 @@ from django.conf import settings
 
 from organization.constants import InvoiceStatusEnum
 from organization.graphene.types import InvoiceItemInput
-from organization.models import CustomerOrganization, Invoice, InvoiceItem
+from organization.models import Client, Invoice, InvoiceItem
 from user.models import User
 
 
@@ -18,9 +18,7 @@ def get_client_invoice(
 ) -> Invoice:
     assert (year and month) or (not year and not month)
 
-    client = CustomerOrganization.objects.get(
-        uuid=client_uuid, organization=user.organization
-    )
+    client = Client.objects.get(uuid=client_uuid, organization=user.organization)
 
     if year and month:
         return client.invoices.get_or_create(month=month, year=year)[0]
@@ -55,7 +53,7 @@ def update_client_invoice_status(
 ) -> Invoice:
     invoice = Invoice.objects.get(
         uuid=invoice_uuid,
-        customer_organization__organization=user.organization,
+        client__organization=user.organization,
     )
     if status == InvoiceStatusEnum.SENT.value:
         invoice.date_sent = pendulum.now()
@@ -71,9 +69,7 @@ def update_client_invoice_item(
     invoice_uuid: str,
     invoice_item_input: InvoiceItemInput,
 ) -> InvoiceItem:
-    invoice = Invoice.objects.get(
-        uuid=invoice_uuid, customer_organization=user.customer_organization
-    )
+    invoice = Invoice.objects.get(uuid=invoice_uuid, client=user.client)
     if invoice_item_input.uuid:
         invoice_item = invoice.items.get(uuid=invoice_item_input.uuid)
     else:

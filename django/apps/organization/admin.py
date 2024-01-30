@@ -2,12 +2,7 @@
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 
-from organization.models import (
-    CustomerOrganization,
-    CustomerOrganizationDocument,
-    Invoice,
-    Organization,
-)
+from organization.models import Client, ClientFile, Invoice, Organization
 
 
 @admin.register(Organization)
@@ -27,14 +22,14 @@ class InvoiceAdmin(admin.TabularInline):
     ]
 
 
-class CustomerOrganizationDocumentAdmin(admin.TabularInline):
-    model = CustomerOrganizationDocument
-    fields = ("name", "description", "document")
+class ClientFileAdmin(admin.TabularInline):
+    model = ClientFile
+    fields = ("name", "description", "file")
     extra = 1
 
 
-@admin.register(CustomerOrganization)
-class CustomerOrganizationAdmin(SimpleHistoryAdmin):
+@admin.register(Client)
+class ClientAdmin(SimpleHistoryAdmin):
     search_fields = ("name",)
     list_display = (
         "name",
@@ -47,4 +42,4 @@ class CustomerOrganizationAdmin(SimpleHistoryAdmin):
         "name",
     ]
 
-    inlines = [CustomerOrganizationDocumentAdmin, InvoiceAdmin]
+    inlines = [ClientFileAdmin, InvoiceAdmin]
