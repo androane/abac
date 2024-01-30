@@ -66,7 +66,7 @@ class Query(graphene.ObjectType):
 
     @logged_in_user_required
     def resolve_program_managers(info, user, **kwargs):
-        return get_program_managers(user)
+        return get_program_managers()
 
 
 class Mutation(graphene.ObjectType):
