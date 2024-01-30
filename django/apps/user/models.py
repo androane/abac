@@ -6,7 +6,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 
 from core.models import BaseModel
-from user.constants import CustomerOrganizationUserRoleEnum
+from user.constants import ClientUserRoleEnum
 from user.managers import UserManager
 
 logger = logging.getLogger(__name__)
@@ -37,8 +37,8 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     organization = models.ForeignKey(
         "organization.Organization", null=True, on_delete=models.CASCADE
     )
-    customer_organization_profile = models.ForeignKey(
-        "user.CustomerOrganizationUserProfile",
+    client_profile = models.ForeignKey(
+        "user.ClientUserProfile",
         null=True,
         on_delete=models.CASCADE,
         related_name="user",
@@ -66,10 +66,8 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
         return f"{self.first_name} {self.last_name}"
 
 
-class CustomerOrganizationUserProfile(BaseModel):
-    customer_organization = models.ForeignKey(
-        "organization.CustomerOrganization", on_delete=models.CASCADE
-    )
+class ClientUserProfile(BaseModel):
+    client = models.ForeignKey("organization.Client", on_delete=models.CASCADE)
     ownership_percentage = models.SmallIntegerField(
         null=True,
         blank=True,
@@ -77,7 +75,7 @@ class CustomerOrganizationUserProfile(BaseModel):
     )
     role = models.CharField(
         max_length=64,
-        choices=CustomerOrganizationUserRoleEnum.choices,
+        choices=ClientUserRoleEnum.choices,
         blank=True,
         null=True,
         help_text="Role in the organization",
@@ -92,7 +90,7 @@ class CustomerOrganizationUserProfile(BaseModel):
     )
 
     def __str__(self):
-        return f"{self.customer_organization.name} - {self.user.name}"
+        return f"{self.client.name} - {self.user.name}"
 
     def __repr__(self):
-        return f"{self.customer_organization.name} - {self.user.name}"
+        return f"{self.client.name} - {self.user.name}"

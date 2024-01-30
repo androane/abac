@@ -17,21 +17,21 @@ class Organization(BaseModel):
         return self.name
 
 
-class CustomerOrganization(BaseModel):
+class Client(BaseModel):
     """
-    CustomerOrganization is a client of the organization.
+    Client is a client of the organization.
     """
 
     constraints = [
         models.UniqueConstraint(
             fields=["organization", "name"],
             condition=models.Q(deleted__isnull=True),
-            name="organization_organization_customer_organization_name_unique",
+            name="organization_client_organization_name_unique",
         )
     ]
 
     organization = models.ForeignKey(
-        Organization, on_delete=models.CASCADE, related_name="customer_organizations"
+        Organization, on_delete=models.CASCADE, related_name="clients"
     )
 
     name = models.CharField(max_length=128)
@@ -57,20 +57,16 @@ class CustomerOrganization(BaseModel):
 
 
 class Invoice(BaseModel):
-    """
-    Invoice is an invoice for a customer organization.
-    """
-
     constraints = [
         models.UniqueConstraint(
-            fields=["customer_organization", "name"],
+            fields=["client", "name"],
             condition=models.Q(deleted__isnull=True),
-            name="organization_invoice_customer_organization_month_year_unique",
+            name="organization_invoice_client_month_year_unique",
         )
     ]
 
-    customer_organization = models.ForeignKey(
-        CustomerOrganization,
+    client = models.ForeignKey(
+        Client,
         on_delete=models.CASCADE,
         related_name="invoices",
     )
@@ -94,14 +90,10 @@ class Invoice(BaseModel):
     )
 
     def __str__(self):
-        return (
-            f"Invoice on {self.month}/{self.year} for {self.customer_organization.name}"
-        )
+        return f"Invoice on {self.month}/{self.year} for {self.client.name}"
 
     def __repr__(self):
-        return (
-            f"Invoice on {self.month}/{self.year} for {self.customer_organization.name}"
-        )
+        return f"Invoice on {self.month}/{self.year} for {self.client.name}"
 
     @property
     def is_locked(self) -> bool:
@@ -153,40 +145,40 @@ class InvoiceItem(BaseModel):
 def client_file_path(instance, filename):
     return "/".join(
         [
-            str(instance.customer_organization.organization.pk),
-            str(instance.customer_organization.pk),
+            str(instance.client.organization.pk),
+            str(instance.client.pk),
             filename,
         ]
     )
 
 
-class CustomerOrganizationDocument(BaseModel):
+class ClientFile(BaseModel):
     """
-    CustomerOrganizationClient is a document file for a Client
+    ClientClient is a file file for a Client
     """
 
-    customer_organization = models.ForeignKey(
-        CustomerOrganization,
+    client = models.ForeignKey(
+        Client,
         on_delete=models.CASCADE,
-        related_name="documents",
+        related_name="files",
     )
 
     name = models.CharField(max_length=128, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    document = models.FileField(
-        upload_to=client_file_path, help_text="Document resource", null=True, blank=True
+    file = models.FileField(
+        upload_to=client_file_path, help_text="File resource", null=True, blank=True
     )
 
     def __str__(self):
-        return f"{self.customer_organization.name} - {self.name}"
+        return f"{self.client.name} - {self.name}"
 
     def __repr__(self):
-        return f"{self.customer_organization.name} - {self.name}"
+        return f"{self.client.name} - {self.name}"
 
     @property
     def url(self):
-        return self.document.url
+        return self.file.url
 
     @property
     def size(self):
-        return self.document.size
+        return self.file.size

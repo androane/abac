@@ -179,7 +179,7 @@ export type Query = {
   __typename?: 'Query';
   /** Get an individual Client */
   client: ClientType;
-  /** List all Documents of a Client */
+  /** List all files of a Client */
   clientFiles: Array<ClientFileType>;
   clientInvoice: InvoiceType;
   /** List all Clients */
@@ -235,7 +235,7 @@ export type UserType = {
 
 export type UserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string };
 
-export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
+export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
 
 export type InvoiceItemFragment = { __typename?: 'InvoiceItemType', uuid: string, description: string, unitPrice?: number | null, unitPriceCurrency?: CurrencyEnum | null, itemDate?: DateString | null, minutesAllocated?: number | null, isRecurring: boolean };
 
@@ -276,7 +276,7 @@ export type UpdateClientMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { __typename?: 'UpdateClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null } | null } | null };
+export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { __typename?: 'UpdateClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null } | null } | null };
 
 export type UpdateClientInvoiceItemMutationVariables = Exact<{
   invoiceUuid: Scalars['String']['input'];
@@ -307,7 +307,7 @@ export type ClientProgramManagersQuery = { __typename?: 'Query', programManagers
 export type ClientsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ClientsQuery = { __typename?: 'Query', clients: Array<{ __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null }> };
+export type ClientsQuery = { __typename?: 'Query', clients: Array<{ __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null }> };
 
 export type ClientFilesQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -343,6 +343,7 @@ export const ClientFragmentDoc = gql`
     uuid
     name
   }
+  cui
 }
     `;
 export const InvoiceItemFragmentDoc = gql`

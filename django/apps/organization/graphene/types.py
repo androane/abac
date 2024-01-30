@@ -4,12 +4,7 @@ from graphene_django import DjangoObjectType
 from graphene_file_upload.scalars import Upload
 
 from organization.constants import CurrencyEnum, InvoiceStatusEnum
-from organization.models import (
-    CustomerOrganization,
-    CustomerOrganizationDocument,
-    Invoice,
-    InvoiceItem,
-)
+from organization.models import Client, ClientFile, Invoice, InvoiceItem
 
 CurrencyEnumType = graphene.Enum.from_enum(CurrencyEnum)
 InvoiceStatusEnumType = graphene.Enum.from_enum(InvoiceStatusEnum)
@@ -59,7 +54,7 @@ class InvoiceItemInput(graphene.InputObjectType):
 
 class ClientFileType(DjangoObjectType):
     class Meta:
-        model = CustomerOrganizationDocument
+        model = ClientFile
         only_fields = ("updated",)
 
     # Model properties
@@ -68,7 +63,7 @@ class ClientFileType(DjangoObjectType):
     name = graphene.NonNull(graphene.String)
 
     def resolve_name(self, info):
-        return self.document.name
+        return self.file.name
 
 
 class ClientFileInput(graphene.InputObjectType):
@@ -77,7 +72,7 @@ class ClientFileInput(graphene.InputObjectType):
 
 class ClientType(DjangoObjectType):
     class Meta:
-        model = CustomerOrganization
+        model = Client
         only_fields = (
             "uuid",
             "name",
@@ -91,4 +86,4 @@ class ClientType(DjangoObjectType):
     files = graphene.List(graphene.NonNull(ClientFileType), required=True)
 
     def resolve_files(self, info, **kwargs):
-        return self.documents.all()
+        return self.files.all()

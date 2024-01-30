@@ -8,4 +8,5 @@ fragment Client on ClientType {
     uuid
     name
   }
+  cui
 }

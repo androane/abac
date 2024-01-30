@@ -4,16 +4,16 @@ from typing import Optional
 from django.contrib.auth import get_user_model
 from django.db.models import QuerySet
 
-from organization.models import CustomerOrganization
+from organization.models import Client
 from user.models import User
 
 
-def get_clients(user: User) -> QuerySet[CustomerOrganization]:
-    return user.organization.customer_organizations.all()
+def get_clients(user: User) -> QuerySet[Client]:
+    return user.organization.clients.all()
 
 
-def get_client(user: User, uuid: str) -> CustomerOrganization:
-    return user.organization.customer_organizations.get(uuid=uuid)
+def get_client(user: User, uuid: str) -> Client:
+    return user.organization.clients.get(uuid=uuid)
 
 
 def update_or_create_client(
@@ -32,11 +32,9 @@ def update_or_create_client(
         )
 
     if uuid:
-        client = CustomerOrganization.objects.get(
-            uuid=uuid, organization=user.organization
-        )
+        client = Client.objects.get(uuid=uuid, organization=user.organization)
     else:
-        client = CustomerOrganization(organization=user.organization)
+        client = Client(organization=user.organization)
 
     client.name = name
     client.description = description

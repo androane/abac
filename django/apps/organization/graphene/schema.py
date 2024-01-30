@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import graphene
-from django.contrib.auth import get_user_model
 
 from organization.graphene.mutations import (
     CreateClientFiles,
@@ -12,6 +11,7 @@ from organization.graphene.types import ClientFileType, ClientType, InvoiceType
 from organization.services.client_files_service import get_client_files
 from organization.services.client_invoice_service import get_client_invoice
 from organization.services.client_service import get_client, get_clients
+from organization.services.client_users import get_program_managers
 from user.decorators import logged_in_user_required
 from user.graphene.types import UserType
 
@@ -38,7 +38,7 @@ class Query(graphene.ObjectType):
     )
     client_files = graphene.List(
         graphene.NonNull(ClientFileType),
-        description="List all Documents of a Client",
+        description="List all files of a Client",
         client_uuid=graphene.String(required=True),
         required=True,
     )
@@ -66,7 +66,7 @@ class Query(graphene.ObjectType):
 
     @logged_in_user_required
     def resolve_program_managers(info, user, **kwargs):
-        return get_user_model().objects.filter(is_staff=False)
+        return get_program_managers(user)
 
 
 class Mutation(graphene.ObjectType):
