@@ -63,6 +63,7 @@
     "@graphql-codegen/typescript": "^4.0.1",
     "@graphql-codegen/typescript-operations": "^4.0.1",
     "@graphql-codegen/typescript-react-apollo": "^4.1.0",
+    "@types/apollo-upload-client": "^18.0.0",
     "@types/history": "^5.0.0",
     "@types/lodash": "^4.14.202",
     "@types/nprogress": "^0.2.3",

@@ -32,4 +32,4 @@ export type InvoiceTableFilters = {
 export type APIClient = ClientsQuery['clients'][0]
 export type APIClientInvoice = ClientInvoiceQuery['clientInvoice']
 export type APIInvoiceItem = ClientInvoiceQuery['clientInvoice']['items'][0]
-export type APIClientFile = ClientFilesQuery['clientFiles'][0]
+export type APIClientFile = ClientFilesQuery['client']['files'][0]
