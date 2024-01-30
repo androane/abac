@@ -1,26 +1,24 @@
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import { alpha, useTheme } from '@mui/material/styles';
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { alpha, useTheme } from '@mui/material/styles'
 
+import { useResponsive } from 'hooks/use-responsive'
 
-import { useResponsive } from 'hooks/use-responsive';
+import { bgGradient } from 'theme/css'
 
-import { bgGradient } from 'theme/css';
-
-import Logo from 'components/logo';
-
+import Logo from 'components/logo'
 
 type Props = {
-  title?: string;
-  image?: string;
-  children: React.ReactNode;
-};
+  title?: string
+  image?: string
+  children: React.ReactNode
+}
 
 export default function AuthLayout({ children, image, title }: Props) {
-  const theme = useTheme();
+  const theme = useTheme()
 
-  const mdUp = useResponsive('up', 'md');
+  const mdUp = useResponsive('up', 'md')
 
   const renderLogo = (
     <Logo
@@ -30,7 +28,7 @@ export default function AuthLayout({ children, image, title }: Props) {
         m: { xs: 2, md: 5 },
       }}
     />
-  );
+  )
 
   const renderContent = (
     <Stack
@@ -45,7 +43,7 @@ export default function AuthLayout({ children, image, title }: Props) {
     >
       {children}
     </Stack>
-  );
+  )
 
   const renderSection = (
     <Stack
@@ -57,14 +55,14 @@ export default function AuthLayout({ children, image, title }: Props) {
         ...bgGradient({
           color: alpha(
             theme.palette.background.default,
-            theme.palette.mode === 'light' ? 0.88 : 0.94
+            theme.palette.mode === 'light' ? 0.88 : 0.94,
           ),
           imgUrl: '/assets/background/overlay_2.jpg',
         }),
       }}
     >
       <Typography variant="h3" sx={{ maxWidth: 480, textAlign: 'center' }}>
-        {title || 'Salut, bine ai revenit!'}
+        {title}
       </Typography>
 
       <Box
@@ -80,7 +78,7 @@ export default function AuthLayout({ children, image, title }: Props) {
         }}
       />
     </Stack>
-  );
+  )
 
   return (
     <Stack
@@ -96,5 +94,5 @@ export default function AuthLayout({ children, image, title }: Props) {
 
       {renderContent}
     </Stack>
-  );
+  )
 }
