@@ -168,7 +168,7 @@ export default function ClientNewEditForm({ client }: Props) {
               <RHFTextField name="phoneNumber1" label="Telefon 1" />
               <RHFTextField name="phoneNumber2" label="Telefon 2" />
               <ResponseHandler {...result}>
-                {({ programManagers }) => {
+                {({ clientProgramManagers }) => {
                   return (
                     <RHFSelect
                       native
@@ -177,7 +177,7 @@ export default function ClientNewEditForm({ client }: Props) {
                       InputLabelProps={{ shrink: true }}
                     >
                       <option key="null" value="" />
-                      {programManagers.map(pm => (
+                      {clientProgramManagers.map(pm => (
                         <option key={pm.uuid} value={pm.uuid}>
                           {pm.name}
                         </option>

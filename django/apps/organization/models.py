@@ -4,7 +4,7 @@ from datetime import date
 from django.db import models
 
 from core.models import BaseModel
-from organization.constants import CurrencyEnum
+from organization.constants import ClientUserRoleEnum, CurrencyEnum
 
 
 class Organization(BaseModel):
@@ -39,15 +39,29 @@ class Client(BaseModel):
     phone_number_1 = models.CharField(max_length=12, blank=True)
     phone_number_2 = models.CharField(max_length=12, blank=True)
     program_manager = models.ForeignKey(
-        "user.User", on_delete=models.SET_NULL, blank=True, null=True
+        "user.User",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="clients",
     )
     cui = models.CharField(
         max_length=32, blank=True, null=True, help_text="CUI - Cod Unic de Identificare"
     )
 
     # Accounting specific fields
-    # inventory_app = models.CharField(max_length=128, blank=True, null=True, help_text="Application they use to manage inventory")
-    # accounting_app = models.CharField(max_length=128, choices=AccountingAppEnum.choices, blank=True, null=True, help_text="Application they use for accounting")
+    inventory_app = models.CharField(
+        max_length=128,
+        blank=True,
+        null=True,
+        help_text="Application they use to manage inventory",
+    )
+    accounting_app = models.CharField(
+        max_length=128,
+        blank=True,
+        null=True,
+        help_text="Application they use for accounting",
+    )
 
     def __str__(self):
         return self.name
@@ -182,3 +196,39 @@ class ClientFile(BaseModel):
     @property
     def size(self):
         return self.file.size
+
+
+class ClientUserProfile(BaseModel):
+    user = models.OneToOneField(
+        "user.User", on_delete=models.CASCADE, related_name="client_profile", null=True
+    )
+    client = models.ForeignKey(
+        "organization.Client", on_delete=models.CASCADE, related_name="user_profiles"
+    )
+
+    ownership_percentage = models.SmallIntegerField(
+        null=True,
+        blank=True,
+        help_text="What percentage of the organization does this user own?",
+    )
+    role = models.CharField(
+        max_length=64,
+        choices=ClientUserRoleEnum.choices,
+        blank=True,
+        null=True,
+        help_text="Role in the organization",
+    )
+
+    # Accounting Specific Fields
+    spv_username = models.CharField(
+        max_length=64, blank=True, null=True, help_text="SPV Username"
+    )
+    spv_password = models.CharField(
+        max_length=64, blank=True, null=True, help_text="SPV Password"
+    )
+
+    def __str__(self):
+        return f"{self.client.name} - {self.user.name}"
+
+    def __repr__(self):
+        return f"{self.client.name} - {self.user.name}"

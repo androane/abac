@@ -1,4 +1,10 @@
-import { ClientFilesQuery, ClientInvoiceQuery, ClientsQuery, CurrencyEnum } from 'generated/graphql'
+import {
+  ClientFilesQuery,
+  ClientInvoiceQuery,
+  ClientUserRoleEnum,
+  ClientsQuery,
+  CurrencyEnum,
+} from 'generated/graphql'
 
 export type ClientItem = {
   id: string
@@ -27,6 +33,16 @@ export type InvoiceItem = {
 
 export type InvoiceTableFilters = {
   description: string
+}
+
+export type ClientUser = {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  role?: null | ClientUserRoleEnum
+  spvUsername?: null | string
+  spvPassword?: null | string
 }
 
 export type APIClient = ClientsQuery['clients'][0]

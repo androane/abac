@@ -1,0 +1,12 @@
+fragment ClientUser on UserType {
+  uuid
+  email
+  firstName
+  lastName
+  clientProfile {
+    ownershipPercentage
+    role
+    spvUsername
+    spvPassword
+  }
+}

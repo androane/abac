@@ -2,14 +2,23 @@
 import os
 
 import graphene
+from django.contrib.auth import get_user_model
 from graphene_django import DjangoObjectType
 from graphene_file_upload.scalars import Upload
 
-from organization.constants import CurrencyEnum, InvoiceStatusEnum
-from organization.models import Client, ClientFile, Invoice, InvoiceItem
+from organization.constants import ClientUserRoleEnum, CurrencyEnum, InvoiceStatusEnum
+from organization.models import (
+    Client,
+    ClientFile,
+    ClientUserProfile,
+    Invoice,
+    InvoiceItem,
+)
+from user.graphene.types import UserType
 
 CurrencyEnumType = graphene.Enum.from_enum(CurrencyEnum)
 InvoiceStatusEnumType = graphene.Enum.from_enum(InvoiceStatusEnum)
+ClientUserRoleEnumType = graphene.Enum.from_enum(ClientUserRoleEnum)
 
 
 class InvoiceItemType(DjangoObjectType):
@@ -87,6 +96,36 @@ class ClientType(DjangoObjectType):
         )
 
     files = graphene.List(graphene.NonNull(ClientFileType), required=True)
+    users = graphene.List(graphene.NonNull(UserType), required=True)
 
     def resolve_files(self, info, **kwargs):
         return self.files.all()
+
+    def resolve_users(self, info, **kwargs):
+        return get_user_model().objects.filter(
+            organization=info.contenxt.user.organization, client_profile=self
+        )
+
+
+class ClientUserProfileType(DjangoObjectType):
+    class Meta:
+        model = ClientUserProfile
+        only_fields = (
+            "uuid",
+            "ownership_percentage",
+            "role",
+            "spv_username",
+            "spv_password",
+        )
+
+    role = ClientUserRoleEnumType()
+
+
+class ClientUserInput(graphene.InputObjectType):
+    uuid = graphene.String()
+    first_name = graphene.String(required=True)
+    last_name = graphene.String(required=True)
+    email = graphene.String(required=True)
+    spv_username = graphene.String()
+    spv_password = graphene.String()
+    role = ClientUserRoleEnumType()

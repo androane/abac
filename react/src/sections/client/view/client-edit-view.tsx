@@ -10,13 +10,15 @@ import { useCallback, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { paths } from 'routes/paths'
 import FilesListView from './files-list-view'
+import UsersListView from '../users-list-view'
 import ClientNewEditForm from '../client-new-edit-form'
 import InvoiceDetailsView from './invoice-details-view'
 
 enum TABS_VALUES {
-  GENERAL = 'general',
-  INVOICING = 'invoicing',
-  FILES = 'files',
+  GENERAL = 'g',
+  INVOICING = 'i',
+  FILES = 'f',
+  USERS = 'u',
 }
 
 const TABS = [
@@ -35,6 +37,11 @@ const TABS = [
     label: 'Documente',
     icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
   },
+  {
+    value: TABS_VALUES.USERS,
+    label: 'Utilizatori',
+    icon: <Iconify icon="solar:users-group-rounded-bold" width={24} />,
+  },
 ]
 
 type Props = {
@@ -46,9 +53,9 @@ export default function UserEditView({ id }: Props) {
 
   const result = useClientsQuery()
 
-  const [currentTab, setCurrentTab] = useState('invoicing')
+  const [currentTab, setCurrentTab] = useState(TABS_VALUES.GENERAL)
 
-  const handleChangeTab = useCallback((_: React.SyntheticEvent, newValue: string) => {
+  const handleChangeTab = useCallback((_: React.SyntheticEvent, newValue: TABS_VALUES) => {
     setCurrentTab(newValue)
   }, [])
 
@@ -63,7 +70,7 @@ export default function UserEditView({ id }: Props) {
           return (
             <>
               <CustomBreadcrumbs
-                heading="Edit"
+                heading={client.name}
                 links={[
                   {
                     name: 'Panou Principal',
@@ -77,7 +84,7 @@ export default function UserEditView({ id }: Props) {
                     name: 'Lista',
                     href: paths.dashboard.client.list,
                   },
-                  { name: client?.name },
+                  { name: client.name },
                 ]}
                 sx={{
                   mb: { xs: 3, md: 5 },
@@ -101,6 +108,7 @@ export default function UserEditView({ id }: Props) {
                 <InvoiceDetailsView clientId={client.uuid} />
               )}
               {currentTab === TABS_VALUES.FILES && <FilesListView clientId={client.uuid} />}
+              {currentTab === TABS_VALUES.USERS && <UsersListView clientId={client.uuid} />}
             </>
           )
         }}

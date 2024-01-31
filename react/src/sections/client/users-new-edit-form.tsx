@@ -1,7 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import Button from '@mui/material/Button'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
 import Dialog from '@mui/material/Dialog'
@@ -10,58 +9,51 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import Box from '@mui/material/Box'
 import DialogActions from '@mui/material/DialogActions'
-import { format } from 'date-fns'
 
 import FormProvider, { RHFSelect, RHFTextField } from 'components/hook-form'
 import { useSnackbar } from 'components/snackbar'
 import {
-  CurrencyEnum,
-  useUpdateClientInvoiceItemMutation,
+  useUpdateClientUserMutation,
   ClientInvoiceQuery,
   ClientInvoiceDocument,
+  ClientUserRoleEnum,
 } from 'generated/graphql'
-import { InvoiceItem } from './types'
+import { ClientUser } from 'sections/client/types'
 
 type Props = {
   clientId: string
-  invoiceId: string
-  invoiceDate: null | Date
+  user: ClientUser
   onClose: () => void
-  invoiceItem?: InvoiceItem
 }
 
-export default function InvoiceItemNewEditForm({
-  clientId,
-  invoiceId,
-  invoiceDate,
-  invoiceItem,
-  onClose,
-}: Props) {
-  const [updateInvoiceItem] = useUpdateClientInvoiceItemMutation()
+export default function UserNewEditForm({ clientId, user, onClose }: Props) {
+  const [updateClientUser] = useUpdateClientUserMutation()
 
   const { enqueueSnackbar } = useSnackbar()
 
-  const [itemDate, setItemDate] = useState(invoiceItem?.itemDate)
-
-  const NewInvoiceSchema = Yup.object().shape({
-    description: Yup.string().required('Acest camp este obligatoriu'),
-    unitPrice: Yup.number().nullable(),
-    unitPriceCurrency: Yup.mixed<CurrencyEnum>().oneOf(Object.values(CurrencyEnum)).nullable(),
-    minutesAllocated: Yup.number().nullable(),
+  const NewUserSchema = Yup.object().shape({
+    firstName: Yup.string().required('Acest camp este obligatoriu'),
+    lastName: Yup.string().required('Acest camp este obligatoriu'),
+    email: Yup.string().required('Acest camp este obligatoriu'),
+    role: Yup.mixed<ClientUserRoleEnum>().oneOf(Object.values(ClientUserRoleEnum)).nullable(),
+    spvUsername: Yup.string().nullable(),
+    spvPassword: Yup.string().nullable(),
   })
 
   const defaultValues = useMemo(
     () => ({
-      description: invoiceItem?.description || '',
-      unitPrice: invoiceItem?.unitPrice,
-      unitPriceCurrency: invoiceItem?.unitPriceCurrency,
-      minutesAllocated: invoiceItem?.minutesAllocated,
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      email: user?.email,
+      role: user?.role,
+      spvUsername: user?.spvUsername,
+      spvPassword: user?.spvPassword,
     }),
-    [invoiceItem],
+    [user],
   )
 
   const methods = useForm({
-    resolver: yupResolver(NewInvoiceSchema),
+    resolver: yupResolver(NewUserSchema),
     defaultValues,
   })
 
@@ -73,16 +65,17 @@ export default function InvoiceItemNewEditForm({
 
   const onSubmit = handleSubmit(async data => {
     try {
-      await updateInvoiceItem({
+      await updateClientUser({
         variables: {
-          invoiceUuid: invoiceId,
-          invoiceItemInput: {
-            uuid: invoiceItem?.id,
-            description: data.description,
-            unitPrice: data.unitPrice,
-            unitPriceCurrency: data.unitPriceCurrency,
-            minutesAllocated: data.minutesAllocated,
-            itemDate,
+          clientUuid: clientId,
+          clientUserInput: {
+            uuid: user?.id,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            role: data.role,
+            spvUsername: data.spvUsername,
+            spvPassword: data.spvPassword,
           },
         },
         // update(cache) {
@@ -108,7 +101,7 @@ export default function InvoiceItemNewEditForm({
               year: 2024,
             },
           }
-          if (!responseData?.updateClientInvoiceItem?.invoiceItem) return
+          if (!responseData?.updateClientUser?.clientUser) return
           const cachedData = cache.readQuery<ClientInvoiceQuery>(cacheClientsInvoiceQuery)
 
           console.log('cachedData', cachedData)
@@ -158,37 +151,19 @@ export default function InvoiceItemNewEditForm({
               sm: 'repeat(2, 1fr)',
             }}
           >
-            <RHFTextField name="description" label="Descriere" multiline rows={5} />
-            <DatePicker
-              label="Ziua din luna"
-              minDate={invoiceDate}
-              value={itemDate && new Date(itemDate)}
-              onChange={newItemDate =>
-                newItemDate && setItemDate(format(newItemDate, 'yyyy-MM-dd'))
-              }
-              disableFuture
-              name="itemDate"
-              slotProps={{ textField: { fullWidth: true } }}
-              views={['day']}
-              sx={{
-                maxWidth: { md: 180 },
-              }}
-            />
-            <RHFTextField name="unitPrice" label="Cost" />
-            <RHFSelect
-              native
-              name="unitPriceCurrency"
-              label="Moneda"
-              InputLabelProps={{ shrink: true }}
-            >
+            <RHFTextField name="firstName" label="Prenume" />
+            <RHFTextField name="lastName" label="Nume" />
+            <RHFTextField name="email" label="Email" />
+            <RHFTextField name="spvUsername" label="Utilizator SPV" />
+            <RHFTextField name="spvPassword" label="Partola SPV" />
+            <RHFSelect native name="role" label="Rol" InputLabelProps={{ shrink: true }}>
               <option key="null" value="" />
-              {Object.keys(CurrencyEnum).map(currency => (
+              {Object.keys(ClientUserRoleEnum).map(currency => (
                 <option key={currency} value={currency}>
                   {currency}
                 </option>
               ))}
             </RHFSelect>
-            <RHFTextField name="minutesAllocated" label="Numar de minute alocate" />
           </Box>
 
           <DialogActions>

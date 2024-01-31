@@ -122,11 +122,11 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
   return (
     <Card>
       <ResponseHandler {...result}>
-        {({ programManagers }) => {
+        {({ clientProgramManagers }) => {
           return (
             <ClientTableToolbar
               filters={filters}
-              programManagers={programManagers.map(programManager => ({
+              programManagers={clientProgramManagers.map(programManager => ({
                 id: programManager.uuid,
                 label: programManager.name,
               }))}

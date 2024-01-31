@@ -12,7 +12,14 @@ class UserType(DjangoObjectType):
         only_fields = (
             "uuid",
             "email",
+            "first_name",
+            "last_name",
+            "client_profile",
         )
+
+    client_profile = graphene.NonNull(
+        "organization.graphene.types.ClientUserProfileType"
+    )
 
     # properties
     name = graphene.String(required=True)
