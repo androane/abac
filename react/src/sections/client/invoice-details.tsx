@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import Card from '@mui/material/Card'
 import Table from '@mui/material/Table'
@@ -23,10 +23,10 @@ import ResponseHandler from 'components/response-handler'
 import { useClientInvoiceQuery } from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import InvoiceItemNewEditForm from 'sections/client/invoice-item-new-edit-form'
-import InvoiceTableFiltersResult from '../invoice-table-filters-result'
-import InvoiceTableRow from '../invoice-table-row'
-import InvoiceTableToolbar from '../invoice-table-toolbar'
-import { APIClientInvoice, InvoiceItem, InvoiceTableFilters } from '../types'
+import InvoiceTableFiltersResult from './invoice-table-filters-result'
+import InvoiceTableRow from './invoice-table-row'
+import InvoiceTableToolbar from './invoice-table-toolbar'
+import { APIClientInvoice, InvoiceItem, InvoiceTableFilters } from './types'
 
 const defaultFilters = {
   description: '',
@@ -41,14 +41,12 @@ const TABLE_HEAD = [
 ]
 
 type InvoiceDetailsCardProps = {
-  clientId: string
   clientInvoice: APIClientInvoice
   invoiceDate: null | Date
   onChangeInvoiceDate: (newDate: null | Date) => void
 }
 
 const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
-  clientId,
   clientInvoice,
   invoiceDate,
   onChangeInvoiceDate,
@@ -67,6 +65,10 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
 
   const { enqueueSnackbar } = useSnackbar()
   const [tableData, setTableData] = useState(invoiceItems)
+
+  useEffect(() => {
+    setTableData(invoiceItems)
+  }, [invoiceItems])
 
   const table = useTable()
 
@@ -129,7 +131,6 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
     <Card>
       {showCreateInvoiceItem.value && (
         <InvoiceItemNewEditForm
-          clientId={clientId}
           invoiceId={clientInvoice.uuid}
           invoiceDate={invoiceDate}
           invoiceItem={invoiceItems.find(_ => _.id === invoiceItemIdToEdit)}
@@ -228,7 +229,6 @@ export default function InvoiceDetailsView({ clientId }: Props) {
       {({ clientInvoice }) => {
         return (
           <InvoiceDetailsCard
-            clientId={clientId}
             clientInvoice={clientInvoice}
             invoiceDate={invoiceDate}
             onChangeInvoiceDate={setInvoiceDate}

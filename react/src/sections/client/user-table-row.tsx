@@ -10,6 +10,8 @@ import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
 
 import { useBoolean } from 'hooks/use-boolean'
+import { ROLE_LABELS } from 'sections/client/constants'
+import { ClientUserRoleEnum } from 'generated/graphql'
 import { ClientUser } from './types'
 
 type Props = {
@@ -19,7 +21,7 @@ type Props = {
 }
 
 export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) {
-  const { name, email, role, spvUsername, spvPassword } = row
+  const { firstName, lastName, email, role, spvUsername, spvPassword } = row
 
   const confirm = useBoolean()
 
@@ -38,7 +40,7 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
               },
             }}
           >
-            {name}
+            {lastName} {firstName}
           </Box>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -54,7 +56,7 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={role}
+            primary={ROLE_LABELS[role as ClientUserRoleEnum]}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

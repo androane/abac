@@ -9,4 +9,6 @@ fragment Client on ClientType {
     name
   }
   cui
+  spvUsername
+  spvPassword
 }

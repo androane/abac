@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import Card from '@mui/material/Card'
 import Table from '@mui/material/Table'
@@ -49,6 +49,10 @@ const UserListCard: React.FC<CardProps> = ({ clientId, users }) => {
 
   const table = useTable()
 
+  useEffect(() => {
+    setTableData(users)
+  }, [users])
+
   const denseHeight = table.dense ? 56 : 56 + 20
 
   const dataInPage = tableData.slice(
@@ -78,11 +82,11 @@ const UserListCard: React.FC<CardProps> = ({ clientId, users }) => {
   )
 
   return (
-    <Card>
+    <>
       <Stack direction="row" alignItems="center" sx={{ mb: 3 }}>
         <Stack flexGrow={1}>
           <Stack direction="row" alignItems="center" spacing={1} flexGrow={1}>
-            <Typography variant="h6"> Fisiere </Typography>
+            <Typography variant="h6"> Persoane </Typography>
 
             <IconButton
               size="small"
@@ -104,64 +108,66 @@ const UserListCard: React.FC<CardProps> = ({ clientId, users }) => {
 
           <Box
             sx={{ typography: 'body2', color: 'text.disabled', mt: 0.5 }}
-          >{`${users.length} fisere`}</Box>
+          >{`${users.length} persoane`}</Box>
         </Stack>
       </Stack>
-      {showCreateUser.value && (
-        <UserNewEditForm
-          clientId={clientId}
-          user={users.find(_ => _.id === userIdToEdit)}
-          onClose={showCreateUser.onFalse}
-        />
-      )}
-      <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-        <Scrollbar>
-          <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-            <TableHeadCustom
-              order={table.order}
-              orderBy={table.orderBy}
-              headLabel={TABLE_HEAD}
-              rowCount={tableData.length}
-              numSelected={table.selected.length}
-              onSort={table.onSort}
-            />
-
-            <TableBody>
-              {tableData
-                .slice(
-                  table.page * table.rowsPerPage,
-                  table.page * table.rowsPerPage + table.rowsPerPage,
-                )
-                .map(row => (
-                  <UserTableRow
-                    key={row.id}
-                    row={row}
-                    onDeleteRow={() => handleDeleteRow(row.id)}
-                    onEditRow={() => handleEditRow(row.id)}
-                  />
-                ))}
-
-              <TableEmptyRows
-                height={denseHeight}
-                emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
+      <Card>
+        {showCreateUser.value && (
+          <UserNewEditForm
+            clientId={clientId}
+            user={users.find(_ => _.id === userIdToEdit)}
+            onClose={showCreateUser.onFalse}
+          />
+        )}
+        <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          <Scrollbar>
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={tableData.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
               />
 
-              <TableNoData notFound={!tableData.length} />
-            </TableBody>
-          </Table>
-        </Scrollbar>
-      </TableContainer>
-      <TablePaginationCustom
-        count={tableData.length}
-        page={table.page}
-        rowsPerPage={table.rowsPerPage}
-        onPageChange={table.onChangePage}
-        onRowsPerPageChange={table.onChangeRowsPerPage}
-        //
-        dense={table.dense}
-        onChangeDense={table.onChangeDense}
-      />
-    </Card>
+              <TableBody>
+                {tableData
+                  .slice(
+                    table.page * table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage,
+                  )
+                  .map(row => (
+                    <UserTableRow
+                      key={row.id}
+                      row={row}
+                      onDeleteRow={() => handleDeleteRow(row.id)}
+                      onEditRow={() => handleEditRow(row.id)}
+                    />
+                  ))}
+
+                <TableEmptyRows
+                  height={denseHeight}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
+                />
+
+                <TableNoData notFound={!tableData.length} />
+              </TableBody>
+            </Table>
+          </Scrollbar>
+        </TableContainer>
+        <TablePaginationCustom
+          count={tableData.length}
+          page={table.page}
+          rowsPerPage={table.rowsPerPage}
+          onPageChange={table.onChangePage}
+          onRowsPerPageChange={table.onChangeRowsPerPage}
+          //
+          dense={table.dense}
+          onChangeDense={table.onChangeDense}
+        />
+      </Card>
+    </>
   )
 }
 
@@ -181,9 +187,11 @@ export default function UserListView({ clientId }: Props) {
       {({ clientUsers: apiClientUsers }) => {
         const users = apiClientUsers?.map(user => ({
           id: user.uuid,
-          name: user.name,
+          firstName: user.firstName,
+          lastName: user.lastName,
           email: user.email,
           role: user.clientProfile.role,
+          ownershipPercentage: user.clientProfile.ownershipPercentage,
           spvUsername: user.clientProfile.spvUsername,
           spvPassword: user.clientProfile.spvPassword,
         }))

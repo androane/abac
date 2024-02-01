@@ -15,6 +15,7 @@ class UserType(DjangoObjectType):
             "first_name",
             "last_name",
             "client_profile",
+            "organization",
         )
 
     client_profile = graphene.NonNull(

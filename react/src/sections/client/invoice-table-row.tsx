@@ -55,7 +55,7 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={`${unitPrice} ${unitPriceCurrency}`}
+            primary={`${unitPrice || ''} ${unitPriceCurrency || ''}`}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

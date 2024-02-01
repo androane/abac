@@ -69,7 +69,9 @@ def update_client_invoice_item(
     invoice_uuid: str,
     invoice_item_input: InvoiceItemInput,
 ) -> InvoiceItem:
-    invoice = Invoice.objects.get(uuid=invoice_uuid, client=user.client)
+    invoice = Invoice.objects.get(
+        uuid=invoice_uuid, client__organization=user.organization
+    )
     if invoice_item_input.uuid:
         invoice_item = invoice.items.get(uuid=invoice_item_input.uuid)
     else:
@@ -87,4 +89,4 @@ def update_client_invoice_item(
         invoice_item.is_recurring = True
 
     invoice_item.save()
-    return invoice_item
+    return invoice

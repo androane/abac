@@ -7,7 +7,6 @@ from organization.graphene.types import (
     ClientType,
     ClientUserInput,
     InvoiceItemInput,
-    InvoiceItemType,
     InvoiceStatusEnumType,
     InvoiceType,
 )
@@ -30,6 +29,9 @@ class UpdateClient(BaseMutation):
         phone_number_1 = graphene.String()
         phone_number_2 = graphene.String()
         program_manager_uuid = graphene.String()
+        spv_username = graphene.String()
+        spv_password = graphene.String()
+        cui = graphene.String()
 
     client = graphene.Field(ClientType)
 
@@ -69,17 +71,17 @@ class UpdateClientInvoiceItem(BaseMutation):
         invoice_uuid = graphene.String(required=True)
         invoice_item_input = graphene.NonNull(InvoiceItemInput)
 
-    invoice_item = graphene.Field(InvoiceItemType)
+    invoice = graphene.Field(InvoiceType)
 
     @logged_in_user_required
     def mutate(self, user, **kwargs):
         try:
-            invoice_item = update_client_invoice_item(user, **kwargs)
+            invoice = update_client_invoice_item(user, **kwargs)
         except Exception as e:
             return get_graphene_error(str(e))
 
         return {
-            "invoice_item": invoice_item,
+            "invoice": invoice,
         }
 
 

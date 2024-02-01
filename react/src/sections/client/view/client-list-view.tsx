@@ -54,7 +54,7 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
   const { enqueueSnackbar } = useSnackbar()
   const [tableData, setTableData] = useState(clients)
 
-  const table = useTable({ defaultRowsPerPage: 25 })
+  const table = useTable()
 
   const denseHeight = table.dense ? 56 : 56 + 20
 

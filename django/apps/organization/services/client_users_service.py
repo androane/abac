@@ -8,7 +8,7 @@ from user.models import User
 
 
 def get_client_program_managers() -> QuerySet[User]:
-    return get_user_model().objects.filter(is_staff=False)
+    return get_user_model().objects.filter(is_staff=False, client__isnull=True)
 
 
 def get_client_users(user: User, client_uuid: str) -> QuerySet[User]:
@@ -42,9 +42,10 @@ def update_client_user(
     client_user.last_name = client_user_input.last_name
     client_user.save()
 
+    client_user_profile.ownership_percentage = client_user_input.ownership_percentage
+    client_user_profile.role = client_user_input.role
     client_user_profile.spv_username = client_user_input.spv_username
     client_user_profile.spv_password = client_user_input.spv_password
-    client_user_profile.role = client_user_input.role
     client_user_profile.user = client_user
     client_user_profile.save()
 

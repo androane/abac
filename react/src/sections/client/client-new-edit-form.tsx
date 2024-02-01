@@ -17,12 +17,7 @@ import { paths } from 'routes/paths'
 
 import ResponseHandler from 'components/response-handler'
 import { useSnackbar } from 'components/snackbar'
-import {
-  useClientProgramManagersQuery,
-  useUpdateClientMutation,
-  ClientsQuery,
-  ClientsDocument,
-} from 'generated/graphql'
+import { useClientProgramManagersQuery, useUpdateClientMutation } from 'generated/graphql'
 import { fData } from 'utils/format-number'
 import { APIClient } from './types'
 
@@ -46,16 +41,22 @@ export default function ClientNewEditForm({ client }: Props) {
     phoneNumber1: Yup.string().nullable(),
     phoneNumber2: Yup.string().nullable(),
     programManagerUuid: Yup.string().nullable(),
+    spvUsername: Yup.string().nullable(),
+    spvPassword: Yup.string().nullable(),
+    cui: Yup.string().nullable(),
   })
 
   const defaultValues = useMemo(
     () => ({
       name: client?.name || '',
-      description: client?.description,
+      description: client?.description || '',
       imageUrl: null,
       phoneNumber1: client?.phoneNumber1,
       phoneNumber2: client?.phoneNumber2,
       programManagerUuid: client?.programManager?.uuid,
+      spvUsername: client?.spvUsername,
+      spvPassword: client?.spvPassword,
+      cui: client?.cui,
     }),
     [client],
   )
@@ -82,21 +83,9 @@ export default function ClientNewEditForm({ client }: Props) {
           phoneNumber1: data.phoneNumber1,
           phoneNumber2: data.phoneNumber2,
           programManagerUuid: data.programManagerUuid,
-        },
-        update: (cache, { data: responseData }) => {
-          const cacheClientsQuery = {
-            query: ClientsDocument,
-            variables: {
-              uuid: client?.uuid,
-            },
-          }
-          if (!responseData?.updateClient?.client) return
-          const cachedData = cache.readQuery<ClientsQuery>(cacheClientsQuery)
-          if (!cachedData?.clients) return
-          cache.writeQuery({
-            ...cacheClientsQuery,
-            data: { clients: cachedData.clients.concat([responseData.updateClient.client]) },
-          })
+          spvUsername: data.spvUsername,
+          spvPassword: data.spvPassword,
+          cui: data.cui,
         },
       })
       reset()
@@ -164,9 +153,6 @@ export default function ClientNewEditForm({ client }: Props) {
               }}
             >
               <RHFTextField name="name" label="Nume" />
-              <RHFTextField name="description" label="Descriere" multiline rows={5} />
-              <RHFTextField name="phoneNumber1" label="Telefon 1" />
-              <RHFTextField name="phoneNumber2" label="Telefon 2" />
               <ResponseHandler {...result}>
                 {({ clientProgramManagers }) => {
                   return (
@@ -186,6 +172,26 @@ export default function ClientNewEditForm({ client }: Props) {
                   )
                 }}
               </ResponseHandler>
+              <RHFTextField name="phoneNumber1" label="Telefon 1" />
+              <RHFTextField name="phoneNumber2" label="Telefon 2" />
+              <RHFTextField name="cui" label="CUI" />
+            </Box>
+            <Box sx={{ pt: 3 }}>
+              <RHFTextField name="description" label="Descriere" multiline rows={5} />
+            </Box>
+
+            <Box
+              sx={{ pt: 3 }}
+              rowGap={3}
+              columnGap={2}
+              display="grid"
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(2, 1fr)',
+              }}
+            >
+              <RHFTextField name="spvUsername" label="Utilizator SPV" />
+              <RHFTextField name="spvPassword" label="Parola SPV" />
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>

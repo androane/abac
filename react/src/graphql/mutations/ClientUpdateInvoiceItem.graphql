@@ -5,8 +5,11 @@ mutation UpdateClientInvoiceItem($invoiceUuid: String!, $invoiceItemInput: Invoi
     error {
       ...Error
     }
-    invoiceItem {
-      ...InvoiceItem
+    invoice {
+      uuid
+      items {
+        ...InvoiceItem
+      }
     }
   }
 }

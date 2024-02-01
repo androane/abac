@@ -16,9 +16,9 @@ import { useBoolean } from 'hooks/use-boolean'
 import Iconify from 'components/iconify'
 import IconButton from '@mui/material/IconButton'
 import EmptyContent from 'components/empty-content'
-import CreateFilesDialog from 'sections/client/files-new-files-dialog'
+import FilesNewDialog from 'sections/client/files-new-dialog'
 import { Link } from 'react-router-dom'
-import { APIClientFile } from '../types'
+import { APIClientFile } from './types'
 
 type FileDetailsProps = {
   clientId: string
@@ -127,7 +127,7 @@ type Props = {
   clientId: string
 }
 
-export default function FilesListView({ clientId }: Props) {
+export default function FilesList({ clientId }: Props) {
   const upload = useBoolean()
 
   const result = useClientFilesQuery({
@@ -193,7 +193,7 @@ export default function FilesListView({ clientId }: Props) {
                 }}
               />
             )}
-            <CreateFilesDialog clientId={clientId} open={upload.value} onClose={upload.onFalse} />
+            <FilesNewDialog clientId={clientId} open={upload.value} onClose={upload.onFalse} />
           </>
         )
       }}

@@ -41,6 +41,7 @@ export type ClientUser = {
   lastName: string
   email: string
   role?: null | ClientUserRoleEnum
+  ownershipPercentage?: null | number
   spvUsername?: null | string
   spvPassword?: null | string
 }

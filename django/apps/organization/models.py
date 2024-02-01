@@ -4,11 +4,28 @@ from datetime import date
 from django.db import models
 
 from core.models import BaseModel
+from core.utils import replace_filename
 from organization.constants import ClientUserRoleEnum, CurrencyEnum
+
+
+def organization_logo_path(instance, filename):
+    return "/".join(
+        [
+            "organization",
+            str(instance.pk),
+            replace_filename(filename, "logo"),
+        ]
+    )
 
 
 class Organization(BaseModel):
     name = models.CharField(max_length=128, unique=True)
+    logo = models.FileField(
+        upload_to=organization_logo_path,
+        help_text="Organization logo",
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
         return self.name
@@ -50,6 +67,12 @@ class Client(BaseModel):
     )
 
     # Accounting specific fields
+    spv_username = models.CharField(
+        max_length=64, blank=True, null=True, help_text="SPV Username"
+    )
+    spv_password = models.CharField(
+        max_length=64, blank=True, null=True, help_text="SPV Password"
+    )
     inventory_app = models.CharField(
         max_length=128,
         blank=True,
@@ -159,7 +182,9 @@ class InvoiceItem(BaseModel):
 def client_file_path(instance, filename):
     return "/".join(
         [
+            "organization",
             str(instance.client.organization.pk),
+            "client",
             str(instance.client.pk),
             filename,
         ]

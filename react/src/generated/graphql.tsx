@@ -44,6 +44,10 @@ export type ClientType = {
   phoneNumber1: Scalars['String']['output'];
   phoneNumber2: Scalars['String']['output'];
   programManager?: Maybe<UserType>;
+  /** SPV Password */
+  spvPassword?: Maybe<Scalars['String']['output']>;
+  /** SPV Username */
+  spvUsername?: Maybe<Scalars['String']['output']>;
   users: Array<UserType>;
   uuid: Scalars['String']['output'];
 };
@@ -52,6 +56,7 @@ export type ClientUserInput = {
   email: Scalars['String']['input'];
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
+  ownershipPercentage?: InputMaybe<Scalars['Int']['input']>;
   role?: InputMaybe<ClientUserRoleEnum>;
   spvPassword?: InputMaybe<Scalars['String']['input']>;
   spvUsername?: InputMaybe<Scalars['String']['input']>;
@@ -188,11 +193,14 @@ export type MutationLoginArgs = {
 
 
 export type MutationUpdateClientArgs = {
+  cui?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   phoneNumber1?: InputMaybe<Scalars['String']['input']>;
   phoneNumber2?: InputMaybe<Scalars['String']['input']>;
   programManagerUuid?: InputMaybe<Scalars['String']['input']>;
+  spvPassword?: InputMaybe<Scalars['String']['input']>;
+  spvUsername?: InputMaybe<Scalars['String']['input']>;
   uuid?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -212,6 +220,13 @@ export type MutationUpdateClientInvoiceStatusArgs = {
 export type MutationUpdateClientUserArgs = {
   clientUserInput: ClientUserInput;
   clientUuid: Scalars['String']['input'];
+};
+
+export type OrganizationType = {
+  __typename?: 'OrganizationType';
+  logoUrl: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  uuid: Scalars['String']['output'];
 };
 
 export type Query = {
@@ -263,7 +278,7 @@ export type UpdateClient = {
 export type UpdateClientInvoiceItem = {
   __typename?: 'UpdateClientInvoiceItem';
   error?: Maybe<ErrorType>;
-  invoiceItem?: Maybe<InvoiceItemType>;
+  invoice?: Maybe<InvoiceType>;
 };
 
 export type UpdateClientInvoiceStatus = {
@@ -285,12 +300,13 @@ export type UserType = {
   firstName: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  organization?: Maybe<OrganizationType>;
   uuid: Scalars['String']['output'];
 };
 
-export type UserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string };
+export type UserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string, organization?: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } | null };
 
-export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
+export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
 
 export type InvoiceItemFragment = { __typename?: 'InvoiceItemType', uuid: string, description: string, unitPrice?: number | null, unitPriceCurrency?: CurrencyEnum | null, itemDate?: DateString | null, minutesAllocated?: number | null, isRecurring: boolean };
 
@@ -308,7 +324,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginUser', token?: string | null, error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'UserType', uuid: string, email: string, name: string } | null } | null };
+export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginUser', token?: string | null, error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'UserType', uuid: string, email: string, name: string, organization?: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } | null } | null } | null };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -330,10 +346,13 @@ export type UpdateClientMutationVariables = Exact<{
   phoneNumber1?: InputMaybe<Scalars['String']['input']>;
   phoneNumber2?: InputMaybe<Scalars['String']['input']>;
   programManagerUuid?: InputMaybe<Scalars['String']['input']>;
+  spvUsername?: InputMaybe<Scalars['String']['input']>;
+  spvPassword?: InputMaybe<Scalars['String']['input']>;
+  cui?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { __typename?: 'UpdateClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null } | null } | null };
+export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { __typename?: 'UpdateClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null } | null } | null };
 
 export type UpdateClientInvoiceItemMutationVariables = Exact<{
   invoiceUuid: Scalars['String']['input'];
@@ -341,7 +360,7 @@ export type UpdateClientInvoiceItemMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClientInvoiceItemMutation = { __typename?: 'Mutation', updateClientInvoiceItem?: { __typename?: 'UpdateClientInvoiceItem', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, invoiceItem?: { __typename?: 'InvoiceItemType', uuid: string, description: string, unitPrice?: number | null, unitPriceCurrency?: CurrencyEnum | null, itemDate?: DateString | null, minutesAllocated?: number | null, isRecurring: boolean } | null } | null };
+export type UpdateClientInvoiceItemMutation = { __typename?: 'Mutation', updateClientInvoiceItem?: { __typename?: 'UpdateClientInvoiceItem', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, invoice?: { __typename?: 'InvoiceType', uuid: string, items: Array<{ __typename?: 'InvoiceItemType', uuid: string, description: string, unitPrice?: number | null, unitPriceCurrency?: CurrencyEnum | null, itemDate?: DateString | null, minutesAllocated?: number | null, isRecurring: boolean }> } | null } | null };
 
 export type UpdateClientInvoiceStatusMutationVariables = Exact<{
   invoiceUuid: Scalars['String']['input'];
@@ -362,12 +381,12 @@ export type UpdateClientUserMutation = { __typename?: 'Mutation', updateClientUs
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'UserType', uuid: string, email: string, name: string } };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'UserType', uuid: string, email: string, name: string, organization?: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } | null } };
 
 export type ClientsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ClientsQuery = { __typename?: 'Query', clients: Array<{ __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null }> };
+export type ClientsQuery = { __typename?: 'Query', clients: Array<{ __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null }> };
 
 export type ClientFilesQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -402,6 +421,11 @@ export const UserFragmentDoc = gql`
   uuid
   email
   name
+  organization {
+    uuid
+    name
+    logoUrl
+  }
 }
     `;
 export const ClientFragmentDoc = gql`
@@ -416,6 +440,8 @@ export const ClientFragmentDoc = gql`
     name
   }
   cui
+  spvUsername
+  spvPassword
 }
     `;
 export const InvoiceItemFragmentDoc = gql`
@@ -583,7 +609,7 @@ export type CreateClientFilesMutationHookResult = ReturnType<typeof useCreateCli
 export type CreateClientFilesMutationResult = Apollo.MutationResult<CreateClientFilesMutation>;
 export type CreateClientFilesMutationOptions = Apollo.BaseMutationOptions<CreateClientFilesMutation, CreateClientFilesMutationVariables>;
 export const UpdateClientDocument = gql`
-    mutation UpdateClient($uuid: String, $name: String!, $description: String, $phoneNumber1: String, $phoneNumber2: String, $programManagerUuid: String) {
+    mutation UpdateClient($uuid: String, $name: String!, $description: String, $phoneNumber1: String, $phoneNumber2: String, $programManagerUuid: String, $spvUsername: String, $spvPassword: String, $cui: String) {
   updateClient(
     uuid: $uuid
     name: $name
@@ -591,6 +617,9 @@ export const UpdateClientDocument = gql`
     phoneNumber1: $phoneNumber1
     phoneNumber2: $phoneNumber2
     programManagerUuid: $programManagerUuid
+    spvPassword: $spvPassword
+    spvUsername: $spvUsername
+    cui: $cui
   ) {
     error {
       ...Error
@@ -623,6 +652,9 @@ export type UpdateClientMutationFn = Apollo.MutationFunction<UpdateClientMutatio
  *      phoneNumber1: // value for 'phoneNumber1'
  *      phoneNumber2: // value for 'phoneNumber2'
  *      programManagerUuid: // value for 'programManagerUuid'
+ *      spvUsername: // value for 'spvUsername'
+ *      spvPassword: // value for 'spvPassword'
+ *      cui: // value for 'cui'
  *   },
  * });
  */
@@ -642,8 +674,11 @@ export const UpdateClientInvoiceItemDocument = gql`
     error {
       ...Error
     }
-    invoiceItem {
-      ...InvoiceItem
+    invoice {
+      uuid
+      items {
+        ...InvoiceItem
+      }
     }
   }
 }

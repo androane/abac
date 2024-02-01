@@ -24,6 +24,9 @@ def update_or_create_client(
     phone_number_1: Optional[str] = "",
     phone_number_2: Optional[str] = "",
     program_manager_uuid: Optional[str] = None,
+    spv_username: Optional[str] = None,
+    spv_password: Optional[str] = None,
+    cui: Optional[str] = None,
 ) -> None:
     program_manager = None
     if program_manager_uuid:
@@ -41,5 +44,9 @@ def update_or_create_client(
     client.phone_number_1 = phone_number_1
     client.phone_number_2 = phone_number_2
     client.program_manager = program_manager
+    client.spv_username = spv_username
+    client.spv_password = spv_password
+    client.cui = cui
     client.save()
+
     return client

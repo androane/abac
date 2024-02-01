@@ -13,12 +13,28 @@ from organization.models import (
     ClientUserProfile,
     Invoice,
     InvoiceItem,
+    Organization,
 )
 from user.graphene.types import UserType
 
 CurrencyEnumType = graphene.Enum.from_enum(CurrencyEnum)
 InvoiceStatusEnumType = graphene.Enum.from_enum(InvoiceStatusEnum)
 ClientUserRoleEnumType = graphene.Enum.from_enum(ClientUserRoleEnum)
+
+
+class OrganizationType(DjangoObjectType):
+    class Meta:
+        model = Organization
+        only_fields = (
+            "uuid",
+            "name",
+        )
+
+    logo_url = graphene.NonNull(graphene.String)
+
+    def resolve_logo_url(self, info):
+        if self.logo:
+            return self.logo.url
 
 
 class InvoiceItemType(DjangoObjectType):
@@ -74,7 +90,7 @@ class ClientFileType(DjangoObjectType):
     name = graphene.NonNull(graphene.String)
 
     def resolve_name(self, info):
-        # Using os.path.basename to get rid of the path and onyl return the actual file name
+        # Using os.path.basename to get rid of the path and only return the actual file name
         return os.path.basename(self.file.name)
 
 
@@ -92,6 +108,8 @@ class ClientType(DjangoObjectType):
             "phone_number_1",
             "phone_number_2",
             "program_manager",
+            "spv_username",
+            "spv_password",
             "cui",
         )
 
@@ -126,6 +144,7 @@ class ClientUserInput(graphene.InputObjectType):
     first_name = graphene.String(required=True)
     last_name = graphene.String(required=True)
     email = graphene.String(required=True)
+    role = ClientUserRoleEnumType()
+    ownership_percentage = graphene.Int()
     spv_username = graphene.String()
     spv_password = graphene.String()
-    role = ClientUserRoleEnumType()

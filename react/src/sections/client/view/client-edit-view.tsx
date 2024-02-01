@@ -9,10 +9,10 @@ import { useClientsQuery } from 'generated/graphql'
 import { useCallback, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { paths } from 'routes/paths'
-import FilesListView from './files-list-view'
-import UsersListView from '../users-list-view'
+import FilesList from '../files-list'
+import UsersList from '../users-list'
 import ClientNewEditForm from '../client-new-edit-form'
-import InvoiceDetailsView from './invoice-details-view'
+import InvoiceDetails from '../invoice-details'
 
 enum TABS_VALUES {
   GENERAL = 'g',
@@ -39,7 +39,7 @@ const TABS = [
   },
   {
     value: TABS_VALUES.USERS,
-    label: 'Utilizatori',
+    label: 'Persoane de Contact',
     icon: <Iconify icon="solar:users-group-rounded-bold" width={24} />,
   },
 ]
@@ -104,11 +104,9 @@ export default function UserEditView({ id }: Props) {
               </Tabs>
 
               {currentTab === TABS_VALUES.GENERAL && <ClientNewEditForm client={client} />}
-              {currentTab === TABS_VALUES.INVOICING && (
-                <InvoiceDetailsView clientId={client.uuid} />
-              )}
-              {currentTab === TABS_VALUES.FILES && <FilesListView clientId={client.uuid} />}
-              {currentTab === TABS_VALUES.USERS && <UsersListView clientId={client.uuid} />}
+              {currentTab === TABS_VALUES.INVOICING && <InvoiceDetails clientId={client.uuid} />}
+              {currentTab === TABS_VALUES.FILES && <FilesList clientId={client.uuid} />}
+              {currentTab === TABS_VALUES.USERS && <UsersList clientId={client.uuid} />}
             </>
           )
         }}

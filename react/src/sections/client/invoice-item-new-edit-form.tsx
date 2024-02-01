@@ -14,16 +14,10 @@ import { format } from 'date-fns'
 
 import FormProvider, { RHFSelect, RHFTextField } from 'components/hook-form'
 import { useSnackbar } from 'components/snackbar'
-import {
-  CurrencyEnum,
-  useUpdateClientInvoiceItemMutation,
-  ClientInvoiceQuery,
-  ClientInvoiceDocument,
-} from 'generated/graphql'
+import { CurrencyEnum, useUpdateClientInvoiceItemMutation } from 'generated/graphql'
 import { InvoiceItem } from './types'
 
 type Props = {
-  clientId: string
   invoiceId: string
   invoiceDate: null | Date
   onClose: () => void
@@ -31,7 +25,6 @@ type Props = {
 }
 
 export default function InvoiceItemNewEditForm({
-  clientId,
   invoiceId,
   invoiceDate,
   invoiceItem,
@@ -84,47 +77,6 @@ export default function InvoiceItemNewEditForm({
             minutesAllocated: data.minutesAllocated,
             itemDate,
           },
-        },
-        // update(cache) {
-        //   cache.modify({
-        //     fields: {
-        //       clientInvoice(result: ClientInvoiceQuery['clientInvoice'], { readField }) {
-        //         return {
-        //           ...result,
-        //           items: result.items.map(item =>
-        //             readField('uuid', item) === invoiceItem?.id ? item : invoiceItem,
-        //           ),
-        //         }
-        //       },
-        //     },
-        //   })
-        // },
-        update: (cache, { data: responseData }) => {
-          const cacheClientsInvoiceQuery = {
-            query: ClientInvoiceDocument,
-            variables: {
-              uuid: clientId,
-              month: 1,
-              year: 2024,
-            },
-          }
-          if (!responseData?.updateClientInvoiceItem?.invoiceItem) return
-          const cachedData = cache.readQuery<ClientInvoiceQuery>(cacheClientsInvoiceQuery)
-
-          console.log('cachedData', cachedData)
-
-          if (!cachedData?.clientInvoice) return
-          cache.writeQuery({
-            ...cacheClientsInvoiceQuery,
-            data: {
-              ...cachedData.clientInvoice,
-              items: cachedData.clientInvoice.items.map(item =>
-                item.uuid === invoiceItem?.id
-                  ? responseData?.updateClientInvoiceItem?.invoiceItem
-                  : item,
-              ),
-            },
-          })
         },
       })
       reset()

@@ -8,6 +8,9 @@ mutation UpdateClient(
   $phoneNumber1: String
   $phoneNumber2: String
   $programManagerUuid: String
+  $spvUsername: String
+  $spvPassword: String
+  $cui: String
 ) {
   updateClient(
     uuid: $uuid
@@ -16,6 +19,9 @@ mutation UpdateClient(
     phoneNumber1: $phoneNumber1
     phoneNumber2: $phoneNumber2
     programManagerUuid: $programManagerUuid
+    spvPassword: $spvPassword
+    spvUsername: $spvUsername
+    cui: $cui
   ) {
     error {
       ...Error

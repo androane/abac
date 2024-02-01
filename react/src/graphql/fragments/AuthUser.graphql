@@ -2,4 +2,9 @@ fragment User on UserType {
   uuid
   email
   name
+  organization {
+    uuid
+    name
+    logoUrl
+  }
 }

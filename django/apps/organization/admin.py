@@ -12,6 +12,7 @@ class OrganizationAdmin(SimpleHistoryAdmin):
     history_list_display = [
         "name",
     ]
+    fields = ("name", "logo")
 
 
 class InvoiceAdmin(admin.TabularInline):

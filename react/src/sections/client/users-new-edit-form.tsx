@@ -14,15 +14,15 @@ import FormProvider, { RHFSelect, RHFTextField } from 'components/hook-form'
 import { useSnackbar } from 'components/snackbar'
 import {
   useUpdateClientUserMutation,
-  ClientInvoiceQuery,
-  ClientInvoiceDocument,
   ClientUserRoleEnum,
+  ClientUserFragmentDoc,
 } from 'generated/graphql'
 import { ClientUser } from 'sections/client/types'
+import { ROLE_LABELS } from 'sections/client/constants'
 
 type Props = {
   clientId: string
-  user: ClientUser
+  user?: ClientUser
   onClose: () => void
 }
 
@@ -35,6 +35,7 @@ export default function UserNewEditForm({ clientId, user, onClose }: Props) {
     firstName: Yup.string().required('Acest camp este obligatoriu'),
     lastName: Yup.string().required('Acest camp este obligatoriu'),
     email: Yup.string().required('Acest camp este obligatoriu'),
+    ownershipPercentage: Yup.number().min(0).max(100).nullable(),
     role: Yup.mixed<ClientUserRoleEnum>().oneOf(Object.values(ClientUserRoleEnum)).nullable(),
     spvUsername: Yup.string().nullable(),
     spvPassword: Yup.string().nullable(),
@@ -44,7 +45,8 @@ export default function UserNewEditForm({ clientId, user, onClose }: Props) {
     () => ({
       firstName: user?.firstName || '',
       lastName: user?.lastName || '',
-      email: user?.email,
+      email: user?.email || '',
+      ownershipPercentage: user?.ownershipPercentage,
       role: user?.role,
       spvUsername: user?.spvUsername,
       spvPassword: user?.spvPassword,
@@ -74,54 +76,30 @@ export default function UserNewEditForm({ clientId, user, onClose }: Props) {
             lastName: data.lastName,
             email: data.email,
             role: data.role,
+            ownershipPercentage: data.ownershipPercentage,
             spvUsername: data.spvUsername,
             spvPassword: data.spvPassword,
           },
         },
-        // update(cache) {
-        //   cache.modify({
-        //     fields: {
-        //       clientInvoice(result: ClientInvoiceQuery['clientInvoice'], { readField }) {
-        //         return {
-        //           ...result,
-        //           items: result.items.map(item =>
-        //             readField('uuid', item) === invoiceItem?.id ? item : invoiceItem,
-        //           ),
-        //         }
-        //       },
-        //     },
-        //   })
-        // },
-        update: (cache, { data: responseData }) => {
-          const cacheClientsInvoiceQuery = {
-            query: ClientInvoiceDocument,
-            variables: {
-              uuid: clientId,
-              month: 1,
-              year: 2024,
-            },
-          }
-          if (!responseData?.updateClientUser?.clientUser) return
-          const cachedData = cache.readQuery<ClientInvoiceQuery>(cacheClientsInvoiceQuery)
-
-          console.log('cachedData', cachedData)
-
-          if (!cachedData?.clientInvoice) return
-          cache.writeQuery({
-            ...cacheClientsInvoiceQuery,
-            data: {
-              ...cachedData.clientInvoice,
-              items: cachedData.clientInvoice.items.map(item =>
-                item.uuid === invoiceItem?.id
-                  ? responseData?.updateClientInvoiceItem?.invoiceItem
-                  : item,
-              ),
+        update(cache, { data: cacheData }) {
+          cache.modify({
+            fields: {
+              clientUsers(existingClientUsers = []) {
+                if (!user) {
+                  const newUser = cache.writeFragment({
+                    data: cacheData?.updateClientUser?.clientUser,
+                    fragment: ClientUserFragmentDoc,
+                  })
+                  return [newUser, ...existingClientUsers]
+                }
+                return existingClientUsers
+              },
             },
           })
         },
       })
       reset()
-      enqueueSnackbar('Factura actualizata cu succes!')
+      enqueueSnackbar('Persoana actualizata cu succes!')
       onClose()
     } catch (error) {
       console.error(error)
@@ -139,7 +117,7 @@ export default function UserNewEditForm({ clientId, user, onClose }: Props) {
       }}
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>Factura</DialogTitle>
+        <DialogTitle>Persoana de Contact</DialogTitle>
         <DialogContent>
           <br />
           <Box
@@ -154,16 +132,29 @@ export default function UserNewEditForm({ clientId, user, onClose }: Props) {
             <RHFTextField name="firstName" label="Prenume" />
             <RHFTextField name="lastName" label="Nume" />
             <RHFTextField name="email" label="Email" />
-            <RHFTextField name="spvUsername" label="Utilizator SPV" />
-            <RHFTextField name="spvPassword" label="Partola SPV" />
             <RHFSelect native name="role" label="Rol" InputLabelProps={{ shrink: true }}>
               <option key="null" value="" />
-              {Object.keys(ClientUserRoleEnum).map(currency => (
-                <option key={currency} value={currency}>
-                  {currency}
+              {Object.keys(ClientUserRoleEnum).map(role => (
+                <option key={role} value={role}>
+                  {ROLE_LABELS[role as ClientUserRoleEnum]}
                 </option>
               ))}
             </RHFSelect>
+            <RHFTextField name="ownershipPercentage" label="Procent din firma" />
+          </Box>
+
+          <br />
+          <Box
+            rowGap={3}
+            columnGap={2}
+            display="grid"
+            gridTemplateColumns={{
+              xs: 'repeat(1, 1fr)',
+              sm: 'repeat(2, 1fr)',
+            }}
+          >
+            <RHFTextField name="spvUsername" label="Utilizator SPV" />
+            <RHFTextField name="spvPassword" label="Parola SPV" />
           </Box>
 
           <DialogActions>
