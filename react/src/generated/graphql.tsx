@@ -44,8 +44,44 @@ export type ClientType = {
   phoneNumber1: Scalars['String']['output'];
   phoneNumber2: Scalars['String']['output'];
   programManager?: Maybe<UserType>;
+  /** SPV Password */
+  spvPassword?: Maybe<Scalars['String']['output']>;
+  /** SPV Username */
+  spvUsername?: Maybe<Scalars['String']['output']>;
+  users: Array<UserType>;
   uuid: Scalars['String']['output'];
 };
+
+export type ClientUserInput = {
+  email: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  ownershipPercentage?: InputMaybe<Scalars['Int']['input']>;
+  role?: InputMaybe<ClientUserRoleEnum>;
+  spvPassword?: InputMaybe<Scalars['String']['input']>;
+  spvUsername?: InputMaybe<Scalars['String']['input']>;
+  uuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ClientUserProfileType = {
+  __typename?: 'ClientUserProfileType';
+  /** What percentage of the organization does this user own? */
+  ownershipPercentage?: Maybe<Scalars['Int']['output']>;
+  role?: Maybe<ClientUserRoleEnum>;
+  /** SPV Password */
+  spvPassword?: Maybe<Scalars['String']['output']>;
+  /** SPV Username */
+  spvUsername?: Maybe<Scalars['String']['output']>;
+  uuid: Scalars['String']['output'];
+};
+
+/** An enumeration. */
+export enum ClientUserRoleEnum {
+  ADMINSTRATOR = 'ADMINSTRATOR',
+  ASSOCIATE = 'ASSOCIATE',
+  EMPLOYEE = 'EMPLOYEE',
+  MANAGER = 'MANAGER'
+}
 
 export type CreateClientFiles = {
   __typename?: 'CreateClientFiles';
@@ -139,6 +175,8 @@ export type Mutation = {
   updateClientInvoiceItem?: Maybe<UpdateClientInvoiceItem>;
   /** Update Client Invoice Status */
   updateClientInvoiceStatus?: Maybe<UpdateClientInvoiceStatus>;
+  /** Update or Create a New Client User */
+  updateClientUser?: Maybe<UpdateClientUser>;
 };
 
 
@@ -155,11 +193,14 @@ export type MutationLoginArgs = {
 
 
 export type MutationUpdateClientArgs = {
+  cui?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   phoneNumber1?: InputMaybe<Scalars['String']['input']>;
   phoneNumber2?: InputMaybe<Scalars['String']['input']>;
   programManagerUuid?: InputMaybe<Scalars['String']['input']>;
+  spvPassword?: InputMaybe<Scalars['String']['input']>;
+  spvUsername?: InputMaybe<Scalars['String']['input']>;
   uuid?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -175,6 +216,19 @@ export type MutationUpdateClientInvoiceStatusArgs = {
   status: InvoiceStatusEnum;
 };
 
+
+export type MutationUpdateClientUserArgs = {
+  clientUserInput: ClientUserInput;
+  clientUuid: Scalars['String']['input'];
+};
+
+export type OrganizationType = {
+  __typename?: 'OrganizationType';
+  logoUrl: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  uuid: Scalars['String']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   /** Get an individual Client */
@@ -182,11 +236,13 @@ export type Query = {
   /** List all files of a Client */
   clientFiles: Array<ClientFileType>;
   clientInvoice: InvoiceType;
+  /** List all Program Managers */
+  clientProgramManagers: Array<UserType>;
+  /** List all Client Users */
+  clientUsers: Array<UserType>;
   /** List all Clients */
   clients: Array<ClientType>;
   currentUser: UserType;
-  /** List all Program Managers */
-  programManagers: Array<UserType>;
   /** List all users */
   users: Array<UserType>;
 };
@@ -208,6 +264,11 @@ export type QueryClientInvoiceArgs = {
   year?: InputMaybe<Scalars['Int']['input']>;
 };
 
+
+export type QueryClientUsersArgs = {
+  clientUuid: Scalars['String']['input'];
+};
+
 export type UpdateClient = {
   __typename?: 'UpdateClient';
   client?: Maybe<ClientType>;
@@ -217,7 +278,7 @@ export type UpdateClient = {
 export type UpdateClientInvoiceItem = {
   __typename?: 'UpdateClientInvoiceItem';
   error?: Maybe<ErrorType>;
-  invoiceItem?: Maybe<InvoiceItemType>;
+  invoice?: Maybe<InvoiceType>;
 };
 
 export type UpdateClientInvoiceStatus = {
@@ -226,18 +287,30 @@ export type UpdateClientInvoiceStatus = {
   invoice?: Maybe<InvoiceType>;
 };
 
+export type UpdateClientUser = {
+  __typename?: 'UpdateClientUser';
+  clientUser?: Maybe<UserType>;
+  error?: Maybe<ErrorType>;
+};
+
 export type UserType = {
   __typename?: 'UserType';
+  clientProfile: ClientUserProfileType;
   email: Scalars['String']['output'];
+  firstName: Scalars['String']['output'];
+  lastName: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  organization?: Maybe<OrganizationType>;
   uuid: Scalars['String']['output'];
 };
 
-export type UserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string };
+export type UserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string, organization?: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } | null };
 
-export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
+export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
 
 export type InvoiceItemFragment = { __typename?: 'InvoiceItemType', uuid: string, description: string, unitPrice?: number | null, unitPriceCurrency?: CurrencyEnum | null, itemDate?: DateString | null, minutesAllocated?: number | null, isRecurring: boolean };
+
+export type ClientUserFragment = { __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null } };
 
 export type ErrorFragment = { __typename?: 'ErrorType', field?: string | null, message: string };
 
@@ -251,7 +324,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginUser', token?: string | null, error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'UserType', uuid: string, email: string, name: string } | null } | null };
+export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginUser', token?: string | null, error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'UserType', uuid: string, email: string, name: string, organization?: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } | null } | null } | null };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -273,10 +346,13 @@ export type UpdateClientMutationVariables = Exact<{
   phoneNumber1?: InputMaybe<Scalars['String']['input']>;
   phoneNumber2?: InputMaybe<Scalars['String']['input']>;
   programManagerUuid?: InputMaybe<Scalars['String']['input']>;
+  spvUsername?: InputMaybe<Scalars['String']['input']>;
+  spvPassword?: InputMaybe<Scalars['String']['input']>;
+  cui?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { __typename?: 'UpdateClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null } | null } | null };
+export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { __typename?: 'UpdateClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null } | null } | null };
 
 export type UpdateClientInvoiceItemMutationVariables = Exact<{
   invoiceUuid: Scalars['String']['input'];
@@ -284,7 +360,7 @@ export type UpdateClientInvoiceItemMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClientInvoiceItemMutation = { __typename?: 'Mutation', updateClientInvoiceItem?: { __typename?: 'UpdateClientInvoiceItem', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, invoiceItem?: { __typename?: 'InvoiceItemType', uuid: string, description: string, unitPrice?: number | null, unitPriceCurrency?: CurrencyEnum | null, itemDate?: DateString | null, minutesAllocated?: number | null, isRecurring: boolean } | null } | null };
+export type UpdateClientInvoiceItemMutation = { __typename?: 'Mutation', updateClientInvoiceItem?: { __typename?: 'UpdateClientInvoiceItem', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, invoice?: { __typename?: 'InvoiceType', uuid: string, items: Array<{ __typename?: 'InvoiceItemType', uuid: string, description: string, unitPrice?: number | null, unitPriceCurrency?: CurrencyEnum | null, itemDate?: DateString | null, minutesAllocated?: number | null, isRecurring: boolean }> } | null } | null };
 
 export type UpdateClientInvoiceStatusMutationVariables = Exact<{
   invoiceUuid: Scalars['String']['input'];
@@ -294,20 +370,23 @@ export type UpdateClientInvoiceStatusMutationVariables = Exact<{
 
 export type UpdateClientInvoiceStatusMutation = { __typename?: 'Mutation', updateClientInvoiceStatus?: { __typename?: 'UpdateClientInvoiceStatus', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, invoice?: { __typename?: 'InvoiceType', uuid: string, dateSent?: DateString | null } | null } | null };
 
+export type UpdateClientUserMutationVariables = Exact<{
+  clientUuid: Scalars['String']['input'];
+  clientUserInput: ClientUserInput;
+}>;
+
+
+export type UpdateClientUserMutation = { __typename?: 'Mutation', updateClientUser?: { __typename?: 'UpdateClientUser', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientUser?: { __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null } } | null } | null };
+
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'UserType', uuid: string, email: string, name: string } };
-
-export type ClientProgramManagersQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type ClientProgramManagersQuery = { __typename?: 'Query', programManagers: Array<{ __typename?: 'UserType', uuid: string, name: string, email: string }> };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'UserType', uuid: string, email: string, name: string, organization?: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } | null } };
 
 export type ClientsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ClientsQuery = { __typename?: 'Query', clients: Array<{ __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null }> };
+export type ClientsQuery = { __typename?: 'Query', clients: Array<{ __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null }> };
 
 export type ClientFilesQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -325,11 +404,28 @@ export type ClientInvoiceQueryVariables = Exact<{
 
 export type ClientInvoiceQuery = { __typename?: 'Query', clientInvoice: { __typename?: 'InvoiceType', uuid: string, month: number, year: number, dateSent?: DateString | null, items: Array<{ __typename?: 'InvoiceItemType', uuid: string, description: string, unitPrice?: number | null, unitPriceCurrency?: CurrencyEnum | null, itemDate?: DateString | null, minutesAllocated?: number | null, isRecurring: boolean }> } };
 
+export type ClientProgramManagersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ClientProgramManagersQuery = { __typename?: 'Query', clientProgramManagers: Array<{ __typename?: 'UserType', uuid: string, name: string, email: string }> };
+
+export type ClientUsersQueryVariables = Exact<{
+  clientUuid: Scalars['String']['input'];
+}>;
+
+
+export type ClientUsersQuery = { __typename?: 'Query', clientUsers: Array<{ __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null } }> };
+
 export const UserFragmentDoc = gql`
     fragment User on UserType {
   uuid
   email
   name
+  organization {
+    uuid
+    name
+    logoUrl
+  }
 }
     `;
 export const ClientFragmentDoc = gql`
@@ -344,6 +440,8 @@ export const ClientFragmentDoc = gql`
     name
   }
   cui
+  spvUsername
+  spvPassword
 }
     `;
 export const InvoiceItemFragmentDoc = gql`
@@ -355,6 +453,20 @@ export const InvoiceItemFragmentDoc = gql`
   itemDate
   minutesAllocated
   isRecurring
+}
+    `;
+export const ClientUserFragmentDoc = gql`
+    fragment ClientUser on UserType {
+  uuid
+  email
+  firstName
+  lastName
+  clientProfile {
+    ownershipPercentage
+    role
+    spvUsername
+    spvPassword
+  }
 }
     `;
 export const ErrorFragmentDoc = gql`
@@ -497,7 +609,7 @@ export type CreateClientFilesMutationHookResult = ReturnType<typeof useCreateCli
 export type CreateClientFilesMutationResult = Apollo.MutationResult<CreateClientFilesMutation>;
 export type CreateClientFilesMutationOptions = Apollo.BaseMutationOptions<CreateClientFilesMutation, CreateClientFilesMutationVariables>;
 export const UpdateClientDocument = gql`
-    mutation UpdateClient($uuid: String, $name: String!, $description: String, $phoneNumber1: String, $phoneNumber2: String, $programManagerUuid: String) {
+    mutation UpdateClient($uuid: String, $name: String!, $description: String, $phoneNumber1: String, $phoneNumber2: String, $programManagerUuid: String, $spvUsername: String, $spvPassword: String, $cui: String) {
   updateClient(
     uuid: $uuid
     name: $name
@@ -505,6 +617,9 @@ export const UpdateClientDocument = gql`
     phoneNumber1: $phoneNumber1
     phoneNumber2: $phoneNumber2
     programManagerUuid: $programManagerUuid
+    spvPassword: $spvPassword
+    spvUsername: $spvUsername
+    cui: $cui
   ) {
     error {
       ...Error
@@ -537,6 +652,9 @@ export type UpdateClientMutationFn = Apollo.MutationFunction<UpdateClientMutatio
  *      phoneNumber1: // value for 'phoneNumber1'
  *      phoneNumber2: // value for 'phoneNumber2'
  *      programManagerUuid: // value for 'programManagerUuid'
+ *      spvUsername: // value for 'spvUsername'
+ *      spvPassword: // value for 'spvPassword'
+ *      cui: // value for 'cui'
  *   },
  * });
  */
@@ -556,8 +674,11 @@ export const UpdateClientInvoiceItemDocument = gql`
     error {
       ...Error
     }
-    invoiceItem {
-      ...InvoiceItem
+    invoice {
+      uuid
+      items {
+        ...InvoiceItem
+      }
     }
   }
 }
@@ -630,6 +751,46 @@ export function useUpdateClientInvoiceStatusMutation(baseOptions?: Apollo.Mutati
 export type UpdateClientInvoiceStatusMutationHookResult = ReturnType<typeof useUpdateClientInvoiceStatusMutation>;
 export type UpdateClientInvoiceStatusMutationResult = Apollo.MutationResult<UpdateClientInvoiceStatusMutation>;
 export type UpdateClientInvoiceStatusMutationOptions = Apollo.BaseMutationOptions<UpdateClientInvoiceStatusMutation, UpdateClientInvoiceStatusMutationVariables>;
+export const UpdateClientUserDocument = gql`
+    mutation UpdateClientUser($clientUuid: String!, $clientUserInput: ClientUserInput!) {
+  updateClientUser(clientUuid: $clientUuid, clientUserInput: $clientUserInput) {
+    error {
+      ...Error
+    }
+    clientUser {
+      ...ClientUser
+    }
+  }
+}
+    ${ErrorFragmentDoc}
+${ClientUserFragmentDoc}`;
+export type UpdateClientUserMutationFn = Apollo.MutationFunction<UpdateClientUserMutation, UpdateClientUserMutationVariables>;
+
+/**
+ * __useUpdateClientUserMutation__
+ *
+ * To run a mutation, you first call `useUpdateClientUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateClientUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateClientUserMutation, { data, loading, error }] = useUpdateClientUserMutation({
+ *   variables: {
+ *      clientUuid: // value for 'clientUuid'
+ *      clientUserInput: // value for 'clientUserInput'
+ *   },
+ * });
+ */
+export function useUpdateClientUserMutation(baseOptions?: Apollo.MutationHookOptions<UpdateClientUserMutation, UpdateClientUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateClientUserMutation, UpdateClientUserMutationVariables>(UpdateClientUserDocument, options);
+      }
+export type UpdateClientUserMutationHookResult = ReturnType<typeof useUpdateClientUserMutation>;
+export type UpdateClientUserMutationResult = Apollo.MutationResult<UpdateClientUserMutation>;
+export type UpdateClientUserMutationOptions = Apollo.BaseMutationOptions<UpdateClientUserMutation, UpdateClientUserMutationVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {
@@ -669,45 +830,6 @@ export type CurrentUserQueryHookResult = ReturnType<typeof useCurrentUserQuery>;
 export type CurrentUserLazyQueryHookResult = ReturnType<typeof useCurrentUserLazyQuery>;
 export type CurrentUserSuspenseQueryHookResult = ReturnType<typeof useCurrentUserSuspenseQuery>;
 export type CurrentUserQueryResult = Apollo.QueryResult<CurrentUserQuery, CurrentUserQueryVariables>;
-export const ClientProgramManagersDocument = gql`
-    query ClientProgramManagers {
-  programManagers {
-    ...ProgramManager
-  }
-}
-    ${ProgramManagerFragmentDoc}`;
-
-/**
- * __useClientProgramManagersQuery__
- *
- * To run a query within a React component, call `useClientProgramManagersQuery` and pass it any options that fit your needs.
- * When your component renders, `useClientProgramManagersQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useClientProgramManagersQuery({
- *   variables: {
- *   },
- * });
- */
-export function useClientProgramManagersQuery(baseOptions?: Apollo.QueryHookOptions<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>(ClientProgramManagersDocument, options);
-      }
-export function useClientProgramManagersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>(ClientProgramManagersDocument, options);
-        }
-export function useClientProgramManagersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>(ClientProgramManagersDocument, options);
-        }
-export type ClientProgramManagersQueryHookResult = ReturnType<typeof useClientProgramManagersQuery>;
-export type ClientProgramManagersLazyQueryHookResult = ReturnType<typeof useClientProgramManagersLazyQuery>;
-export type ClientProgramManagersSuspenseQueryHookResult = ReturnType<typeof useClientProgramManagersSuspenseQuery>;
-export type ClientProgramManagersQueryResult = Apollo.QueryResult<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>;
 export const ClientsDocument = gql`
     query Clients {
   clients {
@@ -838,3 +960,82 @@ export type ClientInvoiceQueryHookResult = ReturnType<typeof useClientInvoiceQue
 export type ClientInvoiceLazyQueryHookResult = ReturnType<typeof useClientInvoiceLazyQuery>;
 export type ClientInvoiceSuspenseQueryHookResult = ReturnType<typeof useClientInvoiceSuspenseQuery>;
 export type ClientInvoiceQueryResult = Apollo.QueryResult<ClientInvoiceQuery, ClientInvoiceQueryVariables>;
+export const ClientProgramManagersDocument = gql`
+    query ClientProgramManagers {
+  clientProgramManagers {
+    ...ProgramManager
+  }
+}
+    ${ProgramManagerFragmentDoc}`;
+
+/**
+ * __useClientProgramManagersQuery__
+ *
+ * To run a query within a React component, call `useClientProgramManagersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useClientProgramManagersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useClientProgramManagersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useClientProgramManagersQuery(baseOptions?: Apollo.QueryHookOptions<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>(ClientProgramManagersDocument, options);
+      }
+export function useClientProgramManagersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>(ClientProgramManagersDocument, options);
+        }
+export function useClientProgramManagersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>(ClientProgramManagersDocument, options);
+        }
+export type ClientProgramManagersQueryHookResult = ReturnType<typeof useClientProgramManagersQuery>;
+export type ClientProgramManagersLazyQueryHookResult = ReturnType<typeof useClientProgramManagersLazyQuery>;
+export type ClientProgramManagersSuspenseQueryHookResult = ReturnType<typeof useClientProgramManagersSuspenseQuery>;
+export type ClientProgramManagersQueryResult = Apollo.QueryResult<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>;
+export const ClientUsersDocument = gql`
+    query ClientUsers($clientUuid: String!) {
+  clientUsers(clientUuid: $clientUuid) {
+    ...ClientUser
+  }
+}
+    ${ClientUserFragmentDoc}`;
+
+/**
+ * __useClientUsersQuery__
+ *
+ * To run a query within a React component, call `useClientUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useClientUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useClientUsersQuery({
+ *   variables: {
+ *      clientUuid: // value for 'clientUuid'
+ *   },
+ * });
+ */
+export function useClientUsersQuery(baseOptions: Apollo.QueryHookOptions<ClientUsersQuery, ClientUsersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ClientUsersQuery, ClientUsersQueryVariables>(ClientUsersDocument, options);
+      }
+export function useClientUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ClientUsersQuery, ClientUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ClientUsersQuery, ClientUsersQueryVariables>(ClientUsersDocument, options);
+        }
+export function useClientUsersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ClientUsersQuery, ClientUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ClientUsersQuery, ClientUsersQueryVariables>(ClientUsersDocument, options);
+        }
+export type ClientUsersQueryHookResult = ReturnType<typeof useClientUsersQuery>;
+export type ClientUsersLazyQueryHookResult = ReturnType<typeof useClientUsersLazyQuery>;
+export type ClientUsersSuspenseQueryHookResult = ReturnType<typeof useClientUsersSuspenseQuery>;
+export type ClientUsersQueryResult = Apollo.QueryResult<ClientUsersQuery, ClientUsersQueryVariables>;

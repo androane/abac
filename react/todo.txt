@@ -1,8 +1,4 @@
-1  Prezentare firma – scan CUI
-
 2 Asociati – participatie – administrator (nume, prenume, procent)
-
-3 Activitate desfasurata – scurta descriere
 
 4 Aplicatie utilizata pentru contabiltitate
 5 Aplicatie utilizata pentru gestiune
@@ -15,12 +11,6 @@
 
 7 Date de contact: email, nume persoane delegate, numar telefon
 
-8 Preturi si tarife: pret de baza (RON si EUR si USD)
-
-9 Timp lucru : timp de baza , alocari suplimentare (aici trebuie pus submodule cu: lucrare executata / data / intre orele / timp total alocat
-
 10 Parole utilizate pentru client (open text)
 
 11 Lucrari executate: banci - bnr-statistica - intrastat – saft - consultanta – altele
-
-12 Responsabil Ulmacont

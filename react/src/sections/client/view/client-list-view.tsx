@@ -54,7 +54,7 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
   const { enqueueSnackbar } = useSnackbar()
   const [tableData, setTableData] = useState(clients)
 
-  const table = useTable({ defaultRowsPerPage: 25 })
+  const table = useTable()
 
   const denseHeight = table.dense ? 56 : 56 + 20
 
@@ -122,11 +122,11 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
   return (
     <Card>
       <ResponseHandler {...result}>
-        {({ programManagers }) => {
+        {({ clientProgramManagers }) => {
           return (
             <ClientTableToolbar
               filters={filters}
-              programManagers={programManagers.map(programManager => ({
+              programManagers={clientProgramManagers.map(programManager => ({
                 id: programManager.uuid,
                 label: programManager.name,
               }))}

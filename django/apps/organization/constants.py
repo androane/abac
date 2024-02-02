@@ -15,5 +15,8 @@ class InvoiceStatusEnum(BaseEnum):
     SENT = enum.auto()
 
 
-# class AccountingAppEnum(BaseEnum):
-#     OneC = enum.auto()
+class ClientUserRoleEnum(BaseEnum):
+    ADMINSTRATOR = enum.auto()
+    ASSOCIATE = enum.auto()
+    EMPLOYEE = enum.auto()
+    MANAGER = enum.auto()

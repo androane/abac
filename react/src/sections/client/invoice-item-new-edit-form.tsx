@@ -12,18 +12,13 @@ import Box from '@mui/material/Box'
 import DialogActions from '@mui/material/DialogActions'
 import { format } from 'date-fns'
 
-import FormProvider, { RHFSelect, RHFTextField } from 'components/hook-form'
+import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'components/hook-form'
 import { useSnackbar } from 'components/snackbar'
-import {
-  CurrencyEnum,
-  useUpdateClientInvoiceItemMutation,
-  ClientInvoiceQuery,
-  ClientInvoiceDocument,
-} from 'generated/graphql'
+import { CurrencyEnum, useUpdateClientInvoiceItemMutation } from 'generated/graphql'
+import { Typography } from '@mui/material'
 import { InvoiceItem } from './types'
 
 type Props = {
-  clientId: string
   invoiceId: string
   invoiceDate: null | Date
   onClose: () => void
@@ -31,7 +26,6 @@ type Props = {
 }
 
 export default function InvoiceItemNewEditForm({
-  clientId,
   invoiceId,
   invoiceDate,
   invoiceItem,
@@ -44,10 +38,11 @@ export default function InvoiceItemNewEditForm({
   const [itemDate, setItemDate] = useState(invoiceItem?.itemDate)
 
   const NewInvoiceSchema = Yup.object().shape({
-    description: Yup.string().required('Acest camp este obligatorie'),
+    description: Yup.string().required('Acest camp este obligatoriu'),
     unitPrice: Yup.number().nullable(),
     unitPriceCurrency: Yup.mixed<CurrencyEnum>().oneOf(Object.values(CurrencyEnum)).nullable(),
     minutesAllocated: Yup.number().nullable(),
+    isRecurring: Yup.boolean(),
   })
 
   const defaultValues = useMemo(
@@ -56,6 +51,7 @@ export default function InvoiceItemNewEditForm({
       unitPrice: invoiceItem?.unitPrice,
       unitPriceCurrency: invoiceItem?.unitPriceCurrency,
       minutesAllocated: invoiceItem?.minutesAllocated,
+      isRecurring: invoiceItem?.isRecurring || false,
     }),
     [invoiceItem],
   )
@@ -78,53 +74,13 @@ export default function InvoiceItemNewEditForm({
           invoiceUuid: invoiceId,
           invoiceItemInput: {
             uuid: invoiceItem?.id,
+            itemDate,
             description: data.description,
             unitPrice: data.unitPrice,
             unitPriceCurrency: data.unitPriceCurrency,
             minutesAllocated: data.minutesAllocated,
-            itemDate,
+            isRecurring: data.isRecurring,
           },
-        },
-        // update(cache) {
-        //   cache.modify({
-        //     fields: {
-        //       clientInvoice(result: ClientInvoiceQuery['clientInvoice'], { readField }) {
-        //         return {
-        //           ...result,
-        //           items: result.items.map(item =>
-        //             readField('uuid', item) === invoiceItem?.id ? item : invoiceItem,
-        //           ),
-        //         }
-        //       },
-        //     },
-        //   })
-        // },
-        update: (cache, { data: responseData }) => {
-          const cacheClientsInvoiceQuery = {
-            query: ClientInvoiceDocument,
-            variables: {
-              uuid: clientId,
-              month: 1,
-              year: 2024,
-            },
-          }
-          if (!responseData?.updateClientInvoiceItem?.invoiceItem) return
-          const cachedData = cache.readQuery<ClientInvoiceQuery>(cacheClientsInvoiceQuery)
-
-          console.log('cachedData', cachedData)
-
-          if (!cachedData?.clientInvoice) return
-          cache.writeQuery({
-            ...cacheClientsInvoiceQuery,
-            data: {
-              ...cachedData.clientInvoice,
-              items: cachedData.clientInvoice.items.map(item =>
-                item.uuid === invoiceItem?.id
-                  ? responseData?.updateClientInvoiceItem?.invoiceItem
-                  : item,
-              ),
-            },
-          })
         },
       })
       reset()
@@ -157,22 +113,24 @@ export default function InvoiceItemNewEditForm({
               xs: 'repeat(1, 1fr)',
               sm: 'repeat(2, 1fr)',
             }}
+            sx={{ pb: 4 }}
           >
             <RHFTextField name="description" label="Descriere" multiline rows={5} />
-            <DatePicker
-              label="Ziua din luna"
-              minDate={invoiceDate}
-              value={itemDate && new Date(itemDate)}
-              onChange={newItemDate =>
-                newItemDate && setItemDate(format(newItemDate, 'yyyy-MM-dd'))
+            <RHFSwitch
+              name="isRecurring"
+              labelPlacement="start"
+              label={
+                <>
+                  <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                    Este cost lunar?
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    Daca este un cost lunar, acesta va fi automat transferat pe factura in
+                    urmatoarea luna.
+                  </Typography>
+                </>
               }
-              disableFuture
-              name="itemDate"
-              slotProps={{ textField: { fullWidth: true } }}
-              views={['day']}
-              sx={{
-                maxWidth: { md: 180 },
-              }}
+              sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
             />
             <RHFTextField name="unitPrice" label="Cost" />
             <RHFSelect
@@ -189,6 +147,21 @@ export default function InvoiceItemNewEditForm({
               ))}
             </RHFSelect>
             <RHFTextField name="minutesAllocated" label="Numar de minute alocate" />
+            <DatePicker
+              label="Ziua din luna"
+              minDate={invoiceDate}
+              value={itemDate && new Date(itemDate)}
+              onChange={newItemDate =>
+                newItemDate && setItemDate(format(newItemDate, 'yyyy-MM-dd'))
+              }
+              disableFuture
+              name="itemDate"
+              slotProps={{ textField: { fullWidth: true } }}
+              views={['day']}
+              sx={{
+                maxWidth: { md: 180 },
+              }}
+            />
           </Box>
 
           <DialogActions>

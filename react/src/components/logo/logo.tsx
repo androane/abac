@@ -3,26 +3,25 @@ import { forwardRef } from 'react'
 import Link from '@mui/material/Link'
 import Box, { BoxProps } from '@mui/material/Box'
 
-import { RouterLink } from 'routes/components'
+import { useAuthContext } from 'auth/hooks'
 
-// export interface LogoProps extends BoxProps {
-//   disabledLink?: boolean;
-// }
+import { RouterLink } from 'routes/components'
+import { Stack } from '@mui/material'
 
 const Logo = forwardRef<HTMLDivElement, BoxProps>(({ sx }, ref) => {
-  const logo = (
-    <Box
-      ref={ref}
-      component="img"
-      src="/logo/logo_single.svg"
-      sx={{ width: 40, height: 40, cursor: 'pointer', ...sx }}
-    />
-  )
+  const { user } = useAuthContext()
 
   return (
-    <Link component={RouterLink} href="/" sx={{ display: 'contents' }}>
-      {logo}
-    </Link>
+    <Stack pr={5} direction="row" alignItems="center" justifyContent="center">
+      <Link component={RouterLink} href="/" sx={{ display: 'contents' }}>
+        <Box
+          ref={ref}
+          component="img"
+          src={user?.organization.logoUrl}
+          sx={{ maxWidth: 160, pb: 5, cursor: 'pointer', ...sx }}
+        />
+      </Link>
+    </Stack>
   )
 })
 

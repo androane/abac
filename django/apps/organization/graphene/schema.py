@@ -6,12 +6,16 @@ from organization.graphene.mutations import (
     UpdateClient,
     UpdateClientInvoiceItem,
     UpdateClientInvoiceStatus,
+    UpdateClientUser,
 )
 from organization.graphene.types import ClientFileType, ClientType, InvoiceType
 from organization.services.client_files_service import get_client_files
 from organization.services.client_invoice_service import get_client_invoice
 from organization.services.client_service import get_client, get_clients
-from organization.services.client_users import get_program_managers
+from organization.services.client_users_service import (
+    get_client_program_managers,
+    get_client_users,
+)
 from user.decorators import logged_in_user_required
 from user.graphene.types import UserType
 
@@ -42,9 +46,15 @@ class Query(graphene.ObjectType):
         client_uuid=graphene.String(required=True),
         required=True,
     )
-    program_managers = graphene.List(
+    client_program_managers = graphene.List(
         graphene.NonNull(UserType),
         description="List all Program Managers",
+        required=True,
+    )
+    client_users = graphene.List(
+        graphene.NonNull(UserType),
+        description="List all Client Users",
+        client_uuid=graphene.String(required=True),
         required=True,
     )
 
@@ -65,8 +75,12 @@ class Query(graphene.ObjectType):
         return get_client_files(user, **kwargs)
 
     @logged_in_user_required
-    def resolve_program_managers(info, user, **kwargs):
-        return get_program_managers()
+    def resolve_client_program_managers(info, user, **kwargs):
+        return get_client_program_managers()
+
+    @logged_in_user_required
+    def resolve_client_users(info, user, **kwargs):
+        return get_client_users(user, **kwargs)
 
 
 class Mutation(graphene.ObjectType):
@@ -78,3 +92,6 @@ class Mutation(graphene.ObjectType):
         description="Update or Create a New Client Invoice Item"
     )
     create_client_files = CreateClientFiles.Field(description="Create new Client Files")
+    update_client_user = UpdateClientUser.Field(
+        description="Update or Create a New Client User"
+    )

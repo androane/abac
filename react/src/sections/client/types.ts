@@ -1,4 +1,10 @@
-import { ClientFilesQuery, ClientInvoiceQuery, ClientsQuery, CurrencyEnum } from 'generated/graphql'
+import {
+  ClientFilesQuery,
+  ClientInvoiceQuery,
+  ClientUserRoleEnum,
+  ClientsQuery,
+  CurrencyEnum,
+} from 'generated/graphql'
 
 export type ClientItem = {
   id: string
@@ -18,15 +24,28 @@ export type ClientTableFilters = {
 
 export type InvoiceItem = {
   id: string
+  index: number
   description: string
   unitPrice?: null | number
   unitPriceCurrency?: null | CurrencyEnum
   itemDate?: null | string
   minutesAllocated?: null | number
+  isRecurring: boolean
 }
 
 export type InvoiceTableFilters = {
   description: string
+}
+
+export type ClientUser = {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  role?: null | ClientUserRoleEnum
+  ownershipPercentage?: null | number
+  spvUsername?: null | string
+  spvPassword?: null | string
 }
 
 export type APIClient = ClientsQuery['clients'][0]

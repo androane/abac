@@ -2,14 +2,39 @@
 import os
 
 import graphene
+from django.contrib.auth import get_user_model
 from graphene_django import DjangoObjectType
 from graphene_file_upload.scalars import Upload
 
-from organization.constants import CurrencyEnum, InvoiceStatusEnum
-from organization.models import Client, ClientFile, Invoice, InvoiceItem
+from organization.constants import ClientUserRoleEnum, CurrencyEnum, InvoiceStatusEnum
+from organization.models import (
+    Client,
+    ClientFile,
+    ClientUserProfile,
+    Invoice,
+    InvoiceItem,
+    Organization,
+)
+from user.graphene.types import UserType
 
 CurrencyEnumType = graphene.Enum.from_enum(CurrencyEnum)
 InvoiceStatusEnumType = graphene.Enum.from_enum(InvoiceStatusEnum)
+ClientUserRoleEnumType = graphene.Enum.from_enum(ClientUserRoleEnum)
+
+
+class OrganizationType(DjangoObjectType):
+    class Meta:
+        model = Organization
+        only_fields = (
+            "uuid",
+            "name",
+        )
+
+    logo_url = graphene.NonNull(graphene.String)
+
+    def resolve_logo_url(self, info):
+        if self.logo:
+            return self.logo.url
 
 
 class InvoiceItemType(DjangoObjectType):
@@ -65,7 +90,7 @@ class ClientFileType(DjangoObjectType):
     name = graphene.NonNull(graphene.String)
 
     def resolve_name(self, info):
-        # Using os.path.basename to get rid of the path and onyl return the actual file name
+        # Using os.path.basename to get rid of the path and only return the actual file name
         return os.path.basename(self.file.name)
 
 
@@ -83,10 +108,43 @@ class ClientType(DjangoObjectType):
             "phone_number_1",
             "phone_number_2",
             "program_manager",
+            "spv_username",
+            "spv_password",
             "cui",
         )
 
     files = graphene.List(graphene.NonNull(ClientFileType), required=True)
+    users = graphene.List(graphene.NonNull(UserType), required=True)
 
     def resolve_files(self, info, **kwargs):
         return self.files.all()
+
+    def resolve_users(self, info, **kwargs):
+        return get_user_model().objects.filter(
+            organization=info.contenxt.user.organization, client_profile=self
+        )
+
+
+class ClientUserProfileType(DjangoObjectType):
+    class Meta:
+        model = ClientUserProfile
+        only_fields = (
+            "uuid",
+            "ownership_percentage",
+            "role",
+            "spv_username",
+            "spv_password",
+        )
+
+    role = ClientUserRoleEnumType()
+
+
+class ClientUserInput(graphene.InputObjectType):
+    uuid = graphene.String()
+    first_name = graphene.String(required=True)
+    last_name = graphene.String(required=True)
+    email = graphene.String(required=True)
+    role = ClientUserRoleEnumType()
+    ownership_percentage = graphene.Int()
+    spv_username = graphene.String()
+    spv_password = graphene.String()

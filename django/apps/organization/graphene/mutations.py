@@ -5,8 +5,8 @@ from api.graphene.mutations import BaseMutation, get_graphene_error
 from organization.graphene.types import (
     ClientFileInput,
     ClientType,
+    ClientUserInput,
     InvoiceItemInput,
-    InvoiceItemType,
     InvoiceStatusEnumType,
     InvoiceType,
 )
@@ -16,7 +16,9 @@ from organization.services.client_invoice_service import (
     update_client_invoice_status,
 )
 from organization.services.client_service import update_or_create_client
+from organization.services.client_users_service import update_client_user
 from user.decorators import logged_in_user_required
+from user.graphene.types import UserType
 
 
 class UpdateClient(BaseMutation):
@@ -27,6 +29,9 @@ class UpdateClient(BaseMutation):
         phone_number_1 = graphene.String()
         phone_number_2 = graphene.String()
         program_manager_uuid = graphene.String()
+        spv_username = graphene.String()
+        spv_password = graphene.String()
+        cui = graphene.String()
 
     client = graphene.Field(ClientType)
 
@@ -66,17 +71,17 @@ class UpdateClientInvoiceItem(BaseMutation):
         invoice_uuid = graphene.String(required=True)
         invoice_item_input = graphene.NonNull(InvoiceItemInput)
 
-    invoice_item = graphene.Field(InvoiceItemType)
+    invoice = graphene.Field(InvoiceType)
 
     @logged_in_user_required
     def mutate(self, user, **kwargs):
         try:
-            invoice_item = update_client_invoice_item(user, **kwargs)
+            invoice = update_client_invoice_item(user, **kwargs)
         except Exception as e:
             return get_graphene_error(str(e))
 
         return {
-            "invoice_item": invoice_item,
+            "invoice": invoice,
         }
 
 
@@ -96,4 +101,23 @@ class CreateClientFiles(BaseMutation):
 
         return {
             "client": client,
+        }
+
+
+class UpdateClientUser(BaseMutation):
+    class Arguments:
+        client_uuid = graphene.String(required=True)
+        client_user_input = graphene.NonNull(ClientUserInput)
+
+    client_user = graphene.Field(UserType)
+
+    @logged_in_user_required
+    def mutate(self, user, **kwargs):
+        try:
+            client_user = update_client_user(user, **kwargs)
+        except Exception as e:
+            return get_graphene_error(str(e))
+
+        return {
+            "client_user": client_user,
         }

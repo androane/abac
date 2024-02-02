@@ -3,7 +3,6 @@ import Stack from '@mui/material/Stack'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Collapse from '@mui/material/Collapse'
 import Typography from '@mui/material/Typography'
 import TextMaxLine from 'components/text-max-line'
 import { fDateTime } from 'utils/format-time'
@@ -17,9 +16,9 @@ import { useBoolean } from 'hooks/use-boolean'
 import Iconify from 'components/iconify'
 import IconButton from '@mui/material/IconButton'
 import EmptyContent from 'components/empty-content'
-import CreateFilesDialog from 'sections/client/files-new-files-dialog'
+import FilesNewDialog from 'sections/client/files-new-dialog'
 import { Link } from 'react-router-dom'
-import { APIClientFile } from '../types'
+import { APIClientFile } from './types'
 
 type FileDetailsProps = {
   clientId: string
@@ -128,7 +127,7 @@ type Props = {
   clientId: string
 }
 
-export default function FilesListView({ clientId }: Props) {
+export default function FilesList({ clientId }: Props) {
   const upload = useBoolean()
 
   const result = useClientFilesQuery({
@@ -171,22 +170,20 @@ export default function FilesListView({ clientId }: Props) {
               </Stack>
             </Stack>
             {files.length ? (
-              <Collapse in={Boolean(files.length)} unmountOnExit>
-                <Box
-                  display="grid"
-                  gridTemplateColumns={{
-                    xs: 'repeat(1, 1fr)',
-                    sm: 'repeat(2, 1fr)',
-                    md: 'repeat(3, 1fr)',
-                    lg: 'repeat(4, 1fr)',
-                  }}
-                  gap={3}
-                >
-                  {files.map(file => (
-                    <FileDetails key={file.name} clientId={clientId} file={file} />
-                  ))}
-                </Box>
-              </Collapse>
+              <Box
+                display="grid"
+                gridTemplateColumns={{
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(2, 1fr)',
+                  md: 'repeat(3, 1fr)',
+                  lg: 'repeat(4, 1fr)',
+                }}
+                gap={3}
+              >
+                {files.map(file => (
+                  <FileDetails key={file.name} clientId={clientId} file={file} />
+                ))}
+              </Box>
             ) : (
               <EmptyContent
                 filled
@@ -196,7 +193,7 @@ export default function FilesListView({ clientId }: Props) {
                 }}
               />
             )}
-            <CreateFilesDialog clientId={clientId} open={upload.value} onClose={upload.onFalse} />
+            <FilesNewDialog clientId={clientId} open={upload.value} onClose={upload.onFalse} />
           </>
         )
       }}

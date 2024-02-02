@@ -19,7 +19,7 @@ interface Props extends DialogProps {
   onClose: VoidFunction
 }
 
-export default function CreateFilesDialog({
+export default function FilesNewDialog({
   title = 'Incarca Fisiere',
   clientId,
   open,

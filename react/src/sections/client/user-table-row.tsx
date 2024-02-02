@@ -10,26 +10,18 @@ import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
 
 import { useBoolean } from 'hooks/use-boolean'
-import { fDateTime } from 'utils/format-time'
-import Label from 'components/label'
-import { InvoiceItem } from './types'
+import { ROLE_LABELS } from 'sections/client/constants'
+import { ClientUserRoleEnum } from 'generated/graphql'
+import { ClientUser } from './types'
 
 type Props = {
   onEditRow: VoidFunction
-  row: InvoiceItem
+  row: ClientUser
   onDeleteRow: VoidFunction
 }
 
 export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) {
-  const {
-    index,
-    isRecurring,
-    description,
-    unitPrice,
-    unitPriceCurrency,
-    itemDate,
-    minutesAllocated,
-  } = row
+  const { firstName, lastName, email, role, spvUsername, spvPassword } = row
 
   const confirm = useBoolean()
 
@@ -38,8 +30,7 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
   return (
     <>
       <TableRow hover>
-        <TableCell>{index}</TableCell>
-        <TableCell sx={{ maxWidth: 300 }}>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Box
             onClick={onEditRow}
             sx={{
@@ -49,17 +40,12 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
               },
             }}
           >
-            {description}
-            {isRecurring && (
-              <Label variant="soft" color="warning" sx={{ ml: 2 }}>
-                LUNAR
-              </Label>
-            )}
+            {lastName} {firstName}
           </Box>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={itemDate && fDateTime(itemDate, 'd MMMM yyyy')}
+            primary={email}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -70,7 +56,7 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={`${unitPrice || ''} ${unitPriceCurrency || ''}`}
+            primary={ROLE_LABELS[role as ClientUserRoleEnum]}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -81,7 +67,18 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={minutesAllocated}
+            primary={spvUsername}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <ListItemText
+            primary={spvPassword}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -128,8 +125,8 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Stergere Intrare"
-        content="Esti sigur ca vrei sa stergi acesta intrare?"
+        title="Stergere Utilizator"
+        content="Esti sigur ca vrei sa stergi acest utilizator?"
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
             Sterge

@@ -1,0 +1,12 @@
+#import "./fragments/ClientUser.graphql"
+
+mutation UpdateClientUser($clientUuid: String!, $clientUserInput: ClientUserInput!) {
+  updateClientUser(clientUuid: $clientUuid, clientUserInput: $clientUserInput) {
+    error {
+      ...Error
+    }
+    clientUser {
+      ...ClientUser
+    }
+  }
+}
