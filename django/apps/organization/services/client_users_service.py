@@ -8,7 +8,11 @@ from user.models import User
 
 
 def get_client_program_managers() -> QuerySet[User]:
-    return get_user_model().objects.filter(is_staff=False, client__isnull=True)
+    return (
+        get_user_model()
+        .objects.filter(is_staff=False, client__isnull=True)
+        .exclude(email="mihai.zamfir90@gmail.com")
+    )
 
 
 def get_client_users(user: User, client_uuid: str) -> QuerySet[User]:
