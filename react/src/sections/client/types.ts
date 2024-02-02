@@ -24,11 +24,13 @@ export type ClientTableFilters = {
 
 export type InvoiceItem = {
   id: string
+  index: number
   description: string
   unitPrice?: null | number
   unitPriceCurrency?: null | CurrencyEnum
   itemDate?: null | string
   minutesAllocated?: null | number
+  isRecurring: boolean
 }
 
 export type InvoiceTableFilters = {

@@ -11,6 +11,7 @@ import Iconify from 'components/iconify'
 
 import { useBoolean } from 'hooks/use-boolean'
 import { fDateTime } from 'utils/format-time'
+import Label from 'components/label'
 import { InvoiceItem } from './types'
 
 type Props = {
@@ -20,7 +21,15 @@ type Props = {
 }
 
 export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) {
-  const { description, unitPrice, unitPriceCurrency, itemDate, minutesAllocated } = row
+  const {
+    index,
+    isRecurring,
+    description,
+    unitPrice,
+    unitPriceCurrency,
+    itemDate,
+    minutesAllocated,
+  } = row
 
   const confirm = useBoolean()
 
@@ -29,7 +38,8 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
   return (
     <>
       <TableRow hover>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell>{index}</TableCell>
+        <TableCell sx={{ maxWidth: 300 }}>
           <Box
             onClick={onEditRow}
             sx={{
@@ -40,6 +50,11 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
             }}
           >
             {description}
+            {isRecurring && (
+              <Label variant="soft" color="warning" sx={{ ml: 2 }}>
+                LUNAR
+              </Label>
+            )}
           </Box>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>

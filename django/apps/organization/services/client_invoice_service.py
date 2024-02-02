@@ -83,10 +83,9 @@ def update_client_invoice_item(
         "unit_price_currency",
         "item_date",
         "minutes_allocated",
+        "is_recurring",
     ):
         setattr(invoice_item, field, getattr(invoice_item_input, field))
-    if invoice_item_input.is_recurring:
-        invoice_item.is_recurring = True
 
     invoice_item.save()
     return invoice

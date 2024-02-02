@@ -33,6 +33,7 @@ const defaultFilters = {
 }
 
 const TABLE_HEAD = [
+  { id: 'index', label: '#' },
   { id: 'description', label: 'Descriere' },
   { id: 'itemDate', label: 'Data' },
   { id: 'unitPrice', label: 'Suma' },
@@ -51,13 +52,15 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
   invoiceDate,
   onChangeInvoiceDate,
 }) => {
-  const invoiceItems = clientInvoice.items?.map(invoice => ({
+  const invoiceItems = clientInvoice.items?.map((invoice, index) => ({
     id: invoice.uuid,
+    index: index + 1,
     description: invoice.description,
     itemDate: invoice?.itemDate,
     unitPrice: invoice?.unitPrice,
     unitPriceCurrency: invoice?.unitPriceCurrency,
     minutesAllocated: invoice?.minutesAllocated,
+    isRecurring: invoice?.isRecurring,
   }))
 
   const showCreateInvoiceItem = useBoolean()
