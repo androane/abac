@@ -300,11 +300,13 @@ export type UserType = {
   firstName: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  organization?: Maybe<OrganizationType>;
+  organization: OrganizationType;
+  photoUrl: Scalars['String']['output'];
+  role: Scalars['String']['output'];
   uuid: Scalars['String']['output'];
 };
 
-export type UserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string, organization?: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } | null };
+export type UserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: string, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } };
 
 export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
 
@@ -324,7 +326,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginUser', token?: string | null, error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'UserType', uuid: string, email: string, name: string, organization?: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } | null } | null } | null };
+export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginUser', token?: string | null, error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: string, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } } | null } | null };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -381,7 +383,7 @@ export type UpdateClientUserMutation = { __typename?: 'Mutation', updateClientUs
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'UserType', uuid: string, email: string, name: string, organization?: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } | null } };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: string, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } } };
 
 export type ClientsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -421,6 +423,8 @@ export const UserFragmentDoc = gql`
   uuid
   email
   name
+  photoUrl
+  role
   organization {
     uuid
     name

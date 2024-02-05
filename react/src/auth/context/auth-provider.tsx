@@ -88,10 +88,7 @@ export function AuthProvider({ children }: Props) {
           dispatch({
             type: Types.INITIAL,
             payload: {
-              user: {
-                ...currentUserResponse.data?.currentUser,
-                accessToken,
-              },
+              user: currentUserResponse.data?.currentUser,
             },
           })
         }
@@ -119,30 +116,30 @@ export function AuthProvider({ children }: Props) {
   }, [initialize])
 
   // LOGIN
-  const login = useCallback(async (email: string, password: string) => {
-    const res = await loginMutation({ variables: { email, password } })
+  const login = useCallback(
+    async (email: string, password: string) => {
+      const res = await loginMutation({ variables: { email, password } })
 
-    if (!res.data?.login) {
-      return
-    }
-    const { token, user, error } = res.data.login
+      if (!res.data?.login) {
+        return
+      }
+      const { token, user, error } = res.data.login
 
-    if (!token) {
-      throw new Error(error?.message)
-    }
+      if (!token) {
+        throw new Error(error?.message)
+      }
 
-    setSession(token)
+      setSession(token)
 
-    dispatch({
-      type: Types.LOGIN,
-      payload: {
-        user: {
-          ...user,
-          token,
+      dispatch({
+        type: Types.LOGIN,
+        payload: {
+          user,
         },
-      },
-    })
-  }, [loginMutation])
+      })
+    },
+    [loginMutation],
+  )
 
   // LOGOUT
   const logout = useCallback(async () => {

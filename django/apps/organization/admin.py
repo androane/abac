@@ -13,6 +13,7 @@ class OrganizationAdmin(SimpleHistoryAdmin):
         "name",
     ]
     fields = ("name", "logo")
+    order_by = ("name",)
 
 
 class InvoiceAdmin(admin.TabularInline):
@@ -42,5 +43,6 @@ class ClientAdmin(SimpleHistoryAdmin):
     history_list_display = [
         "name",
     ]
+    order_by = ("organization__name", "name")
 
     inlines = [ClientFileAdmin, InvoiceAdmin]

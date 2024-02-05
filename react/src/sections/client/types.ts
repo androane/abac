@@ -19,7 +19,7 @@ export type ClientItem = {
 
 export type ClientTableFilters = {
   name: string
-  programManagerId: string
+  programManagerId?: string
 }
 
 export type InvoiceItem = {

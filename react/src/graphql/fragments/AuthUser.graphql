@@ -2,6 +2,8 @@ fragment User on UserType {
   uuid
   email
   name
+  photoUrl
+  role
   organization {
     uuid
     name

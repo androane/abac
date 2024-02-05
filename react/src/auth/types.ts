@@ -1,4 +1,4 @@
-import { UserType } from 'generated/graphql'
+import { UserFragment } from 'generated/graphql'
 
 export type ActionMapType<M extends { [index: string]: any }> = {
   [Key in keyof M]: M[Key] extends undefined
@@ -11,7 +11,7 @@ export type ActionMapType<M extends { [index: string]: any }> = {
       }
 }
 
-export type AuthUserType = UserType
+export type AuthUserType = null | undefined | UserFragment
 
 export type AuthStateType = {
   status?: string
