@@ -36,6 +36,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     organization = models.ForeignKey(
         "organization.Organization",
         null=True,
+        blank=True,
         on_delete=models.CASCADE,
         related_name="users",
     )

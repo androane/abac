@@ -36,18 +36,16 @@ class GraphQLView(FileUploadGraphQLView):
         See: https://github.com/graphql-python/graphene-django/issues/124
         """
 
-        # Log request data so that we can view it / debug if there's a runtime error while it's executed.
-        # Note: this is similarly accomplished in Moesif but it's less expensive to do it here when
-        # the number of requests scales.
         graphql_request = self.parse_body(args[0])
         variables = graphql_request.get("variables", "")
         operation_name = graphql_request.get("operationName", "")
-        logger.warning(operation_name)
-        logger.warning(variables)
+        print(operation_name)
+        if variables:
+            print(variables)
 
         result = super().execute_graphql_request(*args, **kwargs)
         if result and result.errors:
-            logger.warning("GraphQL Error: %s", result.errors)
+            logger.warning(f"GraphQL Error: {result.errors}")
             for error in result.errors:
                 if hasattr(error, "original_error") and settings.DEBUG:
                     raise error.original_error

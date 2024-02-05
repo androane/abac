@@ -9,7 +9,7 @@ from user.models import User
 
 
 def get_clients(user: User) -> QuerySet[Client]:
-    return user.organization.clients.all()
+    return user.organization.clients.order_by("name").all()
 
 
 def get_client(user: User, uuid: str) -> Client:

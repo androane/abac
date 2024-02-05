@@ -17,8 +17,13 @@ import { paths } from 'routes/paths'
 
 import ResponseHandler from 'components/response-handler'
 import { useSnackbar } from 'components/snackbar'
-import { useClientProgramManagersQuery, useUpdateClientMutation } from 'generated/graphql'
+import {
+  useClientProgramManagersQuery,
+  useUpdateClientMutation,
+  ClientFragmentDoc,
+} from 'generated/graphql'
 import { fData } from 'utils/format-number'
+import { useAuthContext } from 'auth/hooks'
 import { APIClient } from './types'
 
 type Props = {
@@ -27,6 +32,8 @@ type Props = {
 
 export default function ClientNewEditForm({ client }: Props) {
   const router = useRouter()
+
+  const { user } = useAuthContext()
 
   const result = useClientProgramManagersQuery()
 
@@ -53,12 +60,12 @@ export default function ClientNewEditForm({ client }: Props) {
       imageUrl: null,
       phoneNumber1: client?.phoneNumber1,
       phoneNumber2: client?.phoneNumber2,
-      programManagerUuid: client?.programManager?.uuid,
+      programManagerUuid: client?.programManager?.uuid || user?.uuid,
       spvUsername: client?.spvUsername,
       spvPassword: client?.spvPassword,
       cui: client?.cui,
     }),
-    [client],
+    [client, user],
   )
 
   const methods = useForm({
@@ -86,6 +93,22 @@ export default function ClientNewEditForm({ client }: Props) {
           spvUsername: data.spvUsername,
           spvPassword: data.spvPassword,
           cui: data.cui,
+        },
+        update(cache, { data: cacheData }) {
+          cache.modify({
+            fields: {
+              clients(existingClients = []) {
+                if (!client) {
+                  const newClient = cache.writeFragment({
+                    data: cacheData?.updateClient?.client,
+                    fragment: ClientFragmentDoc,
+                  })
+                  return [newClient, ...existingClients]
+                }
+                return existingClients
+              },
+            },
+          })
         },
       })
       reset()

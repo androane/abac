@@ -13,7 +13,7 @@ def get_client_files(
     return ClientFile.objects.filter(
         client__uuid=client_uuid,
         client__organization=user.organization,
-    )
+    ).order_by("-created")
 
 
 def create_client_files(

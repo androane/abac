@@ -12,6 +12,7 @@ def get_client_program_managers() -> QuerySet[User]:
         get_user_model()
         .objects.filter(is_staff=False, client__isnull=True)
         .exclude(email="mihai.zamfir90@gmail.com")
+        .order_by("first_name", "last_name")
     )
 
 
