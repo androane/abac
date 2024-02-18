@@ -12,18 +12,14 @@ import { InvoiceTableFilters } from './types'
 type Props = StackProps & {
   filters: InvoiceTableFilters
   onFilters: (name: string, value: string) => void
-  //
   onResetFilters: VoidFunction
-  //
   results: number
 }
 
 export default function InvoiceTableFiltersResult({
   filters,
   onFilters,
-  //
   onResetFilters,
-  //
   results,
   ...other
 }: Props) {
@@ -41,9 +37,9 @@ export default function InvoiceTableFiltersResult({
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
-        {!!filters.description && (
+        {!!filters.name && (
           <Block label="Cuvant cheie:">
-            <Chip label={filters.description} size="small" onDelete={handleRemoveKeyword} />
+            <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}
 
