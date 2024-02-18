@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
@@ -12,25 +11,28 @@ import Iconify from 'components/iconify'
 import { useBoolean } from 'hooks/use-boolean'
 import { fDateTime } from 'utils/format-time'
 import Label from 'components/label'
-import { InvoiceItem } from './types'
+import { UNIT_PRICE_TYPE_LABELS } from 'sections/settings/constants'
+import { UnitPriceTypeEnum } from 'generated/graphql'
+import LoadingButton from '@mui/lab/LoadingButton'
+import { APIInvoiceItem } from './types'
 
 type Props = {
+  index: number
+  loading: boolean
+  invoiceIsLocked: boolean
+  row: APIInvoiceItem
   onEditRow: VoidFunction
-  row: InvoiceItem
   onDeleteRow: VoidFunction
 }
 
-export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) {
-  const {
-    index,
-    isRecurring,
-    description,
-    unitPrice,
-    unitPriceCurrency,
-    itemDate,
-    minutesAllocated,
-  } = row
-
+const InvoiceTableRow: React.FC<Props> = ({
+  index,
+  invoiceIsLocked,
+  row,
+  onEditRow,
+  onDeleteRow,
+  loading,
+}) => {
   const confirm = useBoolean()
 
   const popover = usePopover()
@@ -39,9 +41,9 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
     <>
       <TableRow hover>
         <TableCell>{index}</TableCell>
-        <TableCell sx={{ maxWidth: 300 }}>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Box
-            onClick={onEditRow}
+            onClick={() => !invoiceIsLocked && onEditRow()}
             sx={{
               cursor: 'pointer',
               '&:hover': {
@@ -49,17 +51,17 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
               },
             }}
           >
-            {description}
-            {isRecurring && (
+            {row.name}
+            {row.isRecurring && (
               <Label variant="soft" color="warning" sx={{ ml: 2 }}>
                 LUNAR
               </Label>
             )}
           </Box>
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell sx={{ maxWidth: 300 }}>
           <ListItemText
-            primary={itemDate && fDateTime(itemDate, 'd MMMM yyyy')}
+            primary={row.description}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -70,7 +72,7 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={`${unitPrice || ''} ${unitPriceCurrency || ''}`}
+            primary={row.itemDate && fDateTime(row.itemDate, 'd MMMM yyyy')}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -81,7 +83,29 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={minutesAllocated}
+            primary={`${row.unitPrice || ''} ${row.unitPriceCurrency || ''}`}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <ListItemText
+            primary={UNIT_PRICE_TYPE_LABELS[row.unitPriceType as UnitPriceTypeEnum]}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <ListItemText
+            primary={row.minutesAllocated}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -91,7 +115,11 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
           />
         </TableCell>
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+          <IconButton
+            disabled={invoiceIsLocked}
+            color={popover.open ? 'inherit' : 'default'}
+            onClick={popover.onOpen}
+          >
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
@@ -131,11 +159,13 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
         title="Stergere Intrare"
         content="Esti sigur ca vrei sa stergi acesta intrare?"
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <LoadingButton loading={loading} variant="contained" color="error" onClick={onDeleteRow}>
             Sterge
-          </Button>
+          </LoadingButton>
         }
       />
     </>
   )
 }
+
+export default InvoiceTableRow

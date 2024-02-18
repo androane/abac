@@ -20,3 +20,8 @@ class ClientUserRoleEnum(BaseEnum):
     ASSOCIATE = enum.auto()
     EMPLOYEE = enum.auto()
     MANAGER = enum.auto()
+
+
+class UnitPriceTypeEnum(BaseEnum):
+    FIXED = enum.auto()
+    HOURLY = enum.auto()

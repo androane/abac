@@ -7,10 +7,11 @@ from user.models import User
 
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
-    list_display = ("email", "organization")
+    list_display = ("email", "organization", "client")
 
     ordering = (
         "organization",
+        "client",
         "last_name",
         "first_name",
     )

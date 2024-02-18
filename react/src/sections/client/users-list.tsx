@@ -21,14 +21,14 @@ import ResponseHandler from 'components/response-handler'
 import { useClientUsersQuery } from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import { ClientUser } from 'sections/client/types'
-import { Box, IconButton, Stack, Typography } from '@mui/material'
-import Iconify from 'components/iconify'
-import UserNewEditForm from 'sections/client/users-new-edit-form'
+import UpdateUser from 'sections/client/users-update'
+import AddButton from 'components/add-button'
 import UserTableRow from './user-table-row'
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Nume' },
   { id: 'email', label: 'Email' },
+  { id: 'phoneNumber', label: 'Telefon' },
   { id: 'role', label: 'Rol' },
   { id: 'spvUsername', label: 'Utilizator SPV' },
   { id: 'spvPassword', label: 'Parola SPV' },
@@ -83,37 +83,10 @@ const UserListCard: React.FC<CardProps> = ({ clientId, users }) => {
 
   return (
     <>
-      <Stack direction="row" alignItems="center" sx={{ mb: 3 }}>
-        <Stack flexGrow={1}>
-          <Stack direction="row" alignItems="center" spacing={1} flexGrow={1}>
-            <Typography variant="h6"> Persoane </Typography>
-
-            <IconButton
-              size="small"
-              color="primary"
-              onClick={showCreateUser.onTrue}
-              sx={{
-                width: 24,
-                height: 24,
-                bgcolor: 'primary.main',
-                color: 'primary.contrastText',
-                '&:hover': {
-                  bgcolor: 'primary.dark',
-                },
-              }}
-            >
-              <Iconify icon="mingcute:add-line" />
-            </IconButton>
-          </Stack>
-
-          <Box
-            sx={{ typography: 'body2', color: 'text.disabled', mt: 0.5 }}
-          >{`${users.length} persoane`}</Box>
-        </Stack>
-      </Stack>
+      <AddButton count={users.length} label="Persoane" onClick={showCreateUser.onTrue} />
       <Card>
         {showCreateUser.value && (
-          <UserNewEditForm
+          <UpdateUser
             clientId={clientId}
             user={users.find(_ => _.id === userIdToEdit)}
             onClose={showCreateUser.onFalse}
@@ -194,6 +167,7 @@ export default function UserListView({ clientId }: Props) {
           ownershipPercentage: user.clientProfile.ownershipPercentage,
           spvUsername: user.clientProfile.spvUsername,
           spvPassword: user.clientProfile.spvPassword,
+          phoneNumber: user.clientProfile.phoneNumber,
         }))
         return <UserListCard clientId={clientId} users={users} />
       }}

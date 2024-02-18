@@ -57,6 +57,7 @@ export type ClientUserInput = {
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
   ownershipPercentage?: InputMaybe<Scalars['Int']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
   role?: InputMaybe<ClientUserRoleEnum>;
   spvPassword?: InputMaybe<Scalars['String']['input']>;
   spvUsername?: InputMaybe<Scalars['String']['input']>;
@@ -67,6 +68,7 @@ export type ClientUserProfileType = {
   __typename?: 'ClientUserProfileType';
   /** What percentage of the organization does this user own? */
   ownershipPercentage?: Maybe<Scalars['Int']['output']>;
+  phoneNumber: Scalars['String']['output'];
   role?: Maybe<ClientUserRoleEnum>;
   /** SPV Password */
   spvPassword?: Maybe<Scalars['String']['output']>;
@@ -96,6 +98,17 @@ export enum CurrencyEnum {
   USD = 'USD'
 }
 
+export type DeleteClientInvoiceItem = {
+  __typename?: 'DeleteClientInvoiceItem';
+  error?: Maybe<ErrorType>;
+  invoice?: Maybe<InvoiceType>;
+};
+
+export type DeleteOrganizationService = {
+  __typename?: 'DeleteOrganizationService';
+  error?: Maybe<ErrorType>;
+};
+
 export type ErrorType = {
   __typename?: 'ErrorType';
   field?: Maybe<Scalars['String']['output']>;
@@ -103,10 +116,12 @@ export type ErrorType = {
 };
 
 export type InvoiceItemInput = {
-  description: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
   isRecurring?: InputMaybe<Scalars['Boolean']['input']>;
   itemDate?: InputMaybe<Scalars['Date']['input']>;
   minutesAllocated?: InputMaybe<Scalars['Int']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  standardServiceUuid?: InputMaybe<Scalars['String']['input']>;
   unitPrice?: InputMaybe<Scalars['Int']['input']>;
   unitPriceCurrency?: InputMaybe<CurrencyEnum>;
   uuid?: InputMaybe<Scalars['String']['input']>;
@@ -114,15 +129,22 @@ export type InvoiceItemInput = {
 
 export type InvoiceItemType = {
   __typename?: 'InvoiceItemType';
-  description: Scalars['String']['output'];
+  /** Optional explanation for the invoice item */
+  description?: Maybe<Scalars['String']['output']>;
   /** Boolean indicating if this invoice item is a recurring item every month */
   isRecurring: Scalars['Boolean']['output'];
   /** Date when the invoice item was executed */
   itemDate?: Maybe<Scalars['Date']['output']>;
   /** Number of minutes allocated to the customer for this invoice item */
   minutesAllocated?: Maybe<Scalars['Int']['output']>;
-  unitPrice?: Maybe<Scalars['Int']['output']>;
+  /** Name of the invoice item */
+  name: Scalars['String']['output'];
+  /** Connection to the initial standard invoice item. When provided, it copies the attributes from the standard invoice item. */
+  standardInvoiceItem?: Maybe<StandardInvoiceItemType>;
+  /** Price of the invoice item per unit type */
+  unitPrice: Scalars['Int']['output'];
   unitPriceCurrency?: Maybe<CurrencyEnum>;
+  unitPriceType?: Maybe<UnitPriceTypeEnum>;
   uuid: Scalars['String']['output'];
 };
 
@@ -165,6 +187,10 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Create new Client Files */
   createClientFiles?: Maybe<CreateClientFiles>;
+  /** Delete a Client Invoice Item */
+  deleteClientInvoiceItem?: Maybe<DeleteClientInvoiceItem>;
+  /** Delete an Organization Service (Standard Invoice Item) */
+  deleteOrganizationService?: Maybe<DeleteOrganizationService>;
   /** Log the user in with email and password. */
   login?: Maybe<LoginUser>;
   /** Log out user. */
@@ -177,12 +203,24 @@ export type Mutation = {
   updateClientInvoiceStatus?: Maybe<UpdateClientInvoiceStatus>;
   /** Update or Create a New Client User */
   updateClientUser?: Maybe<UpdateClientUser>;
+  /** Update or Create a New Service (Standard Invoice Item) */
+  updateOrganizationService?: Maybe<UpdateOrganizationService>;
 };
 
 
 export type MutationCreateClientFilesArgs = {
   clientFilesInput?: InputMaybe<Array<ClientFileInput>>;
   clientUuid: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteClientInvoiceItemArgs = {
+  invoiceItemUuid: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteOrganizationServiceArgs = {
+  uuid: Scalars['String']['input'];
 };
 
 
@@ -222,10 +260,16 @@ export type MutationUpdateClientUserArgs = {
   clientUuid: Scalars['String']['input'];
 };
 
+
+export type MutationUpdateOrganizationServiceArgs = {
+  standardInvoiceItemInput: StandardInvoiceItemInput;
+};
+
 export type OrganizationType = {
   __typename?: 'OrganizationType';
   logoUrl: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  standardInvoiceItems: Array<StandardInvoiceItemType>;
   uuid: Scalars['String']['output'];
 };
 
@@ -243,6 +287,8 @@ export type Query = {
   /** List all Clients */
   clients: Array<ClientType>;
   currentUser: UserType;
+  /** List all Services (Standard Invoice Items) for an organization */
+  organizationServices: Array<StandardInvoiceItemType>;
   /** List all users */
   users: Array<UserType>;
 };
@@ -269,6 +315,31 @@ export type QueryClientUsersArgs = {
   clientUuid: Scalars['String']['input'];
 };
 
+export type StandardInvoiceItemInput = {
+  name: Scalars['String']['input'];
+  unitPrice: Scalars['Int']['input'];
+  unitPriceCurrency: CurrencyEnum;
+  unitPriceType: UnitPriceTypeEnum;
+  uuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type StandardInvoiceItemType = {
+  __typename?: 'StandardInvoiceItemType';
+  /** Name of the invoice item */
+  name: Scalars['String']['output'];
+  /** Price of the invoice item per unit type */
+  unitPrice: Scalars['Int']['output'];
+  unitPriceCurrency?: Maybe<CurrencyEnum>;
+  unitPriceType?: Maybe<UnitPriceTypeEnum>;
+  uuid: Scalars['String']['output'];
+};
+
+/** An enumeration. */
+export enum UnitPriceTypeEnum {
+  FIXED = 'FIXED',
+  HOURLY = 'HOURLY'
+}
+
 export type UpdateClient = {
   __typename?: 'UpdateClient';
   client?: Maybe<ClientType>;
@@ -293,6 +364,12 @@ export type UpdateClientUser = {
   error?: Maybe<ErrorType>;
 };
 
+export type UpdateOrganizationService = {
+  __typename?: 'UpdateOrganizationService';
+  error?: Maybe<ErrorType>;
+  service?: Maybe<StandardInvoiceItemType>;
+};
+
 export type UserType = {
   __typename?: 'UserType';
   clientProfile: ClientUserProfileType;
@@ -310,15 +387,17 @@ export type UserFragment = { __typename?: 'UserType', uuid: string, email: strin
 
 export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
 
-export type InvoiceItemFragment = { __typename?: 'InvoiceItemType', uuid: string, description: string, unitPrice?: number | null, unitPriceCurrency?: CurrencyEnum | null, itemDate?: DateString | null, minutesAllocated?: number | null, isRecurring: boolean };
+export type InvoiceItemFragment = { __typename?: 'InvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency?: CurrencyEnum | null, unitPriceType?: UnitPriceTypeEnum | null, itemDate?: DateString | null, description?: string | null, minutesAllocated?: number | null, isRecurring: boolean, standardInvoiceItem?: { __typename?: 'StandardInvoiceItemType', uuid: string } | null };
 
-export type ClientUserFragment = { __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null } };
+export type ClientUserFragment = { __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string } };
 
 export type ErrorFragment = { __typename?: 'ErrorType', field?: string | null, message: string };
 
 export type FileFragment = { __typename?: 'ClientFileType', name: string, updated: DateTimeString, url: string, size: number };
 
 export type ProgramManagerFragment = { __typename?: 'UserType', uuid: string, name: string, email: string };
+
+export type StandardInvoiceItemFragment = { __typename?: 'StandardInvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency?: CurrencyEnum | null, unitPriceType?: UnitPriceTypeEnum | null };
 
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -341,6 +420,13 @@ export type CreateClientFilesMutationVariables = Exact<{
 
 export type CreateClientFilesMutation = { __typename?: 'Mutation', createClientFiles?: { __typename?: 'CreateClientFiles', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, files: Array<{ __typename?: 'ClientFileType', name: string, updated: DateTimeString, url: string, size: number }> } | null } | null };
 
+export type DeleteClientInvoiceItemMutationVariables = Exact<{
+  invoiceItemUuid: Scalars['String']['input'];
+}>;
+
+
+export type DeleteClientInvoiceItemMutation = { __typename?: 'Mutation', deleteClientInvoiceItem?: { __typename?: 'DeleteClientInvoiceItem', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
+
 export type UpdateClientMutationVariables = Exact<{
   uuid?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -362,7 +448,7 @@ export type UpdateClientInvoiceItemMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClientInvoiceItemMutation = { __typename?: 'Mutation', updateClientInvoiceItem?: { __typename?: 'UpdateClientInvoiceItem', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, invoice?: { __typename?: 'InvoiceType', uuid: string, items: Array<{ __typename?: 'InvoiceItemType', uuid: string, description: string, unitPrice?: number | null, unitPriceCurrency?: CurrencyEnum | null, itemDate?: DateString | null, minutesAllocated?: number | null, isRecurring: boolean }> } | null } | null };
+export type UpdateClientInvoiceItemMutation = { __typename?: 'Mutation', updateClientInvoiceItem?: { __typename?: 'UpdateClientInvoiceItem', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, invoice?: { __typename?: 'InvoiceType', uuid: string, items: Array<{ __typename?: 'InvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency?: CurrencyEnum | null, unitPriceType?: UnitPriceTypeEnum | null, itemDate?: DateString | null, description?: string | null, minutesAllocated?: number | null, isRecurring: boolean, standardInvoiceItem?: { __typename?: 'StandardInvoiceItemType', uuid: string } | null }> } | null } | null };
 
 export type UpdateClientInvoiceStatusMutationVariables = Exact<{
   invoiceUuid: Scalars['String']['input'];
@@ -378,7 +464,21 @@ export type UpdateClientUserMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClientUserMutation = { __typename?: 'Mutation', updateClientUser?: { __typename?: 'UpdateClientUser', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientUser?: { __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null } } | null } | null };
+export type UpdateClientUserMutation = { __typename?: 'Mutation', updateClientUser?: { __typename?: 'UpdateClientUser', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientUser?: { __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string } } | null } | null };
+
+export type DeleteOrganizationServiceMutationVariables = Exact<{
+  uuid: Scalars['String']['input'];
+}>;
+
+
+export type DeleteOrganizationServiceMutation = { __typename?: 'Mutation', deleteOrganizationService?: { __typename?: 'DeleteOrganizationService', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
+
+export type UpdateOrganizationServiceMutationVariables = Exact<{
+  standardInvoiceItemInput: StandardInvoiceItemInput;
+}>;
+
+
+export type UpdateOrganizationServiceMutation = { __typename?: 'Mutation', updateOrganizationService?: { __typename?: 'UpdateOrganizationService', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, service?: { __typename?: 'StandardInvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency?: CurrencyEnum | null, unitPriceType?: UnitPriceTypeEnum | null } | null } | null };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -404,7 +504,7 @@ export type ClientInvoiceQueryVariables = Exact<{
 }>;
 
 
-export type ClientInvoiceQuery = { __typename?: 'Query', clientInvoice: { __typename?: 'InvoiceType', uuid: string, month: number, year: number, dateSent?: DateString | null, items: Array<{ __typename?: 'InvoiceItemType', uuid: string, description: string, unitPrice?: number | null, unitPriceCurrency?: CurrencyEnum | null, itemDate?: DateString | null, minutesAllocated?: number | null, isRecurring: boolean }> } };
+export type ClientInvoiceQuery = { __typename?: 'Query', clientInvoice: { __typename?: 'InvoiceType', uuid: string, month: number, year: number, dateSent?: DateString | null, items: Array<{ __typename?: 'InvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency?: CurrencyEnum | null, unitPriceType?: UnitPriceTypeEnum | null, itemDate?: DateString | null, description?: string | null, minutesAllocated?: number | null, isRecurring: boolean, standardInvoiceItem?: { __typename?: 'StandardInvoiceItemType', uuid: string } | null }> } };
 
 export type ClientProgramManagersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -416,7 +516,12 @@ export type ClientUsersQueryVariables = Exact<{
 }>;
 
 
-export type ClientUsersQuery = { __typename?: 'Query', clientUsers: Array<{ __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null } }> };
+export type ClientUsersQuery = { __typename?: 'Query', clientUsers: Array<{ __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string } }> };
+
+export type OrganizationServicesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type OrganizationServicesQuery = { __typename?: 'Query', organizationServices: Array<{ __typename?: 'StandardInvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency?: CurrencyEnum | null, unitPriceType?: UnitPriceTypeEnum | null }> };
 
 export const UserFragmentDoc = gql`
     fragment User on UserType {
@@ -451,12 +556,17 @@ export const ClientFragmentDoc = gql`
 export const InvoiceItemFragmentDoc = gql`
     fragment InvoiceItem on InvoiceItemType {
   uuid
-  description
+  name
   unitPrice
   unitPriceCurrency
+  unitPriceType
   itemDate
+  description
   minutesAllocated
   isRecurring
+  standardInvoiceItem {
+    uuid
+  }
 }
     `;
 export const ClientUserFragmentDoc = gql`
@@ -470,6 +580,7 @@ export const ClientUserFragmentDoc = gql`
     role
     spvUsername
     spvPassword
+    phoneNumber
   }
 }
     `;
@@ -492,6 +603,15 @@ export const ProgramManagerFragmentDoc = gql`
   uuid
   name
   email
+}
+    `;
+export const StandardInvoiceItemFragmentDoc = gql`
+    fragment StandardInvoiceItem on StandardInvoiceItemType {
+  uuid
+  name
+  unitPrice
+  unitPriceCurrency
+  unitPriceType
 }
     `;
 export const LoginDocument = gql`
@@ -612,6 +732,41 @@ export function useCreateClientFilesMutation(baseOptions?: Apollo.MutationHookOp
 export type CreateClientFilesMutationHookResult = ReturnType<typeof useCreateClientFilesMutation>;
 export type CreateClientFilesMutationResult = Apollo.MutationResult<CreateClientFilesMutation>;
 export type CreateClientFilesMutationOptions = Apollo.BaseMutationOptions<CreateClientFilesMutation, CreateClientFilesMutationVariables>;
+export const DeleteClientInvoiceItemDocument = gql`
+    mutation DeleteClientInvoiceItem($invoiceItemUuid: String!) {
+  deleteClientInvoiceItem(invoiceItemUuid: $invoiceItemUuid) {
+    error {
+      ...Error
+    }
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type DeleteClientInvoiceItemMutationFn = Apollo.MutationFunction<DeleteClientInvoiceItemMutation, DeleteClientInvoiceItemMutationVariables>;
+
+/**
+ * __useDeleteClientInvoiceItemMutation__
+ *
+ * To run a mutation, you first call `useDeleteClientInvoiceItemMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteClientInvoiceItemMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteClientInvoiceItemMutation, { data, loading, error }] = useDeleteClientInvoiceItemMutation({
+ *   variables: {
+ *      invoiceItemUuid: // value for 'invoiceItemUuid'
+ *   },
+ * });
+ */
+export function useDeleteClientInvoiceItemMutation(baseOptions?: Apollo.MutationHookOptions<DeleteClientInvoiceItemMutation, DeleteClientInvoiceItemMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteClientInvoiceItemMutation, DeleteClientInvoiceItemMutationVariables>(DeleteClientInvoiceItemDocument, options);
+      }
+export type DeleteClientInvoiceItemMutationHookResult = ReturnType<typeof useDeleteClientInvoiceItemMutation>;
+export type DeleteClientInvoiceItemMutationResult = Apollo.MutationResult<DeleteClientInvoiceItemMutation>;
+export type DeleteClientInvoiceItemMutationOptions = Apollo.BaseMutationOptions<DeleteClientInvoiceItemMutation, DeleteClientInvoiceItemMutationVariables>;
 export const UpdateClientDocument = gql`
     mutation UpdateClient($uuid: String, $name: String!, $description: String, $phoneNumber1: String, $phoneNumber2: String, $programManagerUuid: String, $spvUsername: String, $spvPassword: String, $cui: String) {
   updateClient(
@@ -795,6 +950,80 @@ export function useUpdateClientUserMutation(baseOptions?: Apollo.MutationHookOpt
 export type UpdateClientUserMutationHookResult = ReturnType<typeof useUpdateClientUserMutation>;
 export type UpdateClientUserMutationResult = Apollo.MutationResult<UpdateClientUserMutation>;
 export type UpdateClientUserMutationOptions = Apollo.BaseMutationOptions<UpdateClientUserMutation, UpdateClientUserMutationVariables>;
+export const DeleteOrganizationServiceDocument = gql`
+    mutation DeleteOrganizationService($uuid: String!) {
+  deleteOrganizationService(uuid: $uuid) {
+    error {
+      ...Error
+    }
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type DeleteOrganizationServiceMutationFn = Apollo.MutationFunction<DeleteOrganizationServiceMutation, DeleteOrganizationServiceMutationVariables>;
+
+/**
+ * __useDeleteOrganizationServiceMutation__
+ *
+ * To run a mutation, you first call `useDeleteOrganizationServiceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteOrganizationServiceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteOrganizationServiceMutation, { data, loading, error }] = useDeleteOrganizationServiceMutation({
+ *   variables: {
+ *      uuid: // value for 'uuid'
+ *   },
+ * });
+ */
+export function useDeleteOrganizationServiceMutation(baseOptions?: Apollo.MutationHookOptions<DeleteOrganizationServiceMutation, DeleteOrganizationServiceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteOrganizationServiceMutation, DeleteOrganizationServiceMutationVariables>(DeleteOrganizationServiceDocument, options);
+      }
+export type DeleteOrganizationServiceMutationHookResult = ReturnType<typeof useDeleteOrganizationServiceMutation>;
+export type DeleteOrganizationServiceMutationResult = Apollo.MutationResult<DeleteOrganizationServiceMutation>;
+export type DeleteOrganizationServiceMutationOptions = Apollo.BaseMutationOptions<DeleteOrganizationServiceMutation, DeleteOrganizationServiceMutationVariables>;
+export const UpdateOrganizationServiceDocument = gql`
+    mutation UpdateOrganizationService($standardInvoiceItemInput: StandardInvoiceItemInput!) {
+  updateOrganizationService(standardInvoiceItemInput: $standardInvoiceItemInput) {
+    error {
+      ...Error
+    }
+    service {
+      ...StandardInvoiceItem
+    }
+  }
+}
+    ${ErrorFragmentDoc}
+${StandardInvoiceItemFragmentDoc}`;
+export type UpdateOrganizationServiceMutationFn = Apollo.MutationFunction<UpdateOrganizationServiceMutation, UpdateOrganizationServiceMutationVariables>;
+
+/**
+ * __useUpdateOrganizationServiceMutation__
+ *
+ * To run a mutation, you first call `useUpdateOrganizationServiceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateOrganizationServiceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateOrganizationServiceMutation, { data, loading, error }] = useUpdateOrganizationServiceMutation({
+ *   variables: {
+ *      standardInvoiceItemInput: // value for 'standardInvoiceItemInput'
+ *   },
+ * });
+ */
+export function useUpdateOrganizationServiceMutation(baseOptions?: Apollo.MutationHookOptions<UpdateOrganizationServiceMutation, UpdateOrganizationServiceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateOrganizationServiceMutation, UpdateOrganizationServiceMutationVariables>(UpdateOrganizationServiceDocument, options);
+      }
+export type UpdateOrganizationServiceMutationHookResult = ReturnType<typeof useUpdateOrganizationServiceMutation>;
+export type UpdateOrganizationServiceMutationResult = Apollo.MutationResult<UpdateOrganizationServiceMutation>;
+export type UpdateOrganizationServiceMutationOptions = Apollo.BaseMutationOptions<UpdateOrganizationServiceMutation, UpdateOrganizationServiceMutationVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {
@@ -1043,3 +1272,42 @@ export type ClientUsersQueryHookResult = ReturnType<typeof useClientUsersQuery>;
 export type ClientUsersLazyQueryHookResult = ReturnType<typeof useClientUsersLazyQuery>;
 export type ClientUsersSuspenseQueryHookResult = ReturnType<typeof useClientUsersSuspenseQuery>;
 export type ClientUsersQueryResult = Apollo.QueryResult<ClientUsersQuery, ClientUsersQueryVariables>;
+export const OrganizationServicesDocument = gql`
+    query OrganizationServices {
+  organizationServices {
+    ...StandardInvoiceItem
+  }
+}
+    ${StandardInvoiceItemFragmentDoc}`;
+
+/**
+ * __useOrganizationServicesQuery__
+ *
+ * To run a query within a React component, call `useOrganizationServicesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOrganizationServicesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOrganizationServicesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useOrganizationServicesQuery(baseOptions?: Apollo.QueryHookOptions<OrganizationServicesQuery, OrganizationServicesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<OrganizationServicesQuery, OrganizationServicesQueryVariables>(OrganizationServicesDocument, options);
+      }
+export function useOrganizationServicesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<OrganizationServicesQuery, OrganizationServicesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<OrganizationServicesQuery, OrganizationServicesQueryVariables>(OrganizationServicesDocument, options);
+        }
+export function useOrganizationServicesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<OrganizationServicesQuery, OrganizationServicesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<OrganizationServicesQuery, OrganizationServicesQueryVariables>(OrganizationServicesDocument, options);
+        }
+export type OrganizationServicesQueryHookResult = ReturnType<typeof useOrganizationServicesQuery>;
+export type OrganizationServicesLazyQueryHookResult = ReturnType<typeof useOrganizationServicesLazyQuery>;
+export type OrganizationServicesSuspenseQueryHookResult = ReturnType<typeof useOrganizationServicesSuspenseQuery>;
+export type OrganizationServicesQueryResult = Apollo.QueryResult<OrganizationServicesQuery, OrganizationServicesQueryVariables>;

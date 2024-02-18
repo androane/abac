@@ -1,11 +1,11 @@
 import Container from '@mui/material/Container'
 
-import { paths } from 'routes/paths'
+import { LANDING_PAGE, paths } from 'routes/paths'
 
 import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 import { useSettingsContext } from 'components/settings'
 
-import ClientNewEditForm from '../client-new-edit-form'
+import UpdateClient from '../client-update'
 
 export default function ClientCreateView() {
   const settings = useSettingsContext()
@@ -16,12 +16,12 @@ export default function ClientCreateView() {
         heading="Adauga un Client Nou"
         links={[
           {
-            name: 'Panou Principal',
-            href: paths.dashboard.client.root,
+            name: 'Pagina Principala',
+            href: LANDING_PAGE,
           },
           {
             name: 'Clienti',
-            href: paths.dashboard.client.root,
+            href: paths.app.client.list,
           },
           { name: 'Client Nou' },
         ]}
@@ -30,7 +30,7 @@ export default function ClientCreateView() {
         }}
       />
 
-      <ClientNewEditForm />
+      <UpdateClient />
     </Container>
   )
 }

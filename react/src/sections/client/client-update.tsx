@@ -30,28 +30,16 @@ type Props = {
   client?: APIClient
 }
 
-export default function ClientNewEditForm({ client }: Props) {
+const UpdateClient: React.FC<Props> = ({ client }) => {
   const router = useRouter()
 
   const { user } = useAuthContext()
 
   const result = useClientProgramManagersQuery()
 
-  const [updateClient] = useUpdateClientMutation()
+  const [updateClient, { loading }] = useUpdateClientMutation()
 
   const { enqueueSnackbar } = useSnackbar()
-
-  const NewClientSchema = Yup.object().shape({
-    name: Yup.string().required('Numele este obligatoriu'),
-    description: Yup.string().nullable(),
-    imageUrl: Yup.mixed<any>().nullable(),
-    phoneNumber1: Yup.string().nullable(),
-    phoneNumber2: Yup.string().nullable(),
-    programManagerUuid: Yup.string().nullable(),
-    spvUsername: Yup.string().nullable(),
-    spvPassword: Yup.string().nullable(),
-    cui: Yup.string().nullable(),
-  })
 
   const defaultValues = useMemo(
     () => ({
@@ -68,19 +56,24 @@ export default function ClientNewEditForm({ client }: Props) {
     [client, user],
   )
 
-  const methods = useForm({
-    resolver: yupResolver(NewClientSchema),
+  const form = useForm({
+    resolver: yupResolver(
+      Yup.object().shape({
+        name: Yup.string().required('Numele este obligatoriu'),
+        description: Yup.string().nullable(),
+        imageUrl: Yup.mixed<any>().nullable(),
+        phoneNumber1: Yup.string().nullable(),
+        phoneNumber2: Yup.string().nullable(),
+        programManagerUuid: Yup.string().nullable(),
+        spvUsername: Yup.string().nullable(),
+        spvPassword: Yup.string().nullable(),
+        cui: Yup.string().nullable(),
+      }),
+    ),
     defaultValues,
   })
 
-  const {
-    reset,
-    setValue,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods
-
-  const onSubmit = handleSubmit(async data => {
+  const onSubmit = form.handleSubmit(async data => {
     try {
       await updateClient({
         variables: {
@@ -111,9 +104,9 @@ export default function ClientNewEditForm({ client }: Props) {
           })
         },
       })
-      reset()
+      form.reset()
       enqueueSnackbar(client ? 'Client actualizat cu succes!' : 'Client creat cu succes!')
-      router.push(paths.dashboard.client.list)
+      router.push(paths.app.client.list)
     } catch (error) {
       console.error(error)
     }
@@ -128,14 +121,14 @@ export default function ClientNewEditForm({ client }: Props) {
       })
 
       if (file) {
-        setValue('imageUrl', newFile, { shouldValidate: true })
+        form.setValue('imageUrl', newFile, { shouldValidate: true })
       }
     },
-    [setValue],
+    [form],
   )
 
   return (
-    <FormProvider methods={methods} onSubmit={onSubmit}>
+    <FormProvider methods={form} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
           <Card sx={{ pt: 10, pb: 5, px: 3 }}>
@@ -218,8 +211,8 @@ export default function ClientNewEditForm({ client }: Props) {
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {!client ? 'Adauga Client' : 'Salveaza Schimbarile'}
+              <LoadingButton type="submit" variant="contained" loading={loading}>
+                {client ? 'Salveaza' : 'Adauga Client'}
               </LoadingButton>
             </Stack>
           </Card>
@@ -228,3 +221,5 @@ export default function ClientNewEditForm({ client }: Props) {
     </FormProvider>
   )
 }
+
+export default UpdateClient

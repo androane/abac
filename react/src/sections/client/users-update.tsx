@@ -26,20 +26,10 @@ type Props = {
   onClose: () => void
 }
 
-export default function UserNewEditForm({ clientId, user, onClose }: Props) {
-  const [updateClientUser] = useUpdateClientUserMutation()
+const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
+  const [updateClientUser, { loading }] = useUpdateClientUserMutation()
 
   const { enqueueSnackbar } = useSnackbar()
-
-  const NewUserSchema = Yup.object().shape({
-    firstName: Yup.string().required('Acest camp este obligatoriu'),
-    lastName: Yup.string().required('Acest camp este obligatoriu'),
-    email: Yup.string().required('Acest camp este obligatoriu'),
-    ownershipPercentage: Yup.number().min(0).max(100).nullable(),
-    role: Yup.mixed<ClientUserRoleEnum>().oneOf(Object.values(ClientUserRoleEnum)).nullable(),
-    spvUsername: Yup.string().nullable(),
-    spvPassword: Yup.string().nullable(),
-  })
 
   const defaultValues = useMemo(
     () => ({
@@ -50,22 +40,28 @@ export default function UserNewEditForm({ clientId, user, onClose }: Props) {
       role: user?.role,
       spvUsername: user?.spvUsername,
       spvPassword: user?.spvPassword,
+      phoneNumber: user?.phoneNumber,
     }),
     [user],
   )
 
-  const methods = useForm({
-    resolver: yupResolver(NewUserSchema),
+  const form = useForm({
+    resolver: yupResolver(
+      Yup.object().shape({
+        firstName: Yup.string().required('Acest camp este obligatoriu'),
+        lastName: Yup.string().required('Acest camp este obligatoriu'),
+        email: Yup.string().required('Acest camp este obligatoriu'),
+        ownershipPercentage: Yup.number().min(0).max(100).nullable(),
+        role: Yup.mixed<ClientUserRoleEnum>().oneOf(Object.values(ClientUserRoleEnum)).nullable(),
+        spvUsername: Yup.string().nullable(),
+        spvPassword: Yup.string().nullable(),
+        phoneNumber: Yup.string().nullable(),
+      }),
+    ),
     defaultValues,
   })
 
-  const {
-    reset,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods
-
-  const onSubmit = handleSubmit(async data => {
+  const onSubmit = form.handleSubmit(async data => {
     try {
       await updateClientUser({
         variables: {
@@ -79,6 +75,7 @@ export default function UserNewEditForm({ clientId, user, onClose }: Props) {
             ownershipPercentage: data.ownershipPercentage,
             spvUsername: data.spvUsername,
             spvPassword: data.spvPassword,
+            phoneNumber: data.phoneNumber,
           },
         },
         update(cache, { data: cacheData }) {
@@ -98,7 +95,7 @@ export default function UserNewEditForm({ clientId, user, onClose }: Props) {
           })
         },
       })
-      reset()
+      form.reset()
       enqueueSnackbar('Persoana actualizata cu succes!')
       onClose()
     } catch (error) {
@@ -116,7 +113,7 @@ export default function UserNewEditForm({ clientId, user, onClose }: Props) {
         sx: { maxWidth: 720 },
       }}
     >
-      <FormProvider methods={methods} onSubmit={onSubmit}>
+      <FormProvider methods={form} onSubmit={onSubmit}>
         <DialogTitle>Persoana de Contact</DialogTitle>
         <DialogContent>
           <br />
@@ -132,6 +129,8 @@ export default function UserNewEditForm({ clientId, user, onClose }: Props) {
             <RHFTextField name="firstName" label="Prenume" />
             <RHFTextField name="lastName" label="Nume" />
             <RHFTextField name="email" label="Email" />
+            <RHFTextField name="phoneNumber" label="Telefon" />
+            <RHFTextField name="ownershipPercentage" label="Procent din firma" />
             <RHFSelect native name="role" label="Rol" InputLabelProps={{ shrink: true }}>
               <option key="null" value="" />
               {Object.keys(ClientUserRoleEnum).map(role => (
@@ -140,7 +139,6 @@ export default function UserNewEditForm({ clientId, user, onClose }: Props) {
                 </option>
               ))}
             </RHFSelect>
-            <RHFTextField name="ownershipPercentage" label="Procent din firma" />
           </Box>
 
           <br />
@@ -161,8 +159,8 @@ export default function UserNewEditForm({ clientId, user, onClose }: Props) {
             <Button color="inherit" variant="outlined" onClick={onClose}>
               {'<'} Inapoi
             </Button>
-            <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-              Salveaza Schimbarile
+            <LoadingButton type="submit" variant="contained" loading={loading}>
+              {user ? 'Salveaza' : 'Adauga Persoana'}
             </LoadingButton>
           </DialogActions>
         </DialogContent>
@@ -170,3 +168,5 @@ export default function UserNewEditForm({ clientId, user, onClose }: Props) {
     </Dialog>
   )
 }
+
+export default UpdateUser

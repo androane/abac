@@ -16,8 +16,9 @@ import { useBoolean } from 'hooks/use-boolean'
 import Iconify from 'components/iconify'
 import IconButton from '@mui/material/IconButton'
 import EmptyContent from 'components/empty-content'
-import FilesNewDialog from 'sections/client/files-new-dialog'
+import CreateFiles from 'sections/client/files-create'
 import { Link } from 'react-router-dom'
+import AddButton from 'components/add-button'
 import { APIClientFile } from './types'
 
 type FileDetailsProps = {
@@ -141,34 +142,7 @@ export default function FilesList({ clientId }: Props) {
       {({ client: { files } }) => {
         return (
           <>
-            <Stack direction="row" alignItems="center" sx={{ mb: 3 }}>
-              <Stack flexGrow={1}>
-                <Stack direction="row" alignItems="center" spacing={1} flexGrow={1}>
-                  <Typography variant="h6"> Fisiere </Typography>
-
-                  <IconButton
-                    size="small"
-                    color="primary"
-                    onClick={upload.onTrue}
-                    sx={{
-                      width: 24,
-                      height: 24,
-                      bgcolor: 'primary.main',
-                      color: 'primary.contrastText',
-                      '&:hover': {
-                        bgcolor: 'primary.dark',
-                      },
-                    }}
-                  >
-                    <Iconify icon="mingcute:add-line" />
-                  </IconButton>
-                </Stack>
-
-                <Box
-                  sx={{ typography: 'body2', color: 'text.disabled', mt: 0.5 }}
-                >{`${files.length} fisere`}</Box>
-              </Stack>
-            </Stack>
+            <AddButton count={files.length} label="Fisiere" onClick={upload.onTrue} />
             {files.length ? (
               <Box
                 display="grid"
@@ -193,7 +167,7 @@ export default function FilesList({ clientId }: Props) {
                 }}
               />
             )}
-            <FilesNewDialog clientId={clientId} open={upload.value} onClose={upload.onFalse} />
+            <CreateFiles clientId={clientId} open={upload.value} onClose={upload.onFalse} />
           </>
         )
       }}

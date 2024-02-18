@@ -4,20 +4,19 @@ from typing import Optional
 from django.contrib.auth import get_user_model
 from django.db.models import QuerySet
 
-from organization.models import Client
-from user.models import User
+from organization.models import Client, Organization
 
 
-def get_clients(user: User) -> QuerySet[Client]:
-    return user.organization.clients.order_by("name").all()
+def get_clients(org: Organization) -> QuerySet[Client]:
+    return org.clients.order_by("name").all()
 
 
-def get_client(user: User, uuid: str) -> Client:
-    return user.organization.clients.get(uuid=uuid)
+def get_client(org: Organization, uuid: str) -> Client:
+    return org.clients.get(uuid=uuid)
 
 
 def update_or_create_client(
-    user: User,
+    org: Organization,
     name: str,
     uuid: Optional[str] = None,
     description: Optional[str] = None,
@@ -35,9 +34,9 @@ def update_or_create_client(
         )
 
     if uuid:
-        client = Client.objects.get(uuid=uuid, organization=user.organization)
+        client = Client.objects.get(uuid=uuid, organization=org)
     else:
-        client = Client(organization=user.organization)
+        client = Client(organization=org)
 
     client.name = name
     client.description = description

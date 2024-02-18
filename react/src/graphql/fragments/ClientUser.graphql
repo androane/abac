@@ -8,5 +8,6 @@ fragment ClientUser on UserType {
     role
     spvUsername
     spvPassword
+    phoneNumber
   }
 }

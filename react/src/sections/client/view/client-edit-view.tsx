@@ -8,10 +8,10 @@ import { useSettingsContext } from 'components/settings'
 import { useClientsQuery } from 'generated/graphql'
 import { useCallback, useState } from 'react'
 import { Navigate } from 'react-router-dom'
-import { paths } from 'routes/paths'
+import { LANDING_PAGE, paths } from 'routes/paths'
 import FilesList from '../files-list'
 import UsersList from '../users-list'
-import ClientNewEditForm from '../client-new-edit-form'
+import UpdateClient from '../client-update'
 import InvoiceDetails from '../invoice-details'
 
 enum TABS_VALUES {
@@ -73,16 +73,16 @@ export default function UserEditView({ id }: Props) {
                 heading={client.name}
                 links={[
                   {
-                    name: 'Panou Principal',
-                    href: paths.dashboard.client.list,
+                    name: 'Pagina Principala',
+                    href: LANDING_PAGE,
                   },
                   {
                     name: 'Clienti',
-                    href: paths.dashboard.client.list,
+                    href: paths.app.client.list,
                   },
                   {
                     name: 'Lista',
-                    href: paths.dashboard.client.list,
+                    href: paths.app.client.list,
                   },
                   { name: client.name },
                 ]}
@@ -103,7 +103,7 @@ export default function UserEditView({ id }: Props) {
                 ))}
               </Tabs>
 
-              {currentTab === TABS_VALUES.GENERAL && <ClientNewEditForm client={client} />}
+              {currentTab === TABS_VALUES.GENERAL && <UpdateClient client={client} />}
               {currentTab === TABS_VALUES.INVOICING && <InvoiceDetails clientId={client.uuid} />}
               {currentTab === TABS_VALUES.FILES && <FilesList clientId={client.uuid} />}
               {currentTab === TABS_VALUES.USERS && <UsersList clientId={client.uuid} />}

@@ -1,0 +1,7 @@
+fragment StandardInvoiceItem on StandardInvoiceItemType {
+  uuid
+  name
+  unitPrice
+  unitPriceCurrency
+  unitPriceType
+}

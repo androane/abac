@@ -2,28 +2,27 @@
 from django.db.models import QuerySet
 from graphene_file_upload.scalars import Upload
 
-from organization.models import Client, ClientFile
-from user.models import User
+from organization.models import Client, ClientFile, Organization
 
 
 def get_client_files(
-    user: User,
+    org: Organization,
     client_uuid: str,
 ) -> QuerySet[ClientFile]:
     return ClientFile.objects.filter(
         client__uuid=client_uuid,
-        client__organization=user.organization,
+        client__organization=org,
     ).order_by("-created")
 
 
 def create_client_files(
-    user: User,
+    org: Organization,
     client_uuid: str,
     client_files_input: list[Upload],
 ) -> Client:
     client = Client.objects.get(
         uuid=client_uuid,
-        organization=user.organization,
+        organization=org,
     )
     ClientFile.objects.bulk_create(
         [

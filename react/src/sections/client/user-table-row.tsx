@@ -21,7 +21,7 @@ type Props = {
 }
 
 export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) {
-  const { firstName, lastName, email, role, spvUsername, spvPassword } = row
+  const { firstName, lastName, email, phoneNumber, role, spvUsername, spvPassword } = row
 
   const confirm = useBoolean()
 
@@ -46,6 +46,17 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
             primary={email}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <ListItemText
+            primary={phoneNumber}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

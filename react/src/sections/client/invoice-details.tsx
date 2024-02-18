@@ -20,23 +20,25 @@ import {
 } from 'components/table'
 
 import ResponseHandler from 'components/response-handler'
-import { useClientInvoiceQuery } from 'generated/graphql'
+import { useClientInvoiceQuery, useDeleteClientInvoiceItemMutation } from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
-import InvoiceItemNewEditForm from 'sections/client/invoice-item-new-edit-form'
+import UpdateInvoiceItem from 'sections/client/invoice-item-update'
 import InvoiceTableFiltersResult from './invoice-table-filters-result'
 import InvoiceTableRow from './invoice-table-row'
 import InvoiceTableToolbar from './invoice-table-toolbar'
-import { APIClientInvoice, InvoiceItem, InvoiceTableFilters } from './types'
+import { APIClientInvoice, APIInvoiceItem, InvoiceTableFilters } from './types'
 
 const defaultFilters = {
-  description: '',
+  name: '',
 }
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'description', label: 'Descriere' },
+  { id: 'name', label: 'Nume' },
+  { id: 'description', label: 'Explicatie' },
   { id: 'itemDate', label: 'Data' },
   { id: 'unitPrice', label: 'Suma' },
+  { id: 'unitPriceType', label: 'Tip tarifare' },
   { id: 'minutesAllocated', label: 'Minute Alocate' },
   { id: '', width: 88 },
 ]
@@ -52,28 +54,20 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
   invoiceDate,
   onChangeInvoiceDate,
 }) => {
-  const invoiceItems = clientInvoice.items?.map((invoice, index) => ({
-    id: invoice.uuid,
-    index: index + 1,
-    description: invoice.description,
-    itemDate: invoice?.itemDate,
-    unitPrice: invoice?.unitPrice,
-    unitPriceCurrency: invoice?.unitPriceCurrency,
-    minutesAllocated: invoice?.minutesAllocated,
-    isRecurring: invoice?.isRecurring,
-  }))
-
   const showCreateInvoiceItem = useBoolean()
+
+  const [deleteInvoiceItem, { loading }] = useDeleteClientInvoiceItemMutation()
+
   const [invoiceItemIdToEdit, setInvoiceItemIdToEdit] = useState<null | string>(null)
 
   const { enqueueSnackbar } = useSnackbar()
-  const [tableData, setTableData] = useState(invoiceItems)
+  const [tableData, setTableData] = useState(clientInvoice.items)
 
   useEffect(() => {
-    setTableData(invoiceItems)
-  }, [invoiceItems])
+    setTableData(clientInvoice.items)
+  }, [clientInvoice])
 
-  const table = useTable()
+  const table = useTable({ defaultOrderBy: 'isRecurring', defaultOrder: 'desc' })
 
   const denseHeight = table.dense ? 56 : 56 + 20
 
@@ -109,18 +103,20 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
     setFilters(defaultFilters)
   }, [])
 
-  const handleDeleteRow = useCallback(
-    (id: string) => {
-      const deleteRow = tableData.filter(row => row.id !== id)
+  const handleDeleteRow = async (uuid: string) => {
+    await deleteInvoiceItem({
+      variables: { invoiceItemUuid: uuid },
+      update(cache) {
+        const normalizedId = cache.identify({ uuid, __typename: 'InvoiceItemType' })
+        cache.evict({ id: normalizedId })
+        cache.gc()
+      },
+    })
 
-      enqueueSnackbar('Factura a fost stersa cu success!')
+    enqueueSnackbar('Intrarea a fost stearsa cu success!')
 
-      setTableData(deleteRow)
-
-      table.onUpdatePageDeleteRow(dataInPage.length)
-    },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
-  )
+    table.onUpdatePageDeleteRow(dataInPage.length)
+  }
 
   const handleEditRow = useCallback(
     (id: null | string) => {
@@ -130,13 +126,15 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
     [showCreateInvoiceItem, setInvoiceItemIdToEdit],
   )
 
+  const invoiceIsLocked = Boolean(clientInvoice.dateSent)
+
   return (
     <Card>
       {showCreateInvoiceItem.value && (
-        <InvoiceItemNewEditForm
+        <UpdateInvoiceItem
           invoiceId={clientInvoice.uuid}
           invoiceDate={invoiceDate}
-          invoiceItem={invoiceItems.find(_ => _.id === invoiceItemIdToEdit)}
+          invoiceItem={clientInvoice.items.find(item => item.uuid === invoiceItemIdToEdit)}
           onClose={showCreateInvoiceItem.onFalse}
         />
       )}
@@ -152,9 +150,7 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
         <InvoiceTableFiltersResult
           filters={filters}
           onFilters={handleFilters}
-          //
           onResetFilters={handleResetFilters}
-          //
           results={dataFiltered.length}
           sx={{ p: 2.5, pt: 0 }}
         />
@@ -178,12 +174,15 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
                   table.page * table.rowsPerPage,
                   table.page * table.rowsPerPage + table.rowsPerPage,
                 )
-                .map(row => (
+                .map((row, index) => (
                   <InvoiceTableRow
-                    key={row.id}
+                    invoiceIsLocked={invoiceIsLocked}
+                    key={row.uuid}
+                    index={index + 1}
                     row={row}
-                    onDeleteRow={() => handleDeleteRow(row.id)}
-                    onEditRow={() => handleEditRow(row.id)}
+                    loading={loading}
+                    onDeleteRow={() => handleDeleteRow(row.uuid)}
+                    onEditRow={() => handleEditRow(row.uuid)}
                   />
                 ))}
 
@@ -204,7 +203,6 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
         rowsPerPage={table.rowsPerPage}
         onPageChange={table.onChangePage}
         onRowsPerPageChange={table.onChangeRowsPerPage}
-        //
         dense={table.dense}
         onChangeDense={table.onChangeDense}
       />
@@ -247,12 +245,10 @@ function applyFilter({
   comparator,
   filters,
 }: {
-  inputData: InvoiceItem[]
+  inputData: APIInvoiceItem[]
   comparator: (a: any, b: any) => number
   filters: InvoiceTableFilters
 }) {
-  const { description } = filters
-
   const stabilizedThis = inputData.map((el, index) => [el, index] as const)
 
   stabilizedThis.sort((a, b) => {
@@ -263,9 +259,9 @@ function applyFilter({
 
   inputData = stabilizedThis.map(el => el[0])
 
-  if (description) {
+  if (filters.name) {
     inputData = inputData.filter(
-      invoice => invoice.description.toLowerCase().indexOf(description.toLowerCase()) !== -1,
+      invoice => invoice.name.toLowerCase().indexOf(filters.name.toLowerCase()) !== -1,
     )
   }
 

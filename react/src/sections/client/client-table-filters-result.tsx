@@ -42,7 +42,7 @@ export default function ClientTableFiltersResult({
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
         {!!filters.name && (
-          <Block label="Keyword:">
+          <Block label="Cuvant cheie:">
             <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}

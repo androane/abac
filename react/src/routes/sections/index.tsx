@@ -3,7 +3,7 @@ import { Navigate, useRoutes } from 'react-router-dom'
 import { PATH_AFTER_LOGIN } from 'config/config-global'
 import { mainRoutes } from 'routes/sections/main'
 import { authRoutes } from './auth'
-import { dashboardRoutes } from './dashboard'
+import { appRoutes } from './app'
 
 export default function Router() {
   return useRoutes([
@@ -12,7 +12,7 @@ export default function Router() {
       element: <Navigate to={PATH_AFTER_LOGIN} replace />,
     },
     ...authRoutes,
-    ...dashboardRoutes,
+    ...appRoutes,
     ...mainRoutes,
 
     // No match 404

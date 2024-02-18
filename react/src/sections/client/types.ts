@@ -3,7 +3,6 @@ import {
   ClientInvoiceQuery,
   ClientUserRoleEnum,
   ClientsQuery,
-  CurrencyEnum,
 } from 'generated/graphql'
 
 export type ClientItem = {
@@ -22,19 +21,8 @@ export type ClientTableFilters = {
   programManagerId?: string
 }
 
-export type InvoiceItem = {
-  id: string
-  index: number
-  description: string
-  unitPrice?: null | number
-  unitPriceCurrency?: null | CurrencyEnum
-  itemDate?: null | string
-  minutesAllocated?: null | number
-  isRecurring: boolean
-}
-
 export type InvoiceTableFilters = {
-  description: string
+  name: string
 }
 
 export type ClientUser = {
@@ -46,6 +34,7 @@ export type ClientUser = {
   ownershipPercentage?: null | number
   spvUsername?: null | string
   spvPassword?: null | string
+  phoneNumber?: null | string
 }
 
 export type APIClient = ClientsQuery['clients'][0]

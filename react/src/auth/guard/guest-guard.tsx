@@ -22,7 +22,7 @@ function Container({ children }: Props) {
 
   const searchParams = useSearchParams()
 
-  const returnTo = searchParams.get('returnTo') || paths.dashboard.client.list
+  const returnTo = searchParams.get('returnTo') || paths.app.client.list
 
   const { authenticated } = useAuthContext()
 

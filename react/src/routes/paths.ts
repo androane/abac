@@ -1,6 +1,7 @@
-const ROOTS = {
-  AUTH: '/auth',
-  DASHBOARD: '',
+export const ROOTS = {
+  AUTH: 'auth',
+  CLIENT: 'client',
+  SETTINGS: 'settings',
 }
 
 export const paths = {
@@ -8,17 +9,25 @@ export const paths = {
   auth: {
     login: `${ROOTS.AUTH}/login`,
   },
-  dashboard: {
+  app: {
     client: {
-      root: `${ROOTS.DASHBOARD}/client`,
-      list: `${ROOTS.DASHBOARD}/client/list`,
-      new: `${ROOTS.DASHBOARD}/client/new`,
-      edit: (id: string) => `${ROOTS.DASHBOARD}/client/${id}/edit`,
+      root: `/${ROOTS.CLIENT}`,
+      list: `/${ROOTS.CLIENT}/list`,
+      new: `/${ROOTS.CLIENT}/new`,
+      edit: (id: string) => `/${ROOTS.CLIENT}/${id}/edit`,
       invoice: {
-        list: `${ROOTS.DASHBOARD}/client/invoice/list`,
-        new: `${ROOTS.DASHBOARD}/client/invoice/new`,
-        edit: (id: string) => `${ROOTS.DASHBOARD}/client/invoice/${id}/edit`,
+        list: `/${ROOTS.CLIENT}/invoice/list`,
+        new: `/${ROOTS.CLIENT}/invoice/new`,
+        edit: (id: string) => `/${ROOTS.CLIENT}/invoice/${id}/edit`,
+      },
+    },
+    settings: {
+      root: `/${ROOTS.SETTINGS}`,
+      service: {
+        list: `/${ROOTS.SETTINGS}/service/list`,
       },
     },
   },
 }
+
+export const LANDING_PAGE = paths.app.client.list

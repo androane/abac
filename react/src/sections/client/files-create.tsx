@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 
 import Button from '@mui/material/Button'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -19,13 +19,13 @@ interface Props extends DialogProps {
   onClose: VoidFunction
 }
 
-export default function FilesNewDialog({
+const CreateFiles: React.FC<Props> = ({
   title = 'Incarca Fisiere',
   clientId,
   open,
   onClose,
   ...other
-}: Props) {
+}) => {
   const [createFiles, { loading }] = useCreateClientFilesMutation()
 
   const { enqueueSnackbar } = useSnackbar()
@@ -102,3 +102,5 @@ export default function FilesNewDialog({
     </Dialog>
   )
 }
+
+export default CreateFiles

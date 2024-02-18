@@ -7,10 +7,10 @@ import Paper from '@mui/material/Paper'
 import Stack, { StackProps } from '@mui/material/Stack'
 
 import Iconify from 'components/iconify'
-import { InvoiceTableFilters } from './types'
+import { ServiceTableFilters } from './types'
 
 type Props = StackProps & {
-  filters: InvoiceTableFilters
+  filters: ServiceTableFilters
   onFilters: (name: string, value: string) => void
   //
   onResetFilters: VoidFunction
@@ -18,7 +18,7 @@ type Props = StackProps & {
   results: number
 }
 
-export default function InvoiceTableFiltersResult({
+export default function ServiceTableFiltersResult({
   filters,
   onFilters,
   //
@@ -41,9 +41,9 @@ export default function InvoiceTableFiltersResult({
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
-        {!!filters.description && (
+        {!!filters.name && (
           <Block label="Cuvant cheie:">
-            <Chip label={filters.description} size="small" onDelete={handleRemoveKeyword} />
+            <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}
 

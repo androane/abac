@@ -1,0 +1,12 @@
+#import "./fragments/StandardInvoiceItem.graphql"
+
+mutation UpdateOrganizationService($standardInvoiceItemInput: StandardInvoiceItemInput!) {
+  updateOrganizationService(standardInvoiceItemInput: $standardInvoiceItemInput) {
+    error {
+      ...Error
+    }
+    service {
+      ...StandardInvoiceItem
+    }
+  }
+}

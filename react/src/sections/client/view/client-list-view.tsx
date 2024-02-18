@@ -10,7 +10,7 @@ import TableContainer from '@mui/material/TableContainer'
 
 import { useSnackbar } from 'components/snackbar'
 import { RouterLink } from 'routes/components'
-import { paths } from 'routes/paths'
+import { LANDING_PAGE, paths } from 'routes/paths'
 
 import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 import Iconify from 'components/iconify'
@@ -114,7 +114,7 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
 
   const handleEditRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.client.edit(id))
+      router.push(paths.app.client.edit(id))
     },
     [router],
   )
@@ -209,14 +209,14 @@ export default function ClientListView() {
       <CustomBreadcrumbs
         heading="Lista Clienti"
         links={[
-          { name: 'Panou Principal', href: paths.dashboard.client.root },
-          { name: 'Clienti', href: paths.dashboard.client.root },
+          { name: 'Pagina Principala', href: LANDING_PAGE },
+          { name: 'Clienti', href: paths.app.client.list },
           { name: 'Lista' },
         ]}
         action={
           <Button
             component={RouterLink}
-            href={paths.dashboard.client.new}
+            href={paths.app.client.new}
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >

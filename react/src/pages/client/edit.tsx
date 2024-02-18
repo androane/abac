@@ -12,7 +12,7 @@ export default function ClientEditPage() {
   return (
     <>
       <Helmet>
-        <title> ABAC Soft</title>
+        <title>ABAC Soft</title>
       </Helmet>
 
       <ClientEditView id={`${id}`} />

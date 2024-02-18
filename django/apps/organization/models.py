@@ -5,7 +5,7 @@ from django.db import models
 
 from core.models import BaseModel
 from core.utils import replace_filename
-from organization.constants import ClientUserRoleEnum, CurrencyEnum
+from organization.constants import ClientUserRoleEnum, CurrencyEnum, UnitPriceTypeEnum
 
 
 def organization_logo_path(instance, filename):
@@ -141,18 +141,50 @@ class Invoice(BaseModel):
         return date(self.year, self.month, 1)
 
 
-class InvoiceItem(BaseModel):
+class BaseInvoiceItem(BaseModel):
+    class Meta:
+        abstract = True
+
+    name = models.CharField(
+        max_length=256, blank=True, help_text="Name of the invoice item"
+    )
+    unit_price = models.IntegerField(
+        help_text="Price of the invoice item per unit type"
+    )
+    unit_price_currency = models.CharField(max_length=3, choices=CurrencyEnum.choices)
+    unit_price_type = models.CharField(
+        max_length=8, choices=UnitPriceTypeEnum.choices, blank=True, null=True
+    )
+
+
+class StandardInvoiceItem(BaseInvoiceItem):
+    organization = models.ForeignKey(
+        Organization, on_delete=models.CASCADE, related_name="standard_invoice_items"
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class InvoiceItem(BaseInvoiceItem):
     """
-    InvoiceItem is a line item on a customer organization invoice.
+    InvoiceItem is an entry on the invoice.
     """
 
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="items")
-
-    description = models.TextField()
-    unit_price = models.IntegerField(blank=True, null=True)
-    unit_price_currency = models.CharField(
-        max_length=3, choices=CurrencyEnum.choices, blank=True, null=True
+    standard_invoice_item = models.ForeignKey(
+        StandardInvoiceItem,
+        on_delete=models.SET_NULL,
+        related_name="items",
+        null=True,
+        blank=True,
+        help_text="Connection to the initial standard invoice item. When provided, it copies the attributes from the standard invoice item.",
     )
+
+    description = models.TextField(
+        help_text="Optional explanation for the invoice item", null=True, blank=True
+    )
+
     item_date = models.DateField(
         null=True,
         blank=True,
@@ -169,10 +201,10 @@ class InvoiceItem(BaseModel):
     )
 
     def __str__(self):
-        return f'{self.invoice.date.strftime("%m/%Y")} / {self.description}'
+        return f'{self.invoice.date.strftime("%m/%Y")} / {self.name}'
 
     def __repr__(self):
-        return f'{self.invoice.date.strftime("%m/%Y")} / {self.description}'
+        return f'{self.invoice.date.strftime("%m/%Y")} / {self.name}'
 
     @property
     def is_locked(self) -> bool:
@@ -193,7 +225,7 @@ def client_file_path(instance, filename):
 
 class ClientFile(BaseModel):
     """
-    ClientClient is a file file for a Client
+    ClientFile represents a file for a Client
     """
 
     client = models.ForeignKey(
@@ -230,6 +262,8 @@ class ClientUserProfile(BaseModel):
     client = models.ForeignKey(
         "organization.Client", on_delete=models.CASCADE, related_name="user_profiles"
     )
+
+    phone_number = models.CharField(max_length=12, blank=True)
 
     ownership_percentage = models.SmallIntegerField(
         null=True,

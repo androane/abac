@@ -1,4 +1,4 @@
-import { paths } from 'routes/paths'
+import { LANDING_PAGE } from 'routes/paths'
 
 export const AUTH_STORAGE_KEY = 'abacAccessToken'
-export const PATH_AFTER_LOGIN = paths.dashboard.client.list
+export const PATH_AFTER_LOGIN = LANDING_PAGE

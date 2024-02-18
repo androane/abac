@@ -39,9 +39,11 @@ class GraphQLView(FileUploadGraphQLView):
         graphql_request = self.parse_body(args[0])
         variables = graphql_request.get("variables", "")
         operation_name = graphql_request.get("operationName", "")
-        print(operation_name)
+
         if variables:
-            print(variables)
+            print("\n", operation_name, variables, "\n")
+        else:
+            print("\n", operation_name, "\n")
 
         result = super().execute_graphql_request(*args, **kwargs)
         if result and result.errors:

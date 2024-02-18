@@ -6,7 +6,12 @@ from django.contrib.auth import get_user_model
 from graphene_django import DjangoObjectType
 from graphene_file_upload.scalars import Upload
 
-from organization.constants import ClientUserRoleEnum, CurrencyEnum, InvoiceStatusEnum
+from organization.constants import (
+    ClientUserRoleEnum,
+    CurrencyEnum,
+    InvoiceStatusEnum,
+    UnitPriceTypeEnum,
+)
 from organization.models import (
     Client,
     ClientFile,
@@ -14,12 +19,49 @@ from organization.models import (
     Invoice,
     InvoiceItem,
     Organization,
+    StandardInvoiceItem,
 )
 from user.graphene.types import UserType
 
 CurrencyEnumType = graphene.Enum.from_enum(CurrencyEnum)
+UnitPriceTypeEnumType = graphene.Enum.from_enum(UnitPriceTypeEnum)
 InvoiceStatusEnumType = graphene.Enum.from_enum(InvoiceStatusEnum)
 ClientUserRoleEnumType = graphene.Enum.from_enum(ClientUserRoleEnum)
+
+
+class StandardInvoiceItemType(DjangoObjectType):
+    class Meta:
+        model = StandardInvoiceItem
+        only_fields = (
+            "uuid",
+            "name",
+            "unit_price",
+            "unit_price_currency",
+            "unit_price_type",
+        )
+
+    unit_price_currency = CurrencyEnumType()
+    unit_price_type = UnitPriceTypeEnumType()
+
+
+class InvoiceItemType(DjangoObjectType):
+    class Meta:
+        model = InvoiceItem
+        only_fields = (
+            "uuid",
+            "name",
+            "unit_price",
+            "unit_price_currency",
+            "unit_price_type",
+            "description",
+            "item_date",
+            "minutes_allocated",
+            "is_recurring",
+            "standard_invoice_item",
+        )
+
+    unit_price_currency = CurrencyEnumType()
+    unit_price_type = UnitPriceTypeEnumType()
 
 
 class OrganizationType(DjangoObjectType):
@@ -30,27 +72,17 @@ class OrganizationType(DjangoObjectType):
             "name",
         )
 
+    standard_invoice_items = graphene.List(
+        graphene.NonNull(StandardInvoiceItemType), required=True
+    )
     logo_url = graphene.NonNull(graphene.String)
 
     def resolve_logo_url(self, info):
         if self.logo:
             return self.logo.url
 
-
-class InvoiceItemType(DjangoObjectType):
-    class Meta:
-        model = InvoiceItem
-        only_fields = (
-            "uuid",
-            "description",
-            "unit_price",
-            "unit_price_currency",
-            "item_date",
-            "minutes_allocated",
-            "is_recurring",
-        )
-
-    unit_price_currency = CurrencyEnumType()
+    def resolve_standard_invoice_items(self, info, **kwargs):
+        return self.standard_invoice_items.all()
 
 
 class InvoiceType(DjangoObjectType):
@@ -69,11 +101,21 @@ class InvoiceType(DjangoObjectType):
         return self.items.all()
 
 
+class StandardInvoiceItemInput(graphene.InputObjectType):
+    uuid = graphene.String()
+    name = graphene.String(required=True)
+    unit_price = graphene.Int(required=True)
+    unit_price_currency = CurrencyEnumType(required=True)
+    unit_price_type = UnitPriceTypeEnumType(required=True)
+
+
 class InvoiceItemInput(graphene.InputObjectType):
     uuid = graphene.String()
-    description = graphene.String(required=True)
+    name = graphene.String()
     unit_price = graphene.Int()
     unit_price_currency = CurrencyEnumType()
+    standard_service_uuid = graphene.String()
+    description = graphene.String()
     item_date = graphene.Date()
     minutes_allocated = graphene.Int()
     is_recurring = graphene.Boolean()
@@ -134,6 +176,7 @@ class ClientUserProfileType(DjangoObjectType):
             "role",
             "spv_username",
             "spv_password",
+            "phone_number",
         )
 
     role = ClientUserRoleEnumType()
@@ -148,3 +191,4 @@ class ClientUserInput(graphene.InputObjectType):
     ownership_percentage = graphene.Int()
     spv_username = graphene.String()
     spv_password = graphene.String()
+    phone_number = graphene.String()

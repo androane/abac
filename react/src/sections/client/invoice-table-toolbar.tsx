@@ -1,15 +1,14 @@
-import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import LoadingButton from '@mui/lab/LoadingButton'
 
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { RouterLink } from 'routes/components'
 import MenuItem from '@mui/material/MenuItem'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 
 import Iconify from 'components/iconify'
 import { InvoiceStatusEnum, useUpdateClientInvoiceStatusMutation } from 'generated/graphql'
 import { enqueueSnackbar } from 'components/snackbar'
+import AddButton from 'components/add-button'
 
 type Props = {
   onAddInvoiceItem: () => void
@@ -106,17 +105,17 @@ export default function InvoiceTableToolbar({
           </MenuItem>
         ))}
       </CustomPopover>
-      <Stack spacing={1} flexGrow={1} direction="row" alignItems="center" justifyContent="flex-end">
-        <Button
-          disabled={status === InvoiceStatusEnum.SENT}
-          onClick={onAddInvoiceItem}
-          component={RouterLink}
-          variant="contained"
-          startIcon={<Iconify icon="mingcute:add-line" />}
+      {status !== InvoiceStatusEnum.SENT && (
+        <Stack
+          spacing={1}
+          flexGrow={1}
+          direction="row"
+          alignItems="center"
+          justifyContent="flex-end"
         >
-          Adauga la Factura
-        </Button>
-      </Stack>
+          <AddButton label="Adauga" withSpacing={false} onClick={onAddInvoiceItem} />
+        </Stack>
+      )}
     </Stack>
   )
 }
