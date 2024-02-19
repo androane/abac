@@ -80,6 +80,16 @@ const errorLink = onError(result => {
 // const httpLink = createHttpLink({ uri: GRAPHQL_ENDPOINT })
 const httpLink = createUploadLink({ uri: GRAPHQL_ENDPOINT })
 
+const logoutAfterware = onError(({ networkError }) => {
+  if (
+    networkError &&
+    'statusCode' in networkError &&
+    [401, 403].includes(networkError.statusCode)
+  ) {
+    setSession(null)
+  }
+})
+
 // eslint-disable-next-line no-unused-vars
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
@@ -104,7 +114,7 @@ const cache = new InMemoryCache({
 // await before instantiating ApolloClient, else queries might run before the cache is persisted
 const initClient = async () => {
   return new ApolloClient({
-    link: from([errorLink, authLink, new DebounceLink(100), httpLink]),
+    link: from([errorLink, logoutAfterware, authLink, new DebounceLink(100), httpLink]),
     cache,
     resolvers: {},
     connectToDevTools: true,

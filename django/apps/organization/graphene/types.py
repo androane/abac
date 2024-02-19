@@ -58,6 +58,7 @@ class InvoiceItemType(DjangoObjectType):
             "minutes_allocated",
             "is_recurring",
             "standard_invoice_item",
+            "quantity",
         )
 
     unit_price_currency = CurrencyEnumType()
@@ -119,6 +120,7 @@ class InvoiceItemInput(graphene.InputObjectType):
     item_date = graphene.Date()
     minutes_allocated = graphene.Int()
     is_recurring = graphene.Boolean()
+    quantity = graphene.Int(required=True)
 
 
 class ClientFileType(DjangoObjectType):

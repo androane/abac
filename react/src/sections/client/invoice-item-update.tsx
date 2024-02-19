@@ -13,6 +13,7 @@ import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'components/hoo
 import { useSnackbar } from 'components/snackbar'
 import {
   CurrencyEnum,
+  UnitPriceTypeEnum,
   useOrganizationServicesQuery,
   useUpdateClientInvoiceItemMutation,
 } from 'generated/graphql'
@@ -45,6 +46,8 @@ const UpdateInvoiceItem: React.FC<Props> = ({ invoiceId, invoiceDate, invoiceIte
     standardServiceUuid = OTHER_SERVICE
   }
 
+  console.log(standardServiceUuid)
+
   const defaultValues = useMemo(
     () => ({
       standardServiceUuid,
@@ -52,6 +55,7 @@ const UpdateInvoiceItem: React.FC<Props> = ({ invoiceId, invoiceDate, invoiceIte
       description: invoiceItem?.description,
       unitPrice: invoiceItem?.unitPrice,
       unitPriceCurrency: invoiceItem?.unitPriceCurrency || CurrencyEnum.RON,
+      quantity: invoiceItem?.quantity || 1,
       minutesAllocated: invoiceItem?.minutesAllocated,
       isRecurring: invoiceItem?.isRecurring || false,
     }),
@@ -67,6 +71,7 @@ const UpdateInvoiceItem: React.FC<Props> = ({ invoiceId, invoiceDate, invoiceIte
         unitPriceCurrency: Yup.mixed<CurrencyEnum>().oneOf(Object.values(CurrencyEnum)).nullable(),
         description: Yup.string().nullable(),
         minutesAllocated: Yup.number().nullable(),
+        quantity: Yup.number().required('Acest camp este obligatoriu'),
         isRecurring: Yup.boolean(),
       }),
     ),
@@ -87,6 +92,7 @@ const UpdateInvoiceItem: React.FC<Props> = ({ invoiceId, invoiceDate, invoiceIte
             description: data.description,
             unitPrice: data.unitPrice,
             unitPriceCurrency: data.unitPriceCurrency,
+            quantity: data.quantity,
             minutesAllocated: data.minutesAllocated,
             isRecurring: data.isRecurring,
           },
@@ -115,104 +121,116 @@ const UpdateInvoiceItem: React.FC<Props> = ({ invoiceId, invoiceDate, invoiceIte
       <FormProvider methods={form} onSubmit={onSubmit}>
         <DialogTitle>Factura</DialogTitle>
         <DialogContent>
-          <br />
-          <Box
-            rowGap={3}
-            columnGap={2}
-            display="grid"
-            gridTemplateColumns={{
-              xs: 'repeat(1, 1fr)',
-              sm: 'repeat(2, 1fr)',
-            }}
-            sx={{ pb: 4 }}
-          >
-            <ResponseHandler {...result}>
-              {({ organizationServices }) => {
-                return (
-                  <RHFSelect
-                    // value={defaultValues.standardServiceUuid}
-                    native
-                    name="standardServiceUuid"
-                    label="Serviciu"
-                    InputLabelProps={{ shrink: true }}
-                  >
-                    <option value="" />
-                    <optgroup label="Serviciu non-standard">
-                      <option value={OTHER_SERVICE} label="Serviciu non-standard" />
-                    </optgroup>
-                    <optgroup label="Servicii Existente">
-                      {organizationServices.map(service => (
-                        <option key={service.uuid} value={service.uuid}>
-                          {service.name}
-                        </option>
-                      ))}
-                    </optgroup>
-                  </RHFSelect>
-                )
-              }}
-            </ResponseHandler>
-            {isNonStandardService ? <RHFTextField name="name" label="Nume" /> : <div />}
-            <RHFTextField name="description" label="Explicatie (optional)" multiline rows={5} />
-            <RHFSwitch
-              name="isRecurring"
-              labelPlacement="start"
-              label={
+          <ResponseHandler {...result}>
+            {({ organizationServices }) => {
+              const selectedServiceIsFixedPrice =
+                organizationServices.find(
+                  service => service.uuid === form.watch('standardServiceUuid'),
+                )?.unitPriceType === UnitPriceTypeEnum.FIXED
+              return (
                 <>
-                  <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                    Este serviciu lunar?
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    Bifeaza aceasta optiune daca vrei ca acest serviciu sa fie transferat recurent
-                    si automat pe factura din urmatoarea luna.
-                  </Typography>
+                  <br />
+                  <Box
+                    rowGap={3}
+                    columnGap={2}
+                    display="grid"
+                    gridTemplateColumns={{
+                      xs: 'repeat(1, 1fr)',
+                      sm: 'repeat(2, 1fr)',
+                    }}
+                    sx={{ pb: 4 }}
+                  >
+                    <RHFSelect
+                      native
+                      name="standardServiceUuid"
+                      label="Serviciu"
+                      InputLabelProps={{ shrink: true }}
+                    >
+                      <option value="" />
+                      <optgroup label="Serviciu non-standard">
+                        <option value={OTHER_SERVICE} label="Serviciu non-standard" />
+                      </optgroup>
+                      <optgroup label="Servicii Existente">
+                        {organizationServices.map(service => (
+                          <option key={service.uuid} value={service.uuid}>
+                            {service.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    </RHFSelect>
+                    {isNonStandardService ? <RHFTextField name="name" label="Nume" /> : <div />}
+                    <RHFTextField
+                      name="description"
+                      label="Explicatie (optional)"
+                      multiline
+                      rows={5}
+                    />
+                    <RHFSwitch
+                      name="isRecurring"
+                      labelPlacement="start"
+                      label={
+                        <>
+                          <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                            Este serviciu lunar?
+                          </Typography>
+                          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                            Bifeaza aceasta optiune daca vrei ca acest serviciu sa fie transferat
+                            recurent si automat pe factura din urmatoarea luna.
+                          </Typography>
+                        </>
+                      }
+                      sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
+                    />
+                    {isNonStandardService ? (
+                      <>
+                        <RHFTextField name="unitPrice" label="Suma" />
+                        <RHFSelect
+                          native
+                          name="unitPriceCurrency"
+                          label="Moneda"
+                          InputLabelProps={{ shrink: true }}
+                        >
+                          {Object.keys(CurrencyEnum).map(currency => (
+                            <option key={currency} value={currency}>
+                              {currency}
+                            </option>
+                          ))}
+                        </RHFSelect>
+                      </>
+                    ) : (
+                      <RHFTextField name="minutesAllocated" label="Numar de minute alocate" />
+                    )}
+                    {selectedServiceIsFixedPrice && (
+                      <RHFTextField name="quantity" label="Cantiate" />
+                    )}
+                    <DatePicker
+                      label="Ziua din luna"
+                      minDate={invoiceDate}
+                      value={itemDate && new Date(itemDate)}
+                      onChange={newItemDate =>
+                        newItemDate && setItemDate(format(newItemDate, 'yyyy-MM-dd'))
+                      }
+                      disableFuture
+                      name="itemDate"
+                      slotProps={{ textField: { fullWidth: true } }}
+                      views={['day']}
+                      sx={{
+                        maxWidth: { md: 180 },
+                      }}
+                    />
+                  </Box>
+                  <DialogActions>
+                    <Button color="inherit" variant="outlined" onClick={onClose}>
+                      {'<'} Inapoi
+                    </Button>
+                    <LoadingButton type="submit" variant="contained" loading={loading}>
+                      {invoiceItem ? 'Salveaza' : 'Adauga la Factura'}
+                    </LoadingButton>
+                  </DialogActions>
                 </>
-              }
-              sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
-            />
-            {isNonStandardService ? (
-              <>
-                <RHFTextField name="unitPrice" label="Suma" />
-                <RHFSelect
-                  native
-                  name="unitPriceCurrency"
-                  label="Moneda"
-                  InputLabelProps={{ shrink: true }}
-                >
-                  {Object.keys(CurrencyEnum).map(currency => (
-                    <option key={currency} value={currency}>
-                      {currency}
-                    </option>
-                  ))}
-                </RHFSelect>
-              </>
-            ) : (
-              <RHFTextField name="minutesAllocated" label="Numar de minute alocate" />
-            )}
-
-            <DatePicker
-              label="Ziua din luna"
-              minDate={invoiceDate}
-              value={itemDate && new Date(itemDate)}
-              onChange={newItemDate =>
-                newItemDate && setItemDate(format(newItemDate, 'yyyy-MM-dd'))
-              }
-              disableFuture
-              name="itemDate"
-              slotProps={{ textField: { fullWidth: true } }}
-              views={['day']}
-              sx={{
-                maxWidth: { md: 180 },
-              }}
-            />
-          </Box>
-          <DialogActions>
-            <Button color="inherit" variant="outlined" onClick={onClose}>
-              {'<'} Inapoi
-            </Button>
-            <LoadingButton type="submit" variant="contained" loading={loading}>
-              {invoiceItem ? 'Salveaza' : 'Adauga la Factura'}
-            </LoadingButton>
-          </DialogActions>
+              )
+            }}
+          </ResponseHandler>
         </DialogContent>
       </FormProvider>
     </Dialog>

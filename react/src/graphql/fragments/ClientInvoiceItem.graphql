@@ -4,6 +4,7 @@ fragment InvoiceItem on InvoiceItemType {
   unitPrice
   unitPriceCurrency
   unitPriceType
+  quantity
   itemDate
   description
   minutesAllocated

@@ -185,6 +185,9 @@ class InvoiceItem(BaseInvoiceItem):
         help_text="Optional explanation for the invoice item", null=True, blank=True
     )
 
+    quantity = models.SmallIntegerField(
+        default=1, help_text="How many of these items are on the invoice"
+    )
     item_date = models.DateField(
         null=True,
         blank=True,

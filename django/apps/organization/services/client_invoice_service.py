@@ -87,6 +87,7 @@ def update_client_invoice_item(
         ):
             setattr(invoice_item, field, getattr(standard_invoice_item, field))
     else:
+        invoice_item.standard_invoice_item = None
         for field in (
             "name",
             "unit_price",
@@ -99,6 +100,7 @@ def update_client_invoice_item(
         "item_date",
         "minutes_allocated",
         "is_recurring",
+        "quantity",
     ):
         setattr(invoice_item, field, getattr(invoice_item_input, field))
 

@@ -19,7 +19,10 @@ from organization.services.client_invoice_service import (
     update_client_invoice_status,
 )
 from organization.services.client_service import update_or_create_client
-from organization.services.client_users_service import update_client_user
+from organization.services.client_users_service import (
+    delete_client_user,
+    update_client_user,
+)
 from organization.services.organization_invoice_service import (
     delete_standard_invoice_item,
     update_standard_invoice_item,
@@ -145,6 +148,20 @@ class UpdateClientUser(BaseMutation):
         return {
             "client_user": client_user,
         }
+
+
+class DeleteClientUser(BaseMutation):
+    class Arguments:
+        client_user_uuid = graphene.String(required=True)
+
+    @logged_in_user_required
+    def mutate(self, user: User, **kwargs):
+        try:
+            delete_client_user(user.organization, **kwargs)
+        except Exception as e:
+            return get_graphene_error(str(e))
+
+        return {}
 
 
 class UpdateOrganizationService(BaseMutation):

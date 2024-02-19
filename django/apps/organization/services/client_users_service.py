@@ -58,3 +58,7 @@ def update_client_user(
     client_user_profile.save()
 
     return client_user
+
+
+def delete_client_user(org: Organization, client_user_uuid: str) -> None:
+    org.users.get(uuid=client_user_uuid).delete()

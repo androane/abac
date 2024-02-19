@@ -83,17 +83,6 @@ const InvoiceTableRow: React.FC<Props> = ({
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={`${row.unitPrice || ''} ${row.unitPriceCurrency || ''}`}
-            secondary=""
-            primaryTypographyProps={{ typography: 'body2' }}
-            secondaryTypographyProps={{
-              component: 'span',
-              color: 'text.disabled',
-            }}
-          />
-        </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          <ListItemText
             primary={UNIT_PRICE_TYPE_LABELS[row.unitPriceType as UnitPriceTypeEnum]}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
@@ -106,6 +95,39 @@ const InvoiceTableRow: React.FC<Props> = ({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
             primary={row.minutesAllocated}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <ListItemText
+            primary={`${row.unitPrice} ${row.unitPriceCurrency}`}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <ListItemText
+            primary={row.quantity}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <ListItemText
+            primary={`${row.unitPrice * row.quantity} ${row.unitPriceCurrency}`}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
