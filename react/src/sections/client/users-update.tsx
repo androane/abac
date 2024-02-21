@@ -17,12 +17,12 @@ import {
   ClientUserRoleEnum,
   ClientUserFragmentDoc,
 } from 'generated/graphql'
-import { ClientUser } from 'sections/client/types'
+import { APIClientUser } from 'sections/client/types'
 import { ROLE_LABELS } from 'sections/client/constants'
 
 type Props = {
   clientId: string
-  user?: ClientUser
+  user?: APIClientUser
   onClose: () => void
 }
 
@@ -36,11 +36,11 @@ const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
       firstName: user?.firstName || '',
       lastName: user?.lastName || '',
       email: user?.email || '',
-      ownershipPercentage: user?.ownershipPercentage,
-      role: user?.role,
-      spvUsername: user?.spvUsername,
-      spvPassword: user?.spvPassword,
-      phoneNumber: user?.phoneNumber,
+      ownershipPercentage: user?.clientProfile.ownershipPercentage,
+      role: user?.clientProfile.role,
+      spvUsername: user?.clientProfile.spvUsername,
+      spvPassword: user?.clientProfile.spvPassword,
+      phoneNumber: user?.clientProfile.phoneNumber,
     }),
     [user],
   )
@@ -67,7 +67,7 @@ const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
         variables: {
           clientUuid: clientId,
           clientUserInput: {
-            uuid: user?.id,
+            uuid: user?.uuid,
             firstName: data.firstName,
             lastName: data.lastName,
             email: data.email,
