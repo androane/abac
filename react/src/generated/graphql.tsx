@@ -98,6 +98,16 @@ export enum CurrencyEnum {
   USD = 'USD'
 }
 
+export type DeleteClient = {
+  __typename?: 'DeleteClient';
+  error?: Maybe<ErrorType>;
+};
+
+export type DeleteClientFile = {
+  __typename?: 'DeleteClientFile';
+  error?: Maybe<ErrorType>;
+};
+
 export type DeleteClientInvoiceItem = {
   __typename?: 'DeleteClientInvoiceItem';
   error?: Maybe<ErrorType>;
@@ -195,6 +205,10 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Create new Client Files */
   createClientFiles?: Maybe<CreateClientFiles>;
+  /** Delete a Client */
+  deleteClient?: Maybe<DeleteClient>;
+  /** Delete a Client File */
+  deleteClientFile?: Maybe<DeleteClientFile>;
   /** Delete a Client Invoice Item */
   deleteClientInvoiceItem?: Maybe<DeleteClientInvoiceItem>;
   /** Delete a Client User */
@@ -224,13 +238,23 @@ export type MutationCreateClientFilesArgs = {
 };
 
 
+export type MutationDeleteClientArgs = {
+  clientUuid: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteClientFileArgs = {
+  fileUuid: Scalars['String']['input'];
+};
+
+
 export type MutationDeleteClientInvoiceItemArgs = {
   invoiceItemUuid: Scalars['String']['input'];
 };
 
 
 export type MutationDeleteClientUserArgs = {
-  clientUserUuid: Scalars['String']['input'];
+  userUuid: Scalars['String']['input'];
 };
 
 
@@ -435,12 +459,33 @@ export type CreateClientFilesMutationVariables = Exact<{
 
 export type CreateClientFilesMutation = { __typename?: 'Mutation', createClientFiles?: { __typename?: 'CreateClientFiles', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, files: Array<{ __typename?: 'ClientFileType', name: string, updated: DateTimeString, url: string, size: number }> } | null } | null };
 
+export type DeleteClientMutationVariables = Exact<{
+  clientUuid: Scalars['String']['input'];
+}>;
+
+
+export type DeleteClientMutation = { __typename?: 'Mutation', deleteClient?: { __typename?: 'DeleteClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
+
+export type DeleteClientFileMutationVariables = Exact<{
+  fileUuid: Scalars['String']['input'];
+}>;
+
+
+export type DeleteClientFileMutation = { __typename?: 'Mutation', deleteClientFile?: { __typename?: 'DeleteClientFile', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
+
 export type DeleteClientInvoiceItemMutationVariables = Exact<{
   invoiceItemUuid: Scalars['String']['input'];
 }>;
 
 
 export type DeleteClientInvoiceItemMutation = { __typename?: 'Mutation', deleteClientInvoiceItem?: { __typename?: 'DeleteClientInvoiceItem', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
+
+export type DeleteClientUserMutationVariables = Exact<{
+  userUuid: Scalars['String']['input'];
+}>;
+
+
+export type DeleteClientUserMutation = { __typename?: 'Mutation', deleteClientUser?: { __typename?: 'DeleteClientUser', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
 
 export type UpdateClientMutationVariables = Exact<{
   uuid?: InputMaybe<Scalars['String']['input']>;
@@ -748,6 +793,76 @@ export function useCreateClientFilesMutation(baseOptions?: Apollo.MutationHookOp
 export type CreateClientFilesMutationHookResult = ReturnType<typeof useCreateClientFilesMutation>;
 export type CreateClientFilesMutationResult = Apollo.MutationResult<CreateClientFilesMutation>;
 export type CreateClientFilesMutationOptions = Apollo.BaseMutationOptions<CreateClientFilesMutation, CreateClientFilesMutationVariables>;
+export const DeleteClientDocument = gql`
+    mutation DeleteClient($clientUuid: String!) {
+  deleteClient(clientUuid: $clientUuid) {
+    error {
+      ...Error
+    }
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type DeleteClientMutationFn = Apollo.MutationFunction<DeleteClientMutation, DeleteClientMutationVariables>;
+
+/**
+ * __useDeleteClientMutation__
+ *
+ * To run a mutation, you first call `useDeleteClientMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteClientMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteClientMutation, { data, loading, error }] = useDeleteClientMutation({
+ *   variables: {
+ *      clientUuid: // value for 'clientUuid'
+ *   },
+ * });
+ */
+export function useDeleteClientMutation(baseOptions?: Apollo.MutationHookOptions<DeleteClientMutation, DeleteClientMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteClientMutation, DeleteClientMutationVariables>(DeleteClientDocument, options);
+      }
+export type DeleteClientMutationHookResult = ReturnType<typeof useDeleteClientMutation>;
+export type DeleteClientMutationResult = Apollo.MutationResult<DeleteClientMutation>;
+export type DeleteClientMutationOptions = Apollo.BaseMutationOptions<DeleteClientMutation, DeleteClientMutationVariables>;
+export const DeleteClientFileDocument = gql`
+    mutation DeleteClientFile($fileUuid: String!) {
+  deleteClientFile(fileUuid: $fileUuid) {
+    error {
+      ...Error
+    }
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type DeleteClientFileMutationFn = Apollo.MutationFunction<DeleteClientFileMutation, DeleteClientFileMutationVariables>;
+
+/**
+ * __useDeleteClientFileMutation__
+ *
+ * To run a mutation, you first call `useDeleteClientFileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteClientFileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteClientFileMutation, { data, loading, error }] = useDeleteClientFileMutation({
+ *   variables: {
+ *      fileUuid: // value for 'fileUuid'
+ *   },
+ * });
+ */
+export function useDeleteClientFileMutation(baseOptions?: Apollo.MutationHookOptions<DeleteClientFileMutation, DeleteClientFileMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteClientFileMutation, DeleteClientFileMutationVariables>(DeleteClientFileDocument, options);
+      }
+export type DeleteClientFileMutationHookResult = ReturnType<typeof useDeleteClientFileMutation>;
+export type DeleteClientFileMutationResult = Apollo.MutationResult<DeleteClientFileMutation>;
+export type DeleteClientFileMutationOptions = Apollo.BaseMutationOptions<DeleteClientFileMutation, DeleteClientFileMutationVariables>;
 export const DeleteClientInvoiceItemDocument = gql`
     mutation DeleteClientInvoiceItem($invoiceItemUuid: String!) {
   deleteClientInvoiceItem(invoiceItemUuid: $invoiceItemUuid) {
@@ -783,6 +898,41 @@ export function useDeleteClientInvoiceItemMutation(baseOptions?: Apollo.Mutation
 export type DeleteClientInvoiceItemMutationHookResult = ReturnType<typeof useDeleteClientInvoiceItemMutation>;
 export type DeleteClientInvoiceItemMutationResult = Apollo.MutationResult<DeleteClientInvoiceItemMutation>;
 export type DeleteClientInvoiceItemMutationOptions = Apollo.BaseMutationOptions<DeleteClientInvoiceItemMutation, DeleteClientInvoiceItemMutationVariables>;
+export const DeleteClientUserDocument = gql`
+    mutation DeleteClientUser($userUuid: String!) {
+  deleteClientUser(userUuid: $userUuid) {
+    error {
+      ...Error
+    }
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type DeleteClientUserMutationFn = Apollo.MutationFunction<DeleteClientUserMutation, DeleteClientUserMutationVariables>;
+
+/**
+ * __useDeleteClientUserMutation__
+ *
+ * To run a mutation, you first call `useDeleteClientUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteClientUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteClientUserMutation, { data, loading, error }] = useDeleteClientUserMutation({
+ *   variables: {
+ *      userUuid: // value for 'userUuid'
+ *   },
+ * });
+ */
+export function useDeleteClientUserMutation(baseOptions?: Apollo.MutationHookOptions<DeleteClientUserMutation, DeleteClientUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteClientUserMutation, DeleteClientUserMutationVariables>(DeleteClientUserDocument, options);
+      }
+export type DeleteClientUserMutationHookResult = ReturnType<typeof useDeleteClientUserMutation>;
+export type DeleteClientUserMutationResult = Apollo.MutationResult<DeleteClientUserMutation>;
+export type DeleteClientUserMutationOptions = Apollo.BaseMutationOptions<DeleteClientUserMutation, DeleteClientUserMutationVariables>;
 export const UpdateClientDocument = gql`
     mutation UpdateClient($uuid: String, $name: String!, $description: String, $phoneNumber1: String, $phoneNumber2: String, $programManagerUuid: String, $spvUsername: String, $spvPassword: String, $cui: String) {
   updateClient(

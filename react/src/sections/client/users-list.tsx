@@ -18,11 +18,11 @@ import {
 } from 'components/table'
 
 import ResponseHandler from 'components/response-handler'
-import { useClientUsersQuery } from 'generated/graphql'
+import { useClientUsersQuery, useDeleteClientUserMutation } from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
-import { ClientUser } from 'sections/client/types'
 import UpdateUser from 'sections/client/users-update'
 import AddButton from 'components/add-button'
+import { APIClientUser } from 'sections/client/types'
 import UserTableRow from './user-table-row'
 
 const TABLE_HEAD = [
@@ -37,10 +37,12 @@ const TABLE_HEAD = [
 
 type CardProps = {
   clientId: string
-  users: ClientUser[]
+  users: APIClientUser[]
 }
 
 const UserListCard: React.FC<CardProps> = ({ clientId, users }) => {
+  const [deleteUser, { loading }] = useDeleteClientUserMutation()
+
   const showCreateUser = useBoolean()
   const [userIdToEdit, setUserIdToEdit] = useState<null | string>(null)
 
@@ -60,18 +62,20 @@ const UserListCard: React.FC<CardProps> = ({ clientId, users }) => {
     table.page * table.rowsPerPage + table.rowsPerPage,
   )
 
-  const handleDeleteRow = useCallback(
-    (id: string) => {
-      const deleteRow = tableData.filter(row => row.id !== id)
+  const handleDeleteRow = async (uuid: string) => {
+    await deleteUser({
+      variables: { userUuid: uuid },
+      update(cache) {
+        const normalizedId = cache.identify({ uuid, __typename: 'UserType' })
+        cache.evict({ id: normalizedId })
+        cache.gc()
+      },
+    })
 
-      enqueueSnackbar('Factura a fost stersa cu success!')
+    enqueueSnackbar('Persoana de Contact a fost stearsa cu success!')
 
-      setTableData(deleteRow)
-
-      table.onUpdatePageDeleteRow(dataInPage.length)
-    },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
-  )
+    table.onUpdatePageDeleteRow(dataInPage.length)
+  }
 
   const handleEditRow = useCallback(
     (id: null | string) => {
@@ -88,7 +92,7 @@ const UserListCard: React.FC<CardProps> = ({ clientId, users }) => {
         {showCreateUser.value && (
           <UpdateUser
             clientId={clientId}
-            user={users.find(_ => _.id === userIdToEdit)}
+            user={users.find(_ => _.uuid === userIdToEdit)}
             onClose={showCreateUser.onFalse}
           />
         )}
@@ -112,10 +116,11 @@ const UserListCard: React.FC<CardProps> = ({ clientId, users }) => {
                   )
                   .map(row => (
                     <UserTableRow
-                      key={row.id}
+                      loading={loading}
+                      key={row.uuid}
                       row={row}
-                      onDeleteRow={() => handleDeleteRow(row.id)}
-                      onEditRow={() => handleEditRow(row.id)}
+                      onDeleteRow={() => handleDeleteRow(row.uuid)}
+                      onEditRow={() => handleEditRow(row.uuid)}
                     />
                   ))}
 
@@ -157,19 +162,8 @@ export default function UserListView({ clientId }: Props) {
 
   return (
     <ResponseHandler {...result}>
-      {({ clientUsers: apiClientUsers }) => {
-        const users = apiClientUsers?.map(user => ({
-          id: user.uuid,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          role: user.clientProfile.role,
-          ownershipPercentage: user.clientProfile.ownershipPercentage,
-          spvUsername: user.clientProfile.spvUsername,
-          spvPassword: user.clientProfile.spvPassword,
-          phoneNumber: user.clientProfile.phoneNumber,
-        }))
-        return <UserListCard clientId={clientId} users={users} />
+      {({ clientUsers }) => {
+        return <UserListCard clientId={clientId} users={clientUsers} />
       }}
     </ResponseHandler>
   )

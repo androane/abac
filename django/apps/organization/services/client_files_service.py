@@ -34,3 +34,10 @@ def create_client_files(
         ]
     )
     return client
+
+
+def delete_client_file(
+    org: Organization,
+    file_uuid: str,
+) -> None:
+    ClientFile.objects.get(uuid=file_uuid, client__organization=org).delete()

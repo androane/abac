@@ -1,0 +1,7 @@
+mutation DeleteClientFile($fileUuid: String!) {
+  deleteClientFile(fileUuid: $fileUuid) {
+    error {
+      ...Error
+    }
+  }
+}

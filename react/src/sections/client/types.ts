@@ -1,20 +1,9 @@
 import {
   ClientFilesQuery,
   ClientInvoiceQuery,
-  ClientUserRoleEnum,
   ClientsQuery,
+  ClientUsersQuery,
 } from 'generated/graphql'
-
-export type ClientItem = {
-  id: string
-  name: string
-  programManager?: null | {
-    id: string
-    name: string
-  }
-  phoneNumber1?: string
-  phoneNumber2?: string
-}
 
 export type ClientTableFilters = {
   name: string
@@ -25,18 +14,7 @@ export type InvoiceTableFilters = {
   name: string
 }
 
-export type ClientUser = {
-  id: string
-  firstName: string
-  lastName: string
-  email: string
-  role?: null | ClientUserRoleEnum
-  ownershipPercentage?: null | number
-  spvUsername?: null | string
-  spvPassword?: null | string
-  phoneNumber?: null | string
-}
-
+export type APIClientUser = ClientUsersQuery['clientUsers'][0]
 export type APIClient = ClientsQuery['clients'][0]
 export type APIClientInvoice = ClientInvoiceQuery['clientInvoice']
 export type APIInvoiceItem = ClientInvoiceQuery['clientInvoice']['items'][0]

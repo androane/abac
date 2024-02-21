@@ -1,6 +1,5 @@
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
@@ -12,18 +11,17 @@ import { useBoolean } from 'hooks/use-boolean'
 import { ConfirmDialog } from 'components/custom-dialog'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
-
-import { ClientItem } from './types'
+import { APIClient } from 'sections/client/types'
+import LoadingButton from '@mui/lab/LoadingButton'
 
 type Props = {
+  loading: boolean
+  row: APIClient
   onEditRow: VoidFunction
-  row: ClientItem
   onDeleteRow: VoidFunction
 }
 
-export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
-  const { name, programManager, phoneNumber1, phoneNumber2 } = row
-
+export default function UserTableRow({ loading, row, onEditRow, onDeleteRow }: Props) {
   const confirm = useBoolean()
 
   const popover = usePopover()
@@ -32,8 +30,8 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
     <>
       <TableRow hover>
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={name} sx={{ mr: 2 }}>
-            {name.charAt(0).toUpperCase()}
+          <Avatar alt={row.name} sx={{ mr: 2 }}>
+            {row.name.charAt(0).toUpperCase()}
           </Avatar>
           <Box
             onClick={onEditRow}
@@ -44,12 +42,12 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
               },
             }}
           >
-            {name}
+            {row.name}
           </Box>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={programManager?.name}
+            primary={row.programManager?.name}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -60,7 +58,7 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={phoneNumber1}
+            primary={row.phoneNumber1}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -71,7 +69,7 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={phoneNumber2}
+            primary={row.phoneNumber2}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -121,9 +119,9 @@ export default function UserTableRow({ row, onEditRow, onDeleteRow }: Props) {
         title="Stergere Client"
         content="Esti sigur ca vrei sa stergi acest client?"
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <LoadingButton loading={loading} variant="contained" color="error" onClick={onDeleteRow}>
             Sterge
-          </Button>
+          </LoadingButton>
         }
       />
     </>

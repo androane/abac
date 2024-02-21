@@ -3,6 +3,8 @@ import graphene
 
 from organization.graphene.mutations import (
     CreateClientFiles,
+    DeleteClient,
+    DeleteClientFile,
     DeleteClientInvoiceItem,
     DeleteClientUser,
     DeleteOrganizationService,
@@ -104,6 +106,7 @@ class Query(graphene.ObjectType):
 
 class Mutation(graphene.ObjectType):
     update_client = UpdateClient.Field(description="Update or Create a New Client")
+    delete_client = DeleteClient.Field(description="Delete a Client")
     update_client_invoice_status = UpdateClientInvoiceStatus.Field(
         description="Update Client Invoice Status"
     )
@@ -114,6 +117,7 @@ class Mutation(graphene.ObjectType):
         description="Delete a Client Invoice Item"
     )
     create_client_files = CreateClientFiles.Field(description="Create new Client Files")
+    delete_client_file = DeleteClientFile.Field(description="Delete a Client File")
     update_client_user = UpdateClientUser.Field(
         description="Update or Create a New Client User"
     )

@@ -49,3 +49,7 @@ def update_or_create_client(
     client.save()
 
     return client
+
+
+def delete_client(org: Organization, client_uuid: str) -> None:
+    org.clients.get(uuid=client_uuid).delete()

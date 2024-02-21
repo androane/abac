@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
@@ -12,17 +11,17 @@ import Iconify from 'components/iconify'
 import { useBoolean } from 'hooks/use-boolean'
 import { ROLE_LABELS } from 'sections/client/constants'
 import { ClientUserRoleEnum } from 'generated/graphql'
-import { ClientUser } from './types'
+import { APIClientUser } from 'sections/client/types'
+import LoadingButton from '@mui/lab/LoadingButton'
 
 type Props = {
+  loading: boolean
+  row: APIClientUser
   onEditRow: VoidFunction
-  row: ClientUser
   onDeleteRow: VoidFunction
 }
 
-export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) {
-  const { firstName, lastName, email, phoneNumber, role, spvUsername, spvPassword } = row
-
+const UserTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRow }) => {
   const confirm = useBoolean()
 
   const popover = usePopover()
@@ -40,12 +39,12 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
               },
             }}
           >
-            {lastName} {firstName}
+            {row.lastName} {row.firstName}
           </Box>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={email}
+            primary={row.email}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -56,7 +55,7 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={phoneNumber}
+            primary={row.clientProfile.phoneNumber}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -67,7 +66,7 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={ROLE_LABELS[role as ClientUserRoleEnum]}
+            primary={ROLE_LABELS[row.clientProfile.role as ClientUserRoleEnum]}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -78,7 +77,7 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={spvUsername}
+            primary={row.clientProfile.spvUsername}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -89,7 +88,7 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={spvPassword}
+            primary={row.clientProfile.spvPassword}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -136,14 +135,16 @@ export default function InvoiceTableRow({ row, onEditRow, onDeleteRow }: Props) 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Stergere Utilizator"
-        content="Esti sigur ca vrei sa stergi acest utilizator?"
+        title="Stergere Persoana de Contact"
+        content="Esti sigur ca vrei sa stergi aceasta Persoana de Contact?"
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <LoadingButton loading={loading} variant="contained" color="error" onClick={onDeleteRow}>
             Sterge
-          </Button>
+          </LoadingButton>
         }
       />
     </>
   )
 }
+
+export default UserTableRow

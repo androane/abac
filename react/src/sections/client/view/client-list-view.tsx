@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
@@ -27,13 +27,17 @@ import {
 } from 'components/table'
 
 import ResponseHandler from 'components/response-handler'
-import { useClientProgramManagersQuery, useClientsQuery } from 'generated/graphql'
+import {
+  useClientProgramManagersQuery,
+  useClientsQuery,
+  useDeleteClientMutation,
+} from 'generated/graphql'
 import { useRouter } from 'routes/hooks'
 import { useAuthContext } from 'auth/hooks'
 import ClientTableFiltersResult from '../client-table-filters-result'
 import ClientTableRow from '../client-table-row'
 import ClientTableToolbar from '../client-table-toolbar'
-import { ClientItem, ClientTableFilters } from '../types'
+import { APIClient, ClientTableFilters } from '../types'
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Nume' },
@@ -44,10 +48,11 @@ const TABLE_HEAD = [
 ]
 
 type Props = {
-  clients: ClientItem[]
+  clients: APIClient[]
 }
 
 const ClientListCard: React.FC<Props> = ({ clients }) => {
+  const [deleteClient, { loading }] = useDeleteClientMutation()
   const { user } = useAuthContext()
   const result = useClientProgramManagersQuery()
 
@@ -55,6 +60,10 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
   const [tableData, setTableData] = useState(clients)
 
   const table = useTable()
+
+  useEffect(() => {
+    setTableData(clients)
+  }, [clients])
 
   const denseHeight = table.dense ? 56 : 56 + 20
 
@@ -99,22 +108,24 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
     setFilters(defaultFilters)
   }, [defaultFilters])
 
-  const handleDeleteRow = useCallback(
-    (id: string) => {
-      const deleteRow = tableData.filter(row => row.id !== id)
+  const handleDeleteRow = async (uuid: string) => {
+    await deleteClient({
+      variables: { clientUuid: uuid },
+      update(cache) {
+        const normalizedId = cache.identify({ uuid, __typename: 'ClientType' })
+        cache.evict({ id: normalizedId })
+        cache.gc()
+      },
+    })
 
-      enqueueSnackbar('Clientul a fost sters cu success!')
+    enqueueSnackbar('Clientul a fost sters cu success!')
 
-      setTableData(deleteRow)
-
-      table.onUpdatePageDeleteRow(dataInPage.length)
-    },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
-  )
+    table.onUpdatePageDeleteRow(dataInPage.length)
+  }
 
   const handleEditRow = useCallback(
-    (id: string) => {
-      router.push(paths.app.client.edit(id))
+    (uuid: string) => {
+      router.push(paths.app.client.edit(uuid))
     },
     [router],
   )
@@ -168,10 +179,11 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
                 )
                 .map(row => (
                   <ClientTableRow
-                    key={row.id}
+                    loading={loading}
+                    key={row.uuid}
                     row={row}
-                    onDeleteRow={() => handleDeleteRow(row.id)}
-                    onEditRow={() => handleEditRow(row.id)}
+                    onDeleteRow={() => handleDeleteRow(row.uuid)}
+                    onEditRow={() => handleEditRow(row.uuid)}
                   />
                 ))}
 
@@ -200,7 +212,7 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
   )
 }
 
-export default function ClientListView() {
+const ClientListView = () => {
   const settings = useSettingsContext()
   const result = useClientsQuery()
 
@@ -229,17 +241,7 @@ export default function ClientListView() {
       />
 
       <ResponseHandler {...result}>
-        {({ clients: apiClients }) => {
-          const clients = apiClients?.map(client => ({
-            id: client.uuid,
-            name: client.name,
-            programManager: client.programManager && {
-              id: client.programManager.uuid,
-              name: client.programManager.name,
-            },
-            phoneNumber1: client.phoneNumber1,
-            phoneNumber2: client.phoneNumber2,
-          }))
+        {({ clients }) => {
           return <ClientListCard clients={clients} />
         }}
       </ResponseHandler>
@@ -252,7 +254,7 @@ function applyFilter({
   comparator,
   filters,
 }: {
-  inputData: ClientItem[]
+  inputData: APIClient[]
   comparator: (a: any, b: any) => number
   filters: ClientTableFilters
 }) {
@@ -275,8 +277,10 @@ function applyFilter({
   }
 
   if (programManagerId) {
-    inputData = inputData.filter(client => programManagerId === client.programManager?.id)
+    inputData = inputData.filter(client => programManagerId === client.programManager?.uuid)
   }
 
   return inputData
 }
+
+export default ClientListView

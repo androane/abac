@@ -1,0 +1,7 @@
+mutation DeleteClient($clientUuid: String!) {
+  deleteClient(clientUuid: $clientUuid) {
+    error {
+      ...Error
+    }
+  }
+}

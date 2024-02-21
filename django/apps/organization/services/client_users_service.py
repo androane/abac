@@ -21,7 +21,7 @@ def get_client_users(org: Organization, client_uuid: str) -> QuerySet[User]:
         uuid=client_uuid,
         organization=org,
     )
-    return client.users.filter(client_profile__isnull=False)
+    return client.users.all()
 
 
 def update_client_user(
@@ -52,7 +52,7 @@ def update_client_user(
         "spv_password",
         "phone_number",
     ):
-        setattr(client_user_profile, field, client_user_input.get(field))
+        setattr(client_user_profile, field, client_user_input.get(field, ""))
 
     client_user_profile.user = client_user
     client_user_profile.save()
@@ -60,5 +60,5 @@ def update_client_user(
     return client_user
 
 
-def delete_client_user(org: Organization, client_user_uuid: str) -> None:
-    org.users.get(uuid=client_user_uuid).delete()
+def delete_client_user(org: Organization, user_uuid: str) -> None:
+    org.users.get(uuid=user_uuid, client__isnull=False).delete()

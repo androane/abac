@@ -1,5 +1,3 @@
-2 Asociati – participatie – administrator (nume, prenume, procent)
-
 4 Aplicatie utilizata pentru contabiltitate
 5 Aplicatie utilizata pentru gestiune
 6 Daca 4 si 5 sunt integrate sau nu

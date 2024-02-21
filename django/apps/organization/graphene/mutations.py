@@ -12,13 +12,16 @@ from organization.graphene.types import (
     StandardInvoiceItemInput,
     StandardInvoiceItemType,
 )
-from organization.services.client_files_service import create_client_files
+from organization.services.client_files_service import (
+    create_client_files,
+    delete_client_file,
+)
 from organization.services.client_invoice_service import (
     delete_client_invoice_item,
     update_client_invoice_item,
     update_client_invoice_status,
 )
-from organization.services.client_service import update_or_create_client
+from organization.services.client_service import delete_client, update_or_create_client
 from organization.services.client_users_service import (
     delete_client_user,
     update_client_user,
@@ -56,6 +59,20 @@ class UpdateClient(BaseMutation):
         return {
             "client": client,
         }
+
+
+class DeleteClient(BaseMutation):
+    class Arguments:
+        client_uuid = graphene.String(required=True)
+
+    @logged_in_user_required
+    def mutate(self, user: User, **kwargs):
+        try:
+            delete_client(user.organization, **kwargs)
+        except Exception as e:
+            return get_graphene_error(str(e))
+
+        return {}
 
 
 class UpdateClientInvoiceStatus(BaseMutation):
@@ -131,6 +148,20 @@ class CreateClientFiles(BaseMutation):
         }
 
 
+class DeleteClientFile(BaseMutation):
+    class Arguments:
+        file_uuid = graphene.String(required=True)
+
+    @logged_in_user_required
+    def mutate(self, user: User, **kwargs):
+        try:
+            delete_client_file(user.organization, **kwargs)
+        except Exception as e:
+            return get_graphene_error(str(e))
+
+        return {}
+
+
 class UpdateClientUser(BaseMutation):
     class Arguments:
         client_uuid = graphene.String(required=True)
@@ -152,7 +183,7 @@ class UpdateClientUser(BaseMutation):
 
 class DeleteClientUser(BaseMutation):
     class Arguments:
-        client_user_uuid = graphene.String(required=True)
+        user_uuid = graphene.String(required=True)
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
