@@ -9,6 +9,7 @@ import Iconify from 'components/iconify'
 import { InvoiceStatusEnum, useUpdateClientInvoiceStatusMutation } from 'generated/graphql'
 import { enqueueSnackbar } from 'components/snackbar'
 import AddButton from 'components/add-button'
+import getErrorMessage from 'utils/api-codes'
 
 type Props = {
   onAddInvoiceItem: () => void
@@ -40,7 +41,9 @@ export default function InvoiceTableToolbar({
       })
       enqueueSnackbar('Status actualizat cu success')
     } catch (error) {
-      console.error(error)
+      enqueueSnackbar(getErrorMessage((error as Error).message), {
+        variant: 'error',
+      })
     }
   }
 

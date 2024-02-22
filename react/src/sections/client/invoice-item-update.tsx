@@ -20,6 +20,7 @@ import {
 import { Button, DialogActions, Typography } from '@mui/material'
 import ResponseHandler from 'components/response-handler'
 import LoadingButton from '@mui/lab/LoadingButton'
+import getErrorMessage from 'utils/api-codes'
 import { APIInvoiceItem } from './types'
 
 const OTHER_SERVICE = 'Other'
@@ -45,8 +46,6 @@ const UpdateInvoiceItem: React.FC<Props> = ({ invoiceId, invoiceDate, invoiceIte
   } else if (invoiceItem) {
     standardServiceUuid = OTHER_SERVICE
   }
-
-  console.log(standardServiceUuid)
 
   const defaultValues = useMemo(
     () => ({
@@ -102,7 +101,9 @@ const UpdateInvoiceItem: React.FC<Props> = ({ invoiceId, invoiceDate, invoiceIte
       enqueueSnackbar('Factura actualizata cu succes!')
       onClose()
     } catch (error) {
-      console.error(error)
+      enqueueSnackbar(getErrorMessage((error as Error).message), {
+        variant: 'error',
+      })
     }
   })
 

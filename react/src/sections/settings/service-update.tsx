@@ -20,6 +20,7 @@ import {
   StandardInvoiceItemFragmentDoc,
 } from 'generated/graphql'
 import { UNIT_PRICE_TYPE_LABELS } from 'sections/settings/constants'
+import getErrorMessage from 'utils/api-codes'
 
 type Props = {
   service?: StandardInvoiceItemFragment
@@ -89,7 +90,9 @@ const UpdateService: React.FC<Props> = ({ service, onClose }) => {
       enqueueSnackbar('Serviciu actualizat cu succes!')
       onClose()
     } catch (error) {
-      console.error(error)
+      enqueueSnackbar(getErrorMessage((error as Error).message), {
+        variant: 'error',
+      })
     }
   })
 

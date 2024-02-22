@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import Button from '@mui/material/Button'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
 import Dialog from '@mui/material/Dialog'
@@ -19,7 +19,6 @@ import {
 } from 'generated/graphql'
 import { APIClientUser } from 'sections/client/types'
 import { ROLE_LABELS } from 'sections/client/constants'
-import { Alert } from '@mui/material'
 import getErrorMessage from 'utils/api-codes'
 
 type Props = {
@@ -30,8 +29,6 @@ type Props = {
 
 const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
   const [updateClientUser, { loading }] = useUpdateClientUserMutation()
-
-  const [errorMsg, setErrorMsg] = useState('')
 
   const { enqueueSnackbar } = useSnackbar()
 
@@ -67,7 +64,7 @@ const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
 
   const onSubmit = form.handleSubmit(async data => {
     try {
-      const response = await updateClientUser({
+      await updateClientUser({
         variables: {
           clientUuid: clientId,
           clientUserInput: {
@@ -99,19 +96,16 @@ const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
           })
         },
       })
-      if (response.data?.updateClientUser?.error) {
-        throw new Error(response.data.updateClientUser.error.message)
-      }
 
       form.reset()
       enqueueSnackbar('Persoana actualizata cu succes!')
       onClose()
     } catch (error) {
-      setErrorMsg(getErrorMessage((error as Error).message))
+      enqueueSnackbar(getErrorMessage((error as Error).message), {
+        variant: 'error',
+      })
     }
   })
-
-  console.log('errorMsg', errorMsg)
 
   return (
     <Dialog
@@ -127,11 +121,6 @@ const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
         <DialogTitle>Persoana de Contact</DialogTitle>
         <DialogContent>
           <br />
-          {!!errorMsg && (
-            <Alert severity="error" sx={{ mb: 3 }}>
-              {errorMsg}
-            </Alert>
-          )}
           <Box
             rowGap={3}
             columnGap={2}

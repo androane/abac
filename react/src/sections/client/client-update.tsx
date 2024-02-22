@@ -24,6 +24,7 @@ import {
 } from 'generated/graphql'
 import { fData } from 'utils/format-number'
 import { useAuthContext } from 'auth/hooks'
+import getErrorMessage from 'utils/api-codes'
 import { APIClient } from './types'
 
 type Props = {
@@ -108,7 +109,9 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
       enqueueSnackbar(client ? 'Client actualizat cu succes!' : 'Client creat cu succes!')
       router.push(paths.app.client.list)
     } catch (error) {
-      console.error(error)
+      enqueueSnackbar(getErrorMessage((error as Error).message), {
+        variant: 'error',
+      })
     }
   })
 

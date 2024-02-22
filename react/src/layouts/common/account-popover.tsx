@@ -17,6 +17,7 @@ import { useSnackbar } from 'components/snackbar'
 import { Stack } from '@mui/material'
 import { useBoolean } from 'hooks/use-boolean'
 import ChangePassword from 'sections/auth/change-password'
+import getErrorMessage from 'utils/api-codes'
 
 export default function AccountPopover() {
   const router = useRouter()
@@ -38,7 +39,9 @@ export default function AccountPopover() {
       router.replace('/')
     } catch (error) {
       console.error(error)
-      enqueueSnackbar('Eroare la iesirea din cont!', { variant: 'error' })
+      enqueueSnackbar(getErrorMessage((error as Error).message), {
+        variant: 'error',
+      })
     }
   }
 
