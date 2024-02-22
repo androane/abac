@@ -31,15 +31,15 @@ const Login = () => {
 
   const password = useBoolean()
 
-  const LoginSchema = Yup.object().shape({
-    email: Yup.string()
-      .required('Adresa de email este obligatorie')
-      .email('Adresa de email nu este valida'),
-    password: Yup.string().required('Parola este obligatorie'),
-  })
-
   const methods = useForm({
-    resolver: yupResolver(LoginSchema),
+    resolver: yupResolver(
+      Yup.object().shape({
+        email: Yup.string()
+          .required('Adresa de email este obligatorie')
+          .email('Adresa de email nu este valida'),
+        password: Yup.string().required('Parola este obligatorie'),
+      }),
+    ),
   })
 
   const {

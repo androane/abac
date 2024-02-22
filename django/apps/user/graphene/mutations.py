@@ -2,8 +2,9 @@
 import graphene
 
 from api.graphene.mutations import BaseMutation
+from user.decorators import logged_in_user_required
 from user.graphene.types import UserType
-from user.services.user_auth_service import login_user, logout_user
+from user.services.user_auth_service import change_user_password, login_user
 
 
 class LoginUser(BaseMutation):
@@ -21,7 +22,6 @@ class LoginUser(BaseMutation):
 
     def mutate(self, info, email, password, **kwargs):
         request, token, error = login_user(info.context, email, password)
-
         return {
             "token": token,
             "user": request.user,
@@ -30,14 +30,22 @@ class LoginUser(BaseMutation):
 
 
 class LogoutUser(BaseMutation):
-    """
-    Logs out the user
-    """
-
-    def mutate(self, info, **kwargs):
-        request = info.context
-        user = request.user
-        if not user.is_authenticated:
-            raise Exception("You must be authenticated to perform this operation.")
-        logout_user(request)
+    @logged_in_user_required
+    def mutate(self, user, **kwargs):
         return {}
+
+
+class ChangePassword(BaseMutation):
+    class Arguments:
+        current_password = graphene.String(required=True)
+        new_password = graphene.String(required=True)
+
+    token = graphene.String()
+
+    @logged_in_user_required
+    def mutate(self, user, **kwargs):
+        token, error = change_user_password(user, **kwargs)
+        return {
+            "token": token,
+            "error": {"message": error} if error else None,
+        }

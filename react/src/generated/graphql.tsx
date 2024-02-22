@@ -22,6 +22,12 @@ export type Scalars = {
   Upload: { input: any; output: any; }
 };
 
+export type ChangePassword = {
+  __typename?: 'ChangePassword';
+  error?: Maybe<ErrorType>;
+  token?: Maybe<Scalars['String']['output']>;
+};
+
 export type ClientFileInput = {
   file: Scalars['Upload']['input'];
 };
@@ -195,7 +201,6 @@ export type LoginUser = {
   user?: Maybe<UserType>;
 };
 
-/** Logs out the user */
 export type LogoutUser = {
   __typename?: 'LogoutUser';
   error?: Maybe<ErrorType>;
@@ -203,6 +208,8 @@ export type LogoutUser = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Change password for a user */
+  changePassword?: Maybe<ChangePassword>;
   /** Create new Client Files */
   createClientFiles?: Maybe<CreateClientFiles>;
   /** Delete a Client */
@@ -229,6 +236,12 @@ export type Mutation = {
   updateClientUser?: Maybe<UpdateClientUser>;
   /** Update or Create a New Service (Standard Invoice Item) */
   updateOrganizationService?: Maybe<UpdateOrganizationService>;
+};
+
+
+export type MutationChangePasswordArgs = {
+  currentPassword: Scalars['String']['input'];
+  newPassword: Scalars['String']['input'];
 };
 
 
@@ -437,6 +450,14 @@ export type FileFragment = { __typename?: 'ClientFileType', name: string, update
 export type ProgramManagerFragment = { __typename?: 'UserType', uuid: string, name: string, email: string };
 
 export type StandardInvoiceItemFragment = { __typename?: 'StandardInvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency?: CurrencyEnum | null, unitPriceType?: UnitPriceTypeEnum | null };
+
+export type ChangePasswordMutationVariables = Exact<{
+  currentPassword: Scalars['String']['input'];
+  newPassword: Scalars['String']['input'];
+}>;
+
+
+export type ChangePasswordMutation = { __typename?: 'Mutation', changePassword?: { __typename?: 'ChangePassword', token?: string | null, error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
 
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -675,6 +696,43 @@ export const StandardInvoiceItemFragmentDoc = gql`
   unitPriceType
 }
     `;
+export const ChangePasswordDocument = gql`
+    mutation ChangePassword($currentPassword: String!, $newPassword: String!) {
+  changePassword(currentPassword: $currentPassword, newPassword: $newPassword) {
+    error {
+      ...Error
+    }
+    token
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type ChangePasswordMutationFn = Apollo.MutationFunction<ChangePasswordMutation, ChangePasswordMutationVariables>;
+
+/**
+ * __useChangePasswordMutation__
+ *
+ * To run a mutation, you first call `useChangePasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChangePasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [changePasswordMutation, { data, loading, error }] = useChangePasswordMutation({
+ *   variables: {
+ *      currentPassword: // value for 'currentPassword'
+ *      newPassword: // value for 'newPassword'
+ *   },
+ * });
+ */
+export function useChangePasswordMutation(baseOptions?: Apollo.MutationHookOptions<ChangePasswordMutation, ChangePasswordMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ChangePasswordMutation, ChangePasswordMutationVariables>(ChangePasswordDocument, options);
+      }
+export type ChangePasswordMutationHookResult = ReturnType<typeof useChangePasswordMutation>;
+export type ChangePasswordMutationResult = Apollo.MutationResult<ChangePasswordMutation>;
+export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<ChangePasswordMutation, ChangePasswordMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
   login(email: $email, password: $password) {

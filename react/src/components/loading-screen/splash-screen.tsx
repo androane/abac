@@ -1,12 +1,12 @@
 import { m } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import Box, { BoxProps } from '@mui/material/Box'
 import { alpha } from '@mui/material/styles'
 
 import Logo from '../logo'
 
-export default function SplashScreen({ sx, ...other }: BoxProps) {
+const SplashScreen: React.FC<BoxProps> = ({ sx, ...other }) => {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -91,3 +91,5 @@ export default function SplashScreen({ sx, ...other }: BoxProps) {
     </Box>
   )
 }
+
+export default SplashScreen

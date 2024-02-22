@@ -14,6 +14,9 @@ import { useRouter } from 'routes/hooks'
 import { varHover } from 'components/animate'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import { useSnackbar } from 'components/snackbar'
+import { Stack } from '@mui/material'
+import { useBoolean } from 'hooks/use-boolean'
+import ChangePassword from 'sections/auth/change-password'
 
 export default function AccountPopover() {
   const router = useRouter()
@@ -26,6 +29,8 @@ export default function AccountPopover() {
 
   const popover = usePopover()
 
+  const showChangePassword = useBoolean()
+
   const handleLogout = async () => {
     try {
       await logout()
@@ -33,7 +38,7 @@ export default function AccountPopover() {
       router.replace('/')
     } catch (error) {
       console.error(error)
-      enqueueSnackbar('Unable to logout!', { variant: 'error' })
+      enqueueSnackbar('Eroare la iesirea din cont!', { variant: 'error' })
     }
   }
 
@@ -79,15 +84,28 @@ export default function AccountPopover() {
           </Typography>
         </Box>
 
+        <Divider />
+        <Stack sx={{ p: 1 }}>
+          <MenuItem onClick={showChangePassword.onTrue}>Schimba Parola</MenuItem>
+        </Stack>
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <MenuItem
           onClick={handleLogout}
           sx={{ m: 1, fontWeight: 'fontWeightBold', color: 'error.main' }}
         >
-          Logout
+          Iesi din Cont
         </MenuItem>
       </CustomPopover>
+
+      {showChangePassword.value && (
+        <ChangePassword
+          onClose={() => {
+            showChangePassword.onFalse()
+            popover.onClose()
+          }}
+        />
+      )}
     </>
   )
 }

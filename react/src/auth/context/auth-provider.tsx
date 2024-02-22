@@ -6,12 +6,6 @@ import { ActionMapType, AuthStateType, AuthUserType } from '../types'
 import { AuthContext } from './auth-context'
 import { setSession } from './utils'
 
-enum StatusEnum {
-  LOADING = 'loading',
-  AUTHENTICATED = 'authenticated',
-  UNAUTHENTICATED = 'unauthenticated',
-}
-
 enum Types {
   INITIAL = 'INITIAL',
   LOGIN = 'LOGIN',
@@ -118,12 +112,12 @@ export function AuthProvider({ children }: Props) {
   // LOGIN
   const login = useCallback(
     async (email: string, password: string) => {
-      const res = await loginMutation({ variables: { email, password } })
+      const response = await loginMutation({ variables: { email, password } })
 
-      if (!res.data?.login) {
+      if (!response.data?.login) {
         return
       }
-      const { token, user, error } = res.data.login
+      const { token, user, error } = response.data.login
 
       if (!token) {
         throw new Error(error?.message)
@@ -151,21 +145,16 @@ export function AuthProvider({ children }: Props) {
     })
   }, [logoutMutation])
 
-  const checkAuthenticated = state.user ? StatusEnum.AUTHENTICATED : StatusEnum.UNAUTHENTICATED
-
-  const status = state.loading ? StatusEnum.LOADING : checkAuthenticated
-
   const memoizedValue = useMemo(
     () => ({
       user: state.user,
-      loading: status === StatusEnum.LOADING,
-      authenticated: status === StatusEnum.AUTHENTICATED,
-      unauthenticated: status === StatusEnum.UNAUTHENTICATED,
-      //
+      loading: state.loading,
+      authenticated: Boolean(state.user),
+      unauthenticated: Boolean(state.user),
       login,
       logout,
     }),
-    [login, logout, state.user, status],
+    [login, logout, state],
   )
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>

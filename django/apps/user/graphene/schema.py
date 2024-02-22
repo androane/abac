@@ -3,7 +3,7 @@ import graphene
 from django.contrib.auth import get_user_model
 
 from user.decorators import logged_in_user_required
-from user.graphene.mutations import LoginUser, LogoutUser
+from user.graphene.mutations import ChangePassword, LoginUser, LogoutUser
 from user.graphene.types import UserType
 
 
@@ -29,3 +29,4 @@ class Query(graphene.ObjectType):
 class Mutation(graphene.ObjectType):
     login = LoginUser.Field(description="Log the user in with email and password.")
     logout = LogoutUser.Field(description="Log out user.")
+    change_password = ChangePassword.Field(description="Change password for a user")
