@@ -52,7 +52,9 @@ def update_client_user(
         "spv_password",
         "phone_number",
     ):
-        setattr(client_user_profile, field, client_user_input.get(field, ""))
+        value = client_user_input.get(field)
+        if value:
+            setattr(client_user_profile, field, value)
 
     client_user_profile.user = client_user
     client_user_profile.save()

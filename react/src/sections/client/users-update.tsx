@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import Button from '@mui/material/Button'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
 import Dialog from '@mui/material/Dialog'
@@ -19,6 +19,8 @@ import {
 } from 'generated/graphql'
 import { APIClientUser } from 'sections/client/types'
 import { ROLE_LABELS } from 'sections/client/constants'
+import { Alert } from '@mui/material'
+import getErrorMessage from 'utils/api-codes'
 
 type Props = {
   clientId: string
@@ -29,6 +31,8 @@ type Props = {
 const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
   const [updateClientUser, { loading }] = useUpdateClientUserMutation()
 
+  const [errorMsg, setErrorMsg] = useState('')
+
   const { enqueueSnackbar } = useSnackbar()
 
   const defaultValues = useMemo(
@@ -36,11 +40,11 @@ const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
       firstName: user?.firstName || '',
       lastName: user?.lastName || '',
       email: user?.email || '',
-      ownershipPercentage: user?.clientProfile.ownershipPercentage,
-      role: user?.clientProfile.role,
-      spvUsername: user?.clientProfile.spvUsername,
-      spvPassword: user?.clientProfile.spvPassword,
-      phoneNumber: user?.clientProfile.phoneNumber,
+      ownershipPercentage: user?.clientProfile.ownershipPercentage || undefined,
+      role: user?.clientProfile.role || undefined,
+      spvUsername: user?.clientProfile.spvUsername || '',
+      spvPassword: user?.clientProfile.spvPassword || '',
+      phoneNumber: user?.clientProfile.phoneNumber || '',
     }),
     [user],
   )
@@ -63,7 +67,7 @@ const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
 
   const onSubmit = form.handleSubmit(async data => {
     try {
-      await updateClientUser({
+      const response = await updateClientUser({
         variables: {
           clientUuid: clientId,
           clientUserInput: {
@@ -95,13 +99,19 @@ const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
           })
         },
       })
+      if (response.data?.updateClientUser?.error) {
+        throw new Error(response.data.updateClientUser.error.message)
+      }
+
       form.reset()
       enqueueSnackbar('Persoana actualizata cu succes!')
       onClose()
     } catch (error) {
-      console.error(error)
+      setErrorMsg(getErrorMessage((error as Error).message))
     }
   })
+
+  console.log('errorMsg', errorMsg)
 
   return (
     <Dialog
@@ -117,6 +127,11 @@ const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
         <DialogTitle>Persoana de Contact</DialogTitle>
         <DialogContent>
           <br />
+          {!!errorMsg && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {errorMsg}
+            </Alert>
+          )}
           <Box
             rowGap={3}
             columnGap={2}

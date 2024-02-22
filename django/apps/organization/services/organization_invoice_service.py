@@ -21,7 +21,9 @@ def update_standard_invoice_item(
     )
 
     for attr in attrs:
-        setattr(standard_invoice_item, attr, getattr(standard_invoice_item_input, attr))
+        value = getattr(standard_invoice_item_input, attr)
+        if value:
+            setattr(standard_invoice_item, attr, value)
 
     standard_invoice_item.save()
     return standard_invoice_item

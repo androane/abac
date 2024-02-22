@@ -16,7 +16,7 @@ import Iconify from 'components/iconify'
 import { PATH_AFTER_LOGIN } from 'config/config-global'
 import { useBoolean } from 'hooks/use-boolean'
 import { useRouter, useSearchParams } from 'routes/hooks'
-import { API_CODES } from 'utils/api-codes'
+import getErrorMessage from 'utils/api-codes'
 
 const Login = () => {
   const { login } = useAuthContext()
@@ -55,7 +55,7 @@ const Login = () => {
       router.push(returnTo || PATH_AFTER_LOGIN)
     } catch (error) {
       reset()
-      setErrorMsg(error instanceof Error ? API_CODES[error.message] : 'Ceva a mers gresit')
+      setErrorMsg(getErrorMessage((error as Error).message))
     }
   })
 

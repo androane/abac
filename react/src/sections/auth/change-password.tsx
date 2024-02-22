@@ -12,7 +12,7 @@ import Stack from '@mui/material/Stack'
 import FormProvider, { RHFTextField } from 'components/hook-form'
 import Iconify from 'components/iconify'
 import { useBoolean } from 'hooks/use-boolean'
-import { API_CODES } from 'utils/api-codes'
+import getErrorMessage from 'utils/api-codes'
 import { useChangePasswordMutation } from 'generated/graphql'
 import { useSnackbar } from 'notistack'
 import { Box, Dialog, DialogContent, DialogTitle, Grid } from '@mui/material'
@@ -60,7 +60,7 @@ const ChangePassword: React.FC<Props> = ({ onClose }) => {
       onClose()
     } catch (error) {
       reset()
-      setErrorMsg(error instanceof Error ? API_CODES[error.message] : 'Ceva a mers gresit')
+      setErrorMsg(getErrorMessage((error as Error).message))
     }
   })
 

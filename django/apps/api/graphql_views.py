@@ -5,6 +5,7 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotAllowed
 from graphene_django.views import HttpError
 from graphene_file_upload.django import FileUploadGraphQLView
+from sentry_sdk import capture_exception
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +37,11 @@ class GraphQLView(FileUploadGraphQLView):
         See: https://github.com/graphql-python/graphene-django/issues/124
         """
 
+        try:
+            operation_name = args[1].get("operationName")
+        except Exception as exc:
+            capture_exception(exc)
+
         graphql_request = self.parse_body(args[0])
         variables = graphql_request.get("variables", "")
         operation_name = graphql_request.get("operationName", "")
@@ -46,6 +52,7 @@ class GraphQLView(FileUploadGraphQLView):
             print("\n", operation_name, "\n")
 
         result = super().execute_graphql_request(*args, **kwargs)
+
         if result and result.errors:
             logger.warning(f"GraphQL Error: {result.errors}")
             for error in result.errors:

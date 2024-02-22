@@ -7,15 +7,6 @@ class ErrorType(graphene.ObjectType):
     message = graphene.String(required=True)
 
 
-def get_graphene_error(message, field=None):
-    return {
-        "error": {
-            "field": field,
-            "message": message,
-        }
-    }
-
-
 class BaseMutation(graphene.Mutation):
     class Meta:
         abstract = True

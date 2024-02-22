@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import graphene
 
+from api.errors import APIException
 from api.graphene.mutations import BaseMutation
 from user.decorators import logged_in_user_required
 from user.graphene.types import UserType
@@ -21,11 +22,14 @@ class LoginUser(BaseMutation):
     user = graphene.Field(UserType)
 
     def mutate(self, info, email, password, **kwargs):
-        request, token, error = login_user(info.context, email, password)
+        try:
+            request, token = login_user(info.context, email, password)
+        except APIException as error:
+            return {"error": {"message": str(error)}}
+
         return {
             "token": token,
             "user": request.user,
-            "error": {"message": error} if error else None,
         }
 
 
@@ -44,8 +48,11 @@ class ChangePassword(BaseMutation):
 
     @logged_in_user_required
     def mutate(self, user, **kwargs):
-        token, error = change_user_password(user, **kwargs)
+        try:
+            token = change_user_password(user, **kwargs)
+        except APIException as error:
+            return {"error": {"message": str(error)}}
+
         return {
             "token": token,
-            "error": {"message": error} if error else None,
         }

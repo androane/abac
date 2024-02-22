@@ -174,6 +174,11 @@ if SENTRY_DSN:
         send_default_pii=True,
     )
 
+# Graphene
+GRAPHENE = {
+    "ATOMIC_MUTATIONS": True,
+}
+
 # Custom settings
 DEFAULT_TIMEZONE = "Europe/Bucharest"
 

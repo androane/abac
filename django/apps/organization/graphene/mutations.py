@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import graphene
 
-from api.graphene.mutations import BaseMutation, get_graphene_error
+from api.graphene.mutations import BaseMutation
 from organization.graphene.types import (
     ClientFileInput,
     ClientType,
@@ -51,10 +51,7 @@ class UpdateClient(BaseMutation):
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        try:
-            client = update_or_create_client(user.organization, **kwargs)
-        except Exception as e:
-            return get_graphene_error(str(e))
+        client = update_or_create_client(user.organization, **kwargs)
 
         return {
             "client": client,
@@ -67,10 +64,7 @@ class DeleteClient(BaseMutation):
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        try:
-            delete_client(user.organization, **kwargs)
-        except Exception as e:
-            return get_graphene_error(str(e))
+        delete_client(user.organization, **kwargs)
 
         return {}
 
@@ -84,10 +78,7 @@ class UpdateClientInvoiceStatus(BaseMutation):
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        try:
-            invoice = update_client_invoice_status(user.organization, **kwargs)
-        except Exception as e:
-            return get_graphene_error(str(e))
+        invoice = update_client_invoice_status(user.organization, **kwargs)
 
         return {
             "invoice": invoice,
@@ -103,10 +94,7 @@ class UpdateClientInvoiceItem(BaseMutation):
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        try:
-            invoice = update_client_invoice_item(user.organization, **kwargs)
-        except Exception as e:
-            return get_graphene_error(str(e))
+        invoice = update_client_invoice_item(user.organization, **kwargs)
 
         return {
             "invoice": invoice,
@@ -121,10 +109,7 @@ class DeleteClientInvoiceItem(BaseMutation):
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        try:
-            delete_client_invoice_item(user.organization, **kwargs)
-        except Exception as e:
-            return get_graphene_error(str(e))
+        delete_client_invoice_item(user.organization, **kwargs)
 
         return {}
 
@@ -138,10 +123,7 @@ class CreateClientFiles(BaseMutation):
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        try:
-            client = create_client_files(user.organization, **kwargs)
-        except Exception as e:
-            return get_graphene_error(str(e))
+        client = create_client_files(user.organization, **kwargs)
 
         return {
             "client": client,
@@ -154,10 +136,7 @@ class DeleteClientFile(BaseMutation):
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        try:
-            delete_client_file(user.organization, **kwargs)
-        except Exception as e:
-            return get_graphene_error(str(e))
+        delete_client_file(user.organization, **kwargs)
 
         return {}
 
@@ -171,10 +150,7 @@ class UpdateClientUser(BaseMutation):
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        try:
-            client_user = update_client_user(user.organization, **kwargs)
-        except Exception as e:
-            return get_graphene_error(str(e))
+        client_user = update_client_user(user.organization, **kwargs)
 
         return {
             "client_user": client_user,
@@ -187,10 +163,7 @@ class DeleteClientUser(BaseMutation):
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        try:
-            delete_client_user(user.organization, **kwargs)
-        except Exception as e:
-            return get_graphene_error(str(e))
+        delete_client_user(user.organization, **kwargs)
 
         return {}
 
@@ -203,12 +176,9 @@ class UpdateOrganizationService(BaseMutation):
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        try:
-            standard_invoice_item = update_standard_invoice_item(
-                user.organization, **kwargs
-            )
-        except Exception as e:
-            return get_graphene_error(str(e))
+        standard_invoice_item = update_standard_invoice_item(
+            user.organization, **kwargs
+        )
 
         return {
             "service": standard_invoice_item,
@@ -221,9 +191,6 @@ class DeleteOrganizationService(BaseMutation):
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        try:
-            delete_standard_invoice_item(user.organization, **kwargs)
-        except Exception as e:
-            return get_graphene_error(str(e))
+        delete_standard_invoice_item(user.organization, **kwargs)
 
         return {}
