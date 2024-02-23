@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import FormProvider, { RHFSelect, RHFTextField } from 'components/hook-form'
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 
 import * as Yup from 'yup'
@@ -112,21 +112,6 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
       })
     }
   })
-
-  const handleDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      const file = acceptedFiles[0]
-
-      const newFile = Object.assign(file, {
-        preview: URL.createObjectURL(file),
-      })
-
-      if (file) {
-        form.setValue('imageUrl', newFile, { shouldValidate: true })
-      }
-    },
-    [form],
-  )
 
   return (
     <FormProvider methods={form} onSubmit={onSubmit}>
