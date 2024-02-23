@@ -19,7 +19,7 @@ import { useBoolean } from 'hooks/use-boolean'
 import ChangePassword from 'sections/auth/change-password'
 import getErrorMessage from 'utils/api-codes'
 
-export default function AccountPopover() {
+const AccountPopover = () => {
   const router = useRouter()
 
   const { user } = useAuthContext()
@@ -112,3 +112,5 @@ export default function AccountPopover() {
     </>
   )
 }
+
+export default AccountPopover

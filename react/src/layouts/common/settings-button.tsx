@@ -8,12 +8,13 @@ import { SxProps, Theme } from '@mui/material/styles'
 import { varHover } from 'components/animate'
 import Iconify from 'components/iconify'
 import { useSettingsContext } from 'components/settings'
+import React from 'react'
 
 type Props = {
   sx?: SxProps<Theme>
 }
 
-export default function SettingsButton({ sx }: Props) {
+const SettingsButton: React.FC<Props> = ({ sx }) => {
   const settings = useSettingsContext()
 
   return (
@@ -58,3 +59,5 @@ export default function SettingsButton({ sx }: Props) {
     </Badge>
   )
 }
+
+export default SettingsButton

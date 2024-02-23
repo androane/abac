@@ -144,7 +144,10 @@ class InvoiceItemInput(graphene.InputObjectType):
 class ClientFileType(DjangoObjectType):
     class Meta:
         model = ClientFile
-        only_fields = ("updated",)
+        only_fields = (
+            "uuid",
+            "updated",
+        )
 
     # Model properties
     url = graphene.NonNull(graphene.String)

@@ -38,6 +38,7 @@ export type ClientFileType = {
   size: Scalars['Int']['output'];
   updated: Scalars['DateTime']['output'];
   url: Scalars['String']['output'];
+  uuid: Scalars['String']['output'];
 };
 
 export type ClientType = {
@@ -451,7 +452,7 @@ export type ClientUserFragment = { __typename?: 'UserType', uuid: string, email:
 
 export type ErrorFragment = { __typename?: 'ErrorType', field?: string | null, message: string };
 
-export type FileFragment = { __typename?: 'ClientFileType', name: string, updated: DateTimeString, url: string, size: number };
+export type FileFragment = { __typename?: 'ClientFileType', uuid: string, name: string, updated: DateTimeString, url: string, size: number };
 
 export type InvoiceItemFragment = { __typename?: 'InvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency?: CurrencyEnum | null, unitPriceType?: UnitPriceTypeEnum | null, quantity: number, itemDate?: DateString | null, description?: string | null, minutesAllocated?: number | null, isRecurring: boolean, total: number, standardInvoiceItem?: { __typename?: 'StandardInvoiceItemType', uuid: string } | null };
 
@@ -486,7 +487,7 @@ export type CreateClientFilesMutationVariables = Exact<{
 }>;
 
 
-export type CreateClientFilesMutation = { __typename?: 'Mutation', createClientFiles?: { __typename?: 'CreateClientFiles', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, files: Array<{ __typename?: 'ClientFileType', name: string, updated: DateTimeString, url: string, size: number }> } | null } | null };
+export type CreateClientFilesMutation = { __typename?: 'Mutation', createClientFiles?: { __typename?: 'CreateClientFiles', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, files: Array<{ __typename?: 'ClientFileType', uuid: string, name: string, updated: DateTimeString, url: string, size: number }> } | null } | null };
 
 export type DeleteClientMutationVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -584,7 +585,7 @@ export type ClientFilesQueryVariables = Exact<{
 }>;
 
 
-export type ClientFilesQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, files: Array<{ __typename?: 'ClientFileType', name: string, updated: DateTimeString, url: string, size: number }> } };
+export type ClientFilesQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, files: Array<{ __typename?: 'ClientFileType', uuid: string, name: string, updated: DateTimeString, url: string, size: number }> } };
 
 export type ClientInvoiceQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -665,6 +666,7 @@ export const ErrorFragmentDoc = gql`
     `;
 export const FileFragmentDoc = gql`
     fragment File on ClientFileType {
+  uuid
   name
   updated
   url

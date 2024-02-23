@@ -13,6 +13,8 @@ import Logo from 'components/logo'
 import { useSettingsContext } from 'components/settings'
 import SvgColor from 'components/svg-color'
 
+import React from 'react'
+import SettingsButton from 'layouts/common/settings-button'
 import AccountPopover from '../common/account-popover'
 import { HEADER, NAV } from '../config-layout'
 
@@ -20,7 +22,7 @@ type Props = {
   onOpenNav?: VoidFunction
 }
 
-export default function Header({ onOpenNav }: Props) {
+const Header: React.FC<Props> = ({ onOpenNav }) => {
   const theme = useTheme()
 
   const settings = useSettingsContext()
@@ -52,6 +54,8 @@ export default function Header({ onOpenNav }: Props) {
         justifyContent="flex-end"
         spacing={{ xs: 0.5, sm: 1 }}
       >
+        <SettingsButton />
+
         <AccountPopover />
       </Stack>
     </>
@@ -97,3 +101,5 @@ export default function Header({ onOpenNav }: Props) {
     </AppBar>
   )
 }
+
+export default Header
