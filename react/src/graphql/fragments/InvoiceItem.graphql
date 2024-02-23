@@ -9,6 +9,7 @@ fragment InvoiceItem on InvoiceItemType {
   description
   minutesAllocated
   isRecurring
+  total
   standardInvoiceItem {
     uuid
   }

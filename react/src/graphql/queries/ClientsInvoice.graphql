@@ -9,5 +9,9 @@ query ClientInvoice($clientUuid: String!, $year: Int, $month: Int) {
     items {
       ...InvoiceItem
     }
+    totalsByCurrency {
+      currency
+      total
+    }
   }
 }

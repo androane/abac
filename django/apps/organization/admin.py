@@ -2,7 +2,13 @@
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 
-from organization.models import Client, ClientFile, Invoice, Organization
+from organization.models import (
+    Client,
+    ClientFile,
+    Invoice,
+    Organization,
+    StandardInvoiceItem,
+)
 
 
 @admin.register(Organization)
@@ -32,7 +38,6 @@ class ClientFileAdmin(admin.TabularInline):
 
 @admin.register(Client)
 class ClientAdmin(SimpleHistoryAdmin):
-    search_fields = ("name",)
     list_display = (
         "name",
         "organization",
@@ -44,5 +49,19 @@ class ClientAdmin(SimpleHistoryAdmin):
         "name",
     ]
     ordering = ("organization__name", "name")
+    list_filter = ("organization__name",)
 
     inlines = [ClientFileAdmin, InvoiceAdmin]
+
+
+@admin.register(StandardInvoiceItem)
+class StandardInvoiceItemAdmin(SimpleHistoryAdmin):
+    list_display = (
+        "name",
+        "organization",
+        "unit_price",
+        "unit_price_currency",
+        "unit_price_type",
+    )
+    ordering = ("organization__name", "name")
+    list_filter = ("organization__name",)

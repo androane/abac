@@ -61,6 +61,7 @@ class InvoiceItemType(DjangoObjectType):
             "quantity",
         )
 
+    total = graphene.Float(required=True)
     unit_price_currency = CurrencyEnumType()
     unit_price_type = UnitPriceTypeEnumType()
 
@@ -86,6 +87,11 @@ class OrganizationType(DjangoObjectType):
         return self.standard_invoice_items.all()
 
 
+class TotalByCurrencyType(graphene.ObjectType):
+    currency = CurrencyEnumType(required=True)
+    total = graphene.Float(required=True)
+
+
 class InvoiceType(DjangoObjectType):
     class Meta:
         model = Invoice
@@ -96,7 +102,19 @@ class InvoiceType(DjangoObjectType):
             "date_sent",
         )
 
+    totals_by_currency = graphene.List(
+        graphene.NonNull(TotalByCurrencyType), required=True
+    )
     items = graphene.List(graphene.NonNull(InvoiceItemType), required=True)
+
+    def resolve_totals_by_currency(self, info, **kwargs):
+        return [
+            {
+                "currency": currency,
+                "total": total,
+            }
+            for currency, total in self.totals_by_currency.items()
+        ]
 
     def resolve_items(self, info, **kwargs):
         return self.items.all()

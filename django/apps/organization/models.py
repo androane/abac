@@ -1,11 +1,18 @@
 # -*- coding: utf-8 -*-
+from collections import defaultdict
 from datetime import date
+from typing import TypedDict
 
 from django.db import models
 
 from core.models import BaseModel
 from core.utils import replace_filename
 from organization.constants import ClientUserRoleEnum, CurrencyEnum, UnitPriceTypeEnum
+
+
+class TotalByCurrency(TypedDict):
+    currency: CurrencyEnum
+    total: float
 
 
 def organization_logo_path(instance, filename):
@@ -140,6 +147,13 @@ class Invoice(BaseModel):
     def date(self) -> date:
         return date(self.year, self.month, 1)
 
+    @property
+    def totals_by_currency(self) -> list[TotalByCurrency]:
+        totals = defaultdict(float)
+        for item in self.items.all():
+            totals[item.unit_price_currency] += item.total
+        return totals
+
 
 class BaseInvoiceItem(BaseModel):
     class Meta:
@@ -153,7 +167,9 @@ class BaseInvoiceItem(BaseModel):
     )
     unit_price_currency = models.CharField(max_length=3, choices=CurrencyEnum.choices)
     unit_price_type = models.CharField(
-        max_length=8, choices=UnitPriceTypeEnum.choices, blank=True, null=True
+        max_length=8,
+        choices=UnitPriceTypeEnum.choices,
+        help_text="The type of the invoice item can be fixed, per hour etc",
     )
 
 
@@ -212,6 +228,15 @@ class InvoiceItem(BaseInvoiceItem):
     @property
     def is_locked(self) -> bool:
         return self.invoice.is_locked
+
+    @property
+    def total(self) -> float:
+        if self.unit_price_type == UnitPriceTypeEnum.FIXED.value:
+            return self.quantity * self.unit_price
+        elif self.unit_price_type == UnitPriceTypeEnum.HOURLY.value:
+            return self.quantity * (self.unit_price * self.minutes_allocated / 60)
+        else:
+            raise Exception(f"Unknown {self.unit_price_currency}")
 
 
 def client_file_path(instance, filename):

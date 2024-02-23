@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual'
-import { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import Card from '@mui/material/Card'
 import Table from '@mui/material/Table'
@@ -7,22 +7,27 @@ import TableBody from '@mui/material/TableBody'
 import TableContainer from '@mui/material/TableContainer'
 import { useSnackbar } from 'components/snackbar'
 import { startOfMonth } from 'date-fns'
+import { styled } from '@mui/material/styles'
 
 import Scrollbar from 'components/scrollbar'
 import {
   TableEmptyRows,
   TableHeadCustom,
   TableNoData,
-  TablePaginationCustom,
   emptyRows,
   getComparator,
   useTable,
 } from 'components/table'
 
 import ResponseHandler from 'components/response-handler'
-import { useClientInvoiceQuery, useDeleteClientInvoiceItemMutation } from 'generated/graphql'
+import {
+  useClientInvoiceQuery,
+  useDeleteClientInvoiceItemMutation,
+  useOrganizationServicesQuery,
+} from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import UpdateInvoiceItem from 'sections/client/invoice-item-update'
+import { Box, TableCell, TableRow } from '@mui/material'
 import InvoiceTableFiltersResult from './invoice-table-filters-result'
 import InvoiceTableRow from './invoice-table-row'
 import InvoiceTableToolbar from './invoice-table-toolbar'
@@ -45,6 +50,15 @@ const TABLE_HEAD = [
   { id: '', width: 88 },
 ]
 
+const TotalsRow = styled(TableRow)(({ theme }) => ({
+  '& td': {
+    textAlign: 'right',
+    borderBottom: 'none',
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+  },
+}))
+
 type InvoiceDetailsCardProps = {
   clientInvoice: APIClientInvoice
   invoiceDate: null | Date
@@ -59,6 +73,7 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
   const showCreateInvoiceItem = useBoolean()
 
   const [deleteInvoiceItem, { loading }] = useDeleteClientInvoiceItemMutation()
+  const servicesResult = useOrganizationServicesQuery()
 
   const [invoiceItemIdToEdit, setInvoiceItemIdToEdit] = useState<null | string>(null)
 
@@ -80,11 +95,6 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
     comparator: getComparator(table.order, table.orderBy),
     filters,
   })
-
-  const dataInPage = dataFiltered.slice(
-    table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
-  )
 
   const canReset = !isEqual(defaultFilters, filters)
 
@@ -116,8 +126,6 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
     })
 
     enqueueSnackbar('Intrarea a fost stearsa cu success!')
-
-    table.onUpdatePageDeleteRow(dataInPage.length)
   }
 
   const handleEditRow = useCallback(
@@ -133,12 +141,19 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
   return (
     <Card>
       {showCreateInvoiceItem.value && (
-        <UpdateInvoiceItem
-          invoiceId={clientInvoice.uuid}
-          invoiceDate={invoiceDate}
-          invoiceItem={clientInvoice.items.find(item => item.uuid === invoiceItemIdToEdit)}
-          onClose={showCreateInvoiceItem.onFalse}
-        />
+        <ResponseHandler {...servicesResult}>
+          {({ organizationServices }) => {
+            return (
+              <UpdateInvoiceItem
+                organizationServices={organizationServices}
+                invoiceId={clientInvoice.uuid}
+                invoiceDate={invoiceDate}
+                invoiceItem={clientInvoice.items.find(item => item.uuid === invoiceItemIdToEdit)}
+                onClose={showCreateInvoiceItem.onFalse}
+              />
+            )
+          }}
+        </ResponseHandler>
       )}
       <InvoiceTableToolbar
         onAddInvoiceItem={() => handleEditRow(null)}
@@ -194,20 +209,23 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
               />
 
               <TableNoData notFound={notFound} />
+              <Box mt={5} />
+              {clientInvoice.totalsByCurrency.map(({ currency, total }, index) => {
+                return (
+                  <TotalsRow key={currency}>
+                    <TableCell colSpan={7} />
+                    <TableCell sx={{ typography: 'subtitle1' }}>{index === 0 && 'Total'}</TableCell>
+                    <TableCell width={140} sx={{ typography: 'subtitle1' }}>
+                      {total.toFixed(2)} {currency}
+                    </TableCell>
+                  </TotalsRow>
+                )
+              })}
+              <Box mb={5} />
             </TableBody>
           </Table>
         </Scrollbar>
       </TableContainer>
-
-      <TablePaginationCustom
-        count={dataFiltered.length}
-        page={table.page}
-        rowsPerPage={table.rowsPerPage}
-        onPageChange={table.onChangePage}
-        onRowsPerPageChange={table.onChangeRowsPerPage}
-        dense={table.dense}
-        onChangeDense={table.onChangeDense}
-      />
     </Card>
   )
 }
@@ -216,7 +234,7 @@ type Props = {
   clientId: string
 }
 
-export default function InvoiceDetailsView({ clientId }: Props) {
+const InvoiceDetailsView: React.FC<Props> = ({ clientId }) => {
   const [invoiceDate, setInvoiceDate] = useState<null | Date>(startOfMonth(new Date()))
 
   const result = useClientInvoiceQuery({
@@ -269,3 +287,5 @@ function applyFilter({
 
   return inputData
 }
+
+export default InvoiceDetailsView

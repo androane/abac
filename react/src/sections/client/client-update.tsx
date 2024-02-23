@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import FormProvider, { RHFSelect, RHFTextField, RHFUploadAvatar } from 'components/hook-form'
+import FormProvider, { RHFSelect, RHFTextField } from 'components/hook-form'
 import { useCallback, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 
@@ -9,7 +9,6 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 
 import { useRouter } from 'routes/hooks'
@@ -22,7 +21,6 @@ import {
   useUpdateClientMutation,
   ClientFragmentDoc,
 } from 'generated/graphql'
-import { fData } from 'utils/format-number'
 import { useAuthContext } from 'auth/hooks'
 import getErrorMessage from 'utils/api-codes'
 import { APIClient } from './types'
@@ -133,33 +131,6 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
   return (
     <FormProvider methods={form} onSubmit={onSubmit}>
       <Grid container spacing={3}>
-        <Grid xs={12} md={4}>
-          <Card sx={{ pt: 10, pb: 5, px: 3 }}>
-            <Box sx={{ mb: 5 }}>
-              <RHFUploadAvatar
-                name="imageUrl"
-                maxSize={3145728}
-                onDrop={handleDrop}
-                helperText={
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      mt: 3,
-                      mx: 'auto',
-                      display: 'block',
-                      textAlign: 'center',
-                      color: 'text.disabled',
-                    }}
-                  >
-                    Sunt permise *.jpeg, *.jpg, *.png, *.gif
-                    <br /> dimensiunea maxima de {fData(3145728)}
-                  </Typography>
-                }
-              />
-            </Box>
-          </Card>
-        </Grid>
-
         <Grid xs={12} md={8}>
           <Card sx={{ p: 3 }}>
             <Box
@@ -181,7 +152,7 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
                       label="Responsabil"
                       InputLabelProps={{ shrink: true }}
                     >
-                      <option key="null" value="" />
+                      <option value="" />
                       {clientProgramManagers.map(pm => (
                         <option key={pm.uuid} value={pm.uuid}>
                           {pm.name}

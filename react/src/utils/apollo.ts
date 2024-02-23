@@ -9,12 +9,12 @@ import { withScope, captureMessage } from '@sentry/browser'
 import { GRAPHQL_ENDPOINT } from 'config/config-env'
 import { AUTH_STORAGE_KEY } from 'config/config-global'
 import { setSession } from 'auth/context/utils'
+import { GENERIC_ERROR_MESSAGE } from 'utils/api-codes'
 
 enum GraphQLErrorsEnum {
   UNAUTHORIZED_ACCESS = 'UNAUTHORIZED_ACCESS',
   FORBIDDEN = 'FORBIDDEN',
 }
-const ERROR_MESSAGE = 'Ceva a mers gresit! Am fost alertati si vom fixa acest lucru!'
 
 const errorLink = onError(result => {
   withScope(scope => {
@@ -71,7 +71,7 @@ const errorLink = onError(result => {
         JSON.parse((networkError as { bodyText: string }).bodyText)
       } catch (e) {
         // If not replace parsing error message with real one
-        networkError.message = ERROR_MESSAGE
+        networkError.message = GENERIC_ERROR_MESSAGE
       }
     }
   })

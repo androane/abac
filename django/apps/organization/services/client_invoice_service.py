@@ -4,7 +4,7 @@ from typing import Optional
 import pendulum
 from django.conf import settings
 
-from organization.constants import InvoiceStatusEnum
+from organization.constants import InvoiceStatusEnum, UnitPriceTypeEnum
 from organization.graphene.types import InvoiceItemInput
 from organization.models import Client, Invoice, InvoiceItem, Organization
 
@@ -94,6 +94,7 @@ def update_client_invoice_item(
             "unit_price_currency",
         ):
             setattr(invoice_item, field, getattr(invoice_item_input, field))
+        invoice_item.unit_price_type = UnitPriceTypeEnum.FIXED.value
 
     for field in (
         "description",

@@ -114,7 +114,7 @@ const InvoiceTableRow: React.FC<Props> = ({
             }}
           />
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell align="center" sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
             primary={row.quantity}
             secondary=""
@@ -125,9 +125,9 @@ const InvoiceTableRow: React.FC<Props> = ({
             }}
           />
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={`${row.unitPrice * row.quantity} ${row.unitPriceCurrency}`}
+            primary={`${row.total.toFixed(2)} ${row.unitPriceCurrency}`}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
