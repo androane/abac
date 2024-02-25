@@ -54,7 +54,10 @@ const Login = () => {
 
       router.push(returnTo || PATH_AFTER_LOGIN)
     } catch (error) {
-      reset()
+      reset({
+        email: '',
+        password: '',
+      })
       setErrorMsg(getErrorMessage((error as Error).message))
     }
   })

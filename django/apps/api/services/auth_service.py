@@ -66,7 +66,7 @@ def get_token_from_request(request) -> Optional[str]:
     return token
 
 
-def get_authorization_from_jwt_token(token: str) -> Authorization:
+def get_authorization_from_jwt_token(token: Optional[str]) -> Authorization:
     """
     The token must not have a prefix, it should be just the JWT string.
     """

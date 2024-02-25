@@ -34,7 +34,9 @@ const ChangePassword: React.FC<Props> = ({ onClose }) => {
     resolver: yupResolver(
       Yup.object().shape({
         currentPassword: Yup.string().required('Parola este obligatorie'),
-        newPassword1: Yup.string().required('Parola este obligatorie'),
+        newPassword1: Yup.string()
+          .required('Parola este obligatorie')
+          .min(8, 'Parola trebuie sa aiba minim 8 caractere'),
         newPassword2: Yup.string()
           .required('Parola este obligatorie')
           .oneOf([Yup.ref('newPassword1')], 'Parolele nu sunt identice'),

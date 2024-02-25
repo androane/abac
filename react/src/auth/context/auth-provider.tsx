@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useMemo, useReducer } from 'react'
 
-import { AUTH_STORAGE_KEY } from 'config/config-global'
-import { useCurrentUserQuery, useLoginMutation, useLogoutMutation } from 'generated/graphql'
+import { useLoginMutation, useLogoutMutation } from 'generated/graphql'
 import { ActionMapType, AuthStateType, AuthUserType } from '../types'
 import { AuthContext } from './auth-context'
-import { setSession } from './utils'
+import { getSession, setSession } from './utils'
 
 enum Types {
   INITIAL = 'INITIAL',
@@ -67,25 +66,18 @@ export function AuthProvider({ children }: Props) {
   const [state, dispatch] = useReducer(reducer, initialState)
   const [loginMutation] = useLoginMutation()
   const [logoutMutation] = useLogoutMutation()
-  const currentUserResponse = useCurrentUserQuery()
 
   const initialize = useCallback(async () => {
     try {
-      const accessToken = sessionStorage.getItem(AUTH_STORAGE_KEY)
+      const { accessToken, user } = getSession()
 
       if (accessToken) {
-        if (currentUserResponse.loading) {
-          dispatch({
-            type: Types.FETCHING_CURRENT_USER,
-          })
-        } else {
-          dispatch({
-            type: Types.INITIAL,
-            payload: {
-              user: currentUserResponse.data?.currentUser,
-            },
-          })
-        }
+        dispatch({
+          type: Types.INITIAL,
+          payload: {
+            user,
+          },
+        })
       } else {
         dispatch({
           type: Types.INITIAL,
@@ -95,7 +87,6 @@ export function AuthProvider({ children }: Props) {
         })
       }
     } catch (error) {
-      console.error(error)
       dispatch({
         type: Types.INITIAL,
         payload: {
@@ -103,7 +94,7 @@ export function AuthProvider({ children }: Props) {
         },
       })
     }
-  }, [currentUserResponse])
+  }, [])
 
   useEffect(() => {
     initialize()
@@ -123,7 +114,7 @@ export function AuthProvider({ children }: Props) {
         throw new Error(error?.message)
       }
 
-      setSession(token)
+      setSession(token, user)
 
       dispatch({
         type: Types.LOGIN,
@@ -139,7 +130,7 @@ export function AuthProvider({ children }: Props) {
   const logout = useCallback(async () => {
     await logoutMutation()
 
-    setSession(null)
+    setSession(null, null)
     dispatch({
       type: Types.LOGOUT,
     })

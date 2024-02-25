@@ -15,7 +15,6 @@ import { useSettingsContext } from '../context'
 import BaseOptions from './base-option'
 
 const SettingsDrawer = () => {
-  console.log('settings')
   const theme = useTheme()
 
   const settings = useSettingsContext()
