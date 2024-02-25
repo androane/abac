@@ -47,7 +47,7 @@ const errorLink = onError(result => {
         if (
           [GraphQLErrorsEnum.UNAUTHORIZED_ACCESS, GraphQLErrorsEnum.FORBIDDEN].includes(errorCode)
         ) {
-          setSession(null)
+          setSession(null, null)
         }
       })
     }
@@ -86,7 +86,7 @@ const logoutAfterware = onError(({ networkError }) => {
     'statusCode' in networkError &&
     [401, 403].includes(networkError.statusCode)
   ) {
-    setSession(null)
+    setSession(null, null)
   }
 })
 
