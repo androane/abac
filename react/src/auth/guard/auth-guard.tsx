@@ -11,7 +11,7 @@ type Props = {
   children: React.ReactNode
 }
 
-export default function AuthGuard({ children }: Props) {
+const AuthGuard: React.FC<Props> = ({ children }) => {
   const { loading } = useAuthContext()
 
   return <>{loading ? <SplashScreen /> : <Container>{children}</Container>}</>
@@ -51,3 +51,5 @@ function Container({ children }: Props) {
 
   return <>{children}</>
 }
+
+export default AuthGuard

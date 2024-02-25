@@ -25,3 +25,5 @@ urlpatterns = [
         ),
     ),
 ]
+
+handler404 = "core.views.handler_404"

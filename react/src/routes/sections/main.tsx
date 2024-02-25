@@ -5,7 +5,7 @@ import CompactLayout from 'layouts/compact'
 
 import { SplashScreen } from 'components/loading-screen'
 
-const Page404 = lazy(() => import('pages/404'))
+const View404 = lazy(() => import('sections/error/not-found-view'))
 
 export const mainRoutes = [
   {
@@ -16,6 +16,6 @@ export const mainRoutes = [
         </Suspense>
       </CompactLayout>
     ),
-    children: [{ path: '404', element: <Page404 /> }],
+    children: [{ path: '404', element: <View404 /> }],
   },
 ]

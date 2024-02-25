@@ -7,7 +7,7 @@ import { useSettingsContext } from 'components/settings'
 
 import UpdateClient from '../client-update'
 
-export default function ClientCreateView() {
+const ClientCreateView = () => {
   const settings = useSettingsContext()
 
   return (
@@ -34,3 +34,5 @@ export default function ClientCreateView() {
     </Container>
   )
 }
+
+export default ClientCreateView

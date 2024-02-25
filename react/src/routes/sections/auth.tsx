@@ -1,17 +1,20 @@
-import { lazy } from 'react';
+import { lazy } from 'react'
 
-import { GuestGuard } from 'auth/guard';
+import { GuestGuard } from 'auth/guard'
 import AuthLayout from 'layouts/auth'
+import { Helmet } from 'react-helmet-async'
 
-
-const LoginPage = lazy(() => import('pages/auth/login'));
+const LoginView = lazy(() => import('sections/auth/login'))
 
 const auth = {
   path: 'login',
   element: (
     <GuestGuard>
       <AuthLayout>
-        <LoginPage />
+        <Helmet>
+          <title>ABAC Soft</title>
+        </Helmet>
+        <LoginView />
       </AuthLayout>
     </GuestGuard>
   ),
@@ -22,4 +25,4 @@ export const authRoutes = [
     path: 'auth',
     children: [auth],
   },
-];
+]

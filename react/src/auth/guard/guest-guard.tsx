@@ -11,13 +11,13 @@ type Props = {
   children: React.ReactNode
 }
 
-export default function GuestGuard({ children }: Props) {
+const GuestGuard: React.FC<Props> = ({ children }) => {
   const { loading } = useAuthContext()
 
   return <>{loading ? <SplashScreen /> : <Container>{children}</Container>}</>
 }
 
-function Container({ children }: Props) {
+const Container: React.FC<Props> = ({ children }) => {
   const router = useRouter()
 
   const searchParams = useSearchParams()
@@ -38,3 +38,5 @@ function Container({ children }: Props) {
 
   return <>{children}</>
 }
+
+export default GuestGuard

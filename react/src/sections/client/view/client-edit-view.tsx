@@ -7,7 +7,7 @@ import ResponseHandler from 'components/response-handler'
 import { useSettingsContext } from 'components/settings'
 import { useClientsQuery } from 'generated/graphql'
 import { useCallback, useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import { LANDING_PAGE, paths } from 'routes/paths'
 import FilesList from '../files-list'
 import UsersList from '../users-list'
@@ -44,11 +44,11 @@ const TABS = [
   },
 ]
 
-type Props = {
-  id: string
-}
+const ClientEditView = () => {
+  const params = useParams()
 
-export default function UserEditView({ id }: Props) {
+  const { id } = params
+
   const settings = useSettingsContext()
 
   const result = useClientsQuery()
@@ -114,3 +114,5 @@ export default function UserEditView({ id }: Props) {
     </Container>
   )
 }
+
+export default ClientEditView

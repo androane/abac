@@ -7,30 +7,30 @@ import DashboardLayout from 'layouts/dashboard'
 import { LoadingScreen } from 'components/loading-screen'
 import { ROOTS } from 'routes/paths'
 
-const ClientListPage = lazy(() => import('pages/client/list'))
-const ClientCreatePage = lazy(() => import('pages/client/new'))
-const ClientEditPage = lazy(() => import('pages/client/edit'))
-const SettingsServicePage = lazy(() => import('pages/settings/service/list'))
+const ClientListView = lazy(() => import('sections/client/view/client-list-view'))
+const ClientCreateView = lazy(() => import('sections/client/view/client-create-view'))
+const ClientEditView = lazy(() => import('sections/client/view/client-edit-view'))
+const SettingsServiceView = lazy(() => import('sections/settings/view/service-list-view'))
 
 const clients = {
   path: ROOTS.CLIENT,
   children: [
-    { element: <ClientListPage />, index: true },
-    { path: 'list', element: <ClientListPage /> },
-    { path: 'new', element: <ClientCreatePage /> },
-    { path: ':id/edit', element: <ClientEditPage /> },
+    { element: <ClientListView />, index: true },
+    { path: 'list', element: <ClientListView /> },
+    { path: 'new', element: <ClientCreateView /> },
+    { path: ':id/edit', element: <ClientEditView /> },
   ],
 }
 
 const settings = {
   path: ROOTS.SETTINGS,
   children: [
-    { element: <SettingsServicePage />, index: true },
+    { element: <SettingsServiceView />, index: true },
     {
       path: 'service',
       children: [
-        { element: <SettingsServicePage />, index: true },
-        { path: 'list', element: <SettingsServicePage /> },
+        { element: <SettingsServiceView />, index: true },
+        { path: 'list', element: <SettingsServiceView /> },
       ],
     },
   ],

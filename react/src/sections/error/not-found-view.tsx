@@ -9,7 +9,7 @@ import { PageNotFoundIllustration } from 'assets/illustrations'
 
 import { MotionContainer, varBounce } from 'components/animate'
 
-export default function NotFoundView() {
+const NotFoundView = () => {
   return (
     <MotionContainer>
       <m.div variants={varBounce().in}>
@@ -39,3 +39,5 @@ export default function NotFoundView() {
     </MotionContainer>
   )
 }
+
+export default NotFoundView
