@@ -8,6 +8,7 @@ from organization.models import (
     Invoice,
     Organization,
     StandardInvoiceItem,
+    StandardInvoiceItemCategory,
 )
 
 
@@ -65,3 +66,8 @@ class StandardInvoiceItemAdmin(SimpleHistoryAdmin):
     )
     ordering = ("organization__name", "name")
     list_filter = ("organization__name",)
+
+
+@admin.register(StandardInvoiceItemCategory)
+class StandardInvoiceItemCategoryAdmin(SimpleHistoryAdmin):
+    list_display = ("name",)

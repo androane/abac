@@ -27,6 +27,7 @@ from organization.services.client_users_service import (
     get_client_program_managers,
     get_client_users,
 )
+from organization.services.organization_invoice_service import get_organization_services
 from user.decorators import logged_in_user_required
 from user.graphene.types import UserType
 from user.models import User
@@ -101,7 +102,7 @@ class Query(graphene.ObjectType):
 
     @logged_in_user_required
     def resolve_organization_services(info, user: User, **kwargs):
-        return user.organization.standard_invoice_items.all()
+        return get_organization_services(user.organization, **kwargs)
 
 
 class Mutation(graphene.ObjectType):

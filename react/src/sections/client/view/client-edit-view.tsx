@@ -73,7 +73,7 @@ const ClientEditView = () => {
                 heading={client.name}
                 links={[
                   {
-                    name: 'Pagina Principala',
+                    name: 'Pagina Principală',
                     href: LANDING_PAGE,
                   },
                   {
@@ -81,7 +81,7 @@ const ClientEditView = () => {
                     href: paths.app.client.list,
                   },
                   {
-                    name: 'Lista',
+                    name: 'Listă',
                     href: paths.app.client.list,
                   },
                   { name: client.name },

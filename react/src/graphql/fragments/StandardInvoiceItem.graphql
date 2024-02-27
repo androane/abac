@@ -4,4 +4,8 @@ fragment StandardInvoiceItem on StandardInvoiceItemType {
   unitPrice
   unitPriceCurrency
   unitPriceType
+  category {
+    uuid
+    code
+  }
 }

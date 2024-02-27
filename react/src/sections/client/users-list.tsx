@@ -72,7 +72,7 @@ const UserListCard: React.FC<CardProps> = ({ clientId, users }) => {
       },
     })
 
-    enqueueSnackbar('Persoana de Contact a fost stearsa cu success!')
+    enqueueSnackbar('Persoana de Contact a fost ștearsă!')
 
     table.onUpdatePageDeleteRow(dataInPage.length)
   }

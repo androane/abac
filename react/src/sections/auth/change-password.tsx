@@ -36,7 +36,7 @@ const ChangePassword: React.FC<Props> = ({ onClose }) => {
         currentPassword: Yup.string().required('Parola este obligatorie'),
         newPassword1: Yup.string()
           .required('Parola este obligatorie')
-          .min(8, 'Parola trebuie sa aiba minim 8 caractere'),
+          .min(8, 'Parola trebuie să aibă minim 8 caractere'),
         newPassword2: Yup.string()
           .required('Parola este obligatorie')
           .oneOf([Yup.ref('newPassword1')], 'Parolele nu sunt identice'),
@@ -57,7 +57,7 @@ const ChangePassword: React.FC<Props> = ({ onClose }) => {
       if (response.data?.changePassword?.error) {
         throw new Error(response.data.changePassword.error.message)
       }
-      enqueueSnackbar('Parola a fost schimbata cu success')
+      enqueueSnackbar('Parola a fost schimbată!')
       reset()
       onClose()
     } catch (error) {
@@ -80,7 +80,7 @@ const ChangePassword: React.FC<Props> = ({ onClose }) => {
         >
           <RHFTextField
             name="currentPassword"
-            label="Parola Actuala"
+            label="Parola Actuală"
             type={password.value ? 'text' : 'password'}
             InputProps={{
               endAdornment: (
@@ -95,7 +95,7 @@ const ChangePassword: React.FC<Props> = ({ onClose }) => {
           <div />
           <RHFTextField
             name="newPassword1"
-            label="Alege o Parola Noua"
+            label="Alege o Parolă Nouă"
             type={password.value ? 'text' : 'password'}
             InputProps={{
               endAdornment: (
@@ -109,7 +109,7 @@ const ChangePassword: React.FC<Props> = ({ onClose }) => {
           />
           <RHFTextField
             name="newPassword2"
-            label="Confirma Parola Noua"
+            label="Confirmă Parola Nouă"
             type={password.value ? 'text' : 'password'}
             InputProps={{
               endAdornment: (
@@ -132,7 +132,7 @@ const ChangePassword: React.FC<Props> = ({ onClose }) => {
           variant="contained"
           loading={loading}
         >
-          Schimba Parola
+          Schimbă Parola
         </LoadingButton>
       </Stack>
     </Stack>
@@ -148,7 +148,7 @@ const ChangePassword: React.FC<Props> = ({ onClose }) => {
         sx: { maxWidth: 720 },
       }}
     >
-      <DialogTitle>Schimba Parola</DialogTitle>
+      <DialogTitle>Schimbare Parolă</DialogTitle>
       <DialogContent>
         {!!errorMsg && (
           <Alert severity="error" sx={{ mb: 3 }}>

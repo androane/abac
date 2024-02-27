@@ -72,9 +72,9 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
   const defaultFilters = useMemo(
     () => ({
       name: '',
-      programManagerId: user?.uuid,
+      programManagerId: '',
     }),
-    [user?.uuid],
+    [],
   )
   const [filters, setFilters] = useState(defaultFilters)
 
@@ -118,7 +118,7 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
       },
     })
 
-    enqueueSnackbar('Clientul a fost sters cu success!')
+    enqueueSnackbar('Clientul a fost șters!')
 
     table.onUpdatePageDeleteRow(dataInPage.length)
   }
@@ -221,9 +221,9 @@ const ClientListView = () => {
       <CustomBreadcrumbs
         heading="Lista Clienti"
         links={[
-          { name: 'Pagina Principala', href: LANDING_PAGE },
+          { name: 'Pagina Principală', href: LANDING_PAGE },
           { name: 'Clienti', href: paths.app.client.list },
-          { name: 'Lista' },
+          { name: 'Listă' },
         ]}
         action={
           <Button

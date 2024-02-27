@@ -9,7 +9,7 @@ import { NavSectionMini } from 'components/nav-section'
 import { useAuthContext } from 'auth/hooks/use-auth-context'
 import NavToggleButton from '../common/nav-toggle-button'
 import { NAV } from '../config-layout'
-import { useNavData } from './config-navigation'
+import useNavData from './config-navigation'
 
 export default function NavMini() {
   const { user } = useAuthContext()

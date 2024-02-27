@@ -12,7 +12,7 @@ import Scrollbar from 'components/scrollbar'
 import { useAuthContext } from 'auth/hooks'
 import HeaderShadow from '../common/header-shadow'
 import { HEADER } from '../config-layout'
-import { useNavData } from './config-navigation'
+import useNavData from './config-navigation'
 
 function NavHorizontal() {
   const theme = useTheme()

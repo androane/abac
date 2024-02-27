@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from organization.graphene.types import StandardInvoiceItemInput
-from organization.models import Organization, StandardInvoiceItem
+from organization.models import (
+    Organization,
+    StandardInvoiceItem,
+    StandardInvoiceItemCategory,
+)
 
 
 def update_standard_invoice_item(
@@ -11,7 +15,12 @@ def update_standard_invoice_item(
             uuid=standard_invoice_item_input.uuid
         )
     else:
-        standard_invoice_item = StandardInvoiceItem(organization=organization)
+        category = StandardInvoiceItemCategory.objects.get(
+            code=standard_invoice_item_input.category_code
+        )
+        standard_invoice_item = StandardInvoiceItem(
+            organization=organization, category=category
+        )
 
     attrs = (
         "name",
@@ -31,3 +40,7 @@ def update_standard_invoice_item(
 
 def delete_standard_invoice_item(organization: Organization, uuid: str) -> None:
     organization.standard_invoice_items.get(uuid=uuid).delete()
+
+
+def get_organization_services(organization: Organization) -> list[StandardInvoiceItem]:
+    return organization.standard_invoice_items.all()

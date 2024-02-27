@@ -36,20 +36,23 @@ import ServiceTableRow from 'sections/settings/service-table-row'
 import AddButton from 'components/add-button'
 import { useBoolean } from 'hooks/use-boolean'
 import UpdateService from 'sections/settings/service-update'
+import { Navigate, useSearchParams } from 'react-router-dom'
+import { CATEGORY_CODE_TO_LABEL } from 'sections/settings/constants'
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Nume' },
-  { id: 'unitPrice', label: 'Pret' },
+  { id: 'unitPrice', label: 'Cost' },
   { id: 'unitPriceCurrency', label: 'Moneda' },
   { id: 'unitPriceType', label: 'Tip tarif' },
   { id: '', width: 88 },
 ]
 
 type Props = {
+  categoryCode: string
   services: StandardInvoiceItemFragment[]
 }
 
-const ServiceListCard: React.FC<Props> = ({ services }) => {
+const ServiceList: React.FC<Props> = ({ services, categoryCode }) => {
   const showCreateService = useBoolean()
   const [deleteService, { loading }] = useDeleteOrganizationServiceMutation()
   const [serviceIdToEdit, setServiceIdToEdit] = useState<null | string>(null)
@@ -116,7 +119,7 @@ const ServiceListCard: React.FC<Props> = ({ services }) => {
       },
     })
 
-    enqueueSnackbar('Serviciul a fost sters cu success!')
+    enqueueSnackbar('Serviciul a fost șters!')
 
     showCreateService.onFalse()
 
@@ -144,6 +147,7 @@ const ServiceListCard: React.FC<Props> = ({ services }) => {
       <Card>
         {showCreateService.value && (
           <UpdateService
+            categoryCode={categoryCode}
             service={services.find(_ => _.uuid === serviceIdToEdit)}
             onClose={showCreateService.onFalse}
           />
@@ -213,17 +217,27 @@ const ServiceListCard: React.FC<Props> = ({ services }) => {
 }
 
 const ServiceListView = () => {
+  const [searchParams] = useSearchParams()
+
   const settings = useSettingsContext()
+  const categoryCode = searchParams.get('c')
+
   const result = useOrganizationServicesQuery()
+
+  if (!categoryCode) {
+    return <Navigate replace to={LANDING_PAGE} />
+  }
+
+  const label = CATEGORY_CODE_TO_LABEL[categoryCode as keyof typeof CATEGORY_CODE_TO_LABEL]
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Lista Servicii"
+        heading={`Servicii ${label}`}
         links={[
-          { name: 'Pagina Principala', href: LANDING_PAGE },
+          { name: 'Pagina Principală', href: LANDING_PAGE },
           { name: 'Servicii', href: paths.app.settings.service.list },
-          { name: 'Lista' },
+          { name: label },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -232,7 +246,12 @@ const ServiceListView = () => {
 
       <ResponseHandler {...result}>
         {({ organizationServices }) => {
-          return <ServiceListCard services={organizationServices} />
+          return (
+            <ServiceList
+              services={organizationServices.filter(s => s.category?.code === categoryCode)}
+              categoryCode={categoryCode}
+            />
+          )
         }}
       </ResponseHandler>
     </Container>

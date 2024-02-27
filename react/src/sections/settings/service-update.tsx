@@ -19,22 +19,23 @@ import {
   UnitPriceTypeEnum,
   StandardInvoiceItemFragmentDoc,
 } from 'generated/graphql'
-import { UNIT_PRICE_TYPE_LABELS } from 'sections/settings/constants'
+import { CATEGORY_CODE_TO_LABEL, UNIT_PRICE_TYPE_LABELS } from 'sections/settings/constants'
 import getErrorMessage from 'utils/api-codes'
 
 type Props = {
+  categoryCode: string
   service?: StandardInvoiceItemFragment
   onClose: () => void
 }
 
-const UpdateService: React.FC<Props> = ({ service, onClose }) => {
+const UpdateService: React.FC<Props> = ({ categoryCode, service, onClose }) => {
   const [updateOrganizationService, { loading }] = useUpdateOrganizationServiceMutation()
   const { enqueueSnackbar } = useSnackbar()
 
   const defaultValues = useMemo(
     () => ({
       name: service?.name || '',
-      unitPrice: service?.unitPrice,
+      unitPrice: service?.unitPrice || undefined,
       unitPriceCurrency: service?.unitPriceCurrency || CurrencyEnum.RON,
       unitPriceType: service?.unitPriceType || UnitPriceTypeEnum.HOURLY,
     }),
@@ -63,6 +64,7 @@ const UpdateService: React.FC<Props> = ({ service, onClose }) => {
         variables: {
           standardInvoiceItemInput: {
             uuid: service?.uuid,
+            categoryCode,
             name: data.name,
             unitPrice: data.unitPrice || 0,
             unitPriceCurrency: data.unitPriceCurrency,
@@ -107,7 +109,9 @@ const UpdateService: React.FC<Props> = ({ service, onClose }) => {
       }}
     >
       <FormProvider methods={form} onSubmit={onSubmit}>
-        <DialogTitle>Serviciu</DialogTitle>
+        <DialogTitle>
+          Serviciu {CATEGORY_CODE_TO_LABEL[categoryCode as keyof typeof CATEGORY_CODE_TO_LABEL]}
+        </DialogTitle>
         <DialogContent>
           <br />
           <Box

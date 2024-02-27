@@ -16,7 +16,7 @@ const ClientCreateView = () => {
         heading="Adaugă un Client Nou"
         links={[
           {
-            name: 'Pagina Principala',
+            name: 'Pagina Principală',
             href: LANDING_PAGE,
           },
           {

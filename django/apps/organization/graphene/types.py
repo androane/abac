@@ -20,6 +20,7 @@ from organization.models import (
     InvoiceItem,
     Organization,
     StandardInvoiceItem,
+    StandardInvoiceItemCategory,
 )
 from user.graphene.types import UserType
 
@@ -27,6 +28,16 @@ CurrencyEnumType = graphene.Enum.from_enum(CurrencyEnum)
 UnitPriceTypeEnumType = graphene.Enum.from_enum(UnitPriceTypeEnum)
 InvoiceStatusEnumType = graphene.Enum.from_enum(InvoiceStatusEnum)
 ClientUserRoleEnumType = graphene.Enum.from_enum(ClientUserRoleEnum)
+
+
+class StandardInvoiceItemCategoryType(DjangoObjectType):
+    class Meta:
+        model = StandardInvoiceItemCategory
+        only_fields = (
+            "uuid",
+            "name",
+            "code",
+        )
 
 
 class StandardInvoiceItemType(DjangoObjectType):
@@ -38,6 +49,7 @@ class StandardInvoiceItemType(DjangoObjectType):
             "unit_price",
             "unit_price_currency",
             "unit_price_type",
+            "category",
         )
 
     unit_price_currency = CurrencyEnumType()
@@ -126,6 +138,7 @@ class StandardInvoiceItemInput(graphene.InputObjectType):
     unit_price = graphene.Int(required=True)
     unit_price_currency = CurrencyEnumType(required=True)
     unit_price_type = UnitPriceTypeEnumType(required=True)
+    category_code = graphene.String(required=True)
 
 
 class InvoiceItemInput(graphene.InputObjectType):

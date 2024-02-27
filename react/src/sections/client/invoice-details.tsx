@@ -125,7 +125,7 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
       },
     })
 
-    enqueueSnackbar('Intrarea a fost stearsa cu success!')
+    enqueueSnackbar('Intrarea a fost ștearsă!')
   }
 
   const handleEditRow = useCallback(

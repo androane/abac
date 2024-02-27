@@ -2,30 +2,42 @@ import { paths } from 'routes/paths'
 
 import SvgColor from 'components/svg-color'
 import SettingsIcon from '@mui/icons-material/Settings'
+import { CATEGORY_CODE_TO_LABEL } from 'sections/settings/constants'
 
 const icon = (name: string) => (
   <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
 )
 
-export function useNavData() {
+const CATEGORY_CODES = ['accounting', 'hr']
+
+const useNavData = () => {
   const data = [
     {
       subheader: 'Gestiune',
       items: [
         {
-          title: 'Clienti',
+          title: 'Clienți',
           path: paths.app.client.root,
           icon: icon('ic_user'),
           children: [
-            { title: 'Lista', path: paths.app.client.list },
+            { title: 'Listă', path: paths.app.client.list },
             { title: 'Adaugă', path: paths.app.client.new },
           ],
         },
         {
-          title: 'Configurari',
+          title: 'Configurări',
           path: paths.app.settings.root,
           icon: <SettingsIcon />,
-          children: [{ title: 'Servicii', path: paths.app.settings.service.list }],
+          children: [
+            {
+              title: 'Servicii',
+              path: paths.app.settings.root,
+              children: CATEGORY_CODES.map(code => ({
+                title: CATEGORY_CODE_TO_LABEL[code as keyof typeof CATEGORY_CODE_TO_LABEL],
+                path: `${paths.app.settings.service.list}?c=${code}`,
+              })),
+            },
+          ],
         },
       ],
     },
@@ -33,3 +45,5 @@ export function useNavData() {
 
   return data
 }
+
+export default useNavData

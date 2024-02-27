@@ -33,7 +33,7 @@ const FilesList: React.FC<Props> = ({ clientId }) => {
       },
     })
 
-    enqueueSnackbar('Documentul a fost stears')
+    enqueueSnackbar('Documentul a fost șters!')
   }
 
   return (

@@ -370,7 +370,15 @@ export type QueryClientUsersArgs = {
   clientUuid: Scalars['String']['input'];
 };
 
+export type StandardInvoiceItemCategoryType = {
+  __typename?: 'StandardInvoiceItemCategoryType';
+  code: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  uuid: Scalars['String']['output'];
+};
+
 export type StandardInvoiceItemInput = {
+  categoryCode: Scalars['String']['input'];
   name: Scalars['String']['input'];
   unitPrice: Scalars['Int']['input'];
   unitPriceCurrency: CurrencyEnum;
@@ -380,6 +388,7 @@ export type StandardInvoiceItemInput = {
 
 export type StandardInvoiceItemType = {
   __typename?: 'StandardInvoiceItemType';
+  category?: Maybe<StandardInvoiceItemCategoryType>;
   /** Name of the invoice item */
   name: Scalars['String']['output'];
   /** Price of the invoice item per unit type */
@@ -458,7 +467,7 @@ export type InvoiceItemFragment = { __typename?: 'InvoiceItemType', uuid: string
 
 export type ProgramManagerFragment = { __typename?: 'UserType', uuid: string, name: string, email: string };
 
-export type StandardInvoiceItemFragment = { __typename?: 'StandardInvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency?: CurrencyEnum | null, unitPriceType?: UnitPriceTypeEnum | null };
+export type StandardInvoiceItemFragment = { __typename?: 'StandardInvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency?: CurrencyEnum | null, unitPriceType?: UnitPriceTypeEnum | null, category?: { __typename?: 'StandardInvoiceItemCategoryType', uuid: string, code: string } | null };
 
 export type ChangePasswordMutationVariables = Exact<{
   currentPassword: Scalars['String']['input'];
@@ -568,7 +577,7 @@ export type UpdateOrganizationServiceMutationVariables = Exact<{
 }>;
 
 
-export type UpdateOrganizationServiceMutation = { __typename?: 'Mutation', updateOrganizationService?: { __typename?: 'UpdateOrganizationService', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, service?: { __typename?: 'StandardInvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency?: CurrencyEnum | null, unitPriceType?: UnitPriceTypeEnum | null } | null } | null };
+export type UpdateOrganizationServiceMutation = { __typename?: 'Mutation', updateOrganizationService?: { __typename?: 'UpdateOrganizationService', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, service?: { __typename?: 'StandardInvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency?: CurrencyEnum | null, unitPriceType?: UnitPriceTypeEnum | null, category?: { __typename?: 'StandardInvoiceItemCategoryType', uuid: string, code: string } | null } | null } | null };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -611,7 +620,7 @@ export type ClientUsersQuery = { __typename?: 'Query', clientUsers: Array<{ __ty
 export type OrganizationServicesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type OrganizationServicesQuery = { __typename?: 'Query', organizationServices: Array<{ __typename?: 'StandardInvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency?: CurrencyEnum | null, unitPriceType?: UnitPriceTypeEnum | null }> };
+export type OrganizationServicesQuery = { __typename?: 'Query', organizationServices: Array<{ __typename?: 'StandardInvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency?: CurrencyEnum | null, unitPriceType?: UnitPriceTypeEnum | null, category?: { __typename?: 'StandardInvoiceItemCategoryType', uuid: string, code: string } | null }> };
 
 export const UserFragmentDoc = gql`
     fragment User on UserType {
@@ -705,6 +714,10 @@ export const StandardInvoiceItemFragmentDoc = gql`
   unitPrice
   unitPriceCurrency
   unitPriceType
+  category {
+    uuid
+    code
+  }
 }
     `;
 export const ChangePasswordDocument = gql`

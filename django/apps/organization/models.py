@@ -155,6 +155,34 @@ class Invoice(BaseModel):
         return totals
 
 
+class StandardInvoiceItemCategory(BaseModel):
+    class Meta:
+        verbose_name_plural = "Standard Invoice Item Categories"
+
+    """Category of the Standard Invoice Item e.g. Accounting, Human Resources etc."""
+    constraints = [
+        models.UniqueConstraint(
+            fields=["name"],
+            condition=models.Q(deleted__isnull=True),
+            name="organization_standard_invoice_item_category_name_unique",
+        ),
+        models.UniqueConstraint(
+            fields=["code"],
+            condition=models.Q(deleted__isnull=True),
+            name="organization_standard_invoice_item_category_code_unique",
+        ),
+    ]
+
+    name = models.CharField(max_length=64)
+    code = models.CharField(max_length=64)
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name
+
+
 class BaseInvoiceItem(BaseModel):
     class Meta:
         abstract = True
@@ -170,6 +198,9 @@ class BaseInvoiceItem(BaseModel):
         max_length=8,
         choices=UnitPriceTypeEnum.choices,
         help_text="The type of the invoice item can be fixed, per hour etc",
+    )
+    category = models.ForeignKey(
+        StandardInvoiceItemCategory, on_delete=models.CASCADE, blank=True, null=True
     )
 
 
@@ -187,6 +218,9 @@ class InvoiceItem(BaseInvoiceItem):
     InvoiceItem is an entry on the invoice.
     """
 
+    organization = models.ForeignKey(
+        Organization, on_delete=models.CASCADE, related_name="invoice_items"
+    )
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="items")
     standard_invoice_item = models.ForeignKey(
         StandardInvoiceItem,
