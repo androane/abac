@@ -7,8 +7,7 @@ import DebounceLink from 'apollo-link-debounce'
 import { withScope, captureMessage } from '@sentry/browser'
 
 import { GRAPHQL_ENDPOINT } from 'config/config-env'
-import { AUTH_STORAGE_KEY } from 'config/config-global'
-import { setSession } from 'auth/context/utils'
+import { clearAuthData, getAuthData } from 'auth/context/utils'
 import { GENERIC_ERROR_MESSAGE } from 'utils/api-codes'
 
 enum GraphQLErrorsEnum {
@@ -47,7 +46,7 @@ const errorLink = onError(result => {
         if (
           [GraphQLErrorsEnum.UNAUTHORIZED_ACCESS, GraphQLErrorsEnum.FORBIDDEN].includes(errorCode)
         ) {
-          setSession(null, null)
+          clearAuthData()
         }
       })
     }
@@ -86,14 +85,14 @@ const logoutAfterware = onError(({ networkError }) => {
     'statusCode' in networkError &&
     [401, 403].includes(networkError.statusCode)
   ) {
-    setSession(null, null)
+    clearAuthData()
   }
 })
 
 // eslint-disable-next-line no-unused-vars
 const authLink = setContext((_, { headers }) => {
-  // get the authentication token from local storage if it exists
-  const token = sessionStorage.getItem(AUTH_STORAGE_KEY)
+  // get the authentication token from storage if it exists
+  const token = getAuthData().accessToken
   if (token) {
     // return the headers to the context so httpLink can read them
     const Authorization = `Bearer ${token}`

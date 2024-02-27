@@ -171,7 +171,7 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={loading}>
-                {client ? 'Salveaza' : 'Adauga Client'}
+                {client ? 'Salvează' : 'Adaugă Client'}
               </LoadingButton>
             </Stack>
           </Card>

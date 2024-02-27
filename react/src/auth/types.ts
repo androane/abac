@@ -20,7 +20,7 @@ export type AuthStateType = {
 }
 
 type CanRemove = {
-  login?: (email: string, password: string) => Promise<void>
+  login?: (email: string, password: string, rememberMe: boolean) => Promise<void>
   forgotPassword?: (email: string) => Promise<void>
   newPassword?: (email: string, code: string, password: string) => Promise<void>
   updatePassword?: (password: string) => Promise<void>
@@ -31,6 +31,6 @@ export type AuthContextType = CanRemove & {
   loading: boolean
   authenticated: boolean
   unauthenticated: boolean
-  login: (email: string, password: string) => Promise<void>
+  login: (email: string, password: string, rememberMe: boolean) => Promise<void>
   logout: () => Promise<void>
 }

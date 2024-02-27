@@ -116,7 +116,7 @@ export default function InvoiceTableToolbar({
           alignItems="center"
           justifyContent="flex-end"
         >
-          <AddButton label="Adauga la Factura" withSpacing={false} onClick={onAddInvoiceItem} />
+          <AddButton label="Adaugă la Factura" withSpacing={false} onClick={onAddInvoiceItem} />
         </Stack>
       )}
     </Stack>

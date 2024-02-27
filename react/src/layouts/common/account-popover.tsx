@@ -18,6 +18,7 @@ import { Stack } from '@mui/material'
 import { useBoolean } from 'hooks/use-boolean'
 import ChangePassword from 'sections/auth/change-password'
 import getErrorMessage from 'utils/api-codes'
+import { clearAuthData } from 'auth/context/utils'
 
 const AccountPopover = () => {
   const router = useRouter()
@@ -35,10 +36,10 @@ const AccountPopover = () => {
   const handleLogout = async () => {
     try {
       await logout()
+      clearAuthData()
       popover.onClose()
       router.replace('/')
     } catch (error) {
-      console.error(error)
       enqueueSnackbar(getErrorMessage((error as Error).message), {
         variant: 'error',
       })

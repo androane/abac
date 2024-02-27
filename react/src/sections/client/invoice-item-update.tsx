@@ -86,15 +86,15 @@ const UpdateInvoiceItem: React.FC<Props> = ({
           .nullable()
           .when('standardServiceUuid', (uuids, schema) => {
             if (uuids[0] === NON_STANDARD_SERVICE)
-              return schema.required('Acest camp este obligatoriu')
+              return schema.required('Acest câmp este obligatoriu')
             return schema
           }),
-        standardServiceUuid: Yup.string().required('Acest camp este obligatoriu'),
+        standardServiceUuid: Yup.string().required('Acest câmp este obligatoriu'),
         unitPrice: Yup.number()
           .nullable()
           .when('standardServiceUuid', (uuids, schema) => {
             if (uuids[0] === NON_STANDARD_SERVICE)
-              return schema.required('Acest camp este obligatoriu')
+              return schema.required('Acest câmp este obligatoriu')
             return schema
           }),
         unitPriceCurrency: Yup.mixed<CurrencyEnum>().oneOf(Object.values(CurrencyEnum)).nullable(),
@@ -102,10 +102,10 @@ const UpdateInvoiceItem: React.FC<Props> = ({
         minutesAllocated: Yup.number()
           .nullable()
           .when('standardServiceUuid', (uuids, schema) => {
-            if (isHourlyService(uuids[0])) return schema.required('Acest camp este obligatoriu')
+            if (isHourlyService(uuids[0])) return schema.required('Acest câmp este obligatoriu')
             return schema
           }),
-        quantity: Yup.number().required('Acest camp este obligatoriu'),
+        quantity: Yup.number().required('Acest câmp este obligatoriu'),
         isRecurring: Yup.boolean(),
       }),
     ),
@@ -133,7 +133,7 @@ const UpdateInvoiceItem: React.FC<Props> = ({
         },
       })
       form.reset()
-      enqueueSnackbar('Factura actualizata cu succes!')
+      enqueueSnackbar('Factură actualizată cu succes!')
       onClose()
     } catch (error) {
       enqueueSnackbar(getErrorMessage((error as Error).message), {
@@ -188,7 +188,7 @@ const UpdateInvoiceItem: React.FC<Props> = ({
                 </optgroup>
               </RHFSelect>
               {isNonStandardService ? <RHFTextField name="name" label="Nume" /> : <div />}
-              <RHFTextField name="description" label="Explicatie (optional)" multiline rows={5} />
+              <RHFTextField name="description" label="Explicație (opțional)" multiline rows={5} />
               <RHFSwitch
                 name="isRecurring"
                 labelPlacement="start"
@@ -198,8 +198,8 @@ const UpdateInvoiceItem: React.FC<Props> = ({
                       Este serviciu lunar?
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      Bifeaza aceasta optiune daca vrei ca acest serviciu sa fie transferat recurent
-                      si automat pe factura din urmatoarea luna.
+                      Bifează această opțiune dacă vrei ca acest serviciu să fie transferat recurent
+                      și automat pe factura din luna următoare.
                     </Typography>
                   </>
                 }
@@ -223,13 +223,13 @@ const UpdateInvoiceItem: React.FC<Props> = ({
                 </>
               )}
               {isHourlyService(form.watch('standardServiceUuid')) && (
-                <RHFTextField name="minutesAllocated" label="Numar de minute alocate" />
+                <RHFTextField name="minutesAllocated" label="Număr de minute alocate" />
               )}
               {isFixedService(form.watch('standardServiceUuid')) && (
                 <RHFTextField name="quantity" label="Cantitate" />
               )}
               <DatePicker
-                label="Ziua din luna"
+                label="Ziua din lună"
                 minDate={invoiceDate}
                 value={itemDate && new Date(itemDate)}
                 onChange={newItemDate =>
@@ -246,10 +246,10 @@ const UpdateInvoiceItem: React.FC<Props> = ({
             </Box>
             <DialogActions>
               <Button color="inherit" variant="outlined" onClick={onClose}>
-                {'<'} Inapoi
+                {'<'} Înapoi
               </Button>
               <LoadingButton type="submit" variant="contained" loading={loading}>
-                {invoiceItem ? 'Salveaza' : 'Adauga la Factura'}
+                {invoiceItem ? 'Salvează' : 'Adaugă la Factura'}
               </LoadingButton>
             </DialogActions>
           </>

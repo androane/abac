@@ -13,7 +13,7 @@ const ClientCreateView = () => {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Adauga un Client Nou"
+        heading="Adaugă un Client Nou"
         links={[
           {
             name: 'Pagina Principala',

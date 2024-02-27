@@ -49,9 +49,9 @@ const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
   const form = useForm({
     resolver: yupResolver(
       Yup.object().shape({
-        firstName: Yup.string().required('Acest camp este obligatoriu'),
-        lastName: Yup.string().required('Acest camp este obligatoriu'),
-        email: Yup.string().required('Acest camp este obligatoriu'),
+        firstName: Yup.string().required('Acest câmp este obligatoriu'),
+        lastName: Yup.string().required('Acest câmp este obligatoriu'),
+        email: Yup.string().required('Acest câmp este obligatoriu'),
         ownershipPercentage: Yup.number().min(0).max(100).nullable(),
         role: Yup.mixed<ClientUserRoleEnum>().oneOf(Object.values(ClientUserRoleEnum)).nullable(),
         spvUsername: Yup.string().nullable(),
@@ -161,10 +161,10 @@ const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
 
           <DialogActions>
             <Button color="inherit" variant="outlined" onClick={onClose}>
-              {'<'} Inapoi
+              {'<'} Înapoi
             </Button>
             <LoadingButton type="submit" variant="contained" loading={loading}>
-              {user ? 'Salveaza' : 'Adauga Persoana'}
+              {user ? 'Salvează' : 'Adaugă Persoana'}
             </LoadingButton>
           </DialogActions>
         </DialogContent>

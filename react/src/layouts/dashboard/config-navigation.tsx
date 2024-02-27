@@ -18,7 +18,7 @@ export function useNavData() {
           icon: icon('ic_user'),
           children: [
             { title: 'Lista', path: paths.app.client.list },
-            { title: 'Adauga', path: paths.app.client.new },
+            { title: 'Adaugă', path: paths.app.client.new },
           ],
         },
         {

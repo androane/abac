@@ -24,7 +24,7 @@ export default function ConfirmDialog({
         {action}
 
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Inapoi
+          Înapoi
         </Button>
       </DialogActions>
     </Dialog>

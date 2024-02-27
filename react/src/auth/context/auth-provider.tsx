@@ -3,20 +3,18 @@ import { useCallback, useEffect, useMemo, useReducer } from 'react'
 import { useLoginMutation, useLogoutMutation } from 'generated/graphql'
 import { ActionMapType, AuthStateType, AuthUserType } from '../types'
 import { AuthContext } from './auth-context'
-import { getSession, setSession } from './utils'
+import { clearAuthData, getAuthData, setAuthData } from './utils'
 
 enum Types {
   INITIAL = 'INITIAL',
   LOGIN = 'LOGIN',
   LOGOUT = 'LOGOUT',
-  FETCHING_CURRENT_USER = 'FETCHING_CURRENT_USER',
 }
 
 type Payload = {
   [Types.INITIAL]: {
     user: AuthUserType
   }
-  [Types.FETCHING_CURRENT_USER]: undefined
   [Types.LOGIN]: {
     user: AuthUserType
   }
@@ -35,12 +33,6 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
     return {
       loading: false,
       user: action.payload.user,
-    }
-  }
-  if (action.type === Types.FETCHING_CURRENT_USER) {
-    return {
-      loading: true,
-      user: null,
     }
   }
   if (action.type === Types.LOGIN) {
@@ -69,7 +61,7 @@ export function AuthProvider({ children }: Props) {
 
   const initialize = useCallback(async () => {
     try {
-      const { accessToken, user } = getSession()
+      const { accessToken, user } = getAuthData()
 
       if (accessToken) {
         dispatch({
@@ -102,7 +94,7 @@ export function AuthProvider({ children }: Props) {
 
   // LOGIN
   const login = useCallback(
-    async (email: string, password: string) => {
+    async (email: string, password: string, rememberMe: boolean) => {
       const response = await loginMutation({ variables: { email, password } })
 
       if (!response.data?.login) {
@@ -114,7 +106,7 @@ export function AuthProvider({ children }: Props) {
         throw new Error(error?.message)
       }
 
-      setSession(token, user)
+      setAuthData(token, user, rememberMe)
 
       dispatch({
         type: Types.LOGIN,
@@ -130,7 +122,7 @@ export function AuthProvider({ children }: Props) {
   const logout = useCallback(async () => {
     await logoutMutation()
 
-    setSession(null, null)
+    clearAuthData()
     dispatch({
       type: Types.LOGOUT,
     })

@@ -44,14 +44,14 @@ const UpdateService: React.FC<Props> = ({ service, onClose }) => {
   const form = useForm({
     resolver: yupResolver(
       Yup.object().shape({
-        name: Yup.string().required('Acest camp este obligatoriu'),
+        name: Yup.string().required('Acest câmp este obligatoriu'),
         unitPrice: Yup.number(),
         unitPriceCurrency: Yup.mixed<CurrencyEnum>()
           .oneOf(Object.values(CurrencyEnum))
-          .required('Acest camp este obligatoriu'),
+          .required('Acest câmp este obligatoriu'),
         unitPriceType: Yup.mixed<UnitPriceTypeEnum>()
           .oneOf(Object.values(UnitPriceTypeEnum))
-          .required('Acest camp este obligatoriu'),
+          .required('Acest câmp este obligatoriu'),
       }),
     ),
     defaultValues,
@@ -149,10 +149,10 @@ const UpdateService: React.FC<Props> = ({ service, onClose }) => {
           </Box>
           <DialogActions>
             <Button color="inherit" variant="outlined" onClick={onClose}>
-              {'<'} Inapoi
+              {'<'} Înapoi
             </Button>
             <LoadingButton type="submit" variant="contained" loading={loading}>
-              {service ? 'Salveaza' : 'Adauga Serviciu'}
+              {service ? 'Salvează' : 'Adaugă Serviciu'}
             </LoadingButton>
           </DialogActions>
         </DialogContent>

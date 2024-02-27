@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
 
@@ -11,7 +11,7 @@ import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 
 import { useAuthContext } from 'auth/hooks'
-import FormProvider, { RHFTextField } from 'components/hook-form'
+import FormProvider, { RHFCheckbox, RHFTextField } from 'components/hook-form'
 import Iconify from 'components/iconify'
 import { PATH_AFTER_LOGIN } from 'config/config-global'
 import { useBoolean } from 'hooks/use-boolean'
@@ -36,9 +36,18 @@ const Login = () => {
       Yup.object().shape({
         email: Yup.string()
           .required('Adresa de email este obligatorie')
-          .email('Adresa de email nu este valida'),
+          .email('Adresa de email nu este validă'),
         password: Yup.string().required('Parola este obligatorie'),
+        rememberMe: Yup.boolean().required(),
       }),
+    ),
+    defaultValues: useMemo(
+      () => ({
+        rememberMe: false,
+        email: '',
+        password: '',
+      }),
+      [],
     ),
   })
 
@@ -50,13 +59,14 @@ const Login = () => {
 
   const onSubmit = handleSubmit(async data => {
     try {
-      await login?.(data.email, data.password)
+      await login?.(data.email, data.password, data.rememberMe)
 
       router.push(returnTo || PATH_AFTER_LOGIN)
     } catch (error) {
       reset({
         email: '',
         password: '',
+        rememberMe: false,
       })
       setErrorMsg(getErrorMessage((error as Error).message))
     }
@@ -81,6 +91,8 @@ const Login = () => {
         }}
       />
 
+      <RHFCheckbox name="rememberMe" label="Păstrează-mă logat" />
+
       <Link variant="body2" color="inherit" underline="always" sx={{ alignSelf: 'flex-end' }}>
         Ai uitat parola?
       </Link>
@@ -93,7 +105,7 @@ const Login = () => {
         variant="contained"
         loading={isSubmitting}
       >
-        Intra in cont
+        Intră în cont
       </LoadingButton>
     </Stack>
   )
