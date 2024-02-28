@@ -71,6 +71,7 @@ class InvoiceItemType(DjangoObjectType):
             "is_recurring",
             "standard_invoice_item",
             "quantity",
+            "category",
         )
 
     total = graphene.Float(required=True)
@@ -144,6 +145,7 @@ class StandardInvoiceItemInput(graphene.InputObjectType):
 class InvoiceItemInput(graphene.InputObjectType):
     uuid = graphene.String()
     name = graphene.String()
+    service_category_code = graphene.String()
     unit_price = graphene.Int()
     unit_price_currency = CurrencyEnumType()
     standard_service_uuid = graphene.String()

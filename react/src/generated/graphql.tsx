@@ -144,6 +144,7 @@ export type InvoiceItemInput = {
   minutesAllocated?: InputMaybe<Scalars['Int']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   quantity: Scalars['Int']['input'];
+  serviceCategoryCode?: InputMaybe<Scalars['String']['input']>;
   standardServiceUuid?: InputMaybe<Scalars['String']['input']>;
   unitPrice?: InputMaybe<Scalars['Int']['input']>;
   unitPriceCurrency?: InputMaybe<CurrencyEnum>;
@@ -152,6 +153,7 @@ export type InvoiceItemInput = {
 
 export type InvoiceItemType = {
   __typename?: 'InvoiceItemType';
+  category: StandardInvoiceItemCategoryType;
   /** Optional explanation for the invoice item */
   description?: Maybe<Scalars['String']['output']>;
   /** Boolean indicating if this invoice item is a recurring item every month */
@@ -388,7 +390,7 @@ export type StandardInvoiceItemInput = {
 
 export type StandardInvoiceItemType = {
   __typename?: 'StandardInvoiceItemType';
-  category?: Maybe<StandardInvoiceItemCategoryType>;
+  category: StandardInvoiceItemCategoryType;
   /** Name of the invoice item */
   name: Scalars['String']['output'];
   /** Price of the invoice item per unit type */
@@ -463,11 +465,11 @@ export type ErrorFragment = { __typename?: 'ErrorType', field?: string | null, m
 
 export type FileFragment = { __typename?: 'ClientFileType', uuid: string, name: string, updated: DateTimeString, url: string, size: number };
 
-export type InvoiceItemFragment = { __typename?: 'InvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency: CurrencyEnum, unitPriceType: UnitPriceTypeEnum, quantity: number, itemDate?: DateString | null, description?: string | null, minutesAllocated?: number | null, isRecurring: boolean, total: number, standardInvoiceItem?: { __typename?: 'StandardInvoiceItemType', uuid: string } | null };
+export type InvoiceItemFragment = { __typename?: 'InvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency: CurrencyEnum, unitPriceType: UnitPriceTypeEnum, quantity: number, itemDate?: DateString | null, description?: string | null, minutesAllocated?: number | null, isRecurring: boolean, total: number, standardInvoiceItem?: { __typename?: 'StandardInvoiceItemType', uuid: string } | null, category: { __typename?: 'StandardInvoiceItemCategoryType', uuid: string, code: string } };
 
 export type ProgramManagerFragment = { __typename?: 'UserType', uuid: string, name: string, email: string };
 
-export type StandardInvoiceItemFragment = { __typename?: 'StandardInvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency: CurrencyEnum, unitPriceType: UnitPriceTypeEnum, category?: { __typename?: 'StandardInvoiceItemCategoryType', uuid: string, code: string } | null };
+export type StandardInvoiceItemFragment = { __typename?: 'StandardInvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency: CurrencyEnum, unitPriceType: UnitPriceTypeEnum, category: { __typename?: 'StandardInvoiceItemCategoryType', uuid: string, code: string } };
 
 export type ChangePasswordMutationVariables = Exact<{
   currentPassword: Scalars['String']['input'];
@@ -547,7 +549,7 @@ export type UpdateClientInvoiceItemMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClientInvoiceItemMutation = { __typename?: 'Mutation', updateClientInvoiceItem?: { __typename?: 'UpdateClientInvoiceItem', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, invoice?: { __typename?: 'InvoiceType', uuid: string, items: Array<{ __typename?: 'InvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency: CurrencyEnum, unitPriceType: UnitPriceTypeEnum, quantity: number, itemDate?: DateString | null, description?: string | null, minutesAllocated?: number | null, isRecurring: boolean, total: number, standardInvoiceItem?: { __typename?: 'StandardInvoiceItemType', uuid: string } | null }> } | null } | null };
+export type UpdateClientInvoiceItemMutation = { __typename?: 'Mutation', updateClientInvoiceItem?: { __typename?: 'UpdateClientInvoiceItem', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, invoice?: { __typename?: 'InvoiceType', uuid: string, items: Array<{ __typename?: 'InvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency: CurrencyEnum, unitPriceType: UnitPriceTypeEnum, quantity: number, itemDate?: DateString | null, description?: string | null, minutesAllocated?: number | null, isRecurring: boolean, total: number, standardInvoiceItem?: { __typename?: 'StandardInvoiceItemType', uuid: string } | null, category: { __typename?: 'StandardInvoiceItemCategoryType', uuid: string, code: string } }> } | null } | null };
 
 export type UpdateClientInvoiceStatusMutationVariables = Exact<{
   invoiceUuid: Scalars['String']['input'];
@@ -577,7 +579,7 @@ export type UpdateOrganizationServiceMutationVariables = Exact<{
 }>;
 
 
-export type UpdateOrganizationServiceMutation = { __typename?: 'Mutation', updateOrganizationService?: { __typename?: 'UpdateOrganizationService', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, service?: { __typename?: 'StandardInvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency: CurrencyEnum, unitPriceType: UnitPriceTypeEnum, category?: { __typename?: 'StandardInvoiceItemCategoryType', uuid: string, code: string } | null } | null } | null };
+export type UpdateOrganizationServiceMutation = { __typename?: 'Mutation', updateOrganizationService?: { __typename?: 'UpdateOrganizationService', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, service?: { __typename?: 'StandardInvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency: CurrencyEnum, unitPriceType: UnitPriceTypeEnum, category: { __typename?: 'StandardInvoiceItemCategoryType', uuid: string, code: string } } | null } | null };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -603,7 +605,7 @@ export type ClientInvoiceQueryVariables = Exact<{
 }>;
 
 
-export type ClientInvoiceQuery = { __typename?: 'Query', clientInvoice: { __typename?: 'InvoiceType', uuid: string, month: number, year: number, dateSent?: DateString | null, items: Array<{ __typename?: 'InvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency: CurrencyEnum, unitPriceType: UnitPriceTypeEnum, quantity: number, itemDate?: DateString | null, description?: string | null, minutesAllocated?: number | null, isRecurring: boolean, total: number, standardInvoiceItem?: { __typename?: 'StandardInvoiceItemType', uuid: string } | null }>, totalsByCurrency: Array<{ __typename?: 'TotalByCurrencyType', currency: CurrencyEnum, total: number }> } };
+export type ClientInvoiceQuery = { __typename?: 'Query', clientInvoice: { __typename?: 'InvoiceType', uuid: string, month: number, year: number, dateSent?: DateString | null, items: Array<{ __typename?: 'InvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency: CurrencyEnum, unitPriceType: UnitPriceTypeEnum, quantity: number, itemDate?: DateString | null, description?: string | null, minutesAllocated?: number | null, isRecurring: boolean, total: number, standardInvoiceItem?: { __typename?: 'StandardInvoiceItemType', uuid: string } | null, category: { __typename?: 'StandardInvoiceItemCategoryType', uuid: string, code: string } }>, totalsByCurrency: Array<{ __typename?: 'TotalByCurrencyType', currency: CurrencyEnum, total: number }> } };
 
 export type ClientProgramManagersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -620,7 +622,7 @@ export type ClientUsersQuery = { __typename?: 'Query', clientUsers: Array<{ __ty
 export type OrganizationServicesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type OrganizationServicesQuery = { __typename?: 'Query', organizationServices: Array<{ __typename?: 'StandardInvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency: CurrencyEnum, unitPriceType: UnitPriceTypeEnum, category?: { __typename?: 'StandardInvoiceItemCategoryType', uuid: string, code: string } | null }> };
+export type OrganizationServicesQuery = { __typename?: 'Query', organizationServices: Array<{ __typename?: 'StandardInvoiceItemType', uuid: string, name: string, unitPrice: number, unitPriceCurrency: CurrencyEnum, unitPriceType: UnitPriceTypeEnum, category: { __typename?: 'StandardInvoiceItemCategoryType', uuid: string, code: string } }> };
 
 export const UserFragmentDoc = gql`
     fragment User on UserType {
@@ -697,6 +699,10 @@ export const InvoiceItemFragmentDoc = gql`
   total
   standardInvoiceItem {
     uuid
+  }
+  category {
+    uuid
+    code
   }
 }
     `;

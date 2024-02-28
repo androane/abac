@@ -13,4 +13,8 @@ fragment InvoiceItem on InvoiceItemType {
   standardInvoiceItem {
     uuid
   }
+  category {
+    uuid
+    code
+  }
 }

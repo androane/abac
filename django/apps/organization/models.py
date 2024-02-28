@@ -216,9 +216,6 @@ class InvoiceItem(BaseInvoiceItem):
     InvoiceItem is an entry on the invoice.
     """
 
-    organization = models.ForeignKey(
-        Organization, on_delete=models.CASCADE, related_name="invoice_items"
-    )
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="items")
     standard_invoice_item = models.ForeignKey(
         StandardInvoiceItem,

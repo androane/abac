@@ -6,7 +6,13 @@ from django.conf import settings
 
 from organization.constants import InvoiceStatusEnum, UnitPriceTypeEnum
 from organization.graphene.types import InvoiceItemInput
-from organization.models import Client, Invoice, InvoiceItem, Organization
+from organization.models import (
+    Client,
+    Invoice,
+    InvoiceItem,
+    Organization,
+    StandardInvoiceItemCategory,
+)
 
 
 def get_client_invoice(
@@ -84,10 +90,15 @@ def update_client_invoice_item(
             "unit_price",
             "unit_price_currency",
             "unit_price_type",
+            "category_id",
         ):
             setattr(invoice_item, field, getattr(standard_invoice_item, field))
     else:
         invoice_item.standard_invoice_item = None
+        category = StandardInvoiceItemCategory.objects.get(
+            code=invoice_item_input.service_category_code
+        )
+        invoice_item.category = category
         for field in (
             "name",
             "unit_price",
