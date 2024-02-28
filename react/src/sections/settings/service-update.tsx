@@ -19,7 +19,7 @@ import {
   UnitPriceTypeEnum,
   StandardInvoiceItemFragmentDoc,
 } from 'generated/graphql'
-import { CATEGORY_CODE_TO_LABEL, UNIT_PRICE_TYPE_LABELS } from 'sections/settings/constants'
+import { getServiceCategoryLabel, getUnitPriceTypeLabel } from 'sections/settings/constants'
 import getErrorMessage from 'utils/api-codes'
 
 type Props = {
@@ -109,9 +109,7 @@ const UpdateService: React.FC<Props> = ({ categoryCode, service, onClose }) => {
       }}
     >
       <FormProvider methods={form} onSubmit={onSubmit}>
-        <DialogTitle>
-          Serviciu {CATEGORY_CODE_TO_LABEL[categoryCode as keyof typeof CATEGORY_CODE_TO_LABEL]}
-        </DialogTitle>
+        <DialogTitle>Serviciu {getServiceCategoryLabel(categoryCode)}</DialogTitle>
         <DialogContent>
           <br />
           <Box
@@ -146,7 +144,7 @@ const UpdateService: React.FC<Props> = ({ categoryCode, service, onClose }) => {
             >
               {Object.keys(UnitPriceTypeEnum).map(type => (
                 <option key={type} value={type}>
-                  {UNIT_PRICE_TYPE_LABELS[type as UnitPriceTypeEnum]}
+                  {getUnitPriceTypeLabel(type as UnitPriceTypeEnum)}
                 </option>
               ))}
             </RHFSelect>

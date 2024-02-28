@@ -13,7 +13,7 @@ import { ConfirmDialog } from 'components/custom-dialog'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
 import { StandardInvoiceItemFragment } from 'generated/graphql'
-import { UNIT_PRICE_TYPE_LABELS } from 'sections/settings/constants'
+import { getUnitPriceTypeLabel } from 'sections/settings/constants'
 
 type Props = {
   onEditRow: VoidFunction
@@ -46,25 +46,39 @@ const ServiceTableRow: React.FC<Props> = ({ row, onEditRow, onDeleteRow, loading
             {row.name}
           </Box>
         </TableCell>
-        {['unitPrice', 'unitPriceCurrency', 'unitPriceType'].map(key => {
-          let value = row[key as keyof StandardInvoiceItemFragment]
-          if (value && key === 'unitPriceType') {
-            value = UNIT_PRICE_TYPE_LABELS[value as keyof typeof UNIT_PRICE_TYPE_LABELS]
-          }
-          return (
-            <TableCell sx={{ whiteSpace: 'nowrap' }} key={key}>
-              <ListItemText
-                primary={value}
-                secondary=""
-                primaryTypographyProps={{ typography: 'body2' }}
-                secondaryTypographyProps={{
-                  component: 'span',
-                  color: 'text.disabled',
-                }}
-              />
-            </TableCell>
-          )
-        })}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <ListItemText
+            primary={row.unitPrice}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <ListItemText
+            primary={row.unitPriceCurrency}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <ListItemText
+            primary={getUnitPriceTypeLabel(row.unitPriceType)}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
+        </TableCell>
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />

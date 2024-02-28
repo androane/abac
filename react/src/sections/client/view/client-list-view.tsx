@@ -33,7 +33,6 @@ import {
   useDeleteClientMutation,
 } from 'generated/graphql'
 import { useRouter } from 'routes/hooks'
-import { useAuthContext } from 'auth/hooks'
 import ClientTableFiltersResult from '../client-table-filters-result'
 import ClientTableRow from '../client-table-row'
 import ClientTableToolbar from '../client-table-toolbar'
@@ -53,7 +52,6 @@ type Props = {
 
 const ClientListCard: React.FC<Props> = ({ clients }) => {
   const [deleteClient, { loading }] = useDeleteClientMutation()
-  const { user } = useAuthContext()
   const result = useClientProgramManagersQuery()
 
   const { enqueueSnackbar } = useSnackbar()

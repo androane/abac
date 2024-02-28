@@ -2,7 +2,7 @@ import { paths } from 'routes/paths'
 
 import SvgColor from 'components/svg-color'
 import SettingsIcon from '@mui/icons-material/Settings'
-import { CATEGORY_CODE_TO_LABEL } from 'sections/settings/constants'
+import { getServiceCategoryLabel } from 'sections/settings/constants'
 
 const icon = (name: string) => (
   <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
@@ -33,7 +33,7 @@ const useNavData = () => {
               title: 'Servicii',
               path: paths.app.settings.root,
               children: CATEGORY_CODES.map(code => ({
-                title: CATEGORY_CODE_TO_LABEL[code as keyof typeof CATEGORY_CODE_TO_LABEL],
+                title: getServiceCategoryLabel(code),
                 path: `${paths.app.settings.service.list}?c=${code}`,
               })),
             },

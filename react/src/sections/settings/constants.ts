@@ -1,11 +1,15 @@
 import { UnitPriceTypeEnum } from 'generated/graphql'
 
-export const UNIT_PRICE_TYPE_LABELS = {
-  [UnitPriceTypeEnum.HOURLY]: 'Pe ora',
-  [UnitPriceTypeEnum.FIXED]: 'Fix',
+export const getUnitPriceTypeLabel = (unitPriceType: UnitPriceTypeEnum) => {
+  return {
+    [UnitPriceTypeEnum.HOURLY]: 'Pe ora',
+    [UnitPriceTypeEnum.FIXED]: 'Fix',
+  }[unitPriceType]
 }
 
-export const CATEGORY_CODE_TO_LABEL = {
-  hr: 'Resurse Umane',
-  accounting: 'Contabilitate',
+export const getServiceCategoryLabel = (categoryCode: string) => {
+  return {
+    hr: 'Resurse Umane',
+    accounting: 'Contabilitate',
+  }[categoryCode]
 }

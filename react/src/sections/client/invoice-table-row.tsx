@@ -11,8 +11,7 @@ import Iconify from 'components/iconify'
 import { useBoolean } from 'hooks/use-boolean'
 import { fDateTime } from 'utils/format-time'
 import Label from 'components/label'
-import { UNIT_PRICE_TYPE_LABELS } from 'sections/settings/constants'
-import { UnitPriceTypeEnum } from 'generated/graphql'
+import { getUnitPriceTypeLabel } from 'sections/settings/constants'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { APIInvoiceItem } from './types'
 
@@ -83,7 +82,7 @@ const InvoiceTableRow: React.FC<Props> = ({
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={UNIT_PRICE_TYPE_LABELS[row.unitPriceType as UnitPriceTypeEnum]}
+            primary={getUnitPriceTypeLabel(row.unitPriceType)}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

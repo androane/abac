@@ -52,8 +52,8 @@ class StandardInvoiceItemType(DjangoObjectType):
             "category",
         )
 
-    unit_price_currency = CurrencyEnumType()
-    unit_price_type = UnitPriceTypeEnumType()
+    unit_price_currency = CurrencyEnumType(required=True)
+    unit_price_type = UnitPriceTypeEnumType(required=True)
 
 
 class InvoiceItemType(DjangoObjectType):
@@ -74,8 +74,8 @@ class InvoiceItemType(DjangoObjectType):
         )
 
     total = graphene.Float(required=True)
-    unit_price_currency = CurrencyEnumType()
-    unit_price_type = UnitPriceTypeEnumType()
+    unit_price_currency = CurrencyEnumType(required=True)
+    unit_price_type = UnitPriceTypeEnumType(required=True)
 
 
 class OrganizationType(DjangoObjectType):

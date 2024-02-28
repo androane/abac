@@ -27,7 +27,7 @@ import {
 } from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import UpdateInvoiceItem from 'sections/client/invoice-item-update'
-import { Box, TableCell, TableRow } from '@mui/material'
+import { TableCell, TableRow } from '@mui/material'
 import InvoiceTableFiltersResult from './invoice-table-filters-result'
 import InvoiceTableRow from './invoice-table-row'
 import InvoiceTableToolbar from './invoice-table-toolbar'
@@ -209,7 +209,6 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
               />
 
               <TableNoData notFound={notFound} />
-              <Box mt={5} />
               {clientInvoice.totalsByCurrency.map(({ currency, total }, index) => {
                 return (
                   <TotalsRow key={currency}>
@@ -221,7 +220,6 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
                   </TotalsRow>
                 )
               })}
-              <Box mb={5} />
             </TableBody>
           </Table>
         </Scrollbar>

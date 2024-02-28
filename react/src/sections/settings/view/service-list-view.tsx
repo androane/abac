@@ -37,7 +37,7 @@ import AddButton from 'components/add-button'
 import { useBoolean } from 'hooks/use-boolean'
 import UpdateService from 'sections/settings/service-update'
 import { Navigate, useSearchParams } from 'react-router-dom'
-import { CATEGORY_CODE_TO_LABEL } from 'sections/settings/constants'
+import { getServiceCategoryLabel } from 'sections/settings/constants'
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Nume' },
@@ -228,16 +228,14 @@ const ServiceListView = () => {
     return <Navigate replace to={LANDING_PAGE} />
   }
 
-  const label = CATEGORY_CODE_TO_LABEL[categoryCode as keyof typeof CATEGORY_CODE_TO_LABEL]
-
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={`Servicii ${label}`}
+        heading={`Servicii ${getServiceCategoryLabel(categoryCode)}`}
         links={[
           { name: 'Pagina Principală', href: LANDING_PAGE },
           { name: 'Servicii', href: paths.app.settings.service.list },
-          { name: label },
+          { name: getServiceCategoryLabel(categoryCode) },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

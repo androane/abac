@@ -8,6 +8,8 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import Box from '@mui/material/Box'
 import { format } from 'date-fns'
+import groupBy from 'lodash/groupBy'
+import orderBy from 'lodash/orderBy'
 
 import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'components/hook-form'
 import { useSnackbar } from 'components/snackbar'
@@ -20,6 +22,7 @@ import {
 import { Button, DialogActions, Typography } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton'
 import getErrorMessage from 'utils/api-codes'
+import { getServiceCategoryLabel } from 'sections/settings/constants'
 import { APIInvoiceItem } from './types'
 
 const NON_STANDARD_SERVICE = 'non-standard'
@@ -64,6 +67,8 @@ const UpdateInvoiceItem: React.FC<Props> = ({
         .filter(s => s.unitPriceType === UnitPriceTypeEnum.FIXED)
         .find(s => s.uuid === serviceUuid),
     )
+
+  const groupedOrganizationServices = groupBy(organizationServices, s => s.category?.code)
 
   const defaultValues = useMemo(
     () => ({
@@ -179,13 +184,15 @@ const UpdateInvoiceItem: React.FC<Props> = ({
                 <optgroup label="Serviciu non-standard">
                   <option value={NON_STANDARD_SERVICE} label="Serviciu non-standard" />
                 </optgroup>
-                <optgroup label="Servicii Existente">
-                  {organizationServices.map(service => (
-                    <option key={service.uuid} value={service.uuid}>
-                      {service.name}
-                    </option>
-                  ))}
-                </optgroup>
+                {Object.entries(groupedOrganizationServices).map(([categoryCode, services]) => (
+                  <optgroup key={categoryCode} label={getServiceCategoryLabel(categoryCode)}>
+                    {orderBy(services, 'name').map(service => (
+                      <option key={service.uuid} value={service.uuid}>
+                        {service.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
               </RHFSelect>
               {isNonStandardService ? <RHFTextField name="name" label="Nume" /> : <div />}
               <RHFTextField name="description" label="Explicație (opțional)" multiline rows={5} />
