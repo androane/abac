@@ -7,5 +7,15 @@ export default defineConfig({
   server: {
     host: true,
   },
-  plugins: [react(), tsconfigPaths()],
+  optimizeDeps: {
+    include: ['@emotion/react', '@emotion/styled', '@mui/material/Tooltip'],
+  },
+  plugins: [
+    react({
+      babel: {
+        plugins: ['@emotion/babel-plugin'],
+      },
+    }),
+    tsconfigPaths(),
+  ],
 })
