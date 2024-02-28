@@ -199,9 +199,7 @@ class BaseInvoiceItem(BaseModel):
         choices=UnitPriceTypeEnum.choices,
         help_text="The type of the invoice item can be fixed, per hour etc",
     )
-    category = models.ForeignKey(
-        StandardInvoiceItemCategory, on_delete=models.CASCADE, blank=True, null=True
-    )
+    category = models.ForeignKey(StandardInvoiceItemCategory, on_delete=models.CASCADE)
 
 
 class StandardInvoiceItem(BaseInvoiceItem):
