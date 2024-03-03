@@ -76,15 +76,15 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, categoryCode, activ
           cache.modify({
             id: cache.identify({ uuid: organizationUuid, __typename: 'OrganizationType' }),
             fields: {
-              activities(activities) {
+              activities(existingActivities) {
                 if (activity) {
-                  return activities
+                  return existingActivities
                 }
                 const newActivity = cache.writeFragment({
                   data: cacheData?.updateOrganizationActivity?.activity,
                   fragment: ActivityFragmentDoc,
                 })
-                return [newActivity, ...activities]
+                return [newActivity, ...existingActivities]
               },
             },
           })

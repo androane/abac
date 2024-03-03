@@ -249,10 +249,6 @@ class ClientActivity(BaseModel):
 
 class Solution(BaseModel):
     name = models.CharField(max_length=64)
-    unit_cost = models.IntegerField(
-        null=True, blank=True, help_text="Cost/Price of the Solution"
-    )
-    unit_cost_currency = models.CharField(max_length=3, choices=CurrencyEnum.choices)
 
     category = models.ForeignKey(ActivityCategory, on_delete=models.CASCADE)
     activities = models.ManyToManyField(Activity, related_name="solutions")
@@ -262,6 +258,16 @@ class Solution(BaseModel):
 
     def __str__(self):
         return self.name
+
+
+class ClientSolution(BaseModel):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    solution = models.ForeignKey(Solution, on_delete=models.CASCADE)
+
+    unit_cost = models.IntegerField(
+        null=True, blank=True, help_text="Cost/Price of the Solution"
+    )
+    unit_cost_currency = models.CharField(max_length=3, choices=CurrencyEnum.choices)
 
 
 class StandardInvoiceItemCategory(BaseModel):

@@ -95,7 +95,7 @@ const CreateFiles: React.FC<Props> = ({
 
         {!!files.length && (
           <Button variant="outlined" color="inherit" onClick={handleRemoveAllFiles}>
-            Sterge tot
+            Șterge tot
           </Button>
         )}
       </DialogActions>

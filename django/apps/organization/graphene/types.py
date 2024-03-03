@@ -38,18 +38,16 @@ class SolutionType(DjangoObjectType):
         only_fields = (
             "uuid",
             "name",
-            "unit_cost",
-            "unit_cost_currency",
             "category",
             "activities",
         )
-
-    unit_cost_currency = CurrencyEnumType(required=True)
 
 
 class SolutionInput(graphene.InputObjectType):
     uuid = graphene.String()
     name = graphene.String(required=True)
+    category_code = graphene.String(required=True)
+    activity_uuids = graphene.List(graphene.NonNull(graphene.String), required=True)
 
 
 class ActivityCategoryType(DjangoObjectType):
@@ -155,10 +153,10 @@ class InvoiceType(DjangoObjectType):
 class ActivityInput(graphene.InputObjectType):
     uuid = graphene.String()
     name = graphene.String(required=True)
+    category_code = graphene.String(required=True)
     unit_cost = graphene.Int()
     unit_cost_currency = CurrencyEnumType(required=True)
     unit_cost_type = UnitCostTypeEnumType(required=True)
-    category_code = graphene.String(required=True)
 
 
 class ClientActivityInput(graphene.InputObjectType):

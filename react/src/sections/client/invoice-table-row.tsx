@@ -160,7 +160,7 @@ const InvoiceTableRow: React.FC<Props> = ({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Sterge
+          Șterge
         </MenuItem>
 
         <MenuItem
@@ -170,18 +170,18 @@ const InvoiceTableRow: React.FC<Props> = ({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Modifica
+          Modifică
         </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Stergere Intrare"
-        content="Esti sigur ca vrei sa stergi acesta intrare?"
+        title="Șterge Intrare"
+        content="Ești sigur că vrei să ștergi acesta intrare?"
         action={
           <LoadingButton loading={loading} variant="contained" color="error" onClick={onDeleteRow}>
-            Sterge
+            Șterge
           </LoadingButton>
         }
       />

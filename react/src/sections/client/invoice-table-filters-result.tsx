@@ -32,13 +32,13 @@ export default function InvoiceTableFiltersResult({
       <Box sx={{ typography: 'body2' }}>
         <strong>{results}</strong>
         <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
-          rezultate gasite
+          rezultate găsite
         </Box>
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
         {!!filters.name && (
-          <Block label="Cuvant cheie:">
+          <Block label="Cuvânt cheie:">
             <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}
@@ -48,7 +48,7 @@ export default function InvoiceTableFiltersResult({
           onClick={onResetFilters}
           startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
         >
-          Reseteaza
+          Resetează
         </Button>
       </Stack>
     </Stack>

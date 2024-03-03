@@ -207,10 +207,10 @@ class UpdateOrganizationSolution(BaseMutation):
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        activity = update_solution(user.organization, **kwargs)
+        solution = update_solution(user.organization, **kwargs)
 
         return {
-            "activity": activity,
+            "solution": solution,
         }
 
 

@@ -102,17 +102,17 @@ const FileDetails: React.FC<Props> = ({ onDeleteFile, clientId, file, ...other }
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Sterge
+          Șterge
         </MenuItem>
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Sterge"
-        content="Esti sigur ca vrei sa stergi acest fisier?"
+        title="Șterge"
+        content="Ești sigur că vrei să ștergi acest fisier?"
         action={
           <Button variant="contained" color="error" onClick={onDeleteFile}>
-            Sterge
+            Șterge
           </Button>
         }
       />

@@ -453,6 +453,8 @@ export type QueryClientUsersArgs = {
 };
 
 export type SolutionInput = {
+  activityUuids: Array<Scalars['String']['input']>;
+  categoryCode: Scalars['String']['input'];
   name: Scalars['String']['input'];
   uuid?: InputMaybe<Scalars['String']['input']>;
 };
@@ -462,9 +464,6 @@ export type SolutionType = {
   activities: Array<ActivityType>;
   category: ActivityCategoryType;
   name: Scalars['String']['output'];
-  /** Cost/Price of the Solution */
-  unitCost?: Maybe<Scalars['Int']['output']>;
-  unitCostCurrency: CurrencyEnum;
   uuid: Scalars['String']['output'];
 };
 
@@ -545,7 +544,7 @@ export type InvoiceItemFragment = { __typename?: 'InvoiceItemType', uuid: string
 
 export type ProgramManagerFragment = { __typename?: 'UserType', uuid: string, name: string, email: string };
 
-export type SolutionFragment = { __typename?: 'SolutionType', uuid: string, name: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } }> };
+export type SolutionFragment = { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> };
 
 export type ChangePasswordMutationVariables = Exact<{
   currentPassword: Scalars['String']['input'];
@@ -669,7 +668,7 @@ export type UpdateOrganizationSolutionMutationVariables = Exact<{
 }>;
 
 
-export type UpdateOrganizationSolutionMutation = { __typename?: 'Mutation', updateOrganizationSolution?: { __typename?: 'UpdateOrganizationSolution', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, solution?: { __typename?: 'SolutionType', uuid: string, name: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } }> } | null } | null };
+export type UpdateOrganizationSolutionMutation = { __typename?: 'Mutation', updateOrganizationSolution?: { __typename?: 'UpdateOrganizationSolution', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, solution?: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> } | null } | null };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -724,8 +723,21 @@ export type OrganizationActivitiesQuery = { __typename?: 'Query', organization: 
 export type OrganizationSolutionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type OrganizationSolutionsQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, solutions: Array<{ __typename?: 'SolutionType', uuid: string, name: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } }> }> } };
+export type OrganizationSolutionsQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, solutions: Array<{ __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> }> } };
 
+export const ActivityFragmentDoc = gql`
+    fragment Activity on ActivityType {
+  uuid
+  name
+  unitCost
+  unitCostCurrency
+  unitCostType
+  category {
+    uuid
+    code
+  }
+}
+    `;
 export const UserFragmentDoc = gql`
     fragment User on UserType {
   uuid
@@ -799,34 +811,20 @@ export const ProgramManagerFragmentDoc = gql`
   email
 }
     `;
-export const ActivityFragmentDoc = gql`
-    fragment Activity on ActivityType {
-  uuid
-  name
-  unitCost
-  unitCostCurrency
-  unitCostType
-  category {
-    uuid
-    code
-  }
-}
-    `;
 export const SolutionFragmentDoc = gql`
     fragment Solution on SolutionType {
   uuid
   name
-  unitCost
-  unitCostCurrency
   category {
     uuid
     code
   }
   activities {
-    ...Activity
+    uuid
+    name
   }
 }
-    ${ActivityFragmentDoc}`;
+    `;
 export const ChangePasswordDocument = gql`
     mutation ChangePassword($currentPassword: String!, $newPassword: String!) {
   changePassword(currentPassword: $currentPassword, newPassword: $newPassword) {

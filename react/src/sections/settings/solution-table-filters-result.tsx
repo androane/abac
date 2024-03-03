@@ -7,16 +7,16 @@ import Paper from '@mui/material/Paper'
 import Stack, { StackProps } from '@mui/material/Stack'
 
 import Iconify from 'components/iconify'
-import { ActivityTableFilters } from './types'
+import { SolutionTableFilters } from './types'
 
 type Props = StackProps & {
-  filters: ActivityTableFilters
+  filters: SolutionTableFilters
   onFilters: (name: string, value: string) => void
   onResetFilters: VoidFunction
   results: number
 }
 
-const ActivityTableFiltersResult: React.FC<Props> = ({
+const SolutionTableFiltersResult: React.FC<Props> = ({
   filters,
   onFilters,
   onResetFilters,
@@ -86,4 +86,4 @@ function Block({ label, children, sx, ...other }: BlockProps) {
   )
 }
 
-export default ActivityTableFiltersResult
+export default SolutionTableFiltersResult

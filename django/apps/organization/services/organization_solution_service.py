@@ -20,6 +20,12 @@ def update_solution(
             setattr(solution, attr, value)
 
     solution.save()
+
+    solution.activities.clear()
+    solution.activities.set(
+        list(organization.activities.filter(uuid__in=solution_input.activity_uuids))
+    )
+
     return solution
 
 

@@ -37,7 +37,7 @@ import AddButton from 'components/add-button'
 import { useBoolean } from 'hooks/use-boolean'
 import UpdateSolution from 'sections/settings/solution-update'
 import { Navigate, useSearchParams } from 'react-router-dom'
-import { getSolutionCategoryLabel } from 'sections/settings/constants'
+import { getCategoryLabelFromCode } from 'sections/settings/constants'
 import { CATEGORY_CODES } from 'layouts/dashboard/config-navigation'
 
 const TABLE_HEAD = [
@@ -118,7 +118,7 @@ const SolutionList: React.FC<Props> = ({ organizationUuid, solutions, categoryCo
       },
     })
 
-    enqueueSnackbar('Serviciul a fost șters!')
+    enqueueSnackbar('Pachetul a fost șters!')
 
     showCreateSolution.onFalse()
 
@@ -137,7 +137,7 @@ const SolutionList: React.FC<Props> = ({ organizationUuid, solutions, categoryCo
     <>
       <AddButton
         count={solutions.length}
-        label="Servicii"
+        label="Pachete"
         onClick={() => {
           setsolutionIdToEdit(null)
           showCreateSolution.onTrue()
@@ -230,11 +230,11 @@ const SolutionListView = () => {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={`Pachete ${getSolutionCategoryLabel(categoryCode)}`}
+        heading={`Pachete ${getCategoryLabelFromCode(categoryCode)}`}
         links={[
           { name: 'Pagina Principală', href: LANDING_PAGE },
           { name: 'Pachete', href: `${paths.app.settings.solution.list}?c=${CATEGORY_CODES[0]}` },
-          { name: getSolutionCategoryLabel(categoryCode) },
+          { name: getCategoryLabelFromCode(categoryCode) },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

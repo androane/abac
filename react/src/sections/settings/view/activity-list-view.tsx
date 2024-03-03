@@ -29,7 +29,6 @@ import {
   ActivityFragment,
   useDeleteOrganizationActivityMutation,
 } from 'generated/graphql'
-import { useAuthContext } from 'auth/hooks'
 import { ActivityTableFilters } from 'sections/settings/types'
 import ActivityTableFiltersResult from 'sections/settings/activity-table-filters-result'
 import ActivityTableRow from 'sections/settings/activity-table-row'
@@ -59,8 +58,6 @@ const ActivityList: React.FC<Props> = ({ organizationUuid, activities, categoryC
   const [deleteActivity, { loading }] = useDeleteOrganizationActivityMutation()
   const [activityIdToEdit, setActivityIdToEdit] = useState<null | string>(null)
 
-  const { user } = useAuthContext()
-
   const { enqueueSnackbar } = useSnackbar()
   const [tableData, setTableData] = useState(activities)
 
@@ -75,9 +72,8 @@ const ActivityList: React.FC<Props> = ({ organizationUuid, activities, categoryC
   const defaultFilters = useMemo(
     () => ({
       name: '',
-      programManagerId: user?.uuid,
     }),
-    [user?.uuid],
+    [],
   )
   const [filters, setFilters] = useState(defaultFilters)
 

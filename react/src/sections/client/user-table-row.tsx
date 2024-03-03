@@ -118,7 +118,7 @@ const UserTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRow })
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Sterge
+          Șterge
         </MenuItem>
 
         <MenuItem
@@ -128,18 +128,18 @@ const UserTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRow })
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Modifica
+          Modifică
         </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Stergere Persoana de Contact"
-        content="Esti sigur ca vrei sa stergi aceasta Persoana de Contact?"
+        title="Șterge Persoana de Contact"
+        content="Ești sigur că vrei să ștergi aceasta Persoana de Contact?"
         action={
           <LoadingButton loading={loading} variant="contained" color="error" onClick={onDeleteRow}>
-            Sterge
+            Șterge
           </LoadingButton>
         }
       />
