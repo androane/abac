@@ -1,0 +1,10 @@
+mutation UpdateOrganizationSolution($solutionInput: SolutionInput!) {
+  updateOrganizationSolution(solutionInput: $solutionInput) {
+    error {
+      ...Error
+    }
+    solution {
+      ...Solution
+    }
+  }
+}

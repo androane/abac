@@ -17,14 +17,15 @@ export const paths = {
       edit: (id: string) => `/${ROOTS.CLIENT}/${id}/edit`,
       invoice: {
         list: `/${ROOTS.CLIENT}/invoice/list`,
-        new: `/${ROOTS.CLIENT}/invoice/new`,
-        edit: (id: string) => `/${ROOTS.CLIENT}/invoice/${id}/edit`,
       },
     },
     settings: {
       root: `/${ROOTS.SETTINGS}`,
-      service: {
-        list: `/${ROOTS.SETTINGS}/service/list`,
+      activity: {
+        list: `/${ROOTS.SETTINGS}/activity/list`,
+      },
+      solution: {
+        list: `/${ROOTS.SETTINGS}/solution/list`,
       },
     },
   },

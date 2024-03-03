@@ -7,7 +7,7 @@ from django.db import models
 
 from core.models import BaseModel
 from core.utils import replace_filename
-from organization.constants import ClientUserRoleEnum, CurrencyEnum, UnitPriceTypeEnum
+from organization.constants import ClientUserRoleEnum, CurrencyEnum, UnitCostTypeEnum
 
 
 class TotalByCurrency(TypedDict):
@@ -155,6 +155,115 @@ class Invoice(BaseModel):
         return totals
 
 
+class ActivityCategory(BaseModel):
+    class Meta:
+        verbose_name_plural = "Activity Categories"
+
+    """Category of the Activity e.g. Accounting, Human Resources etc."""
+    constraints = [
+        models.UniqueConstraint(
+            fields=["name"],
+            condition=models.Q(deleted__isnull=True),
+            name="organization_activity_category_name_unique",
+        ),
+        models.UniqueConstraint(
+            fields=["code"],
+            condition=models.Q(deleted__isnull=True),
+            name="organization_activity_category_code_unique",
+        ),
+    ]
+
+    name = models.CharField(max_length=64)
+    code = models.CharField(max_length=64)
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name
+
+
+class Activity(BaseModel):
+    class Meta:
+        verbose_name_plural = "Activities"
+
+    constraints = [
+        models.UniqueConstraint(
+            fields=["name"],
+            condition=models.Q(deleted__isnull=True),
+            name="organization_activity_name_unique",
+        )
+    ]
+
+    name = models.CharField(max_length=128)
+    description = models.TextField(blank=True, null=True)
+    is_custom = models.BooleanField(
+        help_text="Is this a custom activity for the client? If not, it is an org-level activity"
+    )
+    unit_cost = models.IntegerField(
+        null=True, blank=True, help_text="Cost of the Activity per unit type"
+    )
+    unit_cost_currency = models.CharField(max_length=3, choices=CurrencyEnum.choices)
+    unit_cost_type = models.CharField(
+        max_length=8,
+        choices=UnitCostTypeEnum.choices,
+        help_text="The cost type of the activity can be fixed, per hour etc",
+    )
+    category = models.ForeignKey(ActivityCategory, on_delete=models.CASCADE)
+    organization = models.ForeignKey(
+        Organization, on_delete=models.CASCADE, related_name="activities"
+    )
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name
+
+
+class ClientActivity(BaseModel):
+    constraints = [
+        models.UniqueConstraint(
+            fields=["date", "client", "activity"],
+            condition=models.Q(deleted__isnull=True),
+            name="organization_client_activity_date_client_activity_unique",
+        )
+    ]
+
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    quantity = models.SmallIntegerField(
+        default=1, help_text="How many of these items are on the invoice"
+    )
+    minutes_allocated = models.SmallIntegerField(
+        blank=True,
+        null=True,
+        help_text="Number of minutes allocated to the customer for this activity",
+    )
+    date = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Date when the activity was executed",
+    )
+
+
+class Solution(BaseModel):
+    name = models.CharField(max_length=64)
+    unit_cost = models.IntegerField(
+        null=True, blank=True, help_text="Cost/Price of the Solution"
+    )
+    unit_cost_currency = models.CharField(max_length=3, choices=CurrencyEnum.choices)
+
+    category = models.ForeignKey(ActivityCategory, on_delete=models.CASCADE)
+    activities = models.ManyToManyField(Activity, related_name="solutions")
+    organization = models.ForeignKey(
+        Organization, on_delete=models.CASCADE, related_name="solutions"
+    )
+
+    def __str__(self):
+        return self.name
+
+
 class StandardInvoiceItemCategory(BaseModel):
     class Meta:
         verbose_name_plural = "Standard Invoice Item Categories"
@@ -196,7 +305,7 @@ class BaseInvoiceItem(BaseModel):
     unit_price_currency = models.CharField(max_length=3, choices=CurrencyEnum.choices)
     unit_price_type = models.CharField(
         max_length=8,
-        choices=UnitPriceTypeEnum.choices,
+        choices=UnitCostTypeEnum.choices,
         help_text="The type of the invoice item can be fixed, per hour etc",
     )
     category = models.ForeignKey(StandardInvoiceItemCategory, on_delete=models.CASCADE)
@@ -260,9 +369,9 @@ class InvoiceItem(BaseInvoiceItem):
 
     @property
     def total(self) -> float:
-        if self.unit_price_type == UnitPriceTypeEnum.FIXED.value:
+        if self.unit_price_type == UnitCostTypeEnum.FIXED.value:
             return self.quantity * self.unit_price
-        elif self.unit_price_type == UnitPriceTypeEnum.HOURLY.value:
+        elif self.unit_price_type == UnitCostTypeEnum.HOURLY.value:
             return self.quantity * (self.unit_price * self.minutes_allocated / 60)
         else:
             raise Exception(f"Unknown {self.unit_price_currency}")

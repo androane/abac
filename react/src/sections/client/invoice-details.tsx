@@ -42,11 +42,11 @@ const TABLE_HEAD = [
   { id: 'name', label: 'Nume' },
   { id: 'description', label: 'Explicatie' },
   { id: 'itemDate', label: 'Data' },
-  { id: 'unitPriceType', label: 'Tip tarifare' },
+  { id: 'unitCostType', label: 'Tip Cost' },
   { id: 'minutesAllocated', label: 'Minute Alocate' },
-  { id: 'unitPrice', label: 'Suma' },
+  { id: 'unitCost', label: 'Suma' },
   { id: 'quantity', label: 'Cantitate' },
-  { id: 'totalPrice', label: 'Suma Totala' },
+  { id: 'totalCost', label: 'Suma Totala' },
   { id: '', width: 88 },
 ]
 

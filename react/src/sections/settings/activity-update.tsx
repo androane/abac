@@ -13,45 +13,46 @@ import DialogActions from '@mui/material/DialogActions'
 import FormProvider, { RHFSelect, RHFTextField } from 'components/hook-form'
 import { useSnackbar } from 'components/snackbar'
 import {
-  StandardInvoiceItemFragment,
+  ActivityFragment,
   CurrencyEnum,
-  useUpdateOrganizationServiceMutation,
-  UnitPriceTypeEnum,
-  StandardInvoiceItemFragmentDoc,
+  useUpdateOrganizationActivityMutation,
+  UnitCostTypeEnum,
+  ActivityFragmentDoc,
 } from 'generated/graphql'
-import { getServiceCategoryLabel, getUnitPriceTypeLabel } from 'sections/settings/constants'
+import { getCategoryLabelFromCode, getUnitCostTypeLabel } from 'sections/settings/constants'
 import getErrorMessage from 'utils/api-codes'
 
 type Props = {
+  organizationUuid: string
   categoryCode: string
-  service?: StandardInvoiceItemFragment
+  activity?: ActivityFragment
   onClose: () => void
 }
 
-const UpdateService: React.FC<Props> = ({ categoryCode, service, onClose }) => {
-  const [updateOrganizationService, { loading }] = useUpdateOrganizationServiceMutation()
+const UpdateActivity: React.FC<Props> = ({ organizationUuid, categoryCode, activity, onClose }) => {
+  const [updateOrganizationActivity, { loading }] = useUpdateOrganizationActivityMutation()
   const { enqueueSnackbar } = useSnackbar()
 
   const defaultValues = useMemo(
     () => ({
-      name: service?.name || '',
-      unitPrice: service?.unitPrice || undefined,
-      unitPriceCurrency: service?.unitPriceCurrency || CurrencyEnum.RON,
-      unitPriceType: service?.unitPriceType || UnitPriceTypeEnum.HOURLY,
+      name: activity?.name || '',
+      unitCost: activity?.unitCost || undefined,
+      unitCostCurrency: activity?.unitCostCurrency || CurrencyEnum.RON,
+      unitCostType: activity?.unitCostType || UnitCostTypeEnum.HOURLY,
     }),
-    [service],
+    [activity],
   )
 
   const form = useForm({
     resolver: yupResolver(
       Yup.object().shape({
         name: Yup.string().required('Acest câmp este obligatoriu'),
-        unitPrice: Yup.number(),
-        unitPriceCurrency: Yup.mixed<CurrencyEnum>()
+        unitCost: Yup.number(),
+        unitCostCurrency: Yup.mixed<CurrencyEnum>()
           .oneOf(Object.values(CurrencyEnum))
           .required('Acest câmp este obligatoriu'),
-        unitPriceType: Yup.mixed<UnitPriceTypeEnum>()
-          .oneOf(Object.values(UnitPriceTypeEnum))
+        unitCostType: Yup.mixed<UnitCostTypeEnum>()
+          .oneOf(Object.values(UnitCostTypeEnum))
           .required('Acest câmp este obligatoriu'),
       }),
     ),
@@ -60,29 +61,30 @@ const UpdateService: React.FC<Props> = ({ categoryCode, service, onClose }) => {
 
   const onSubmit = form.handleSubmit(async data => {
     try {
-      await updateOrganizationService({
+      await updateOrganizationActivity({
         variables: {
-          standardInvoiceItemInput: {
-            uuid: service?.uuid,
+          activityInput: {
+            uuid: activity?.uuid,
             categoryCode,
             name: data.name,
-            unitPrice: data.unitPrice || 0,
-            unitPriceCurrency: data.unitPriceCurrency,
-            unitPriceType: data.unitPriceType,
+            unitCost: data.unitCost,
+            unitCostCurrency: data.unitCostCurrency,
+            unitCostType: data.unitCostType,
           },
         },
         update(cache, { data: cacheData }) {
           cache.modify({
+            id: cache.identify({ uuid: organizationUuid, __typename: 'OrganizationType' }),
             fields: {
-              organizationServices(existingServices = []) {
-                if (!service) {
-                  const newService = cache.writeFragment({
-                    data: cacheData?.updateOrganizationService?.service,
-                    fragment: StandardInvoiceItemFragmentDoc,
-                  })
-                  return [newService, ...existingServices]
+              activities(activities) {
+                if (activity) {
+                  return activities
                 }
-                return existingServices
+                const newActivity = cache.writeFragment({
+                  data: cacheData?.updateOrganizationActivity?.activity,
+                  fragment: ActivityFragmentDoc,
+                })
+                return [newActivity, ...activities]
               },
             },
           })
@@ -92,6 +94,7 @@ const UpdateService: React.FC<Props> = ({ categoryCode, service, onClose }) => {
       enqueueSnackbar('Serviciu actualizat cu succes!')
       onClose()
     } catch (error) {
+      console.log(error)
       enqueueSnackbar(getErrorMessage((error as Error).message), {
         variant: 'error',
       })
@@ -109,7 +112,7 @@ const UpdateService: React.FC<Props> = ({ categoryCode, service, onClose }) => {
       }}
     >
       <FormProvider methods={form} onSubmit={onSubmit}>
-        <DialogTitle>Serviciu {getServiceCategoryLabel(categoryCode)}</DialogTitle>
+        <DialogTitle>Serviciu {getCategoryLabelFromCode(categoryCode)}</DialogTitle>
         <DialogContent>
           <br />
           <Box
@@ -123,10 +126,10 @@ const UpdateService: React.FC<Props> = ({ categoryCode, service, onClose }) => {
           >
             <RHFTextField name="name" label="Nume serviciu" />
             <div />
-            <RHFTextField name="unitPrice" label="Cost" />
+            <RHFTextField name="unitCost" label="Cost" />
             <RHFSelect
               native
-              name="unitPriceCurrency"
+              name="unitCostCurrency"
               label="Moneda"
               InputLabelProps={{ shrink: true }}
             >
@@ -138,13 +141,13 @@ const UpdateService: React.FC<Props> = ({ categoryCode, service, onClose }) => {
             </RHFSelect>
             <RHFSelect
               native
-              name="unitPriceType"
-              label="Tip tarifare"
+              name="unitCostType"
+              label="Tip Cost"
               InputLabelProps={{ shrink: true }}
             >
-              {Object.keys(UnitPriceTypeEnum).map(type => (
+              {Object.keys(UnitCostTypeEnum).map(type => (
                 <option key={type} value={type}>
-                  {getUnitPriceTypeLabel(type as UnitPriceTypeEnum)}
+                  {getUnitCostTypeLabel(type as UnitCostTypeEnum)}
                 </option>
               ))}
             </RHFSelect>
@@ -154,7 +157,7 @@ const UpdateService: React.FC<Props> = ({ categoryCode, service, onClose }) => {
               {'<'} Înapoi
             </Button>
             <LoadingButton type="submit" variant="contained" loading={loading}>
-              {service ? 'Salvează' : 'Adaugă Serviciu'}
+              {activity ? 'Salvează' : 'Adaugă Serviciu'}
             </LoadingButton>
           </DialogActions>
         </DialogContent>
@@ -163,4 +166,4 @@ const UpdateService: React.FC<Props> = ({ categoryCode, service, onClose }) => {
   )
 }
 
-export default UpdateService
+export default UpdateActivity

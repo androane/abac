@@ -1,4 +1,4 @@
-#import "../fragments/Error.graphql"
+#import "./fragments/Error.graphql"
 #import "./fragments/AuthUser.graphql"
 
 mutation Login($email: String!, $password: String!) {

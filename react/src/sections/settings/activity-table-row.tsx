@@ -12,17 +12,17 @@ import { useBoolean } from 'hooks/use-boolean'
 import { ConfirmDialog } from 'components/custom-dialog'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
-import { StandardInvoiceItemFragment } from 'generated/graphql'
-import { getUnitPriceTypeLabel } from 'sections/settings/constants'
+import { ActivityFragment } from 'generated/graphql'
+import { getUnitCostTypeLabel } from 'sections/settings/constants'
 
 type Props = {
   onEditRow: VoidFunction
-  row: StandardInvoiceItemFragment
+  row: ActivityFragment
   onDeleteRow: VoidFunction
   loading: boolean
 }
 
-const ServiceTableRow: React.FC<Props> = ({ row, onEditRow, onDeleteRow, loading }) => {
+const ActivityTableRow: React.FC<Props> = ({ row, onEditRow, onDeleteRow, loading }) => {
   const confirm = useBoolean()
 
   const popover = usePopover()
@@ -48,7 +48,7 @@ const ServiceTableRow: React.FC<Props> = ({ row, onEditRow, onDeleteRow, loading
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={row.unitPrice}
+            primary={row.unitCost}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -59,7 +59,7 @@ const ServiceTableRow: React.FC<Props> = ({ row, onEditRow, onDeleteRow, loading
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={row.unitPriceCurrency}
+            primary={row.unitCostCurrency}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -70,7 +70,7 @@ const ServiceTableRow: React.FC<Props> = ({ row, onEditRow, onDeleteRow, loading
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={getUnitPriceTypeLabel(row.unitPriceType)}
+            primary={getUnitCostTypeLabel(row.unitCostType)}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -129,4 +129,4 @@ const ServiceTableRow: React.FC<Props> = ({ row, onEditRow, onDeleteRow, loading
   )
 }
 
-export default ServiceTableRow
+export default ActivityTableRow

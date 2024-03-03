@@ -1,0 +1,7 @@
+mutation DeleteOrganizationActivity($uuid: String!) {
+  deleteOrganizationActivity(uuid: $uuid) {
+    error {
+      ...Error
+    }
+  }
+}

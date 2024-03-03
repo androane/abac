@@ -1,5 +1,5 @@
-#import "../fragments/Error.graphql"
-#import "../fragments/File.graphql"
+#import "./fragments/Error.graphql"
+#import "./fragments/File.graphql"
 
 mutation CreateClientFiles($clientUuid: String!, $clientFilesInput: [ClientFileInput!]!) {
   createClientFiles(clientUuid: $clientUuid, clientFilesInput: $clientFilesInput) {

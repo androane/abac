@@ -22,6 +22,6 @@ class ClientUserRoleEnum(BaseEnum):
     MANAGER = enum.auto()
 
 
-class UnitPriceTypeEnum(BaseEnum):
+class UnitCostTypeEnum(BaseEnum):
     FIXED = enum.auto()
     HOURLY = enum.auto()

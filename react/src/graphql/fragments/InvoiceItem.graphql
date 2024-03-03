@@ -1,20 +1,4 @@
 fragment InvoiceItem on InvoiceItemType {
   uuid
   name
-  unitPrice
-  unitPriceCurrency
-  unitPriceType
-  quantity
-  itemDate
-  description
-  minutesAllocated
-  isRecurring
-  total
-  standardInvoiceItem {
-    uuid
-  }
-  category {
-    uuid
-    code
-  }
 }

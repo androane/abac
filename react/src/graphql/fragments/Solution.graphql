@@ -1,0 +1,13 @@
+fragment Solution on SolutionType {
+  uuid
+  name
+  unitCost
+  unitCostCurrency
+  category {
+    uuid
+    code
+  }
+  activities {
+    ...Activity
+  }
+}

@@ -1,4 +1,4 @@
-#import "../fragments/ProgramManager.graphql"
+#import "./fragments/ProgramManager.graphql"
 
 query ClientProgramManagers {
   clientProgramManagers {

@@ -16,13 +16,13 @@ import { useSnackbar } from 'components/snackbar'
 import {
   CurrencyEnum,
   OrganizationServicesQuery,
-  UnitPriceTypeEnum,
+  UnitCostTypeEnum,
   useUpdateClientInvoiceItemMutation,
 } from 'generated/graphql'
 import { Button, DialogActions, ListSubheader, MenuItem, Typography } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton'
 import getErrorMessage from 'utils/api-codes'
-import { getServiceCategoryLabel } from 'sections/settings/constants'
+import { getCategoryLabelFromCode } from 'sections/settings/constants'
 import React from 'react'
 import { APIInvoiceItem } from './types'
 
@@ -59,13 +59,13 @@ const UpdateInvoiceItem: React.FC<Props> = ({
   const isHourlyService = (serviceUuid: string) =>
     Boolean(
       organizationServices
-        .filter(s => s.unitPriceType === UnitPriceTypeEnum.HOURLY)
+        .filter(s => s.unitCostType === UnitCostTypeEnum.HOURLY)
         .find(s => s.uuid === serviceUuid),
     )
   const isFixedService = (serviceUuid: string) =>
     Boolean(
       organizationServices
-        .filter(s => s.unitPriceType === UnitPriceTypeEnum.FIXED)
+        .filter(s => s.unitCostType === UnitCostTypeEnum.FIXED)
         .find(s => s.uuid === serviceUuid),
     )
 
@@ -77,8 +77,8 @@ const UpdateInvoiceItem: React.FC<Props> = ({
       name: invoiceItem?.name || '',
       serviceCategoryCode: invoiceItem?.category.code || '',
       description: invoiceItem?.description,
-      unitPrice: invoiceItem?.unitPrice,
-      unitPriceCurrency: invoiceItem?.unitPriceCurrency || CurrencyEnum.RON,
+      unitCost: invoiceItem?.unitCost,
+      unitCostCurrency: invoiceItem?.unitCostCurrency || CurrencyEnum.RON,
       quantity: invoiceItem?.quantity || 1,
       minutesAllocated: invoiceItem?.minutesAllocated,
       isRecurring: invoiceItem?.isRecurring || false,
@@ -104,14 +104,14 @@ const UpdateInvoiceItem: React.FC<Props> = ({
             return schema
           }),
         standardServiceUuid: Yup.string().required('Acest câmp este obligatoriu'),
-        unitPrice: Yup.number()
+        unitCost: Yup.number()
           .nullable()
           .when('standardServiceUuid', (uuids, schema) => {
             if (uuids[0] === NON_STANDARD_SERVICE)
               return schema.required('Acest câmp este obligatoriu')
             return schema
           }),
-        unitPriceCurrency: Yup.mixed<CurrencyEnum>().oneOf(Object.values(CurrencyEnum)).nullable(),
+        unitCostCurrency: Yup.mixed<CurrencyEnum>().oneOf(Object.values(CurrencyEnum)).nullable(),
         description: Yup.string().nullable(),
         minutesAllocated: Yup.number()
           .nullable()
@@ -139,8 +139,8 @@ const UpdateInvoiceItem: React.FC<Props> = ({
             name: data.name,
             serviceCategoryCode: data.serviceCategoryCode,
             description: data.description,
-            unitPrice: data.unitPrice,
-            unitPriceCurrency: data.unitPriceCurrency,
+            unitCost: data.unitCost,
+            unitCostCurrency: data.unitCostCurrency,
             quantity: data.quantity,
             minutesAllocated: data.minutesAllocated,
             isRecurring: data.isRecurring,
@@ -188,7 +188,7 @@ const UpdateInvoiceItem: React.FC<Props> = ({
               {Object.entries(groupedOrganizationServices).map(([categoryCode, services]) => {
                 return [
                   <ListSubheader sx={{ color: 'primary.main' }}>
-                    {getServiceCategoryLabel(categoryCode)}
+                    {getCategoryLabelFromCode(categoryCode)}
                   </ListSubheader>,
                   ...orderBy(services, 'name').map(service => (
                     <MenuItem key={service.uuid} value={service.uuid}>
@@ -205,7 +205,7 @@ const UpdateInvoiceItem: React.FC<Props> = ({
                 <RHFSelect name="serviceCategoryCode" label="Domeniu">
                   {Object.keys(groupedOrganizationServices).map(categoryCode => (
                     <MenuItem key={categoryCode} value={categoryCode}>
-                      {getServiceCategoryLabel(categoryCode)}
+                      {getCategoryLabelFromCode(categoryCode)}
                     </MenuItem>
                   ))}
                 </RHFSelect>
@@ -230,10 +230,10 @@ const UpdateInvoiceItem: React.FC<Props> = ({
             />
             {isNonStandardService && (
               <>
-                <RHFTextField name="unitPrice" label="Suma" />
+                <RHFTextField name="unitCost" label="Suma" />
                 <RHFSelect
                   native
-                  name="unitPriceCurrency"
+                  name="unitCostCurrency"
                   label="Moneda"
                   InputLabelProps={{ shrink: true }}
                 >

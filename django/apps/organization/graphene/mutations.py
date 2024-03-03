@@ -3,32 +3,39 @@ import graphene
 
 from api.graphene.mutations import BaseMutation
 from organization.graphene.types import (
+    ActivityInput,
+    ActivityType,
+    ClientActivityInput,
+    ClientActivityType,
     ClientFileInput,
     ClientType,
     ClientUserInput,
-    InvoiceItemInput,
     InvoiceStatusEnumType,
     InvoiceType,
-    StandardInvoiceItemInput,
-    StandardInvoiceItemType,
+    SolutionInput,
+    SolutionType,
+)
+from organization.services.client_activity_service import (
+    delete_client_activity,
+    update_client_activity,
 )
 from organization.services.client_files_service import (
     create_client_files,
     delete_client_file,
 )
-from organization.services.client_invoice_service import (
-    delete_client_invoice_item,
-    update_client_invoice_item,
-    update_client_invoice_status,
-)
+from organization.services.client_invoice_service import update_client_invoice_status
 from organization.services.client_service import delete_client, update_or_create_client
 from organization.services.client_users_service import (
     delete_client_user,
     update_client_user,
 )
-from organization.services.organization_invoice_service import (
-    delete_standard_invoice_item,
-    update_standard_invoice_item,
+from organization.services.organization_activity_service import (
+    delete_activity,
+    update_activity,
+)
+from organization.services.organization_solution_service import (
+    delete_solution,
+    update_solution,
 )
 from user.decorators import logged_in_user_required
 from user.graphene.types import UserType
@@ -85,31 +92,29 @@ class UpdateClientInvoiceStatus(BaseMutation):
         }
 
 
-class UpdateClientInvoiceItem(BaseMutation):
+class UpdateClientActivity(BaseMutation):
     class Arguments:
-        invoice_uuid = graphene.String(required=True)
-        invoice_item_input = graphene.NonNull(InvoiceItemInput)
+        client_uuid = graphene.String(required=True)
+        client_activity_input = graphene.NonNull(ClientActivityInput)
 
-    invoice = graphene.Field(InvoiceType)
+    client_activity = graphene.Field(ClientActivityType)
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        invoice = update_client_invoice_item(user.organization, **kwargs)
+        client_activity = update_client_activity(user.organization, **kwargs)
 
         return {
-            "invoice": invoice,
+            "client_activity": client_activity,
         }
 
 
-class DeleteClientInvoiceItem(BaseMutation):
+class DeleteClientActivity(BaseMutation):
     class Arguments:
-        invoice_item_uuid = graphene.String(required=True)
-
-    invoice = graphene.Field(InvoiceType)
+        activity_uuid = graphene.String(required=True)
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        delete_client_invoice_item(user.organization, **kwargs)
+        delete_client_activity(user.organization, **kwargs)
 
         return {}
 
@@ -168,29 +173,53 @@ class DeleteClientUser(BaseMutation):
         return {}
 
 
-class UpdateOrganizationService(BaseMutation):
+class UpdateOrganizationActivity(BaseMutation):
     class Arguments:
-        standard_invoice_item_input = graphene.NonNull(StandardInvoiceItemInput)
+        activity_input = graphene.NonNull(ActivityInput)
 
-    service = graphene.Field(StandardInvoiceItemType)
+    activity = graphene.Field(ActivityType)
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        standard_invoice_item = update_standard_invoice_item(
-            user.organization, **kwargs
-        )
+        activity = update_activity(user.organization, **kwargs)
 
         return {
-            "service": standard_invoice_item,
+            "activity": activity,
         }
 
 
-class DeleteOrganizationService(BaseMutation):
+class DeleteOrganizationActivity(BaseMutation):
     class Arguments:
         uuid = graphene.String(required=True)
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        delete_standard_invoice_item(user.organization, **kwargs)
+        delete_activity(user.organization, **kwargs)
+
+        return {}
+
+
+class UpdateOrganizationSolution(BaseMutation):
+    class Arguments:
+        solution_input = graphene.NonNull(SolutionInput)
+
+    solution = graphene.Field(SolutionType)
+
+    @logged_in_user_required
+    def mutate(self, user: User, **kwargs):
+        activity = update_solution(user.organization, **kwargs)
+
+        return {
+            "activity": activity,
+        }
+
+
+class DeleteOrganizationSolution(BaseMutation):
+    class Arguments:
+        uuid = graphene.String(required=True)
+
+    @logged_in_user_required
+    def mutate(self, user: User, **kwargs):
+        delete_solution(user.organization, **kwargs)
 
         return {}

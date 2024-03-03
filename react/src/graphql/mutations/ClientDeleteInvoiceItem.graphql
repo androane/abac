@@ -1,7 +1,0 @@
-mutation DeleteClientInvoiceItem($invoiceItemUuid: String!) {
-  deleteClientInvoiceItem(invoiceItemUuid: $invoiceItemUuid) {
-    error {
-      ...Error
-    }
-  }
-}

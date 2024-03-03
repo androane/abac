@@ -1,0 +1,8 @@
+query OrganizationActivities {
+  organization {
+    uuid
+    activities {
+      ...Activity
+    }
+  }
+}

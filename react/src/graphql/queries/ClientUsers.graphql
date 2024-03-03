@@ -1,4 +1,4 @@
-#import "../fragments/ClientUser.graphql"
+#import "./fragments/ClientUser.graphql"
 
 query ClientUsers($clientUuid: String!) {
   clientUsers(clientUuid: $clientUuid) {

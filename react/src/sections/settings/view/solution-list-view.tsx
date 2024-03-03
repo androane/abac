@@ -25,46 +25,45 @@ import {
 
 import ResponseHandler from 'components/response-handler'
 import {
-  useOrganizationServicesQuery,
-  StandardInvoiceItemFragment,
-  useDeleteOrganizationServiceMutation,
+  useOrganizationSolutionsQuery,
+  SolutionFragment,
+  useDeleteOrganizationSolutionMutation,
 } from 'generated/graphql'
 import { useAuthContext } from 'auth/hooks'
-import { ServiceTableFilters } from 'sections/settings/types'
-import ServiceTableFiltersResult from 'sections/settings/service-table-filters-result'
-import ServiceTableRow from 'sections/settings/service-table-row'
+import { SolutionTableFilters } from 'sections/settings/types'
+import SolutionTableFiltersResult from 'sections/settings/solution-table-filters-result'
+import SolutionTableRow from 'sections/settings/solution-table-row'
 import AddButton from 'components/add-button'
 import { useBoolean } from 'hooks/use-boolean'
-import UpdateService from 'sections/settings/service-update'
+import UpdateSolution from 'sections/settings/solution-update'
 import { Navigate, useSearchParams } from 'react-router-dom'
-import { getServiceCategoryLabel } from 'sections/settings/constants'
+import { getSolutionCategoryLabel } from 'sections/settings/constants'
+import { CATEGORY_CODES } from 'layouts/dashboard/config-navigation'
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Nume' },
-  { id: 'unitPrice', label: 'Cost' },
-  { id: 'unitPriceCurrency', label: 'Moneda' },
-  { id: 'unitPriceType', label: 'Tip tarif' },
   { id: '', width: 88 },
 ]
 
 type Props = {
+  organizationUuid: string
   categoryCode: string
-  services: StandardInvoiceItemFragment[]
+  solutions: SolutionFragment[]
 }
 
-const ServiceList: React.FC<Props> = ({ services, categoryCode }) => {
-  const showCreateService = useBoolean()
-  const [deleteService, { loading }] = useDeleteOrganizationServiceMutation()
-  const [serviceIdToEdit, setServiceIdToEdit] = useState<null | string>(null)
+const SolutionList: React.FC<Props> = ({ organizationUuid, solutions, categoryCode }) => {
+  const showCreateSolution = useBoolean()
+  const [deleteSolution, { loading }] = useDeleteOrganizationSolutionMutation()
+  const [solutionIdToEdit, setsolutionIdToEdit] = useState<null | string>(null)
 
   const { user } = useAuthContext()
 
   const { enqueueSnackbar } = useSnackbar()
-  const [tableData, setTableData] = useState(services)
+  const [tableData, setTableData] = useState(solutions)
 
   useEffect(() => {
-    setTableData(services)
-  }, [services])
+    setTableData(solutions)
+  }, [solutions])
 
   const table = useTable()
 
@@ -110,10 +109,10 @@ const ServiceList: React.FC<Props> = ({ services, categoryCode }) => {
   }, [defaultFilters])
 
   const handleDeleteRow = async (uuid: string) => {
-    await deleteService({
+    await deleteSolution({
       variables: { uuid },
       update(cache) {
-        const normalizedId = cache.identify({ uuid, __typename: 'StandardInvoiceItemType' })
+        const normalizedId = cache.identify({ uuid, __typename: 'SolutionType' })
         cache.evict({ id: normalizedId })
         cache.gc()
       },
@@ -121,39 +120,40 @@ const ServiceList: React.FC<Props> = ({ services, categoryCode }) => {
 
     enqueueSnackbar('Serviciul a fost șters!')
 
-    showCreateService.onFalse()
+    showCreateSolution.onFalse()
 
     table.onUpdatePageDeleteRow(dataInPage.length)
   }
 
   const handleEditRow = useCallback(
     (id: null | string) => {
-      setServiceIdToEdit(id)
-      showCreateService.onTrue()
+      setsolutionIdToEdit(id)
+      showCreateSolution.onTrue()
     },
-    [showCreateService, setServiceIdToEdit],
+    [showCreateSolution, setsolutionIdToEdit],
   )
 
   return (
     <>
       <AddButton
-        count={services.length}
+        count={solutions.length}
         label="Servicii"
         onClick={() => {
-          setServiceIdToEdit(null)
-          showCreateService.onTrue()
+          setsolutionIdToEdit(null)
+          showCreateSolution.onTrue()
         }}
       />
       <Card>
-        {showCreateService.value && (
-          <UpdateService
+        {showCreateSolution.value && (
+          <UpdateSolution
+            organizationUuid={organizationUuid}
             categoryCode={categoryCode}
-            service={services.find(_ => _.uuid === serviceIdToEdit)}
-            onClose={showCreateService.onFalse}
+            solution={solutions.find(_ => _.uuid === solutionIdToEdit)}
+            onClose={showCreateSolution.onFalse}
           />
         )}
         {canReset && (
-          <ServiceTableFiltersResult
+          <SolutionTableFiltersResult
             filters={filters}
             onFilters={handleFilters}
             onResetFilters={handleResetFilters}
@@ -181,7 +181,7 @@ const ServiceList: React.FC<Props> = ({ services, categoryCode }) => {
                     table.page * table.rowsPerPage + table.rowsPerPage,
                   )
                   .map(row => (
-                    <ServiceTableRow
+                    <SolutionTableRow
                       key={row.uuid}
                       row={row}
                       onDeleteRow={() => handleDeleteRow(row.uuid)}
@@ -207,7 +207,6 @@ const ServiceList: React.FC<Props> = ({ services, categoryCode }) => {
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           onRowsPerPageChange={table.onChangeRowsPerPage}
-          //
           dense={table.dense}
           onChangeDense={table.onChangeDense}
         />
@@ -216,13 +215,13 @@ const ServiceList: React.FC<Props> = ({ services, categoryCode }) => {
   )
 }
 
-const ServiceListView = () => {
+const SolutionListView = () => {
   const [searchParams] = useSearchParams()
 
   const settings = useSettingsContext()
   const categoryCode = searchParams.get('c')
 
-  const result = useOrganizationServicesQuery()
+  const result = useOrganizationSolutionsQuery()
 
   if (!categoryCode) {
     return <Navigate replace to={LANDING_PAGE} />
@@ -231,11 +230,11 @@ const ServiceListView = () => {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={`Servicii ${getServiceCategoryLabel(categoryCode)}`}
+        heading={`Pachete ${getSolutionCategoryLabel(categoryCode)}`}
         links={[
           { name: 'Pagina Principală', href: LANDING_PAGE },
-          { name: 'Servicii', href: paths.app.settings.service.list },
-          { name: getServiceCategoryLabel(categoryCode) },
+          { name: 'Pachete', href: `${paths.app.settings.solution.list}?c=${CATEGORY_CODES[0]}` },
+          { name: getSolutionCategoryLabel(categoryCode) },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -243,10 +242,11 @@ const ServiceListView = () => {
       />
 
       <ResponseHandler {...result}>
-        {({ organizationServices }) => {
+        {({ organization }) => {
           return (
-            <ServiceList
-              services={organizationServices.filter(s => s.category?.code === categoryCode)}
+            <SolutionList
+              organizationUuid={organization.uuid}
+              solutions={organization.solutions.filter(s => s.category?.code === categoryCode)}
               categoryCode={categoryCode}
             />
           )
@@ -261,9 +261,9 @@ function applyFilter({
   comparator,
   filters,
 }: {
-  inputData: StandardInvoiceItemFragment[]
+  inputData: SolutionFragment[]
   comparator: (a: any, b: any) => number
-  filters: ServiceTableFilters
+  filters: SolutionTableFilters
 }) {
   const stabilizedThis = inputData.map((el, index) => [el, index] as const)
 
@@ -284,4 +284,4 @@ function applyFilter({
   return inputData
 }
 
-export default ServiceListView
+export default SolutionListView

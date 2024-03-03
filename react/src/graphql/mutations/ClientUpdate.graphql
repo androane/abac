@@ -1,5 +1,5 @@
-#import "../fragments/Error.graphql"
-#import "../fragments/Client.graphql"
+#import "./fragments/Error.graphql"
+#import "./fragments/Client.graphql"
 
 mutation UpdateClient(
   $uuid: String

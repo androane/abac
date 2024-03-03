@@ -4,15 +4,8 @@ from typing import Optional
 import pendulum
 from django.conf import settings
 
-from organization.constants import InvoiceStatusEnum, UnitPriceTypeEnum
-from organization.graphene.types import InvoiceItemInput
-from organization.models import (
-    Client,
-    Invoice,
-    InvoiceItem,
-    Organization,
-    StandardInvoiceItemCategory,
-)
+from organization.constants import InvoiceStatusEnum
+from organization.models import Client, Invoice, Organization
 
 
 def get_client_invoice(
@@ -67,61 +60,3 @@ def update_client_invoice_status(
 
     invoice.save()
     return invoice
-
-
-def update_client_invoice_item(
-    org: Organization,
-    invoice_uuid: str,
-    invoice_item_input: InvoiceItemInput,
-) -> Invoice:
-    invoice = Invoice.objects.get(uuid=invoice_uuid, client__organization=org)
-    if invoice_item_input.uuid:
-        invoice_item = invoice.items.get(uuid=invoice_item_input.uuid)
-    else:
-        invoice_item = InvoiceItem(invoice=invoice)
-
-    if invoice_item_input.standard_service_uuid:
-        standard_invoice_item = org.standard_invoice_items.get(
-            uuid=invoice_item_input.standard_service_uuid
-        )
-        invoice_item.standard_invoice_item = standard_invoice_item
-        for field in (
-            "name",
-            "unit_price",
-            "unit_price_currency",
-            "unit_price_type",
-            "category_id",
-        ):
-            setattr(invoice_item, field, getattr(standard_invoice_item, field))
-    else:
-        invoice_item.standard_invoice_item = None
-        category = StandardInvoiceItemCategory.objects.get(
-            code=invoice_item_input.service_category_code
-        )
-        invoice_item.category = category
-        for field in (
-            "name",
-            "unit_price",
-            "unit_price_currency",
-        ):
-            setattr(invoice_item, field, getattr(invoice_item_input, field))
-        invoice_item.unit_price_type = UnitPriceTypeEnum.FIXED.value
-
-    for field in (
-        "description",
-        "item_date",
-        "minutes_allocated",
-        "is_recurring",
-        "quantity",
-    ):
-        setattr(invoice_item, field, getattr(invoice_item_input, field))
-
-    invoice_item.save()
-    return invoice
-
-
-def delete_client_invoice_item(org: Organization, invoice_item_uuid: str) -> None:
-    invoice_item = InvoiceItem.objects.get(
-        uuid=invoice_item_uuid, invoice__client__organization=org
-    )
-    invoice_item.delete()

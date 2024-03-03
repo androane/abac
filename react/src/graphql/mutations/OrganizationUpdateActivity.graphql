@@ -1,0 +1,10 @@
+mutation UpdateOrganizationActivity($activityInput: ActivityInput!) {
+  updateOrganizationActivity(activityInput: $activityInput) {
+    error {
+      ...Error
+    }
+    activity {
+      ...Activity
+    }
+  }
+}

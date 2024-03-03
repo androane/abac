@@ -1,7 +1,0 @@
-#import "./fragments/StandardInvoiceItem.graphql"
-
-query OrganizationServices {
-  organizationServices {
-    ...StandardInvoiceItem
-  }
-}

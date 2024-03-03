@@ -1,0 +1,11 @@
+fragment Activity on ActivityType {
+  uuid
+  name
+  unitCost
+  unitCostCurrency
+  unitCostType
+  category {
+    uuid
+    code
+  }
+}

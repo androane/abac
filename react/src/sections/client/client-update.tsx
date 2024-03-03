@@ -90,14 +90,14 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
           cache.modify({
             fields: {
               clients(existingClients = []) {
-                if (!client) {
-                  const newClient = cache.writeFragment({
-                    data: cacheData?.updateClient?.client,
-                    fragment: ClientFragmentDoc,
-                  })
-                  return [newClient, ...existingClients]
+                if (client) {
+                  return existingClients
                 }
-                return existingClients
+                const newClient = cache.writeFragment({
+                  data: cacheData?.updateClient?.client,
+                  fragment: ClientFragmentDoc,
+                })
+                return [newClient, ...existingClients]
               },
             },
           })

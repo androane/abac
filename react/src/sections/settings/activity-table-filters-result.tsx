@@ -7,23 +7,19 @@ import Paper from '@mui/material/Paper'
 import Stack, { StackProps } from '@mui/material/Stack'
 
 import Iconify from 'components/iconify'
-import { ServiceTableFilters } from './types'
+import { ActivityTableFilters } from './types'
 
 type Props = StackProps & {
-  filters: ServiceTableFilters
+  filters: ActivityTableFilters
   onFilters: (name: string, value: string) => void
-  //
   onResetFilters: VoidFunction
-  //
   results: number
 }
 
-export default function ServiceTableFiltersResult({
+export default function ActivityTableFiltersResult({
   filters,
   onFilters,
-  //
   onResetFilters,
-  //
   results,
   ...other
 }: Props) {

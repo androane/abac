@@ -10,29 +10,51 @@ from organization.constants import (
     ClientUserRoleEnum,
     CurrencyEnum,
     InvoiceStatusEnum,
-    UnitPriceTypeEnum,
+    UnitCostTypeEnum,
 )
 from organization.models import (
+    Activity,
+    ActivityCategory,
     Client,
+    ClientActivity,
     ClientFile,
     ClientUserProfile,
     Invoice,
     InvoiceItem,
     Organization,
-    StandardInvoiceItem,
-    StandardInvoiceItemCategory,
+    Solution,
 )
 from user.graphene.types import UserType
 
 CurrencyEnumType = graphene.Enum.from_enum(CurrencyEnum)
-UnitPriceTypeEnumType = graphene.Enum.from_enum(UnitPriceTypeEnum)
+UnitCostTypeEnumType = graphene.Enum.from_enum(UnitCostTypeEnum)
 InvoiceStatusEnumType = graphene.Enum.from_enum(InvoiceStatusEnum)
 ClientUserRoleEnumType = graphene.Enum.from_enum(ClientUserRoleEnum)
 
 
-class StandardInvoiceItemCategoryType(DjangoObjectType):
+class SolutionType(DjangoObjectType):
     class Meta:
-        model = StandardInvoiceItemCategory
+        model = Solution
+        only_fields = (
+            "uuid",
+            "name",
+            "unit_cost",
+            "unit_cost_currency",
+            "category",
+            "activities",
+        )
+
+    unit_cost_currency = CurrencyEnumType(required=True)
+
+
+class SolutionInput(graphene.InputObjectType):
+    uuid = graphene.String()
+    name = graphene.String(required=True)
+
+
+class ActivityCategoryType(DjangoObjectType):
+    class Meta:
+        model = ActivityCategory
         only_fields = (
             "uuid",
             "name",
@@ -40,43 +62,32 @@ class StandardInvoiceItemCategoryType(DjangoObjectType):
         )
 
 
-class StandardInvoiceItemType(DjangoObjectType):
+class ActivityType(DjangoObjectType):
     class Meta:
-        model = StandardInvoiceItem
+        model = Activity
         only_fields = (
             "uuid",
             "name",
-            "unit_price",
-            "unit_price_currency",
-            "unit_price_type",
+            "unit_cost",
+            "unit_cost_currency",
+            "unit_cost_type",
             "category",
         )
 
-    unit_price_currency = CurrencyEnumType(required=True)
-    unit_price_type = UnitPriceTypeEnumType(required=True)
+    unit_cost_currency = CurrencyEnumType(required=True)
+    unit_cost_type = UnitCostTypeEnumType(required=True)
 
 
-class InvoiceItemType(DjangoObjectType):
+class ClientActivityType(DjangoObjectType):
     class Meta:
-        model = InvoiceItem
+        model = ClientActivity
         only_fields = (
             "uuid",
-            "name",
-            "unit_price",
-            "unit_price_currency",
-            "unit_price_type",
-            "description",
-            "item_date",
-            "minutes_allocated",
-            "is_recurring",
-            "standard_invoice_item",
+            "date",
             "quantity",
-            "category",
+            "minutes_allocated",
+            "activity",
         )
-
-    total = graphene.Float(required=True)
-    unit_price_currency = CurrencyEnumType(required=True)
-    unit_price_type = UnitPriceTypeEnumType(required=True)
 
 
 class OrganizationType(DjangoObjectType):
@@ -87,22 +98,30 @@ class OrganizationType(DjangoObjectType):
             "name",
         )
 
-    standard_invoice_items = graphene.List(
-        graphene.NonNull(StandardInvoiceItemType), required=True
-    )
+    solutions = graphene.List(graphene.NonNull(SolutionType), required=True)
+    activities = graphene.List(graphene.NonNull(ActivityType), required=True)
     logo_url = graphene.NonNull(graphene.String)
 
     def resolve_logo_url(self, info):
         if self.logo:
             return self.logo.url
 
-    def resolve_standard_invoice_items(self, info, **kwargs):
-        return self.standard_invoice_items.all()
+    def resolve_solutions(self, info, **kwargs):
+        return self.solutions.all()
+
+    def resolve_activities(self, info, **kwargs):
+        return self.activities.filter(is_custom=False).all()
 
 
 class TotalByCurrencyType(graphene.ObjectType):
     currency = CurrencyEnumType(required=True)
     total = graphene.Float(required=True)
+
+
+class InvoiceItemType(DjangoObjectType):
+    class Meta:
+        model = InvoiceItem
+        only = ("uuid", "name")
 
 
 class InvoiceType(DjangoObjectType):
@@ -115,10 +134,10 @@ class InvoiceType(DjangoObjectType):
             "date_sent",
         )
 
+    items = graphene.List(graphene.NonNull(InvoiceItemType), required=True)
     totals_by_currency = graphene.List(
         graphene.NonNull(TotalByCurrencyType), required=True
     )
-    items = graphene.List(graphene.NonNull(InvoiceItemType), required=True)
 
     def resolve_totals_by_currency(self, info, **kwargs):
         return [
@@ -133,22 +152,22 @@ class InvoiceType(DjangoObjectType):
         return self.items.all()
 
 
-class StandardInvoiceItemInput(graphene.InputObjectType):
+class ActivityInput(graphene.InputObjectType):
     uuid = graphene.String()
     name = graphene.String(required=True)
-    unit_price = graphene.Int(required=True)
-    unit_price_currency = CurrencyEnumType(required=True)
-    unit_price_type = UnitPriceTypeEnumType(required=True)
+    unit_cost = graphene.Int()
+    unit_cost_currency = CurrencyEnumType(required=True)
+    unit_cost_type = UnitCostTypeEnumType(required=True)
     category_code = graphene.String(required=True)
 
 
-class InvoiceItemInput(graphene.InputObjectType):
+class ClientActivityInput(graphene.InputObjectType):
     uuid = graphene.String()
     name = graphene.String()
     service_category_code = graphene.String()
-    unit_price = graphene.Int()
-    unit_price_currency = CurrencyEnumType()
-    standard_service_uuid = graphene.String()
+    unit_cost = graphene.Int()
+    unit_cost_currency = CurrencyEnumType()
+    activity_uuid = graphene.String()
     description = graphene.String()
     item_date = graphene.Date()
     minutes_allocated = graphene.Int()
@@ -195,6 +214,7 @@ class ClientType(DjangoObjectType):
 
     files = graphene.List(graphene.NonNull(ClientFileType), required=True)
     users = graphene.List(graphene.NonNull(UserType), required=True)
+    activities = graphene.List(graphene.NonNull(ClientActivityType), required=True)
 
     def resolve_files(self, info, **kwargs):
         return self.files.all()
@@ -203,6 +223,9 @@ class ClientType(DjangoObjectType):
         return get_user_model().objects.filter(
             organization=info.contenxt.user.organization, client_profile=self
         )
+
+    def resolve_activities(self, info, **kwargs):
+        return ClientActivity.objects.filter(client=self).all()
 
 
 class ClientUserProfileType(DjangoObjectType):

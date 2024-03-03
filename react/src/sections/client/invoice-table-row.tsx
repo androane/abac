@@ -11,7 +11,7 @@ import Iconify from 'components/iconify'
 import { useBoolean } from 'hooks/use-boolean'
 import { fDateTime } from 'utils/format-time'
 import Label from 'components/label'
-import { getUnitPriceTypeLabel } from 'sections/settings/constants'
+import { getUnitCostTypeLabel } from 'sections/settings/constants'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { APIInvoiceItem } from './types'
 
@@ -82,7 +82,7 @@ const InvoiceTableRow: React.FC<Props> = ({
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={getUnitPriceTypeLabel(row.unitPriceType)}
+            primary={getUnitCostTypeLabel(row.unitCostType)}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -104,7 +104,7 @@ const InvoiceTableRow: React.FC<Props> = ({
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={`${row.unitPrice} ${row.unitPriceCurrency}`}
+            primary={`${row.unitCost} ${row.unitCostCurrency}`}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -126,7 +126,7 @@ const InvoiceTableRow: React.FC<Props> = ({
         </TableCell>
         <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={`${row.total.toFixed(2)} ${row.unitPriceCurrency}`}
+            primary={`${row.total.toFixed(2)} ${row.unitCostCurrency}`}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

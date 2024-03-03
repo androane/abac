@@ -1,3 +1,3 @@
-export type ServiceTableFilters = {
+export type ActivityTableFilters = {
   name: string
 }

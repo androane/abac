@@ -3,12 +3,13 @@ from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 
 from organization.models import (
+    Activity,
+    ActivityCategory,
     Client,
     ClientFile,
     Invoice,
     Organization,
-    StandardInvoiceItem,
-    StandardInvoiceItemCategory,
+    Solution,
 )
 
 
@@ -55,19 +56,26 @@ class ClientAdmin(SimpleHistoryAdmin):
     inlines = [ClientFileAdmin, InvoiceAdmin]
 
 
-@admin.register(StandardInvoiceItem)
-class StandardInvoiceItemAdmin(SimpleHistoryAdmin):
+@admin.register(Activity)
+class ActivityAdmin(SimpleHistoryAdmin):
     list_display = (
         "name",
         "organization",
-        "unit_price",
-        "unit_price_currency",
-        "unit_price_type",
+        "unit_cost",
+        "unit_cost_currency",
+        "unit_cost_type",
     )
     ordering = ("organization__name", "name")
     list_filter = ("organization__name",)
 
 
-@admin.register(StandardInvoiceItemCategory)
-class StandardInvoiceItemCategoryAdmin(SimpleHistoryAdmin):
+@admin.register(ActivityCategory)
+class ActivityCategoryAdmin(SimpleHistoryAdmin):
     list_display = ("name",)
+
+
+@admin.register(Solution)
+class SolutionAdmin(SimpleHistoryAdmin):
+    list_display = ("name", "organization")
+    ordering = ("organization__name", "name")
+    list_filter = ("organization__name",)

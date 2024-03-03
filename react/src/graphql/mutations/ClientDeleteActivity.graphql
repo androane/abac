@@ -1,0 +1,7 @@
+mutation DeleteClientActivity($activityUuid: String!) {
+  deleteClientActivity(activityUuid: $activityUuid) {
+    error {
+      ...Error
+    }
+  }
+}

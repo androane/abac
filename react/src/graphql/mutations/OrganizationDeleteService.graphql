@@ -1,7 +1,0 @@
-mutation DeleteOrganizationService($uuid: String!) {
-  deleteOrganizationService(uuid: $uuid) {
-    error {
-      ...Error
-    }
-  }
-}

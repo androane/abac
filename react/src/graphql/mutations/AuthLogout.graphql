@@ -1,4 +1,4 @@
-#import "../fragments/Error.graphql"
+#import "./fragments/Error.graphql"
 
 mutation Logout {
   logout {
