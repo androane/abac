@@ -9,6 +9,7 @@ from user.models import User
 class UserAdmin(DjangoUserAdmin):
     search_fields = ("email",)
     list_display = ("email", "organization", "client")
+    list_filter = ("organization",)
 
     ordering = (
         "organization",

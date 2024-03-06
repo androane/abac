@@ -17,11 +17,13 @@ from organization.graphene.mutations import (
     UpdateOrganizationSolution,
 )
 from organization.graphene.types import (
+    ClientActivityType,
     ClientFileType,
     ClientType,
     InvoiceType,
     OrganizationType,
 )
+from organization.services.client_activity_service import get_client_activities
 from organization.services.client_files_service import get_client_files
 from organization.services.client_invoice_service import get_client_invoice
 from organization.services.client_service import get_client, get_clients
@@ -51,6 +53,13 @@ class Query(graphene.ObjectType):
         graphene.NonNull(ClientType),
         description="Get a Client",
         uuid=graphene.String(required=True),
+    )
+    client_activities = graphene.List(
+        graphene.NonNull(ClientActivityType),
+        description="List all Client Activities",
+        client_uuid=graphene.String(required=True),
+        month=graphene.Int(),
+        year=graphene.Int(),
     )
     client_invoice = graphene.Field(
         graphene.NonNull(InvoiceType),
@@ -87,6 +96,10 @@ class Query(graphene.ObjectType):
     @logged_in_user_required
     def resolve_client(info, user: User, **kwargs):
         return get_client(user.organization, **kwargs)
+
+    @logged_in_user_required
+    def resolve_client_activities(info, user: User, **kwargs):
+        return get_client_activities(user.organization, **kwargs)
 
     @logged_in_user_required
     def resolve_client_invoice(info, user: User, **kwargs):

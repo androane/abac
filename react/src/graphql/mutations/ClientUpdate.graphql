@@ -1,28 +1,8 @@
 #import "./fragments/Error.graphql"
 #import "./fragments/Client.graphql"
 
-mutation UpdateClient(
-  $uuid: String
-  $name: String!
-  $description: String
-  $phoneNumber1: String
-  $phoneNumber2: String
-  $programManagerUuid: String
-  $spvUsername: String
-  $spvPassword: String
-  $cui: String
-) {
-  updateClient(
-    uuid: $uuid
-    name: $name
-    description: $description
-    phoneNumber1: $phoneNumber1
-    phoneNumber2: $phoneNumber2
-    programManagerUuid: $programManagerUuid
-    spvPassword: $spvPassword
-    spvUsername: $spvUsername
-    cui: $cui
-  ) {
+mutation UpdateClient($clientInput: ClientInput!) {
+  updateClient(clientInput: $clientInput) {
     error {
       ...Error
     }

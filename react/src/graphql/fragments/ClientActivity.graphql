@@ -1,0 +1,4 @@
+fragment ClientActivity on ClientActivityType {
+  uuid
+  isExecuted
+}

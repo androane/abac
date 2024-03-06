@@ -60,8 +60,6 @@ class Client(BaseModel):
 
     name = models.CharField(max_length=128)
     description = models.TextField(blank=True, null=True)
-    phone_number_1 = models.CharField(max_length=12, blank=True)
-    phone_number_2 = models.CharField(max_length=12, blank=True)
     program_manager = models.ForeignKey(
         "user.User",
         on_delete=models.SET_NULL,
@@ -230,8 +228,20 @@ class ClientActivity(BaseModel):
         )
     ]
 
+    month = models.SmallIntegerField(help_text="Month of the Activity")
+    year = models.SmallIntegerField(help_text="Year of the Activity")
+    is_executed = models.BooleanField(
+        default=True, help_text="Is the activity executed?"
+    )
+
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+
+
+class ClientActivityLog(BaseModel):
+    client_activity = models.ForeignKey(
+        ClientActivity, on_delete=models.CASCADE, related_name="logs"
+    )
     quantity = models.SmallIntegerField(
         default=1, help_text="How many of these items are on the invoice"
     )
@@ -244,6 +254,9 @@ class ClientActivity(BaseModel):
         null=True,
         blank=True,
         help_text="Date when the activity was executed",
+    )
+    description = models.TextField(
+        help_text="Optional explanation for the invoice item", null=True, blank=True
     )
 
 

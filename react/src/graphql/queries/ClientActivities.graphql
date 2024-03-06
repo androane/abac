@@ -1,15 +1,11 @@
-#import "./fragments/Activity.graphql"
-
-query ClientActivities($clientUuid: String!) {
-  client(uuid: $clientUuid) {
-    uuid
-    activities {
-      date
-      quantity
-      minutesAllocated
-      activity {
-        ...Activity
-      }
+query ClientActivities($clientUuid: String!, $year: Int, $month: Int) {
+  clientActivities(clientUuid: $clientUuid, year: $year, month: $month) {
+    ...ClientActivity
+    activity {
+      ...Activity
+    }
+    logs {
+      ...ClientActivityLog
     }
   }
 }

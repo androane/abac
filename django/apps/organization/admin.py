@@ -44,8 +44,6 @@ class ClientAdmin(SimpleHistoryAdmin):
         "name",
         "organization",
         "program_manager",
-        "phone_number_1",
-        "phone_number_2",
     )
     history_list_display = [
         "name",

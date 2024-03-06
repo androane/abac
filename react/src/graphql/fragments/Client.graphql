@@ -2,8 +2,6 @@ fragment Client on ClientType {
   uuid
   name
   description
-  phoneNumber1
-  phoneNumber2
   programManager {
     uuid
     name

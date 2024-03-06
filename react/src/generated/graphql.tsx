@@ -31,6 +31,7 @@ export type ActivityCategoryType = {
 
 export type ActivityInput = {
   categoryCode: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   unitCost?: InputMaybe<Scalars['Int']['input']>;
   unitCostCurrency: CurrencyEnum;
@@ -41,6 +42,7 @@ export type ActivityInput = {
 export type ActivityType = {
   __typename?: 'ActivityType';
   category: ActivityCategoryType;
+  description?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   /** Cost of the Activity per unit type */
   unitCost?: Maybe<Scalars['Int']['output']>;
@@ -56,29 +58,36 @@ export type ChangePassword = {
 };
 
 export type ClientActivityInput = {
-  activityUuid?: InputMaybe<Scalars['String']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  isRecurring?: InputMaybe<Scalars['Boolean']['input']>;
-  itemDate?: InputMaybe<Scalars['Date']['input']>;
-  minutesAllocated?: InputMaybe<Scalars['Int']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  quantity: Scalars['Int']['input'];
-  serviceCategoryCode?: InputMaybe<Scalars['String']['input']>;
-  unitCost?: InputMaybe<Scalars['Int']['input']>;
-  unitCostCurrency?: InputMaybe<CurrencyEnum>;
+  isExecuted: Scalars['Boolean']['input'];
+  month: Scalars['Int']['input'];
   uuid?: InputMaybe<Scalars['String']['input']>;
+  year: Scalars['Int']['input'];
 };
 
-export type ClientActivityType = {
-  __typename?: 'ClientActivityType';
-  activity: ActivityType;
+export type ClientActivityLogType = {
+  __typename?: 'ClientActivityLogType';
   /** Date when the activity was executed */
   date?: Maybe<Scalars['Date']['output']>;
+  /** Optional explanation for the invoice item */
+  description?: Maybe<Scalars['String']['output']>;
   /** Number of minutes allocated to the customer for this activity */
   minutesAllocated?: Maybe<Scalars['Int']['output']>;
   /** How many of these items are on the invoice */
   quantity: Scalars['Int']['output'];
   uuid: Scalars['String']['output'];
+};
+
+export type ClientActivityType = {
+  __typename?: 'ClientActivityType';
+  activity: ActivityType;
+  /** Is the activity executed? */
+  isExecuted: Scalars['Boolean']['output'];
+  logs: Array<ClientActivityLogType>;
+  /** Month of the Activity */
+  month: Scalars['Int']['output'];
+  uuid: Scalars['String']['output'];
+  /** Year of the Activity */
+  year: Scalars['Int']['output'];
 };
 
 export type ClientFileInput = {
@@ -94,6 +103,23 @@ export type ClientFileType = {
   uuid: Scalars['String']['output'];
 };
 
+export type ClientInput = {
+  clientSolutions: Array<ClientSolutionInput>;
+  cui?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  programManagerUuid?: InputMaybe<Scalars['String']['input']>;
+  spvPassword?: InputMaybe<Scalars['String']['input']>;
+  spvUsername?: InputMaybe<Scalars['String']['input']>;
+  uuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ClientSolutionInput = {
+  solutionUuid: Scalars['String']['input'];
+  unitCost?: InputMaybe<Scalars['Int']['input']>;
+  unitCostCurrency: CurrencyEnum;
+};
+
 export type ClientType = {
   __typename?: 'ClientType';
   activities: Array<ClientActivityType>;
@@ -102,8 +128,6 @@ export type ClientType = {
   description?: Maybe<Scalars['String']['output']>;
   files: Array<ClientFileType>;
   name: Scalars['String']['output'];
-  phoneNumber1: Scalars['String']['output'];
-  phoneNumber2: Scalars['String']['output'];
   programManager?: Maybe<UserType>;
   /** SPV Password */
   spvPassword?: Maybe<Scalars['String']['output']>;
@@ -344,15 +368,7 @@ export type MutationLoginArgs = {
 
 
 export type MutationUpdateClientArgs = {
-  cui?: InputMaybe<Scalars['String']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-  phoneNumber1?: InputMaybe<Scalars['String']['input']>;
-  phoneNumber2?: InputMaybe<Scalars['String']['input']>;
-  programManagerUuid?: InputMaybe<Scalars['String']['input']>;
-  spvPassword?: InputMaybe<Scalars['String']['input']>;
-  spvUsername?: InputMaybe<Scalars['String']['input']>;
-  uuid?: InputMaybe<Scalars['String']['input']>;
+  clientInput: ClientInput;
 };
 
 
@@ -414,6 +430,8 @@ export type Query = {
   __typename?: 'Query';
   /** Get a Client */
   client: ClientType;
+  /** List all Client Activities */
+  clientActivities?: Maybe<Array<ClientActivityType>>;
   /** List all files of a Client */
   clientFiles: Array<ClientFileType>;
   clientInvoice: InvoiceType;
@@ -433,6 +451,13 @@ export type Query = {
 
 export type QueryClientArgs = {
   uuid: Scalars['String']['input'];
+};
+
+
+export type QueryClientActivitiesArgs = {
+  clientUuid: Scalars['String']['input'];
+  month?: InputMaybe<Scalars['Int']['input']>;
+  year?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -528,11 +553,15 @@ export type UserType = {
   uuid: Scalars['String']['output'];
 };
 
-export type ActivityFragment = { __typename?: 'ActivityType', uuid: string, name: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } };
+export type ActivityFragment = { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } };
 
 export type UserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: string, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } };
 
-export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
+export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
+
+export type ClientActivityFragment = { __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean };
+
+export type ClientActivityLogFragment = { __typename?: 'ClientActivityLogType', uuid: string, date?: DateString | null, minutesAllocated?: number | null, quantity: number };
 
 export type ClientUserFragment = { __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string } };
 
@@ -604,19 +633,11 @@ export type DeleteClientUserMutationVariables = Exact<{
 export type DeleteClientUserMutation = { __typename?: 'Mutation', deleteClientUser?: { __typename?: 'DeleteClientUser', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
 
 export type UpdateClientMutationVariables = Exact<{
-  uuid?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-  description?: InputMaybe<Scalars['String']['input']>;
-  phoneNumber1?: InputMaybe<Scalars['String']['input']>;
-  phoneNumber2?: InputMaybe<Scalars['String']['input']>;
-  programManagerUuid?: InputMaybe<Scalars['String']['input']>;
-  spvUsername?: InputMaybe<Scalars['String']['input']>;
-  spvPassword?: InputMaybe<Scalars['String']['input']>;
-  cui?: InputMaybe<Scalars['String']['input']>;
+  clientInput: ClientInput;
 }>;
 
 
-export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { __typename?: 'UpdateClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null } | null } | null };
+export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { __typename?: 'UpdateClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null } | null } | null };
 
 export type UpdateClientActivityMutationVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -624,7 +645,7 @@ export type UpdateClientActivityMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClientActivityMutation = { __typename?: 'Mutation', updateClientActivity?: { __typename?: 'UpdateClientActivity', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientActivity?: { __typename?: 'ClientActivityType', date?: DateString | null, quantity: number, minutesAllocated?: number | null, activity: { __typename?: 'ActivityType', uuid: string, name: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } } } | null } | null };
+export type UpdateClientActivityMutation = { __typename?: 'Mutation', updateClientActivity?: { __typename?: 'UpdateClientActivity', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientActivity?: { __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } } } | null } | null };
 
 export type UpdateClientInvoiceStatusMutationVariables = Exact<{
   invoiceUuid: Scalars['String']['input'];
@@ -661,7 +682,7 @@ export type UpdateOrganizationActivityMutationVariables = Exact<{
 }>;
 
 
-export type UpdateOrganizationActivityMutation = { __typename?: 'Mutation', updateOrganizationActivity?: { __typename?: 'UpdateOrganizationActivity', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, activity?: { __typename?: 'ActivityType', uuid: string, name: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } } | null } | null };
+export type UpdateOrganizationActivityMutation = { __typename?: 'Mutation', updateOrganizationActivity?: { __typename?: 'UpdateOrganizationActivity', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, activity?: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } } | null } | null };
 
 export type UpdateOrganizationSolutionMutationVariables = Exact<{
   solutionInput: SolutionInput;
@@ -677,15 +698,17 @@ export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename
 
 export type ClientActivitiesQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
+  year?: InputMaybe<Scalars['Int']['input']>;
+  month?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
-export type ClientActivitiesQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, activities: Array<{ __typename?: 'ClientActivityType', date?: DateString | null, quantity: number, minutesAllocated?: number | null, activity: { __typename?: 'ActivityType', uuid: string, name: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } } }> } };
+export type ClientActivitiesQuery = { __typename?: 'Query', clientActivities?: Array<{ __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } }, logs: Array<{ __typename?: 'ClientActivityLogType', uuid: string, date?: DateString | null, minutesAllocated?: number | null, quantity: number }> }> | null };
 
 export type ClientsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ClientsQuery = { __typename?: 'Query', clients: Array<{ __typename?: 'ClientType', uuid: string, name: string, description?: string | null, phoneNumber1: string, phoneNumber2: string, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null }> };
+export type ClientsQuery = { __typename?: 'Query', clients: Array<{ __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null }> };
 
 export type ClientFilesQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -718,7 +741,7 @@ export type ClientUsersQuery = { __typename?: 'Query', clientUsers: Array<{ __ty
 export type OrganizationActivitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type OrganizationActivitiesQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } }> } };
+export type OrganizationActivitiesQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } }> } };
 
 export type OrganizationSolutionsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -729,6 +752,7 @@ export const ActivityFragmentDoc = gql`
     fragment Activity on ActivityType {
   uuid
   name
+  description
   unitCost
   unitCostCurrency
   unitCostType
@@ -757,8 +781,6 @@ export const ClientFragmentDoc = gql`
   uuid
   name
   description
-  phoneNumber1
-  phoneNumber2
   programManager {
     uuid
     name
@@ -766,6 +788,20 @@ export const ClientFragmentDoc = gql`
   cui
   spvUsername
   spvPassword
+}
+    `;
+export const ClientActivityFragmentDoc = gql`
+    fragment ClientActivity on ClientActivityType {
+  uuid
+  isExecuted
+}
+    `;
+export const ClientActivityLogFragmentDoc = gql`
+    fragment ClientActivityLog on ClientActivityLogType {
+  uuid
+  date
+  minutesAllocated
+  quantity
 }
     `;
 export const ClientUserFragmentDoc = gql`
@@ -1121,18 +1157,8 @@ export type DeleteClientUserMutationHookResult = ReturnType<typeof useDeleteClie
 export type DeleteClientUserMutationResult = Apollo.MutationResult<DeleteClientUserMutation>;
 export type DeleteClientUserMutationOptions = Apollo.BaseMutationOptions<DeleteClientUserMutation, DeleteClientUserMutationVariables>;
 export const UpdateClientDocument = gql`
-    mutation UpdateClient($uuid: String, $name: String!, $description: String, $phoneNumber1: String, $phoneNumber2: String, $programManagerUuid: String, $spvUsername: String, $spvPassword: String, $cui: String) {
-  updateClient(
-    uuid: $uuid
-    name: $name
-    description: $description
-    phoneNumber1: $phoneNumber1
-    phoneNumber2: $phoneNumber2
-    programManagerUuid: $programManagerUuid
-    spvPassword: $spvPassword
-    spvUsername: $spvUsername
-    cui: $cui
-  ) {
+    mutation UpdateClient($clientInput: ClientInput!) {
+  updateClient(clientInput: $clientInput) {
     error {
       ...Error
     }
@@ -1158,15 +1184,7 @@ export type UpdateClientMutationFn = Apollo.MutationFunction<UpdateClientMutatio
  * @example
  * const [updateClientMutation, { data, loading, error }] = useUpdateClientMutation({
  *   variables: {
- *      uuid: // value for 'uuid'
- *      name: // value for 'name'
- *      description: // value for 'description'
- *      phoneNumber1: // value for 'phoneNumber1'
- *      phoneNumber2: // value for 'phoneNumber2'
- *      programManagerUuid: // value for 'programManagerUuid'
- *      spvUsername: // value for 'spvUsername'
- *      spvPassword: // value for 'spvPassword'
- *      cui: // value for 'cui'
+ *      clientInput: // value for 'clientInput'
  *   },
  * });
  */
@@ -1187,9 +1205,7 @@ export const UpdateClientActivityDocument = gql`
       ...Error
     }
     clientActivity {
-      date
-      quantity
-      minutesAllocated
+      ...ClientActivity
       activity {
         ...Activity
       }
@@ -1197,6 +1213,7 @@ export const UpdateClientActivityDocument = gql`
   }
 }
     ${ErrorFragmentDoc}
+${ClientActivityFragmentDoc}
 ${ActivityFragmentDoc}`;
 export type UpdateClientActivityMutationFn = Apollo.MutationFunction<UpdateClientActivityMutation, UpdateClientActivityMutationVariables>;
 
@@ -1493,20 +1510,20 @@ export type CurrentUserLazyQueryHookResult = ReturnType<typeof useCurrentUserLaz
 export type CurrentUserSuspenseQueryHookResult = ReturnType<typeof useCurrentUserSuspenseQuery>;
 export type CurrentUserQueryResult = Apollo.QueryResult<CurrentUserQuery, CurrentUserQueryVariables>;
 export const ClientActivitiesDocument = gql`
-    query ClientActivities($clientUuid: String!) {
-  client(uuid: $clientUuid) {
-    uuid
-    activities {
-      date
-      quantity
-      minutesAllocated
-      activity {
-        ...Activity
-      }
+    query ClientActivities($clientUuid: String!, $year: Int, $month: Int) {
+  clientActivities(clientUuid: $clientUuid, year: $year, month: $month) {
+    ...ClientActivity
+    activity {
+      ...Activity
+    }
+    logs {
+      ...ClientActivityLog
     }
   }
 }
-    ${ActivityFragmentDoc}`;
+    ${ClientActivityFragmentDoc}
+${ActivityFragmentDoc}
+${ClientActivityLogFragmentDoc}`;
 
 /**
  * __useClientActivitiesQuery__
@@ -1521,6 +1538,8 @@ export const ClientActivitiesDocument = gql`
  * const { data, loading, error } = useClientActivitiesQuery({
  *   variables: {
  *      clientUuid: // value for 'clientUuid'
+ *      year: // value for 'year'
+ *      month: // value for 'month'
  *   },
  * });
  */

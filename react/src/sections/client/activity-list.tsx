@@ -23,14 +23,12 @@ import ResponseHandler from 'components/response-handler'
 import {
   useOrganizationActivitiesQuery,
   useDeleteOrganizationActivityMutation,
-  useClientInvoiceQuery,
+  useClientActivitiesQuery,
 } from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
-import UpdateInvoiceItem from 'sections/client/activity-update'
+import UpdateActivity from 'sections/client/activity-update'
 import { TableCell, TableRow } from '@mui/material'
-import InvoiceTableFiltersResult from './invoice-table-filters-result'
-import InvoiceTableToolbar from './invoice-table-toolbar'
-import { APIClientInvoice, APIInvoiceItem, InvoiceTableFilters } from './types'
+import { APIClientInvoice, APIActivity, ActivityTableFilters } from './types'
 
 const defaultFilters = {
   name: '',
@@ -58,23 +56,23 @@ const TotalsRow = styled(TableRow)(({ theme }) => ({
   },
 }))
 
-type InvoiceDetailsCardProps = {
+type ActivityListCardProps = {
   clientInvoice: APIClientInvoice
   invoiceDate: null | Date
   onChangeInvoiceDate: (newDate: null | Date) => void
 }
 
-const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
+const ActivityListCard: React.FC<ActivityListCardProps> = ({
   clientInvoice,
   invoiceDate,
   onChangeInvoiceDate,
 }) => {
-  const showCreateInvoiceItem = useBoolean()
+  const showCreateActivity = useBoolean()
 
   const [deleteActivity, { loading }] = useDeleteOrganizationActivityMutation()
   const activitiesResult = useOrganizationActivitiesQuery()
 
-  const [invoiceItemIdToEdit, setInvoiceItemIdToEdit] = useState<null | string>(null)
+  const [invoiceItemIdToEdit, setActivityIdToEdit] = useState<null | string>(null)
 
   const { enqueueSnackbar } = useSnackbar()
   const [tableData, setTableData] = useState(clientInvoice.items)
@@ -118,7 +116,7 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
     await deleteActivity({
       variables: { uuid },
       update(cache) {
-        const normalizedId = cache.identify({ uuid, __typename: 'InvoiceItemType' })
+        const normalizedId = cache.identify({ uuid, __typename: 'ActivityType' })
         cache.evict({ id: normalizedId })
         cache.gc()
       },
@@ -129,33 +127,33 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
 
   const handleEditRow = useCallback(
     (id: null | string) => {
-      setInvoiceItemIdToEdit(id)
-      showCreateInvoiceItem.onTrue()
+      setActivityIdToEdit(id)
+      showCreateActivity.onTrue()
     },
-    [showCreateInvoiceItem, setInvoiceItemIdToEdit],
+    [showCreateActivity, setActivityIdToEdit],
   )
 
   const invoiceIsLocked = Boolean(clientInvoice.dateSent)
 
   return (
     <Card>
-      {showCreateInvoiceItem.value && (
+      {showCreateActivity.value && (
         <ResponseHandler {...servicesResult}>
           {({ organizationServices }) => {
             return (
-              <UpdateInvoiceItem
+              <UpdateActivity
                 organizationServices={organizationServices}
                 invoiceId={clientInvoice.uuid}
                 invoiceDate={invoiceDate}
                 invoiceItem={clientInvoice.items.find(item => item.uuid === invoiceItemIdToEdit)}
-                onClose={showCreateInvoiceItem.onFalse}
+                onClose={showCreateActivity.onFalse}
               />
             )
           }}
         </ResponseHandler>
       )}
-      <InvoiceTableToolbar
-        onAddInvoiceItem={() => handleEditRow(null)}
+      <ActivityTableToolbar
+        onAddActivity={() => handleEditRow(null)}
         invoiceDate={invoiceDate}
         invoiceId={clientInvoice.uuid}
         invoiceDateSent={clientInvoice.dateSent}
@@ -163,7 +161,7 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
       />
 
       {canReset && (
-        <InvoiceTableFiltersResult
+        <ActivityTableFiltersResult
           filters={filters}
           onFilters={handleFilters}
           onResetFilters={handleResetFilters}
@@ -191,7 +189,7 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
                   table.page * table.rowsPerPage + table.rowsPerPage,
                 )
                 .map((row, index) => (
-                  <InvoiceTableRow
+                  <ActivityTableRow
                     invoiceIsLocked={invoiceIsLocked}
                     key={row.uuid}
                     index={index + 1}
@@ -231,27 +229,21 @@ type Props = {
   clientId: string
 }
 
-const InvoiceDetailsView: React.FC<Props> = ({ clientId }) => {
-  const [invoiceDate, setInvoiceDate] = useState<null | Date>(startOfMonth(new Date()))
+const ActivityListView: React.FC<Props> = ({ clientId }) => {
+  const [date, setDate] = useState<null | Date>(startOfMonth(new Date()))
 
-  const result = useClientInvoiceQuery({
+  const result = useClientActivitiesQuery({
     variables: {
       clientUuid: clientId,
-      month: invoiceDate ? invoiceDate.getMonth() + 1 : null,
-      year: invoiceDate?.getFullYear(),
+      month: date ? date.getMonth() + 1 : null,
+      year: date?.getFullYear(),
     },
   })
 
   return (
     <ResponseHandler {...result}>
-      {({ clientInvoice }) => {
-        return (
-          <InvoiceDetailsCard
-            clientInvoice={clientInvoice}
-            invoiceDate={invoiceDate}
-            onChangeInvoiceDate={setInvoiceDate}
-          />
-        )
+      {({ activities }) => {
+        return <ActivityListCard activities={activities} date={date} onChangeDate={setDate} />
       }}
     </ResponseHandler>
   )
@@ -262,9 +254,9 @@ function applyFilter({
   comparator,
   filters,
 }: {
-  inputData: APIInvoiceItem[]
+  inputData: APIActivity[]
   comparator: (a: any, b: any) => number
-  filters: InvoiceTableFilters
+  filters: ActivityTableFilters
 }) {
   const stabilizedThis = inputData.map((el, index) => [el, index] as const)
 
@@ -285,4 +277,4 @@ function applyFilter({
   return inputData
 }
 
-export default InvoiceDetailsView
+export default ActivityListView

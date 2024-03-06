@@ -1,6 +1,7 @@
 fragment Activity on ActivityType {
   uuid
   name
+  description
   unitCost
   unitCostCurrency
   unitCostType

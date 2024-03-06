@@ -8,6 +8,7 @@ from organization.graphene.types import (
     ClientActivityInput,
     ClientActivityType,
     ClientFileInput,
+    ClientInput,
     ClientType,
     ClientUserInput,
     InvoiceStatusEnumType,
@@ -44,15 +45,7 @@ from user.models import User
 
 class UpdateClient(BaseMutation):
     class Arguments:
-        uuid = graphene.String()
-        name = graphene.String(required=True)
-        description = graphene.String()
-        phone_number_1 = graphene.String()
-        phone_number_2 = graphene.String()
-        program_manager_uuid = graphene.String()
-        spv_username = graphene.String()
-        spv_password = graphene.String()
-        cui = graphene.String()
+        client_input = graphene.NonNull(ClientInput)
 
     client = graphene.Field(ClientType)
 

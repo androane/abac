@@ -1,0 +1,6 @@
+fragment ClientActivityLog on ClientActivityLogType {
+  uuid
+  date
+  minutesAllocated
+  quantity
+}

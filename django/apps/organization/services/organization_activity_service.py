@@ -20,6 +20,7 @@ def update_activity(
 
     attrs = (
         "name",
+        "description",
         "unit_cost",
         "unit_cost_currency",
         "unit_cost_type",

@@ -1,14 +1,10 @@
-#import "./fragments/Activity.graphql"
-
 mutation UpdateClientActivity($clientUuid: String!, $clientActivityInput: ClientActivityInput!) {
   updateClientActivity(clientUuid: $clientUuid, clientActivityInput: $clientActivityInput) {
     error {
       ...Error
     }
     clientActivity {
-      date
-      quantity
-      minutesAllocated
+      ...ClientActivity
       activity {
         ...Activity
       }

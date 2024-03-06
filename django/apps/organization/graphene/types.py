@@ -17,6 +17,7 @@ from organization.models import (
     ActivityCategory,
     Client,
     ClientActivity,
+    ClientActivityLog,
     ClientFile,
     ClientUserProfile,
     Invoice,
@@ -66,6 +67,7 @@ class ActivityType(DjangoObjectType):
         only_fields = (
             "uuid",
             "name",
+            "description",
             "unit_cost",
             "unit_cost_currency",
             "unit_cost_type",
@@ -76,16 +78,30 @@ class ActivityType(DjangoObjectType):
     unit_cost_type = UnitCostTypeEnumType(required=True)
 
 
-class ClientActivityType(DjangoObjectType):
+class ClientActivityLogType(DjangoObjectType):
     class Meta:
-        model = ClientActivity
+        model = ClientActivityLog
         only_fields = (
             "uuid",
             "date",
             "quantity",
             "minutes_allocated",
+            "description",
+        )
+
+
+class ClientActivityType(DjangoObjectType):
+    class Meta:
+        model = ClientActivity
+        only_fields = (
+            "uuid",
+            "month",
+            "year",
+            "is_executed",
             "activity",
         )
+
+    logs = graphene.List(graphene.NonNull(ClientActivityLogType), required=True)
 
 
 class OrganizationType(DjangoObjectType):
@@ -152,25 +168,47 @@ class InvoiceType(DjangoObjectType):
 
 class ActivityInput(graphene.InputObjectType):
     uuid = graphene.String()
-    name = graphene.String(required=True)
     category_code = graphene.String(required=True)
+    name = graphene.String(required=True)
+    description = graphene.String()
     unit_cost = graphene.Int()
     unit_cost_currency = CurrencyEnumType(required=True)
     unit_cost_type = UnitCostTypeEnumType(required=True)
 
 
+class ClientSolutionInput(graphene.InputObjectType):
+    solution_uuid = graphene.String(required=True)
+    unit_cost = graphene.Int()
+    unit_cost_currency = CurrencyEnumType(required=True)
+
+
+class ClientInput(graphene.InputObjectType):
+    uuid = graphene.String()
+    name = graphene.String(required=True)
+    description = graphene.String()
+    program_manager_uuid = graphene.String()
+    spv_username = graphene.String()
+    spv_password = graphene.String()
+    cui = graphene.String()
+    client_solutions = graphene.List(
+        graphene.NonNull(ClientSolutionInput), required=True
+    )
+
+
+class ClientActivityLogInput(graphene.InputObjectType):
+    uuid = graphene.String()
+    activity_uuid = graphene.String(required=True)
+    date = graphene.Date()
+    description = graphene.String()
+    minutes_allocated = graphene.Int()
+    quantity = graphene.Int(required=True)
+
+
 class ClientActivityInput(graphene.InputObjectType):
     uuid = graphene.String()
-    name = graphene.String()
-    service_category_code = graphene.String()
-    unit_cost = graphene.Int()
-    unit_cost_currency = CurrencyEnumType()
-    activity_uuid = graphene.String()
-    description = graphene.String()
-    item_date = graphene.Date()
-    minutes_allocated = graphene.Int()
-    is_recurring = graphene.Boolean()
-    quantity = graphene.Int(required=True)
+    month = graphene.Int(required=True)
+    year = graphene.Int(required=True)
+    is_executed = graphene.Boolean(required=True)
 
 
 class ClientFileType(DjangoObjectType):
@@ -202,8 +240,6 @@ class ClientType(DjangoObjectType):
             "uuid",
             "name",
             "description",
-            "phone_number_1",
-            "phone_number_2",
             "program_manager",
             "spv_username",
             "spv_password",
