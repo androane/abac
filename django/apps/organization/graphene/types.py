@@ -124,7 +124,7 @@ class OrganizationType(DjangoObjectType):
         return self.solutions.all()
 
     def resolve_activities(self, info, **kwargs):
-        return self.activities.filter(is_custom=False).all()
+        return self.activities.filter(client__isnull=True).all()
 
 
 class TotalByCurrencyType(graphene.ObjectType):

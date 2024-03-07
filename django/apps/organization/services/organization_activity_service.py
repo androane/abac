@@ -8,14 +8,13 @@ def update_activity(
 ) -> Activity:
     if activity_input.uuid:
         activity = organization.activities.get(
-            is_custom=False, uuid=activity_input.uuid
+            client__isnull=True, uuid=activity_input.uuid
         )
     else:
         category = ActivityCategory.objects.get(code=activity_input.category_code)
         activity = Activity(
             organization=organization,
             category=category,
-            is_custom=False,
         )
 
     attrs = (

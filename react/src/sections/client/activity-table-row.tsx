@@ -6,24 +6,16 @@ import MenuItem from '@mui/material/MenuItem'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
 
-import { useBoolean } from 'hooks/use-boolean'
-
-import { ConfirmDialog } from 'components/custom-dialog'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
-import { APIClient } from 'sections/client/types'
-import LoadingButton from '@mui/lab/LoadingButton'
+import { ActivityType } from 'generated/graphql'
 
 type Props = {
-  loading: boolean
-  row: APIClient
+  row: ActivityType
   onEditRow: VoidFunction
-  onDeleteRow: VoidFunction
 }
 
-export default function ClientTableRow({ loading, row, onEditRow, onDeleteRow }: Props) {
-  const confirm = useBoolean()
-
+export default function ClientTableRow({ row, onEditRow }: Props) {
   const popover = usePopover()
 
   return (
@@ -47,7 +39,18 @@ export default function ClientTableRow({ loading, row, onEditRow, onDeleteRow }:
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={row.programManager?.name}
+            primary={row.unitCost}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <ListItemText
+            primary={row.unitCostType}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -71,17 +74,6 @@ export default function ClientTableRow({ loading, row, onEditRow, onDeleteRow }:
       >
         <MenuItem
           onClick={() => {
-            confirm.onTrue()
-            popover.onClose()
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          Șterge
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
             onEditRow()
             popover.onClose()
           }}
@@ -90,18 +82,6 @@ export default function ClientTableRow({ loading, row, onEditRow, onDeleteRow }:
           Modifică
         </MenuItem>
       </CustomPopover>
-
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Șterge Client"
-        content="Ești sigur că vrei să ștergi acest client?"
-        action={
-          <LoadingButton loading={loading} variant="contained" color="error" onClick={onDeleteRow}>
-            Șterge
-          </LoadingButton>
-        }
-      />
     </>
   )
 }

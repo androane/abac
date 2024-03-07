@@ -8,5 +8,6 @@ fragment Activity on ActivityType {
   category {
     uuid
     code
+    name
   }
 }

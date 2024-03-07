@@ -68,11 +68,11 @@ export type ClientActivityLogType = {
   __typename?: 'ClientActivityLogType';
   /** Date when the activity was executed */
   date?: Maybe<Scalars['Date']['output']>;
-  /** Optional explanation for the invoice item */
+  /** Optional explanation for the log */
   description?: Maybe<Scalars['String']['output']>;
   /** Number of minutes allocated to the customer for this activity */
   minutesAllocated?: Maybe<Scalars['Int']['output']>;
-  /** How many of these items are on the invoice */
+  /** How many of these activities */
   quantity: Scalars['Int']['output'];
   uuid: Scalars['String']['output'];
 };
@@ -431,7 +431,7 @@ export type Query = {
   /** Get a Client */
   client: ClientType;
   /** List all Client Activities */
-  clientActivities?: Maybe<Array<ClientActivityType>>;
+  clientActivities: Array<ClientActivityType>;
   /** List all files of a Client */
   clientFiles: Array<ClientFileType>;
   clientInvoice: InvoiceType;
@@ -553,7 +553,7 @@ export type UserType = {
   uuid: Scalars['String']['output'];
 };
 
-export type ActivityFragment = { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } };
+export type ActivityFragment = { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string, name: string } };
 
 export type UserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: string, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } };
 
@@ -645,7 +645,7 @@ export type UpdateClientActivityMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClientActivityMutation = { __typename?: 'Mutation', updateClientActivity?: { __typename?: 'UpdateClientActivity', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientActivity?: { __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } } } | null } | null };
+export type UpdateClientActivityMutation = { __typename?: 'Mutation', updateClientActivity?: { __typename?: 'UpdateClientActivity', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientActivity?: { __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string, name: string } } } | null } | null };
 
 export type UpdateClientInvoiceStatusMutationVariables = Exact<{
   invoiceUuid: Scalars['String']['input'];
@@ -682,7 +682,7 @@ export type UpdateOrganizationActivityMutationVariables = Exact<{
 }>;
 
 
-export type UpdateOrganizationActivityMutation = { __typename?: 'Mutation', updateOrganizationActivity?: { __typename?: 'UpdateOrganizationActivity', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, activity?: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } } | null } | null };
+export type UpdateOrganizationActivityMutation = { __typename?: 'Mutation', updateOrganizationActivity?: { __typename?: 'UpdateOrganizationActivity', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, activity?: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string, name: string } } | null } | null };
 
 export type UpdateOrganizationSolutionMutationVariables = Exact<{
   solutionInput: SolutionInput;
@@ -703,7 +703,7 @@ export type ClientActivitiesQueryVariables = Exact<{
 }>;
 
 
-export type ClientActivitiesQuery = { __typename?: 'Query', clientActivities?: Array<{ __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } }, logs: Array<{ __typename?: 'ClientActivityLogType', uuid: string, date?: DateString | null, minutesAllocated?: number | null, quantity: number }> }> | null };
+export type ClientActivitiesQuery = { __typename?: 'Query', clientActivities: Array<{ __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string, name: string } }, logs: Array<{ __typename?: 'ClientActivityLogType', uuid: string, date?: DateString | null, minutesAllocated?: number | null, quantity: number }> }> };
 
 export type ClientsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -741,7 +741,7 @@ export type ClientUsersQuery = { __typename?: 'Query', clientUsers: Array<{ __ty
 export type OrganizationActivitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type OrganizationActivitiesQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string } }> } };
+export type OrganizationActivitiesQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string, name: string } }> } };
 
 export type OrganizationSolutionsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -759,6 +759,7 @@ export const ActivityFragmentDoc = gql`
   category {
     uuid
     code
+    name
   }
 }
     `;

@@ -26,7 +26,16 @@ def organization_logo_path(instance, filename):
 
 
 class Organization(BaseModel):
-    name = models.CharField(max_length=128, unique=True)
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name"],
+                condition=models.Q(deleted__isnull=True),
+                name="organization_organization_name_unique",
+            )
+        ]
+
+    name = models.CharField(max_length=128)
     logo = models.FileField(
         upload_to=organization_logo_path,
         help_text="Organization logo",
@@ -46,13 +55,14 @@ class Client(BaseModel):
     Client is a client of the organization.
     """
 
-    constraints = [
-        models.UniqueConstraint(
-            fields=["organization", "name"],
-            condition=models.Q(deleted__isnull=True),
-            name="organization_client_organization_name_unique",
-        )
-    ]
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["organization", "name"],
+                condition=models.Q(deleted__isnull=True),
+                name="organization_client_organization_name_unique",
+            )
+        ]
 
     organization = models.ForeignKey(
         Organization, on_delete=models.CASCADE, related_name="clients"
@@ -99,14 +109,6 @@ class Client(BaseModel):
 
 
 class Invoice(BaseModel):
-    constraints = [
-        models.UniqueConstraint(
-            fields=["client", "name"],
-            condition=models.Q(deleted__isnull=True),
-            name="organization_invoice_client_month_year_unique",
-        )
-    ]
-
     client = models.ForeignKey(
         Client,
         on_delete=models.CASCADE,
@@ -154,22 +156,23 @@ class Invoice(BaseModel):
 
 
 class ActivityCategory(BaseModel):
+    """Category of the Activity e.g. Accounting, Human Resources etc."""
+
     class Meta:
         verbose_name_plural = "Activity Categories"
 
-    """Category of the Activity e.g. Accounting, Human Resources etc."""
-    constraints = [
-        models.UniqueConstraint(
-            fields=["name"],
-            condition=models.Q(deleted__isnull=True),
-            name="organization_activity_category_name_unique",
-        ),
-        models.UniqueConstraint(
-            fields=["code"],
-            condition=models.Q(deleted__isnull=True),
-            name="organization_activity_category_code_unique",
-        ),
-    ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name"],
+                condition=models.Q(deleted__isnull=True),
+                name="organization_activity_category_name_unique",
+            ),
+            models.UniqueConstraint(
+                fields=["code"],
+                condition=models.Q(deleted__isnull=True),
+                name="organization_activity_category_code_unique",
+            ),
+        ]
 
     name = models.CharField(max_length=64)
     code = models.CharField(max_length=64)
@@ -184,20 +187,23 @@ class ActivityCategory(BaseModel):
 class Activity(BaseModel):
     class Meta:
         verbose_name_plural = "Activities"
-
-    constraints = [
-        models.UniqueConstraint(
-            fields=["name"],
-            condition=models.Q(deleted__isnull=True),
-            name="organization_activity_name_unique",
-        )
-    ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "client", "category"],
+                condition=models.Q(deleted__isnull=True)
+                & models.Q(client__isnull=False),
+                name="organization_activity_name_client_category_unique",
+            ),
+            models.UniqueConstraint(
+                fields=["name", "organization", "category"],
+                condition=models.Q(deleted__isnull=True)
+                & models.Q(client__isnull=True),
+                name="organization_activity_name_organization_category_unique",
+            ),
+        ]
 
     name = models.CharField(max_length=128)
     description = models.TextField(blank=True, null=True)
-    is_custom = models.BooleanField(
-        help_text="Is this a custom activity for the client? If not, it is an org-level activity"
-    )
     unit_cost = models.IntegerField(
         null=True, blank=True, help_text="Cost of the Activity per unit type"
     )
@@ -211,6 +217,9 @@ class Activity(BaseModel):
     organization = models.ForeignKey(
         Organization, on_delete=models.CASCADE, related_name="activities"
     )
+    client = models.ForeignKey(
+        Client, on_delete=models.CASCADE, related_name="activities"
+    )
 
     def __str__(self):
         return self.name
@@ -220,13 +229,15 @@ class Activity(BaseModel):
 
 
 class ClientActivity(BaseModel):
-    constraints = [
-        models.UniqueConstraint(
-            fields=["date", "client", "activity"],
-            condition=models.Q(deleted__isnull=True),
-            name="organization_client_activity_date_client_activity_unique",
-        )
-    ]
+    class Meta:
+        verbose_name_plural = "Client Activities"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["month", "year", "client", "activity"],
+                condition=models.Q(deleted__isnull=True),
+                name="organization_client_activity_month_year_client_activity_unique",
+            )
+        ]
 
     month = models.SmallIntegerField(help_text="Month of the Activity")
     year = models.SmallIntegerField(help_text="Year of the Activity")
@@ -234,8 +245,12 @@ class ClientActivity(BaseModel):
         default=True, help_text="Is the activity executed?"
     )
 
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    client = models.ForeignKey(
+        Client, on_delete=models.CASCADE, related_name="client_activities"
+    )
+    activity = models.ForeignKey(
+        Activity, on_delete=models.CASCADE, related_name="client_activities"
+    )
 
 
 class ClientActivityLog(BaseModel):
@@ -243,7 +258,7 @@ class ClientActivityLog(BaseModel):
         ClientActivity, on_delete=models.CASCADE, related_name="logs"
     )
     quantity = models.SmallIntegerField(
-        default=1, help_text="How many of these items are on the invoice"
+        default=1, help_text="How many of these activities"
     )
     minutes_allocated = models.SmallIntegerField(
         blank=True,
@@ -256,7 +271,7 @@ class ClientActivityLog(BaseModel):
         help_text="Date when the activity was executed",
     )
     description = models.TextField(
-        help_text="Optional explanation for the invoice item", null=True, blank=True
+        help_text="Optional explanation for the log", null=True, blank=True
     )
 
 
@@ -284,22 +299,10 @@ class ClientSolution(BaseModel):
 
 
 class StandardInvoiceItemCategory(BaseModel):
+    """Category of the Standard Invoice Item e.g. Accounting, Human Resources etc."""
+
     class Meta:
         verbose_name_plural = "Standard Invoice Item Categories"
-
-    """Category of the Standard Invoice Item e.g. Accounting, Human Resources etc."""
-    constraints = [
-        models.UniqueConstraint(
-            fields=["name"],
-            condition=models.Q(deleted__isnull=True),
-            name="organization_standard_invoice_item_category_name_unique",
-        ),
-        models.UniqueConstraint(
-            fields=["code"],
-            condition=models.Q(deleted__isnull=True),
-            name="organization_standard_invoice_item_category_code_unique",
-        ),
-    ]
 
     name = models.CharField(max_length=64)
     code = models.CharField(max_length=64)

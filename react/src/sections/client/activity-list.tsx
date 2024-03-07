@@ -7,13 +7,11 @@ import TableBody from '@mui/material/TableBody'
 import TableContainer from '@mui/material/TableContainer'
 import { useSnackbar } from 'components/snackbar'
 import { startOfMonth } from 'date-fns'
-import { styled } from '@mui/material/styles'
 
 import Scrollbar from 'components/scrollbar'
 import {
   TableEmptyRows,
   TableHeadCustom,
-  TableNoData,
   emptyRows,
   getComparator,
   useTable,
@@ -22,66 +20,45 @@ import {
 import ResponseHandler from 'components/response-handler'
 import {
   useOrganizationActivitiesQuery,
-  useDeleteOrganizationActivityMutation,
   useClientActivitiesQuery,
+  ActivityType,
 } from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
-import UpdateActivity from 'sections/client/activity-update'
-import { TableCell, TableRow } from '@mui/material'
-import { APIClientInvoice, APIActivity, ActivityTableFilters } from './types'
+import ActivityTableFiltersResult from 'sections/settings/activity-table-filters-result'
+import ActivityTableToolbar from 'sections/client/activity-table-toolbar'
+import ActivityTableRow from 'sections/client/activity-table-row'
+import { ActivityTableFilters } from './types'
 
 const defaultFilters = {
   name: '',
 }
 
 const TABLE_HEAD = [
-  { id: 'index', label: '#' },
   { id: 'name', label: 'Nume' },
-  { id: 'description', label: 'Explicatie' },
-  { id: 'itemDate', label: 'Data' },
-  { id: 'unitCostType', label: 'Tip Cost' },
-  { id: 'minutesAllocated', label: 'Minute Alocate' },
   { id: 'unitCost', label: 'Suma' },
-  { id: 'quantity', label: 'Cantitate' },
-  { id: 'totalCost', label: 'Suma Totala' },
+  { id: 'unitCostType', label: 'Tip Cost' },
   { id: '', width: 88 },
 ]
 
-const TotalsRow = styled(TableRow)(({ theme }) => ({
-  '& td': {
-    textAlign: 'right',
-    borderBottom: 'none',
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
-  },
-}))
-
 type ActivityListCardProps = {
-  clientInvoice: APIClientInvoice
-  invoiceDate: null | Date
-  onChangeInvoiceDate: (newDate: null | Date) => void
+  activities: ActivityType[]
+  date: Date
+  onChangeDate: (newDate: Date) => void
 }
 
-const ActivityListCard: React.FC<ActivityListCardProps> = ({
-  clientInvoice,
-  invoiceDate,
-  onChangeInvoiceDate,
-}) => {
+const ActivityListCard: React.FC<ActivityListCardProps> = ({ activities, date, onChangeDate }) => {
   const showCreateActivity = useBoolean()
 
-  const [deleteActivity, { loading }] = useDeleteOrganizationActivityMutation()
-  const activitiesResult = useOrganizationActivitiesQuery()
-
-  const [invoiceItemIdToEdit, setActivityIdToEdit] = useState<null | string>(null)
+  const [activityIdToEdit, setActivityIdToEdit] = useState<null | string>(null)
 
   const { enqueueSnackbar } = useSnackbar()
-  const [tableData, setTableData] = useState(clientInvoice.items)
+  const [tableData, setTableData] = useState(activities)
 
   useEffect(() => {
-    setTableData(clientInvoice.items)
-  }, [clientInvoice])
+    setTableData(activities)
+  }, [activities])
 
-  const table = useTable({ defaultOrderBy: 'isRecurring', defaultOrder: 'desc' })
+  const table = useTable({ defaultOrderBy: 'name', defaultOrder: 'asc' })
 
   const denseHeight = table.dense ? 56 : 56 + 20
 
@@ -94,8 +71,6 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
   })
 
   const canReset = !isEqual(defaultFilters, filters)
-
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length
 
   const handleFilters = useCallback(
     (name: string, value: string) => {
@@ -112,19 +87,6 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
     setFilters(defaultFilters)
   }, [])
 
-  const handleDeleteRow = async (uuid: string) => {
-    await deleteActivity({
-      variables: { uuid },
-      update(cache) {
-        const normalizedId = cache.identify({ uuid, __typename: 'ActivityType' })
-        cache.evict({ id: normalizedId })
-        cache.gc()
-      },
-    })
-
-    enqueueSnackbar('Intrarea a fost ștearsă!')
-  }
-
   const handleEditRow = useCallback(
     (id: null | string) => {
       setActivityIdToEdit(id)
@@ -133,32 +95,19 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
     [showCreateActivity, setActivityIdToEdit],
   )
 
-  const invoiceIsLocked = Boolean(clientInvoice.dateSent)
-
   return (
     <Card>
       {showCreateActivity.value && (
-        <ResponseHandler {...servicesResult}>
-          {({ organizationServices }) => {
-            return (
-              <UpdateActivity
-                organizationServices={organizationServices}
-                invoiceId={clientInvoice.uuid}
-                invoiceDate={invoiceDate}
-                invoiceItem={clientInvoice.items.find(item => item.uuid === invoiceItemIdToEdit)}
-                onClose={showCreateActivity.onFalse}
-              />
-            )
-          }}
-        </ResponseHandler>
+        <></>
+        // <UpdateActivity
+        //   organizationServices={organizationServices}
+        //   invoiceId={clientInvoice.uuid}
+        //   invoiceDate={invoiceDate}
+        //   invoiceItem={clientInvoice.items.find(item => item.uuid === invoiceItemIdToEdit)}
+        //   onClose={showCreateActivity.onFalse}
+        // />
       )}
-      <ActivityTableToolbar
-        onAddActivity={() => handleEditRow(null)}
-        invoiceDate={invoiceDate}
-        invoiceId={clientInvoice.uuid}
-        invoiceDateSent={clientInvoice.dateSent}
-        onChangeInvoiceDate={onChangeInvoiceDate}
-      />
+      <ActivityTableToolbar filters={filters} onFilters={handleFilters} />
 
       {canReset && (
         <ActivityTableFiltersResult
@@ -188,14 +137,10 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
                   table.page * table.rowsPerPage,
                   table.page * table.rowsPerPage + table.rowsPerPage,
                 )
-                .map((row, index) => (
+                .map(row => (
                   <ActivityTableRow
-                    invoiceIsLocked={invoiceIsLocked}
                     key={row.uuid}
-                    index={index + 1}
                     row={row}
-                    loading={loading}
-                    onDeleteRow={() => handleDeleteRow(row.uuid)}
                     onEditRow={() => handleEditRow(row.uuid)}
                   />
                 ))}
@@ -204,19 +149,6 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
                 height={denseHeight}
                 emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
               />
-
-              <TableNoData notFound={notFound} />
-              {clientInvoice.totalsByCurrency.map(({ currency, total }, index) => {
-                return (
-                  <TotalsRow key={currency}>
-                    <TableCell colSpan={7} />
-                    <TableCell sx={{ typography: 'subtitle1' }}>{index === 0 && 'Total'}</TableCell>
-                    <TableCell width={140} sx={{ typography: 'subtitle1' }}>
-                      {total.toFixed(2)} {currency}
-                    </TableCell>
-                  </TotalsRow>
-                )
-              })}
             </TableBody>
           </Table>
         </Scrollbar>
@@ -230,9 +162,9 @@ type Props = {
 }
 
 const ActivityListView: React.FC<Props> = ({ clientId }) => {
-  const [date, setDate] = useState<null | Date>(startOfMonth(new Date()))
+  const [date, setDate] = useState(startOfMonth(new Date()))
 
-  const result = useClientActivitiesQuery({
+  const clientActivitiesResult = useClientActivitiesQuery({
     variables: {
       clientUuid: clientId,
       month: date ? date.getMonth() + 1 : null,
@@ -240,10 +172,58 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
     },
   })
 
+  const activitiesResult = useOrganizationActivitiesQuery()
+
   return (
-    <ResponseHandler {...result}>
-      {({ activities }) => {
-        return <ActivityListCard activities={activities} date={date} onChangeDate={setDate} />
+    <ResponseHandler {...clientActivitiesResult}>
+      {({ clientActivities }) => {
+        return (
+          <ResponseHandler {...activitiesResult}>
+            {({ organization }) => {
+              const systemActivities = organization.activities.map(organizationActivity => {
+                const clientActivity = clientActivities.find(
+                  ca => ca.activity.name === organizationActivity.name,
+                )
+
+                if (clientActivity) {
+                  return {
+                    ...organizationActivity,
+                    ...clientActivity.activity,
+                    isExecuted: clientActivity.isExecuted,
+                  }
+                }
+                return { ...organizationActivity, isExecuted: false }
+              })
+
+              const customActivities = clientActivities
+                .filter(clientActivity => {
+                  const isCustomActivity = !organization.activities.some(
+                    a => a.name === clientActivity.activity.name,
+                  )
+                  return isCustomActivity
+                })
+                .map(clientActivity => ({
+                  ...clientActivity.activity,
+                  isExecuted: clientActivity.isExecuted,
+                }))
+
+              return (
+                <>
+                  <ActivityListCard
+                    activities={systemActivities}
+                    date={date}
+                    onChangeDate={setDate}
+                  />
+                  {/* <ActivityListCard
+                    activities={customActivities}
+                    date={date}
+                    onChangeDate={setDate}
+                  /> */}
+                </>
+              )
+            }}
+          </ResponseHandler>
+        )
       }}
     </ResponseHandler>
   )
@@ -254,7 +234,7 @@ function applyFilter({
   comparator,
   filters,
 }: {
-  inputData: APIActivity[]
+  inputData: ActivityType[]
   comparator: (a: any, b: any) => number
   filters: ActivityTableFilters
 }) {

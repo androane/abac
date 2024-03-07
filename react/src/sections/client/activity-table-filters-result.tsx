@@ -16,7 +16,7 @@ type Props = StackProps & {
   results: number
 }
 
-export default function ClientTableFiltersResult({
+export default function ActivityTableFiltersResult({
   filters,
   onFilters,
   onResetFilters,

@@ -60,6 +60,7 @@ class Query(graphene.ObjectType):
         client_uuid=graphene.String(required=True),
         month=graphene.Int(),
         year=graphene.Int(),
+        required=True,
     )
     client_invoice = graphene.Field(
         graphene.NonNull(InvoiceType),

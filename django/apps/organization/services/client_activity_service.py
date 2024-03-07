@@ -23,24 +23,16 @@ def update_client_activity(
     client = org.clients.get(uuid=client_uuid)
     category = ActivityCategory.objects.get(code=activity_input.category_code)
 
-    if activity_input.uuid:
-        activity = org.activities.get(
-            uuid=activity_input.uuid, is_custom=True, category=category
+    def set_activity_attrs(activity):
+        attrs = (
+            "name",
+            "description",
+            "unit_cost_currency",
+            "unit_cost_type",
+            "unit_cost",
         )
-    else:
-        activity = Activity.objects.create(
-            organization=org, is_custom=False, category=category
-        )
-
-    attrs = (
-        "name",
-        "description",
-        "unit_cost_currency",
-        "unit_cost_type",
-        "unit_cost",
-    )
-    for attr in attrs:
-        setattr(activity, attr, getattr(activity_input, attr))
+        for attr in attrs:
+            setattr(activity, attr, getattr(activity_input, attr))
 
     if client_activity_input.uuid:
         client_activity = ClientActivity.objects.get(
@@ -49,7 +41,14 @@ def update_client_activity(
             month=client_activity_input.month,
             year=client_activity_input.year,
         )
+        activity = client_activity.activity
+        set_activity_attrs(activity)
+        activity.save()
     else:
+        activity = Activity(organization=org, client=client, category=category)
+        set_activity_attrs(activity)
+        activity.save()
+
         client_activity = ClientActivity.objects.create(
             client=client,
             activity=activity,

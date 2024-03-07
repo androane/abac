@@ -8,7 +8,6 @@ import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
 import { InvoiceStatusEnum, useUpdateClientInvoiceStatusMutation } from 'generated/graphql'
 import { enqueueSnackbar } from 'components/snackbar'
-import AddButton from 'components/add-button'
 import getErrorMessage from 'utils/api-codes'
 
 type Props = {
@@ -108,7 +107,7 @@ export default function InvoiceTableToolbar({
           </MenuItem>
         ))}
       </CustomPopover>
-      {status !== InvoiceStatusEnum.SENT && (
+      {/* {status !== InvoiceStatusEnum.SENT && (
         <Stack
           spacing={1}
           flexGrow={1}
@@ -118,7 +117,7 @@ export default function InvoiceTableToolbar({
         >
           <AddButton label="Adaugă la Factura" withSpacing={false} onClick={onAddInvoiceItem} />
         </Stack>
-      )}
+      )} */}
     </Stack>
   )
 }
