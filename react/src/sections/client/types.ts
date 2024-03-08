@@ -1,4 +1,5 @@
 import {
+  ActivityType,
   ClientFilesQuery,
   ClientInvoiceQuery,
   ClientsQuery,
@@ -18,6 +19,8 @@ export type ClientActivityTableFilters = {
   name: string
   category: string
 }
+
+export type ClientActivityType = ActivityType & { isExecuted: boolean }
 
 export type APIClientUser = ClientUsersQuery['clientUsers'][0]
 export type APIClient = ClientsQuery['clients'][0]

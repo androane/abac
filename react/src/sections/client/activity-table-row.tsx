@@ -1,3 +1,5 @@
+import LoadingButton from '@mui/lab/LoadingButton'
+import { Switch } from '@mui/material'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
@@ -5,22 +7,41 @@ import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
+import { ConfirmDialog } from 'components/custom-dialog'
 
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
-import { ActivityType } from 'generated/graphql'
+import { useToggleClientActivityMutation } from 'generated/graphql'
+import { useBoolean } from 'hooks/use-boolean'
+import React from 'react'
+import { ClientActivityType } from 'sections/client/types'
+import { getUnitCostTypeLabel } from 'utils/constants'
 
 type Props = {
-  row: ActivityType
+  loading: boolean
+  row: ClientActivityType
   onEditRow: VoidFunction
+  onDeleteRow: VoidFunction
 }
 
-export default function ClientTableRow({ row, onEditRow }: Props) {
+const ActivityTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRow }) => {
+  const [toggleClientActivity, { loading: loadingToggle }] = useToggleClientActivityMutation()
+
+  const confirm = useBoolean()
+
   const popover = usePopover()
 
   return (
     <>
       <TableRow hover>
+        <TableCell>
+          <Switch
+            checked={row.isExecuted}
+            onChange={() => toggleClientActivity({ variables: { clientActivityUuid: row.uuid } })}
+            disabled={loadingToggle}
+            color="primary"
+          />
+        </TableCell>
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar alt={row.name} sx={{ mr: 2 }}>
             {row.name.charAt(0).toUpperCase()}
@@ -50,7 +71,7 @@ export default function ClientTableRow({ row, onEditRow }: Props) {
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={row.unitCostType}
+            primary={getUnitCostTypeLabel(row.unitCostType)}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -74,14 +95,29 @@ export default function ClientTableRow({ row, onEditRow }: Props) {
       >
         <MenuItem
           onClick={() => {
-            onEditRow()
+            confirm.onTrue()
             popover.onClose()
           }}
+          sx={{ color: 'error.main' }}
         >
-          <Iconify icon="solar:pen-bold" />
-          Modifică
+          <Iconify icon="solar:trash-bin-trash-bold" />
+          Șterge
         </MenuItem>
       </CustomPopover>
+
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title="Șterge Serviciu"
+        content="Ești sigur că vrei să ștergi acest serviciu?"
+        action={
+          <LoadingButton variant="contained" color="error" onClick={onDeleteRow} loading={loading}>
+            Șterge
+          </LoadingButton>
+        }
+      />
     </>
   )
 }
+
+export default ActivityTableRow

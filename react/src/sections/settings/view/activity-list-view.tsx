@@ -53,7 +53,9 @@ type Props = {
 
 const ActivityList: React.FC<Props> = ({ organizationUuid, activities }) => {
   const showCreateActivity = useBoolean()
+
   const [deleteActivity, { loading }] = useDeleteOrganizationActivityMutation()
+
   const [activityIdToEdit, setActivityIdToEdit] = useState<null | string>(null)
 
   const { enqueueSnackbar } = useSnackbar()

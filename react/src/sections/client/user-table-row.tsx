@@ -135,8 +135,8 @@ const UserTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRow })
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Șterge Persoana de Contact"
-        content="Ești sigur că vrei să ștergi aceasta Persoana de Contact?"
+        title="Șterge Persoană de Contact"
+        content="Ești sigur că vrei să ștergi aceasta Persoană de Contact?"
         action={
           <LoadingButton loading={loading} variant="contained" color="error" onClick={onDeleteRow}>
             Șterge

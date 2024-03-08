@@ -18,6 +18,7 @@ from organization.graphene.types import (
 )
 from organization.services.client_activity_service import (
     delete_client_activity,
+    toggle_client_activity,
     update_client_activity,
 )
 from organization.services.client_files_service import (
@@ -103,11 +104,22 @@ class UpdateClientActivity(BaseMutation):
 
 class DeleteClientActivity(BaseMutation):
     class Arguments:
-        activity_uuid = graphene.String(required=True)
+        uuid = graphene.String(required=True)
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
         delete_client_activity(user.organization, **kwargs)
+
+        return {}
+
+
+class ToggleClientActivity(BaseMutation):
+    class Arguments:
+        client_activity_uuid = graphene.String(required=True)
+
+    @logged_in_user_required
+    def mutate(self, user: User, **kwargs):
+        toggle_client_activity(user.organization, **kwargs)
 
         return {}
 

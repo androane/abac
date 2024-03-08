@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.db.models import F
+
 from organization.graphene.types import ActivityInput, ClientActivityInput
 from organization.models import Activity, ActivityCategory, ClientActivity, Organization
 
@@ -63,5 +65,11 @@ def update_client_activity(
     return client_activity
 
 
-def delete_client_activity(org: Organization, activity_uuid: str) -> None:
-    ClientActivity.objects.get(uuid=activity_uuid, client__organization=org).delete()
+def delete_client_activity(org: Organization, uuid: str) -> None:
+    ClientActivity.objects.get(uuid=uuid, client__organization=org).delete()
+
+
+def toggle_client_activity(org: Organization, client_activity_uuid: str) -> None:
+    ClientActivity.objects.filter(
+        uuid=client_activity_uuid, client__organization=org
+    ).update(is_executed=~F("is_executed"))

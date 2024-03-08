@@ -9,6 +9,7 @@ from organization.graphene.mutations import (
     DeleteClientUser,
     DeleteOrganizationActivity,
     DeleteOrganizationSolution,
+    ToggleClientActivity,
     UpdateClient,
     UpdateClientActivity,
     UpdateClientInvoiceStatus,
@@ -147,10 +148,13 @@ class Mutation(graphene.ObjectType):
 
     # Client Activity
     update_client_activity = UpdateClientActivity.Field(
-        description="Update or Create a New Client Invoice Item"
+        description="Update or Create a New Client Activity"
     )
     delete_client_activity = DeleteClientActivity.Field(
-        description="Delete a Client Invoice Item"
+        description="Delete a Client Activity"
+    )
+    toggle_client_activity = ToggleClientActivity.Field(
+        description="Toggle Client Activity Executed Status"
     )
 
     # Client File

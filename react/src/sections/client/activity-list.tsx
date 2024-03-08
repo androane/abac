@@ -21,13 +21,13 @@ import ResponseHandler from 'components/response-handler'
 import {
   useOrganizationActivitiesQuery,
   useClientActivitiesQuery,
-  ActivityType,
+  useDeleteClientActivityMutation,
 } from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import ActivityTableFiltersResult from 'sections/settings/activity-table-filters-result'
 import ActivityTableToolbar from 'sections/client/activity-table-toolbar'
 import ActivityTableRow from 'sections/client/activity-table-row'
-import { ClientActivityTableFilters } from 'sections/client/types'
+import { ClientActivityTableFilters, ClientActivityType } from 'sections/client/types'
 
 const defaultFilters = {
   name: '',
@@ -35,6 +35,7 @@ const defaultFilters = {
 }
 
 const TABLE_HEAD = [
+  { id: 'isExecuted', label: 'Efectuat?' },
   { id: 'name', label: 'Nume' },
   { id: 'unitCost', label: 'Suma' },
   { id: 'unitCostType', label: 'Tip Cost' },
@@ -42,13 +43,15 @@ const TABLE_HEAD = [
 ]
 
 type ActivityListCardProps = {
-  activities: ActivityType[]
+  activities: ClientActivityType[]
   date: Date
   onChangeDate: (newDate: Date) => void
 }
 
 const ActivityListCard: React.FC<ActivityListCardProps> = ({ activities, date, onChangeDate }) => {
   const showCreateActivity = useBoolean()
+
+  const [deleteActivity, { loading }] = useDeleteClientActivityMutation()
 
   const [activityIdToEdit, setActivityIdToEdit] = useState<null | string>(null)
 
@@ -71,6 +74,11 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({ activities, date, o
     filters,
   })
 
+  const dataInPage = dataFiltered.slice(
+    table.page * table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage,
+  )
+
   const canReset = !isEqual(defaultFilters, filters)
 
   const handleFilters = useCallback(
@@ -87,6 +95,23 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({ activities, date, o
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters)
   }, [])
+
+  const handleDeleteRow = async (uuid: string) => {
+    await deleteActivity({
+      variables: { uuid },
+      update(cache) {
+        const normalizedId = cache.identify({ uuid, __typename: 'ActivityType' })
+        cache.evict({ id: normalizedId })
+        cache.gc()
+      },
+    })
+
+    enqueueSnackbar('Serviciul a fost șters!')
+
+    showCreateActivity.onFalse()
+
+    table.onUpdatePageDeleteRow(dataInPage.length)
+  }
 
   const handleEditRow = useCallback(
     (id: null | string) => {
@@ -142,7 +167,9 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({ activities, date, o
                   <ActivityTableRow
                     key={row.uuid}
                     row={row}
+                    onDeleteRow={() => handleDeleteRow(row.uuid)}
                     onEditRow={() => handleEditRow(row.uuid)}
+                    loading={loading}
                   />
                 ))}
 
@@ -235,7 +262,7 @@ function applyFilter({
   comparator,
   filters,
 }: {
-  inputData: ActivityType[]
+  inputData: ClientActivityType[]
   comparator: (a: any, b: any) => number
   filters: ClientActivityTableFilters
 }) {

@@ -4,7 +4,7 @@ export const CATEGORY_CODES = ['accounting', 'hr']
 
 export const getUnitCostTypeLabel = (unitCostType: UnitCostTypeEnum) => {
   return {
-    [UnitCostTypeEnum.HOURLY]: 'Pe ora',
+    [UnitCostTypeEnum.HOURLY]: 'Pe oră',
     [UnitCostTypeEnum.FIXED]: 'Fix',
   }[unitCostType]
 }

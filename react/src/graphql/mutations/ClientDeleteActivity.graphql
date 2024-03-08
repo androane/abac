@@ -1,5 +1,5 @@
-mutation DeleteClientActivity($activityUuid: String!) {
-  deleteClientActivity(activityUuid: $activityUuid) {
+mutation DeleteClientActivity($uuid: String!) {
+  deleteClientActivity(uuid: $uuid) {
     error {
       ...Error
     }
