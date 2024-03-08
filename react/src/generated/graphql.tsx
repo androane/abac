@@ -370,7 +370,9 @@ export type MutationLoginArgs = {
 
 
 export type MutationToggleClientActivityArgs = {
-  clientActivityUuid: Scalars['String']['input'];
+  activityUuid: Scalars['String']['input'];
+  clientActivityInput: ClientActivityInput;
+  clientUuid: Scalars['String']['input'];
 };
 
 
@@ -380,6 +382,7 @@ export type MutationUpdateClientArgs = {
 
 
 export type MutationUpdateClientActivityArgs = {
+  activityInput: ActivityInput;
   clientActivityInput: ClientActivityInput;
   clientUuid: Scalars['String']['input'];
 };
@@ -501,6 +504,7 @@ export type SolutionType = {
 
 export type ToggleClientActivity = {
   __typename?: 'ToggleClientActivity';
+  clientActivityUuid: Scalars['String']['output'];
   error?: Maybe<ErrorType>;
 };
 
@@ -645,11 +649,13 @@ export type DeleteClientUserMutationVariables = Exact<{
 export type DeleteClientUserMutation = { __typename?: 'Mutation', deleteClientUser?: { __typename?: 'DeleteClientUser', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
 
 export type ToggleClientActivityMutationVariables = Exact<{
-  clientActivityUuid: Scalars['String']['input'];
+  clientUuid: Scalars['String']['input'];
+  activityUuid: Scalars['String']['input'];
+  clientActivityInput: ClientActivityInput;
 }>;
 
 
-export type ToggleClientActivityMutation = { __typename?: 'Mutation', toggleClientActivity?: { __typename?: 'ToggleClientActivity', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
+export type ToggleClientActivityMutation = { __typename?: 'Mutation', toggleClientActivity?: { __typename?: 'ToggleClientActivity', clientActivityUuid: string, error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
 
 export type UpdateClientMutationVariables = Exact<{
   clientInput: ClientInput;
@@ -660,6 +666,7 @@ export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { _
 
 export type UpdateClientActivityMutationVariables = Exact<{
   clientUuid: Scalars['String']['input'];
+  activityInput: ActivityInput;
   clientActivityInput: ClientActivityInput;
 }>;
 
@@ -1177,11 +1184,16 @@ export type DeleteClientUserMutationHookResult = ReturnType<typeof useDeleteClie
 export type DeleteClientUserMutationResult = Apollo.MutationResult<DeleteClientUserMutation>;
 export type DeleteClientUserMutationOptions = Apollo.BaseMutationOptions<DeleteClientUserMutation, DeleteClientUserMutationVariables>;
 export const ToggleClientActivityDocument = gql`
-    mutation ToggleClientActivity($clientActivityUuid: String!) {
-  toggleClientActivity(clientActivityUuid: $clientActivityUuid) {
+    mutation ToggleClientActivity($clientUuid: String!, $activityUuid: String!, $clientActivityInput: ClientActivityInput!) {
+  toggleClientActivity(
+    clientUuid: $clientUuid
+    activityUuid: $activityUuid
+    clientActivityInput: $clientActivityInput
+  ) {
     error {
       ...Error
     }
+    clientActivityUuid
   }
 }
     ${ErrorFragmentDoc}`;
@@ -1200,7 +1212,9 @@ export type ToggleClientActivityMutationFn = Apollo.MutationFunction<ToggleClien
  * @example
  * const [toggleClientActivityMutation, { data, loading, error }] = useToggleClientActivityMutation({
  *   variables: {
- *      clientActivityUuid: // value for 'clientActivityUuid'
+ *      clientUuid: // value for 'clientUuid'
+ *      activityUuid: // value for 'activityUuid'
+ *      clientActivityInput: // value for 'clientActivityInput'
  *   },
  * });
  */
@@ -1251,9 +1265,10 @@ export type UpdateClientMutationHookResult = ReturnType<typeof useUpdateClientMu
 export type UpdateClientMutationResult = Apollo.MutationResult<UpdateClientMutation>;
 export type UpdateClientMutationOptions = Apollo.BaseMutationOptions<UpdateClientMutation, UpdateClientMutationVariables>;
 export const UpdateClientActivityDocument = gql`
-    mutation UpdateClientActivity($clientUuid: String!, $clientActivityInput: ClientActivityInput!) {
+    mutation UpdateClientActivity($clientUuid: String!, $activityInput: ActivityInput!, $clientActivityInput: ClientActivityInput!) {
   updateClientActivity(
     clientUuid: $clientUuid
+    activityInput: $activityInput
     clientActivityInput: $clientActivityInput
   ) {
     error {
@@ -1286,6 +1301,7 @@ export type UpdateClientActivityMutationFn = Apollo.MutationFunction<UpdateClien
  * const [updateClientActivityMutation, { data, loading, error }] = useUpdateClientActivityMutation({
  *   variables: {
  *      clientUuid: // value for 'clientUuid'
+ *      activityInput: // value for 'activityInput'
  *      clientActivityInput: // value for 'clientActivityInput'
  *   },
  * });

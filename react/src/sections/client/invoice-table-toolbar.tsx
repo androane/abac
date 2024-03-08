@@ -9,6 +9,7 @@ import Iconify from 'components/iconify'
 import { InvoiceStatusEnum, useUpdateClientInvoiceStatusMutation } from 'generated/graphql'
 import { enqueueSnackbar } from 'components/snackbar'
 import getErrorMessage from 'utils/api-codes'
+import React from 'react'
 
 type Props = {
   invoiceId: string
@@ -17,12 +18,12 @@ type Props = {
   onChangeInvoiceDate: (newDate: null | Date) => void
 }
 
-export default function InvoiceTableToolbar({
+const InvoiceTableToolbar: React.FC<Props> = ({
   invoiceId,
   invoiceDate,
   invoiceDateSent,
   onChangeInvoiceDate,
-}: Props) {
+}) => {
   const [updateInvoiceStatus, { loading }] = useUpdateClientInvoiceStatusMutation()
   const popover = usePopover()
 
@@ -108,3 +109,5 @@ export default function InvoiceTableToolbar({
     </Stack>
   )
 }
+
+export default InvoiceTableToolbar

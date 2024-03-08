@@ -3,6 +3,7 @@ import { useCallback } from 'react'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 
 import FormControl from '@mui/material/FormControl'
 import OutlinedInput from '@mui/material/OutlinedInput'
@@ -15,11 +16,13 @@ import { ClientActivityTableFilters } from 'sections/client/types'
 import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
 
 type Props = {
+  date: Date
+  onChangeDate(newDate: Date | null): void
   filters: ClientActivityTableFilters
   onFilters: (name: string, value: string) => void
 }
 
-const ActivityTableToolbar: React.FC<Props> = ({ filters, onFilters }) => {
+const ActivityTableToolbar: React.FC<Props> = ({ date, onChangeDate, filters, onFilters }) => {
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       onFilters('name', event.target.value)
@@ -47,6 +50,18 @@ const ActivityTableToolbar: React.FC<Props> = ({ filters, onFilters }) => {
         pr: { xs: 2.5, md: 1 },
       }}
     >
+      <DatePicker
+        label="Vezi activitățile din luna"
+        minDate={new Date('2024-01-01')}
+        disableFuture
+        value={date}
+        onChange={onChangeDate}
+        slotProps={{ textField: { fullWidth: true } }}
+        views={['month', 'year']}
+        sx={{
+          maxWidth: { md: 180 },
+        }}
+      />
       <FormControl
         sx={{
           flexShrink: 0,

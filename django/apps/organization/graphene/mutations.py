@@ -89,6 +89,7 @@ class UpdateClientInvoiceStatus(BaseMutation):
 class UpdateClientActivity(BaseMutation):
     class Arguments:
         client_uuid = graphene.String(required=True)
+        activity_input = graphene.NonNull(ActivityInput)
         client_activity_input = graphene.NonNull(ClientActivityInput)
 
     client_activity = graphene.Field(ClientActivityType)
@@ -115,13 +116,17 @@ class DeleteClientActivity(BaseMutation):
 
 class ToggleClientActivity(BaseMutation):
     class Arguments:
-        client_activity_uuid = graphene.String(required=True)
+        client_uuid = graphene.String(required=True)
+        activity_uuid = graphene.String(required=True)
+        client_activity_input = graphene.NonNull(ClientActivityInput)
+
+    client_activity_uuid = graphene.String(required=True)
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        toggle_client_activity(user.organization, **kwargs)
+        client_activity_uuid = toggle_client_activity(user.organization, **kwargs)
 
-        return {}
+        return {"client_activity_uuid": client_activity_uuid}
 
 
 class CreateClientFiles(BaseMutation):

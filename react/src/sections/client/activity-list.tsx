@@ -28,6 +28,7 @@ import ActivityTableFiltersResult from 'sections/settings/activity-table-filters
 import ActivityTableToolbar from 'sections/client/activity-table-toolbar'
 import ActivityTableRow from 'sections/client/activity-table-row'
 import { ClientActivityTableFilters, ClientActivityType } from 'sections/client/types'
+import UpdateClientActivity from 'sections/client/activity-update'
 
 const defaultFilters = {
   name: '',
@@ -43,12 +44,18 @@ const TABLE_HEAD = [
 ]
 
 type ActivityListCardProps = {
+  clientUuid: string
   activities: ClientActivityType[]
   date: Date
   onChangeDate: (newDate: Date) => void
 }
 
-const ActivityListCard: React.FC<ActivityListCardProps> = ({ activities, date, onChangeDate }) => {
+const ActivityListCard: React.FC<ActivityListCardProps> = ({
+  clientUuid,
+  activities,
+  date,
+  onChangeDate,
+}) => {
   const showCreateActivity = useBoolean()
 
   const [deleteActivity, { loading }] = useDeleteClientActivityMutation()
@@ -124,16 +131,19 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({ activities, date, o
   return (
     <Card>
       {showCreateActivity.value && (
-        <></>
-        // <UpdateActivity
-        //   organizationServices={organizationServices}
-        //   invoiceId={clientInvoice.uuid}
-        //   invoiceDate={invoiceDate}
-        //   invoiceItem={clientInvoice.items.find(item => item.uuid === invoiceItemIdToEdit)}
-        //   onClose={showCreateActivity.onFalse}
-        // />
+        <UpdateClientActivity
+          date={date}
+          clientUuid={clientUuid}
+          activity={activities.find(_ => _.activityUuid === activityIdToEdit)!}
+          onClose={showCreateActivity.onFalse}
+        />
       )}
-      <ActivityTableToolbar filters={filters} onFilters={handleFilters} />
+      <ActivityTableToolbar
+        date={date}
+        onChangeDate={onChangeDate}
+        filters={filters}
+        onFilters={handleFilters}
+      />
 
       {canReset && (
         <ActivityTableFiltersResult
@@ -166,6 +176,8 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({ activities, date, o
                 .map(row => (
                   <ActivityTableRow
                     key={row.uuid}
+                    clientUuid={clientUuid}
+                    date={date}
                     row={row}
                     onDeleteRow={() => handleDeleteRow(row.uuid)}
                     onEditRow={() => handleEditRow(row.uuid)}
@@ -217,10 +229,16 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
                   return {
                     ...organizationActivity,
                     ...clientActivity.activity,
+                    activityUuid: organizationActivity.uuid,
+                    clientActivityUuid: clientActivity.activity.uuid,
                     isExecuted: clientActivity.isExecuted,
                   }
                 }
-                return { ...organizationActivity, isExecuted: false }
+                return {
+                  ...organizationActivity,
+                  activityUuid: organizationActivity.uuid,
+                  isExecuted: false,
+                }
               })
 
               const customActivities = clientActivities
@@ -238,6 +256,7 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
               return (
                 <>
                   <ActivityListCard
+                    clientUuid={clientId}
                     activities={systemActivities}
                     date={date}
                     onChangeDate={setDate}

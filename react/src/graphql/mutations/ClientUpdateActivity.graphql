@@ -1,5 +1,13 @@
-mutation UpdateClientActivity($clientUuid: String!, $clientActivityInput: ClientActivityInput!) {
-  updateClientActivity(clientUuid: $clientUuid, clientActivityInput: $clientActivityInput) {
+mutation UpdateClientActivity(
+  $clientUuid: String!
+  $activityInput: ActivityInput!
+  $clientActivityInput: ClientActivityInput!
+) {
+  updateClientActivity(
+    clientUuid: $clientUuid
+    activityInput: $activityInput
+    clientActivityInput: $clientActivityInput
+  ) {
     error {
       ...Error
     }

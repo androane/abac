@@ -103,6 +103,9 @@ class ClientActivityType(DjangoObjectType):
 
     logs = graphene.List(graphene.NonNull(ClientActivityLogType), required=True)
 
+    def resolve_logs(self, info, **kwargs):
+        return self.logs.all()
+
 
 class OrganizationType(DjangoObjectType):
     class Meta:

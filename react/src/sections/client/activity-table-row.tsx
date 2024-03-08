@@ -1,7 +1,5 @@
 import LoadingButton from '@mui/lab/LoadingButton'
 import { Switch } from '@mui/material'
-import Avatar from '@mui/material/Avatar'
-import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
@@ -18,13 +16,22 @@ import { ClientActivityType } from 'sections/client/types'
 import { getUnitCostTypeLabel } from 'utils/constants'
 
 type Props = {
+  clientUuid: string
+  date: Date
   loading: boolean
   row: ClientActivityType
   onEditRow: VoidFunction
   onDeleteRow: VoidFunction
 }
 
-const ActivityTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRow }) => {
+const ActivityTableRow: React.FC<Props> = ({
+  clientUuid,
+  date,
+  loading,
+  row,
+  onEditRow,
+  onDeleteRow,
+}) => {
   const [toggleClientActivity, { loading: loadingToggle }] = useToggleClientActivityMutation()
 
   const confirm = useBoolean()
@@ -37,30 +44,44 @@ const ActivityTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRo
         <TableCell>
           <Switch
             checked={row.isExecuted}
-            onChange={() => toggleClientActivity({ variables: { clientActivityUuid: row.uuid } })}
+            onChange={() =>
+              toggleClientActivity({
+                variables: {
+                  clientUuid,
+                  clientActivityInput: {
+                    month: date.getMonth() + 1,
+                    year: date.getFullYear(),
+                    uuid: row.clientActivityUuid,
+                    isExecuted: !row.isExecuted,
+                  },
+                  activityUuid: row.activityUuid,
+                },
+              })
+            }
             disabled={loadingToggle}
             color="primary"
           />
         </TableCell>
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={row.name} sx={{ mr: 2 }}>
-            {row.name.charAt(0).toUpperCase()}
-          </Avatar>
-          <Box
-            onClick={onEditRow}
+        <TableCell sx={{ whiteSpace: 'nowrap' }} onClick={onEditRow}>
+          <ListItemText
+            primary={row.name}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
             sx={{
               cursor: 'pointer',
               '&:hover': {
                 textDecoration: 'underline',
               },
             }}
-          >
-            {row.name}
-          </Box>
+          />
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={row.unitCost}
+            primary={row.unitCost ? `${row.unitCost} ${row.unitCostCurrency}` : ''}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -81,29 +102,35 @@ const ActivityTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRo
           />
         </TableCell>
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
+          {row.clientActivityUuid ? (
+            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          ) : (
+            <div />
+          )}
         </TableCell>
       </TableRow>
 
-      <CustomPopover
-        open={popover.open}
-        onClose={popover.onClose}
-        arrow="right-top"
-        sx={{ width: 140 }}
-      >
-        <MenuItem
-          onClick={() => {
-            confirm.onTrue()
-            popover.onClose()
-          }}
-          sx={{ color: 'error.main' }}
+      {row.clientActivityUuid && (
+        <CustomPopover
+          open={popover.open}
+          onClose={popover.onClose}
+          arrow="right-top"
+          sx={{ width: 140 }}
         >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          Șterge
-        </MenuItem>
-      </CustomPopover>
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue()
+              popover.onClose()
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Șterge
+          </MenuItem>
+        </CustomPopover>
+      )}
 
       <ConfirmDialog
         open={confirm.value}
