@@ -14,8 +14,9 @@ export type InvoiceTableFilters = {
   name: string
 }
 
-export type ActivityTableFilters = {
+export type ClientActivityTableFilters = {
   name: string
+  category: string
 }
 
 export type APIClientUser = ClientUsersQuery['clientUsers'][0]

@@ -29,34 +29,28 @@ import {
   SolutionFragment,
   useDeleteOrganizationSolutionMutation,
 } from 'generated/graphql'
-import { useAuthContext } from 'auth/hooks'
 import { SolutionTableFilters } from 'sections/settings/types'
 import SolutionTableFiltersResult from 'sections/settings/solution-table-filters-result'
 import SolutionTableRow from 'sections/settings/solution-table-row'
 import AddButton from 'components/add-button'
 import { useBoolean } from 'hooks/use-boolean'
 import UpdateSolution from 'sections/settings/solution-update'
-import { Navigate, useSearchParams } from 'react-router-dom'
-import { getCategoryLabelFromCode } from 'sections/settings/constants'
-import { CATEGORY_CODES } from 'layouts/dashboard/config-navigation'
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Nume' },
+  { id: 'category', label: 'Domeniu' },
   { id: '', width: 88 },
 ]
 
 type Props = {
   organizationUuid: string
-  categoryCode: string
   solutions: SolutionFragment[]
 }
 
-const SolutionList: React.FC<Props> = ({ organizationUuid, solutions, categoryCode }) => {
+const SolutionList: React.FC<Props> = ({ organizationUuid, solutions }) => {
   const showCreateSolution = useBoolean()
   const [deleteSolution, { loading }] = useDeleteOrganizationSolutionMutation()
   const [solutionIdToEdit, setsolutionIdToEdit] = useState<null | string>(null)
-
-  const { user } = useAuthContext()
 
   const { enqueueSnackbar } = useSnackbar()
   const [tableData, setTableData] = useState(solutions)
@@ -72,9 +66,9 @@ const SolutionList: React.FC<Props> = ({ organizationUuid, solutions, categoryCo
   const defaultFilters = useMemo(
     () => ({
       name: '',
-      programManagerId: user?.uuid,
+      category: '',
     }),
-    [user?.uuid],
+    [],
   )
   const [filters, setFilters] = useState(defaultFilters)
 
@@ -147,7 +141,6 @@ const SolutionList: React.FC<Props> = ({ organizationUuid, solutions, categoryCo
         {showCreateSolution.value && (
           <UpdateSolution
             organizationUuid={organizationUuid}
-            categoryCode={categoryCode}
             solution={solutions.find(_ => _.uuid === solutionIdToEdit)}
             onClose={showCreateSolution.onFalse}
           />
@@ -216,25 +209,17 @@ const SolutionList: React.FC<Props> = ({ organizationUuid, solutions, categoryCo
 }
 
 const SolutionListView = () => {
-  const [searchParams] = useSearchParams()
-
   const settings = useSettingsContext()
-  const categoryCode = searchParams.get('c')
 
   const result = useOrganizationSolutionsQuery()
-
-  if (!categoryCode) {
-    return <Navigate replace to={LANDING_PAGE} />
-  }
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={`Pachete ${getCategoryLabelFromCode(categoryCode)}`}
+        heading="Pachete"
         links={[
           { name: 'Pagina Principală', href: LANDING_PAGE },
-          { name: 'Pachete', href: `${paths.app.settings.solution.list}?c=${CATEGORY_CODES[0]}` },
-          { name: getCategoryLabelFromCode(categoryCode) },
+          { name: 'Pachete', href: paths.app.settings.solution.list },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -244,11 +229,7 @@ const SolutionListView = () => {
       <ResponseHandler {...result}>
         {({ organization }) => {
           return (
-            <SolutionList
-              organizationUuid={organization.uuid}
-              solutions={organization.solutions.filter(s => s.category?.code === categoryCode)}
-              categoryCode={categoryCode}
-            />
+            <SolutionList organizationUuid={organization.uuid} solutions={organization.solutions} />
           )
         }}
       </ResponseHandler>
@@ -279,6 +260,10 @@ function applyFilter({
     inputData = inputData.filter(
       client => client.name.toLowerCase().indexOf(filters.name.toLowerCase()) !== -1,
     )
+  }
+
+  if (filters.category) {
+    inputData = inputData.filter(activity => activity.category.code === filters.category)
   }
 
   return inputData

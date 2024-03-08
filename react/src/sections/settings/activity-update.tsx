@@ -19,23 +19,24 @@ import {
   UnitCostTypeEnum,
   ActivityFragmentDoc,
 } from 'generated/graphql'
-import { getCategoryLabelFromCode, getUnitCostTypeLabel } from 'sections/settings/constants'
 import getErrorMessage from 'utils/api-codes'
+import { CATEGORY_CODES, getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
+import { MenuItem } from '@mui/material'
 
 type Props = {
   organizationUuid: string
-  categoryCode: string
   activity?: ActivityFragment
   onClose: () => void
 }
 
-const UpdateActivity: React.FC<Props> = ({ organizationUuid, categoryCode, activity, onClose }) => {
+const UpdateActivity: React.FC<Props> = ({ organizationUuid, activity, onClose }) => {
   const [updateOrganizationActivity, { loading }] = useUpdateOrganizationActivityMutation()
   const { enqueueSnackbar } = useSnackbar()
 
   const defaultValues = useMemo(
     () => ({
       name: activity?.name || '',
+      categoryCode: activity?.category.code || '',
       unitCost: activity?.unitCost || undefined,
       unitCostCurrency: activity?.unitCostCurrency || CurrencyEnum.RON,
       unitCostType: activity?.unitCostType || UnitCostTypeEnum.HOURLY,
@@ -47,6 +48,7 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, categoryCode, activ
     resolver: yupResolver(
       Yup.object().shape({
         name: Yup.string().required('Acest câmp este obligatoriu'),
+        categoryCode: Yup.string().required('Acest câmp este obligatoriu'),
         unitCost: Yup.number(),
         unitCostCurrency: Yup.mixed<CurrencyEnum>()
           .oneOf(Object.values(CurrencyEnum))
@@ -65,7 +67,7 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, categoryCode, activ
         variables: {
           activityInput: {
             uuid: activity?.uuid,
-            categoryCode,
+            categoryCode: activity?.category.code || data.categoryCode,
             name: data.name,
             unitCost: data.unitCost,
             unitCostCurrency: data.unitCostCurrency,
@@ -94,7 +96,6 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, categoryCode, activ
       enqueueSnackbar('Serviciu actualizat cu succes!')
       onClose()
     } catch (error) {
-      console.log(error)
       enqueueSnackbar(getErrorMessage((error as Error).message), {
         variant: 'error',
       })
@@ -112,7 +113,7 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, categoryCode, activ
       }}
     >
       <FormProvider methods={form} onSubmit={onSubmit}>
-        <DialogTitle>Serviciu {getCategoryLabelFromCode(categoryCode)}</DialogTitle>
+        <DialogTitle>Serviciu</DialogTitle>
         <DialogContent>
           <br />
           <Box
@@ -125,30 +126,33 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, categoryCode, activ
             }}
           >
             <RHFTextField name="name" label="Nume serviciu" />
-            <div />
+            {activity ? (
+              <div />
+            ) : (
+              <RHFSelect name="categoryCode" label="Domeniu">
+                <MenuItem value="" sx={{ color: 'text.secondary' }}>
+                  Alege
+                </MenuItem>
+                {CATEGORY_CODES.map(catetgoryCode => (
+                  <MenuItem key={catetgoryCode} value={catetgoryCode}>
+                    {getCategoryLabelFromCode(catetgoryCode)}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+            )}
             <RHFTextField name="unitCost" label="Cost" />
-            <RHFSelect
-              native
-              name="unitCostCurrency"
-              label="Moneda"
-              InputLabelProps={{ shrink: true }}
-            >
+            <RHFSelect name="unitCostCurrency" label="Moneda">
               {Object.keys(CurrencyEnum).map(currency => (
-                <option key={currency} value={currency}>
+                <MenuItem key={currency} value={currency}>
                   {currency}
-                </option>
+                </MenuItem>
               ))}
             </RHFSelect>
-            <RHFSelect
-              native
-              name="unitCostType"
-              label="Tip Cost"
-              InputLabelProps={{ shrink: true }}
-            >
+            <RHFSelect name="unitCostType" label="Tip Cost">
               {Object.keys(UnitCostTypeEnum).map(type => (
-                <option key={type} value={type}>
+                <MenuItem key={type} value={type}>
                   {getUnitCostTypeLabel(type as UnitCostTypeEnum)}
-                </option>
+                </MenuItem>
               ))}
             </RHFSelect>
           </Box>

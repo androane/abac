@@ -1,5 +1,7 @@
 import { UnitCostTypeEnum } from 'generated/graphql'
 
+export const CATEGORY_CODES = ['accounting', 'hr']
+
 export const getUnitCostTypeLabel = (unitCostType: UnitCostTypeEnum) => {
   return {
     [UnitCostTypeEnum.HOURLY]: 'Pe ora',

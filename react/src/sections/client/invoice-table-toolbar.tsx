@@ -11,7 +11,6 @@ import { enqueueSnackbar } from 'components/snackbar'
 import getErrorMessage from 'utils/api-codes'
 
 type Props = {
-  onAddInvoiceItem: () => void
   invoiceId: string
   invoiceDate: null | Date
   invoiceDateSent?: null | string
@@ -19,7 +18,6 @@ type Props = {
 }
 
 export default function InvoiceTableToolbar({
-  onAddInvoiceItem,
   invoiceId,
   invoiceDate,
   invoiceDateSent,
@@ -107,17 +105,6 @@ export default function InvoiceTableToolbar({
           </MenuItem>
         ))}
       </CustomPopover>
-      {/* {status !== InvoiceStatusEnum.SENT && (
-        <Stack
-          spacing={1}
-          flexGrow={1}
-          direction="row"
-          alignItems="center"
-          justifyContent="flex-end"
-        >
-          <AddButton label="Adaugă la Factura" withSpacing={false} onClick={onAddInvoiceItem} />
-        </Stack>
-      )} */}
     </Stack>
   )
 }

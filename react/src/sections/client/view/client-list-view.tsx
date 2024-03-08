@@ -256,8 +256,6 @@ function applyFilter({
   comparator: (a: any, b: any) => number
   filters: ClientTableFilters
 }) {
-  const { name, programManagerId } = filters
-
   const stabilizedThis = inputData.map((el, index) => [el, index] as const)
 
   stabilizedThis.sort((a, b) => {
@@ -268,14 +266,14 @@ function applyFilter({
 
   inputData = stabilizedThis.map(el => el[0])
 
-  if (name) {
+  if (filters.name) {
     inputData = inputData.filter(
-      client => client.name.toLowerCase().indexOf(name.toLowerCase()) !== -1,
+      client => client.name.toLowerCase().indexOf(filters.name.toLowerCase()) !== -1,
     )
   }
 
-  if (programManagerId) {
-    inputData = inputData.filter(client => programManagerId === client.programManager?.uuid)
+  if (filters.programManagerId) {
+    inputData = inputData.filter(client => filters.programManagerId === client.programManager?.uuid)
   }
 
   return inputData

@@ -1,40 +1,20 @@
-import isEqual from 'lodash/isEqual'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import Card from '@mui/material/Card'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableContainer from '@mui/material/TableContainer'
-import { useSnackbar } from 'components/snackbar'
 import { startOfMonth } from 'date-fns'
 import { styled } from '@mui/material/styles'
 
 import Scrollbar from 'components/scrollbar'
-import {
-  TableEmptyRows,
-  TableHeadCustom,
-  TableNoData,
-  emptyRows,
-  getComparator,
-  useTable,
-} from 'components/table'
+import { TableEmptyRows, TableHeadCustom, TableNoData, emptyRows, useTable } from 'components/table'
 
 import ResponseHandler from 'components/response-handler'
-import {
-  useOrganizationActivitiesQuery,
-  useDeleteOrganizationActivityMutation,
-  useClientInvoiceQuery,
-} from 'generated/graphql'
-import { useBoolean } from 'hooks/use-boolean'
-import UpdateInvoiceItem from 'sections/client/activity-update'
+import { useClientInvoiceQuery } from 'generated/graphql'
 import { TableCell, TableRow } from '@mui/material'
-import InvoiceTableFiltersResult from './invoice-table-filters-result'
 import InvoiceTableToolbar from './invoice-table-toolbar'
-import { APIClientInvoice, APIInvoiceItem, InvoiceTableFilters } from './types'
-
-const defaultFilters = {
-  name: '',
-}
+import { APIClientInvoice } from './types'
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
@@ -42,9 +22,7 @@ const TABLE_HEAD = [
   { id: 'description', label: 'Explicatie' },
   { id: 'itemDate', label: 'Data' },
   { id: 'unitCostType', label: 'Tip Cost' },
-  { id: 'minutesAllocated', label: 'Minute Alocate' },
   { id: 'unitCost', label: 'Suma' },
-  { id: 'quantity', label: 'Cantitate' },
   { id: 'totalCost', label: 'Suma Totala' },
   { id: '', width: 88 },
 ]
@@ -69,108 +47,26 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
   invoiceDate,
   onChangeInvoiceDate,
 }) => {
-  const showCreateInvoiceItem = useBoolean()
-
-  const [deleteActivity, { loading }] = useDeleteOrganizationActivityMutation()
-  const activitiesResult = useOrganizationActivitiesQuery()
-
-  const [invoiceItemIdToEdit, setInvoiceItemIdToEdit] = useState<null | string>(null)
-
-  const { enqueueSnackbar } = useSnackbar()
   const [tableData, setTableData] = useState(clientInvoice.items)
 
   useEffect(() => {
     setTableData(clientInvoice.items)
   }, [clientInvoice])
 
-  const table = useTable({ defaultOrderBy: 'isRecurring', defaultOrder: 'desc' })
+  const table = useTable()
 
   const denseHeight = table.dense ? 56 : 56 + 20
-
-  const [filters, setFilters] = useState(defaultFilters)
-
-  const dataFiltered = applyFilter({
-    inputData: tableData,
-    comparator: getComparator(table.order, table.orderBy),
-    filters,
-  })
-
-  const canReset = !isEqual(defaultFilters, filters)
-
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length
-
-  const handleFilters = useCallback(
-    (name: string, value: string) => {
-      table.onResetPage()
-      setFilters(prevState => ({
-        ...prevState,
-        [name]: value,
-      }))
-    },
-    [table],
-  )
-
-  const handleResetFilters = useCallback(() => {
-    setFilters(defaultFilters)
-  }, [])
-
-  const handleDeleteRow = async (uuid: string) => {
-    await deleteActivity({
-      variables: { uuid },
-      update(cache) {
-        const normalizedId = cache.identify({ uuid, __typename: 'InvoiceItemType' })
-        cache.evict({ id: normalizedId })
-        cache.gc()
-      },
-    })
-
-    enqueueSnackbar('Intrarea a fost ștearsă!')
-  }
-
-  const handleEditRow = useCallback(
-    (id: null | string) => {
-      setInvoiceItemIdToEdit(id)
-      showCreateInvoiceItem.onTrue()
-    },
-    [showCreateInvoiceItem, setInvoiceItemIdToEdit],
-  )
 
   const invoiceIsLocked = Boolean(clientInvoice.dateSent)
 
   return (
     <Card>
-      {showCreateInvoiceItem.value && (
-        <ResponseHandler {...servicesResult}>
-          {({ organizationServices }) => {
-            return (
-              <UpdateInvoiceItem
-                organizationServices={organizationServices}
-                invoiceId={clientInvoice.uuid}
-                invoiceDate={invoiceDate}
-                invoiceItem={clientInvoice.items.find(item => item.uuid === invoiceItemIdToEdit)}
-                onClose={showCreateInvoiceItem.onFalse}
-              />
-            )
-          }}
-        </ResponseHandler>
-      )}
       <InvoiceTableToolbar
-        onAddInvoiceItem={() => handleEditRow(null)}
         invoiceDate={invoiceDate}
         invoiceId={clientInvoice.uuid}
         invoiceDateSent={clientInvoice.dateSent}
         onChangeInvoiceDate={onChangeInvoiceDate}
       />
-
-      {canReset && (
-        <InvoiceTableFiltersResult
-          filters={filters}
-          onFilters={handleFilters}
-          onResetFilters={handleResetFilters}
-          results={dataFiltered.length}
-          sx={{ p: 2.5, pt: 0 }}
-        />
-      )}
 
       <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
         <Scrollbar>
@@ -179,13 +75,13 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
               order={table.order}
               orderBy={table.orderBy}
               headLabel={TABLE_HEAD}
-              rowCount={dataFiltered.length}
+              rowCount={tableData.length}
               numSelected={table.selected.length}
               onSort={table.onSort}
             />
 
             <TableBody>
-              {dataFiltered
+              {tableData
                 .slice(
                   table.page * table.rowsPerPage,
                   table.page * table.rowsPerPage + table.rowsPerPage,
@@ -196,15 +92,12 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
                     key={row.uuid}
                     index={index + 1}
                     row={row}
-                    loading={loading}
-                    onDeleteRow={() => handleDeleteRow(row.uuid)}
-                    onEditRow={() => handleEditRow(row.uuid)}
                   />
                 ))}
 
               <TableEmptyRows
                 height={denseHeight}
-                emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+                emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
               />
 
               <TableNoData notFound={notFound} />
@@ -255,34 +148,6 @@ const InvoiceDetailsView: React.FC<Props> = ({ clientId }) => {
       }}
     </ResponseHandler>
   )
-}
-
-function applyFilter({
-  inputData,
-  comparator,
-  filters,
-}: {
-  inputData: APIInvoiceItem[]
-  comparator: (a: any, b: any) => number
-  filters: InvoiceTableFilters
-}) {
-  const stabilizedThis = inputData.map((el, index) => [el, index] as const)
-
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0])
-    if (order !== 0) return order
-    return a[1] - b[1]
-  })
-
-  inputData = stabilizedThis.map(el => el[0])
-
-  if (filters.name) {
-    inputData = inputData.filter(
-      invoice => invoice.name.toLowerCase().indexOf(filters.name.toLowerCase()) !== -1,
-    )
-  }
-
-  return inputData
 }
 
 export default InvoiceDetailsView

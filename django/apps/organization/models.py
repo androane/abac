@@ -218,7 +218,11 @@ class Activity(BaseModel):
         Organization, on_delete=models.CASCADE, related_name="activities"
     )
     client = models.ForeignKey(
-        Client, on_delete=models.CASCADE, related_name="activities"
+        Client,
+        on_delete=models.CASCADE,
+        related_name="activities",
+        null=True,
+        help_text="The client for which the activity is created. If null, the activity is for the organization.",
     )
 
     def __str__(self):

@@ -45,8 +45,6 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
       name: client?.name || '',
       description: client?.description || '',
       imageUrl: null,
-      phoneNumber1: client?.phoneNumber1,
-      phoneNumber2: client?.phoneNumber2,
       programManagerUuid: client?.programManager?.uuid || user?.uuid,
       spvUsername: client?.spvUsername,
       spvPassword: client?.spvPassword,
@@ -61,8 +59,6 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
         name: Yup.string().required('Numele este obligatoriu'),
         description: Yup.string().nullable(),
         imageUrl: Yup.mixed<any>().nullable(),
-        phoneNumber1: Yup.string().nullable(),
-        phoneNumber2: Yup.string().nullable(),
         programManagerUuid: Yup.string().nullable(),
         spvUsername: Yup.string().nullable(),
         spvPassword: Yup.string().nullable(),
@@ -76,15 +72,16 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
     try {
       await updateClient({
         variables: {
-          uuid: client?.uuid,
-          name: data.name,
-          description: data.description,
-          phoneNumber1: data.phoneNumber1,
-          phoneNumber2: data.phoneNumber2,
-          programManagerUuid: data.programManagerUuid,
-          spvUsername: data.spvUsername,
-          spvPassword: data.spvPassword,
-          cui: data.cui,
+          clientInput: {
+            uuid: client?.uuid,
+            name: data.name,
+            description: data.description,
+            programManagerUuid: data.programManagerUuid,
+            spvUsername: data.spvUsername,
+            spvPassword: data.spvPassword,
+            cui: data.cui,
+            clientSolutions: [],
+          },
         },
         update(cache, { data: cacheData }) {
           cache.modify({

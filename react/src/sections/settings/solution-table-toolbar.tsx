@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
@@ -11,20 +11,15 @@ import Iconify from 'components/iconify'
 import MenuItem from '@mui/material/MenuItem'
 import Checkbox from '@mui/material/Checkbox'
 import InputLabel from '@mui/material/InputLabel'
-import { ClientTableFilters } from './types'
-
-type ProgramManager = {
-  id: string
-  label: string
-}
+import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
+import { SolutionTableFilters } from 'sections/settings/types'
 
 type Props = {
-  programManagers: ProgramManager[]
-  filters: ClientTableFilters
+  filters: SolutionTableFilters
   onFilters: (name: string, value: string) => void
 }
 
-const ClientTableToolbar: React.FC<Props> = ({ programManagers, filters, onFilters }) => {
+const SolutionTableToolbar: React.FC<Props> = ({ filters, onFilters }) => {
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       onFilters('name', event.target.value)
@@ -32,9 +27,9 @@ const ClientTableToolbar: React.FC<Props> = ({ programManagers, filters, onFilte
     [onFilters],
   )
 
-  const handleFilterProgramManager = useCallback(
+  const handleFilterCategory = useCallback(
     (event: SelectChangeEvent<string>) => {
-      onFilters('programManagerId', event.target.value)
+      onFilters('category', event.target.value)
     },
     [onFilters],
   )
@@ -58,12 +53,12 @@ const ClientTableToolbar: React.FC<Props> = ({ programManagers, filters, onFilte
           width: { xs: 1, md: 200 },
         }}
       >
-        <InputLabel>Responsabil</InputLabel>
+        <InputLabel>Domeniu</InputLabel>
 
         <Select
-          value={filters.programManagerId}
-          onChange={handleFilterProgramManager}
-          input={<OutlinedInput label="Responsabil" />}
+          value={filters.category}
+          onChange={handleFilterCategory}
+          input={<OutlinedInput label="Domeniu" />}
           MenuProps={{
             PaperProps: {
               sx: { maxHeight: 240 },
@@ -71,13 +66,13 @@ const ClientTableToolbar: React.FC<Props> = ({ programManagers, filters, onFilte
           }}
         >
           <MenuItem key="all" value="">
-            <Checkbox disableRipple size="small" checked={!filters.programManagerId} />
-            Toti
+            <Checkbox disableRipple size="small" checked={!filters.category} />
+            Toate
           </MenuItem>
-          {programManagers.map(pm => (
-            <MenuItem key={pm.id} value={pm.id}>
-              <Checkbox disableRipple size="small" checked={filters.programManagerId === pm.id} />
-              {pm.label}
+          {CATEGORY_CODES.map(category => (
+            <MenuItem key={category} value={category}>
+              <Checkbox disableRipple size="small" checked={filters.category === category} />
+              {getCategoryLabelFromCode(category)}
             </MenuItem>
           ))}
         </Select>
@@ -101,4 +96,4 @@ const ClientTableToolbar: React.FC<Props> = ({ programManagers, filters, onFilte
   )
 }
 
-export default ClientTableToolbar
+export default SolutionTableToolbar

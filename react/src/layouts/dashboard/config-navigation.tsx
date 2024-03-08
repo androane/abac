@@ -2,13 +2,10 @@ import { paths } from 'routes/paths'
 
 import SvgColor from 'components/svg-color'
 import SettingsIcon from '@mui/icons-material/Settings'
-import { getCategoryLabelFromCode } from 'sections/settings/constants'
 
 const icon = (name: string) => (
   <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
 )
-
-export const CATEGORY_CODES = ['accounting', 'hr']
 
 const useNavData = () => {
   const data = [
@@ -31,19 +28,11 @@ const useNavData = () => {
           children: [
             {
               title: 'Servicii',
-              path: `${paths.app.settings.activity.list}?c=${CATEGORY_CODES[0]}`,
-              children: CATEGORY_CODES.map(code => ({
-                title: getCategoryLabelFromCode(code),
-                path: `${paths.app.settings.activity.list}?c=${code}`,
-              })),
+              path: paths.app.settings.activity.list,
             },
             {
               title: 'Pachete',
-              path: `${paths.app.settings.solution.list}?c=${CATEGORY_CODES[0]}`,
-              children: CATEGORY_CODES.map(code => ({
-                title: getCategoryLabelFromCode(code),
-                path: `${paths.app.settings.solution.list}?c=${code}`,
-              })),
+              path: paths.app.settings.solution.list,
             },
           ],
         },

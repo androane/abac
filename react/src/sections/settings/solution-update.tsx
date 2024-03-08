@@ -10,7 +10,7 @@ import DialogContent from '@mui/material/DialogContent'
 import Box from '@mui/material/Box'
 import DialogActions from '@mui/material/DialogActions'
 
-import FormProvider, { RHFMultiSelect, RHFTextField } from 'components/hook-form'
+import FormProvider, { RHFMultiSelect, RHFSelect, RHFTextField } from 'components/hook-form'
 import { useSnackbar } from 'components/snackbar'
 import {
   SolutionFragment,
@@ -18,18 +18,18 @@ import {
   SolutionFragmentDoc,
   useOrganizationActivitiesQuery,
 } from 'generated/graphql'
-import { getCategoryLabelFromCode } from 'sections/settings/constants'
 import getErrorMessage from 'utils/api-codes'
 import ResponseHandler from 'components/response-handler'
+import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
+import { MenuItem } from '@mui/material'
 
 type Props = {
   organizationUuid: string
-  categoryCode: string
   solution?: SolutionFragment
   onClose: () => void
 }
 
-const UpdateSolution: React.FC<Props> = ({ organizationUuid, categoryCode, solution, onClose }) => {
+const UpdateSolution: React.FC<Props> = ({ organizationUuid, solution, onClose }) => {
   const result = useOrganizationActivitiesQuery()
 
   const [updateOrganizationSolution, { loading }] = useUpdateOrganizationSolutionMutation()
@@ -38,6 +38,7 @@ const UpdateSolution: React.FC<Props> = ({ organizationUuid, categoryCode, solut
   const defaultValues = useMemo(
     () => ({
       name: solution?.name || '',
+      categoryCode: solution?.category.code || '',
       activityUuids: solution?.activities.map(a => a.uuid) || [],
     }),
     [solution],
@@ -47,6 +48,7 @@ const UpdateSolution: React.FC<Props> = ({ organizationUuid, categoryCode, solut
     resolver: yupResolver(
       Yup.object().shape({
         name: Yup.string().required('Acest câmp este obligatoriu'),
+        categoryCode: Yup.string().required('Acest câmp este obligatoriu'),
         activityUuids: Yup.array()
           .of(Yup.string().required('Acest câmp este obligatoriu'))
           .required('Serviciile incluse sunt obligatorii'),
@@ -61,7 +63,7 @@ const UpdateSolution: React.FC<Props> = ({ organizationUuid, categoryCode, solut
         variables: {
           solutionInput: {
             uuid: solution?.uuid,
-            categoryCode,
+            categoryCode: solution?.category.code || data.categoryCode,
             name: data.name,
             activityUuids: data.activityUuids,
           },
@@ -88,7 +90,6 @@ const UpdateSolution: React.FC<Props> = ({ organizationUuid, categoryCode, solut
       enqueueSnackbar('Pachet actualizat cu succes!')
       onClose()
     } catch (error) {
-      console.log(error)
       enqueueSnackbar(getErrorMessage((error as Error).message), {
         variant: 'error',
       })
@@ -106,7 +107,7 @@ const UpdateSolution: React.FC<Props> = ({ organizationUuid, categoryCode, solut
       }}
     >
       <FormProvider methods={form} onSubmit={onSubmit}>
-        <DialogTitle>Pachet {getCategoryLabelFromCode(categoryCode)}</DialogTitle>
+        <DialogTitle>Pachet</DialogTitle>
         <DialogContent>
           <br />
           <Box
@@ -119,6 +120,18 @@ const UpdateSolution: React.FC<Props> = ({ organizationUuid, categoryCode, solut
             }}
           >
             <RHFTextField name="name" label="Nume Pachet" />
+            {solution ? (
+              <div />
+            ) : (
+              <RHFSelect name="categoryCode" label="Domeniu">
+                <MenuItem value="">Alege</MenuItem>
+                {CATEGORY_CODES.map(catetgoryCode => (
+                  <MenuItem key={catetgoryCode} value={catetgoryCode}>
+                    {getCategoryLabelFromCode(catetgoryCode)}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+            )}
             <ResponseHandler {...result}>
               {({ organization }) => {
                 return (
@@ -127,7 +140,7 @@ const UpdateSolution: React.FC<Props> = ({ organizationUuid, categoryCode, solut
                     name="activityUuids"
                     label="Servicii incluse"
                     options={organization.activities
-                      .filter(a => a.category.code === categoryCode)
+                      .filter(a => a.category.code === form.watch('categoryCode'))
                       .map(activity => ({
                         value: activity.uuid,
                         label: activity.name,

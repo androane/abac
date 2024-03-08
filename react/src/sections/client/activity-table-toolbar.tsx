@@ -4,18 +4,32 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 
+import FormControl from '@mui/material/FormControl'
+import OutlinedInput from '@mui/material/OutlinedInput'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Iconify from 'components/iconify'
-import { ActivityTableFilters } from './types'
+import MenuItem from '@mui/material/MenuItem'
+import Checkbox from '@mui/material/Checkbox'
+import InputLabel from '@mui/material/InputLabel'
+import { ClientActivityTableFilters } from 'sections/client/types'
+import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
 
 type Props = {
-  filters: ActivityTableFilters
+  filters: ClientActivityTableFilters
   onFilters: (name: string, value: string) => void
 }
 
-export default function CustomerTableToolbar({ filters, onFilters }: Props) {
+const ActivityTableToolbar: React.FC<Props> = ({ filters, onFilters }) => {
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       onFilters('name', event.target.value)
+    },
+    [onFilters],
+  )
+
+  const handleFilterCategory = useCallback(
+    (event: SelectChangeEvent<string>) => {
+      onFilters('category', event.target.value)
     },
     [onFilters],
   )
@@ -33,12 +47,42 @@ export default function CustomerTableToolbar({ filters, onFilters }: Props) {
         pr: { xs: 2.5, md: 1 },
       }}
     >
+      <FormControl
+        sx={{
+          flexShrink: 0,
+          width: { xs: 1, md: 200 },
+        }}
+      >
+        <InputLabel>Domeniu</InputLabel>
+
+        <Select
+          value={filters.category}
+          onChange={handleFilterCategory}
+          input={<OutlinedInput label="Domeniu" />}
+          MenuProps={{
+            PaperProps: {
+              sx: { maxHeight: 240 },
+            },
+          }}
+        >
+          <MenuItem key="all" value="">
+            <Checkbox disableRipple size="small" checked={!filters.category} />
+            Toate
+          </MenuItem>
+          {CATEGORY_CODES.map(category => (
+            <MenuItem key={category} value={category}>
+              <Checkbox disableRipple size="small" checked={filters.category === category} />
+              {getCategoryLabelFromCode(category)}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
       <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
         <TextField
           fullWidth
           value={filters.name}
           onChange={handleFilterName}
-          placeholder="Cauta..."
+          placeholder="Caută..."
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -51,3 +95,5 @@ export default function CustomerTableToolbar({ filters, onFilters }: Props) {
     </Stack>
   )
 }
+
+export default ActivityTableToolbar

@@ -12,6 +12,8 @@ import { ConfirmDialog } from 'components/custom-dialog'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
 import { SolutionFragment } from 'generated/graphql'
+import { ListItemText } from '@mui/material'
+import { getCategoryLabelFromCode } from 'utils/constants'
 
 type Props = {
   row: SolutionFragment
@@ -43,6 +45,17 @@ const SolutionTableRow: React.FC<Props> = ({ row, onEditRow, onDeleteRow, loadin
           >
             {row.name}
           </Box>
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <ListItemText
+            primary={getCategoryLabelFromCode(row.category.code)}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
         </TableCell>
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>

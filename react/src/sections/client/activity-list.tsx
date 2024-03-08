@@ -27,10 +27,11 @@ import { useBoolean } from 'hooks/use-boolean'
 import ActivityTableFiltersResult from 'sections/settings/activity-table-filters-result'
 import ActivityTableToolbar from 'sections/client/activity-table-toolbar'
 import ActivityTableRow from 'sections/client/activity-table-row'
-import { ActivityTableFilters } from './types'
+import { ClientActivityTableFilters } from 'sections/client/types'
 
 const defaultFilters = {
   name: '',
+  category: '',
 }
 
 const TABLE_HEAD = [
@@ -236,7 +237,7 @@ function applyFilter({
 }: {
   inputData: ActivityType[]
   comparator: (a: any, b: any) => number
-  filters: ActivityTableFilters
+  filters: ClientActivityTableFilters
 }) {
   const stabilizedThis = inputData.map((el, index) => [el, index] as const)
 
@@ -252,6 +253,10 @@ function applyFilter({
     inputData = inputData.filter(
       invoice => invoice.name.toLowerCase().indexOf(filters.name.toLowerCase()) !== -1,
     )
+  }
+
+  if (filters.category) {
+    inputData = inputData.filter(activity => activity.category.code === filters.category)
   }
 
   return inputData

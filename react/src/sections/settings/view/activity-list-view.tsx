@@ -35,12 +35,11 @@ import ActivityTableRow from 'sections/settings/activity-table-row'
 import AddButton from 'components/add-button'
 import { useBoolean } from 'hooks/use-boolean'
 import UpdateActivity from 'sections/settings/activity-update'
-import { Navigate, useSearchParams } from 'react-router-dom'
-import { getCategoryLabelFromCode } from 'sections/settings/constants'
-import { CATEGORY_CODES } from 'layouts/dashboard/config-navigation'
+import ActivityTableToolbar from 'sections/settings/activity-table-toolbar'
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Nume' },
+  { id: 'category', label: 'Domeniu' },
   { id: 'unitCost', label: 'Cost' },
   { id: 'unitCostCurrency', label: 'Moneda' },
   { id: 'unitCostType', label: 'Tip tarif' },
@@ -49,11 +48,10 @@ const TABLE_HEAD = [
 
 type Props = {
   organizationUuid: string
-  categoryCode: string
   activities: ActivityFragment[]
 }
 
-const ActivityList: React.FC<Props> = ({ organizationUuid, activities, categoryCode }) => {
+const ActivityList: React.FC<Props> = ({ organizationUuid, activities }) => {
   const showCreateActivity = useBoolean()
   const [deleteActivity, { loading }] = useDeleteOrganizationActivityMutation()
   const [activityIdToEdit, setActivityIdToEdit] = useState<null | string>(null)
@@ -72,6 +70,7 @@ const ActivityList: React.FC<Props> = ({ organizationUuid, activities, categoryC
   const defaultFilters = useMemo(
     () => ({
       name: '',
+      category: '',
     }),
     [],
   )
@@ -146,11 +145,12 @@ const ActivityList: React.FC<Props> = ({ organizationUuid, activities, categoryC
         {showCreateActivity.value && (
           <UpdateActivity
             organizationUuid={organizationUuid}
-            categoryCode={categoryCode}
             activity={activities.find(_ => _.uuid === activityIdToEdit)}
             onClose={showCreateActivity.onFalse}
           />
         )}
+        <ActivityTableToolbar filters={filters} onFilters={handleFilters} />
+
         {canReset && (
           <ActivityTableFiltersResult
             filters={filters}
@@ -215,25 +215,17 @@ const ActivityList: React.FC<Props> = ({ organizationUuid, activities, categoryC
 }
 
 const ActivityListView = () => {
-  const [searchParams] = useSearchParams()
-
   const settings = useSettingsContext()
-  const categoryCode = searchParams.get('c')
 
   const result = useOrganizationActivitiesQuery()
-
-  if (!categoryCode) {
-    return <Navigate replace to={LANDING_PAGE} />
-  }
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={`Servicii ${getCategoryLabelFromCode(categoryCode)}`}
+        heading="Servicii"
         links={[
           { name: 'Pagina Principală', href: LANDING_PAGE },
-          { name: 'Servicii', href: `${paths.app.settings.activity.list}?c=${CATEGORY_CODES[0]}` },
-          { name: getCategoryLabelFromCode(categoryCode) },
+          { name: 'Servicii', href: paths.app.settings.activity.list },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -245,8 +237,7 @@ const ActivityListView = () => {
           return (
             <ActivityList
               organizationUuid={organization.uuid}
-              activities={organization.activities.filter(s => s.category?.code === categoryCode)}
-              categoryCode={categoryCode}
+              activities={organization.activities}
             />
           )
         }}
@@ -278,6 +269,10 @@ function applyFilter({
     inputData = inputData.filter(
       client => client.name.toLowerCase().indexOf(filters.name.toLowerCase()) !== -1,
     )
+  }
+
+  if (filters.category) {
+    inputData = inputData.filter(activity => activity.category.code === filters.category)
   }
 
   return inputData
