@@ -33,14 +33,16 @@ import UpdateClientActivity from 'sections/client/activity-update'
 const defaultFilters = {
   name: '',
   category: '',
+  isCustom: '',
 }
 
 const TABLE_HEAD = [
   { id: 'isExecuted', label: 'Efectuat?' },
   { id: 'name', label: 'Nume' },
+  { id: 'isCustom', label: 'Este specifică clientului?' },
+  { id: 'category', label: 'Domeniu' },
   { id: 'unitCost', label: 'Suma' },
   { id: 'unitCostType', label: 'Tip Cost' },
-  { id: '', width: 88 },
 ]
 
 type ActivityListCardProps = {
@@ -139,6 +141,7 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
         />
       )}
       <ActivityTableToolbar
+        onAddActivity={() => handleEditRow(null)}
         date={date}
         onChangeDate={onChangeDate}
         filters={filters}
@@ -225,6 +228,7 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
                   ca => ca.activity.name === organizationActivity.name,
                 )
 
+                // This means that a system activity has been overriden by a custom activity
                 if (clientActivity) {
                   return {
                     ...organizationActivity,
@@ -232,12 +236,15 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
                     activityUuid: organizationActivity.uuid,
                     clientActivityUuid: clientActivity.activity.uuid,
                     isExecuted: clientActivity.isExecuted,
+                    isCustom: false,
                   }
                 }
+
                 return {
                   ...organizationActivity,
                   activityUuid: organizationActivity.uuid,
                   isExecuted: false,
+                  isCustom: false,
                 }
               })
 
@@ -250,23 +257,19 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
                 })
                 .map(clientActivity => ({
                   ...clientActivity.activity,
+                  activityUuid: clientActivity.activity.uuid,
+                  clientActivityUuid: clientActivity.activity.uuid,
                   isExecuted: clientActivity.isExecuted,
+                  isCustom: true,
                 }))
 
               return (
-                <>
-                  <ActivityListCard
-                    clientUuid={clientId}
-                    activities={systemActivities}
-                    date={date}
-                    onChangeDate={setDate}
-                  />
-                  {/* <ActivityListCard
-                    activities={customActivities}
-                    date={date}
-                    onChangeDate={setDate}
-                  /> */}
-                </>
+                <ActivityListCard
+                  clientUuid={clientId}
+                  activities={[...systemActivities, ...customActivities]}
+                  date={date}
+                  onChangeDate={setDate}
+                />
               )
             }}
           </ResponseHandler>
@@ -303,6 +306,12 @@ function applyFilter({
 
   if (filters.category) {
     inputData = inputData.filter(activity => activity.category.code === filters.category)
+  }
+
+  if (filters.isCustom) {
+    inputData = inputData.filter(activity =>
+      filters.isCustom === 'yes' ? activity.isCustom : !activity.isCustom,
+    )
   }
 
   return inputData

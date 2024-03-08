@@ -36,6 +36,7 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, activity, onClose }
   const defaultValues = useMemo(
     () => ({
       name: activity?.name || '',
+      description: activity?.description || '',
       categoryCode: activity?.category.code || '',
       unitCost: activity?.unitCost || undefined,
       unitCostCurrency: activity?.unitCostCurrency || CurrencyEnum.RON,
@@ -48,6 +49,7 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, activity, onClose }
     resolver: yupResolver(
       Yup.object().shape({
         name: Yup.string().required('Acest câmp este obligatoriu'),
+        description: Yup.string(),
         categoryCode: Yup.string().required('Acest câmp este obligatoriu'),
         unitCost: Yup.number(),
         unitCostCurrency: Yup.mixed<CurrencyEnum>()
@@ -69,6 +71,7 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, activity, onClose }
             uuid: activity?.uuid,
             categoryCode: activity?.category.code || data.categoryCode,
             name: data.name,
+            description: data.description,
             unitCost: data.unitCost,
             unitCostCurrency: data.unitCostCurrency,
             unitCostType: data.unitCostType,
@@ -126,20 +129,16 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, activity, onClose }
             }}
           >
             <RHFTextField name="name" label="Nume serviciu" />
-            {activity ? (
-              <div />
-            ) : (
-              <RHFSelect name="categoryCode" label="Domeniu">
-                <MenuItem value="" sx={{ color: 'text.secondary' }}>
-                  Alege
+            <RHFSelect name="categoryCode" label="Domeniu" disabled={Boolean(activity)}>
+              <MenuItem value="" sx={{ color: 'text.secondary' }}>
+                Alege
+              </MenuItem>
+              {CATEGORY_CODES.map(catetgoryCode => (
+                <MenuItem key={catetgoryCode} value={catetgoryCode}>
+                  {getCategoryLabelFromCode(catetgoryCode)}
                 </MenuItem>
-                {CATEGORY_CODES.map(catetgoryCode => (
-                  <MenuItem key={catetgoryCode} value={catetgoryCode}>
-                    {getCategoryLabelFromCode(catetgoryCode)}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
-            )}
+              ))}
+            </RHFSelect>
             <RHFTextField name="unitCost" label="Cost" />
             <RHFSelect name="unitCostCurrency" label="Moneda">
               {Object.keys(CurrencyEnum).map(currency => (
@@ -155,6 +154,7 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, activity, onClose }
                 </MenuItem>
               ))}
             </RHFSelect>
+            <RHFTextField multiline rows={5} name="description" label="Descriere" />
           </Box>
           <DialogActions>
             <Button color="inherit" variant="outlined" onClick={onClose}>

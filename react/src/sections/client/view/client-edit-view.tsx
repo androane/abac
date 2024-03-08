@@ -9,6 +9,7 @@ import { useClientsQuery } from 'generated/graphql'
 import { useCallback, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import { LANDING_PAGE, paths } from 'routes/paths'
+import { info } from 'theme/palette'
 import FilesList from '../files-list'
 import UsersList from '../users-list'
 import ActivityList from '../activity-list'
@@ -23,31 +24,33 @@ enum TABS_VALUES {
   USERS = 'u',
 }
 
+const getIcon = (icon: string) => <Iconify icon={icon} width={24} color={info.main} />
+
 const TABS = [
   {
     value: TABS_VALUES.GENERAL,
-    label: 'Informatii Generale',
-    icon: <Iconify icon="solar:user-id-outline" width={24} />,
+    label: 'Informații Generale',
+    icon: 'solar:user-id-outline',
   },
   {
     value: TABS_VALUES.ACTIVITY,
     label: 'Activitate',
-    icon: <Iconify icon="solar:bill-list-outline" width={24} />,
+    icon: 'solar:bill-list-outline',
   },
   {
     value: TABS_VALUES.INVOICING,
     label: 'Facturare',
-    icon: <Iconify icon="solar:dollar-outline" width={24} />,
+    icon: 'solar:dollar-outline',
   },
   {
     value: TABS_VALUES.FILES,
     label: 'Documente',
-    icon: <Iconify icon="solar:gallery-wide-outline" width={24} />,
+    icon: 'solar:gallery-wide-outline',
   },
   {
     value: TABS_VALUES.USERS,
     label: 'Persoane de Contact',
-    icon: <Iconify icon="solar:users-group-rounded-outline" width={24} />,
+    icon: 'solar:users-group-rounded-outline',
   },
 ]
 
@@ -106,7 +109,12 @@ const ClientEditView = () => {
                 }}
               >
                 {TABS.map(tab => (
-                  <Tab key={tab.value} label={tab.label} icon={tab.icon} value={tab.value} />
+                  <Tab
+                    key={tab.value}
+                    label={tab.label}
+                    icon={getIcon(tab.icon)}
+                    value={tab.value}
+                  />
                 ))}
               </Tabs>
 

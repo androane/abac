@@ -58,7 +58,6 @@ export type ChangePassword = {
 };
 
 export type ClientActivityInput = {
-  isExecuted: Scalars['Boolean']['input'];
   month: Scalars['Int']['input'];
   uuid?: InputMaybe<Scalars['String']['input']>;
   year: Scalars['Int']['input'];

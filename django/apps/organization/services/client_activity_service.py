@@ -52,15 +52,12 @@ def update_client_activity(
         activity.save()
 
         client_activity = ClientActivity.objects.create(
+            is_executed=True,
             client=client,
             activity=activity,
             month=client_activity_input.month,
             year=client_activity_input.year,
         )
-
-    attrs = ("is_executed",)
-    for attr in attrs:
-        setattr(activity, attr, getattr(client_activity_input, attr))
 
     return client_activity
 

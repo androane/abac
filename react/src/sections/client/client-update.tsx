@@ -23,6 +23,7 @@ import {
 } from 'generated/graphql'
 import { useAuthContext } from 'auth/hooks'
 import getErrorMessage from 'utils/api-codes'
+import { MenuItem } from '@mui/material'
 import { APIClient } from './types'
 
 type Props = {
@@ -129,23 +130,20 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
                 {({ clientProgramManagers }) => {
                   return (
                     <RHFSelect
-                      native
                       name="programManagerUuid"
                       label="Responsabil"
                       InputLabelProps={{ shrink: true }}
                     >
-                      <option value="" />
+                      <MenuItem value="" />
                       {clientProgramManagers.map(pm => (
-                        <option key={pm.uuid} value={pm.uuid}>
+                        <MenuItem key={pm.uuid} value={pm.uuid}>
                           {pm.name}
-                        </option>
+                        </MenuItem>
                       ))}
                     </RHFSelect>
                   )
                 }}
               </ResponseHandler>
-              <RHFTextField name="phoneNumber1" label="Telefon 1" />
-              <RHFTextField name="phoneNumber2" label="Telefon 2" />
               <RHFTextField name="cui" label="CUI" />
             </Box>
             <Box sx={{ pt: 3 }}>

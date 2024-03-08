@@ -1,6 +1,5 @@
 import LoadingButton from '@mui/lab/LoadingButton'
 import { Switch } from '@mui/material'
-import IconButton from '@mui/material/IconButton'
 import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import TableCell from '@mui/material/TableCell'
@@ -13,7 +12,7 @@ import { useToggleClientActivityMutation } from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import React from 'react'
 import { ClientActivityType } from 'sections/client/types'
-import { getUnitCostTypeLabel } from 'utils/constants'
+import { getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
 
 type Props = {
   clientUuid: string
@@ -41,7 +40,7 @@ const ActivityTableRow: React.FC<Props> = ({
   return (
     <>
       <TableRow hover>
-        <TableCell>
+        <TableCell style={{ width: 150 }}>
           <Switch
             checked={row.isExecuted}
             onChange={() =>
@@ -52,7 +51,6 @@ const ActivityTableRow: React.FC<Props> = ({
                     month: date.getMonth() + 1,
                     year: date.getFullYear(),
                     uuid: row.clientActivityUuid,
-                    isExecuted: !row.isExecuted,
                   },
                   activityUuid: row.activityUuid,
                 },
@@ -79,6 +77,18 @@ const ActivityTableRow: React.FC<Props> = ({
             }}
           />
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.isCustom ? 'Da' : 'Nu'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <ListItemText
+            primary={getCategoryLabelFromCode(row.category.code)}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
             primary={row.unitCost ? `${row.unitCost} ${row.unitCostCurrency}` : ''}
@@ -100,15 +110,6 @@ const ActivityTableRow: React.FC<Props> = ({
               color: 'text.disabled',
             }}
           />
-        </TableCell>
-        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {row.clientActivityUuid ? (
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          ) : (
-            <div />
-          )}
         </TableCell>
       </TableRow>
 

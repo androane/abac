@@ -4,7 +4,6 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-
 import FormControl from '@mui/material/FormControl'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
@@ -14,15 +13,23 @@ import Checkbox from '@mui/material/Checkbox'
 import InputLabel from '@mui/material/InputLabel'
 import { ClientActivityTableFilters } from 'sections/client/types'
 import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
+import { Button } from '@mui/material'
 
 type Props = {
+  onAddActivity(): void
   date: Date
   onChangeDate(newDate: Date | null): void
   filters: ClientActivityTableFilters
   onFilters: (name: string, value: string) => void
 }
 
-const ActivityTableToolbar: React.FC<Props> = ({ date, onChangeDate, filters, onFilters }) => {
+const ActivityTableToolbar: React.FC<Props> = ({
+  onAddActivity,
+  date,
+  onChangeDate,
+  filters,
+  onFilters,
+}) => {
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       onFilters('name', event.target.value)
@@ -33,6 +40,13 @@ const ActivityTableToolbar: React.FC<Props> = ({ date, onChangeDate, filters, on
   const handleFilterCategory = useCallback(
     (event: SelectChangeEvent<string>) => {
       onFilters('category', event.target.value)
+    },
+    [onFilters],
+  )
+
+  const handleFilterIsCustom = useCallback(
+    (event: SelectChangeEvent<string>) => {
+      onFilters('isCustom', event.target.value)
     },
     [onFilters],
   )
@@ -92,20 +106,63 @@ const ActivityTableToolbar: React.FC<Props> = ({ date, onChangeDate, filters, on
           ))}
         </Select>
       </FormControl>
-      <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
-        <TextField
-          fullWidth
-          value={filters.name}
-          onChange={handleFilterName}
-          placeholder="Caută..."
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-              </InputAdornment>
-            ),
+
+      <FormControl
+        sx={{
+          flexShrink: 0,
+          width: { xs: 1, md: 200 },
+        }}
+      >
+        <InputLabel>Specifică clientului?</InputLabel>
+        <Select
+          value={filters.isCustom}
+          onChange={handleFilterIsCustom}
+          input={<OutlinedInput label="Specifică clientului?" />}
+          MenuProps={{
+            PaperProps: {
+              sx: { maxHeight: 240 },
+            },
           }}
-        />
+        >
+          <MenuItem key="all" value="">
+            <Checkbox disableRipple size="small" checked={filters.isCustom === ''} />
+            Toate
+          </MenuItem>
+          <MenuItem value="yes">
+            <Checkbox disableRipple size="small" checked={filters.isCustom === 'yes'} />
+            Da
+          </MenuItem>
+          <MenuItem value="no">
+            <Checkbox disableRipple size="small" checked={filters.isCustom === 'no'} />
+            Nu
+          </MenuItem>
+        </Select>
+      </FormControl>
+      <TextField
+        value={filters.name}
+        onChange={handleFilterName}
+        placeholder="Caută..."
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+            </InputAdornment>
+          ),
+        }}
+      />
+      <Stack direction="row" justifyContent="flex-end">
+        <Button
+          sx={{
+            width: 200,
+          }}
+          color="info"
+          variant="text"
+          size="medium"
+          startIcon={<Iconify width={30} icon="solar:add-circle-outline" />}
+          onClick={onAddActivity}
+        >
+          Adaugă activitate
+        </Button>
       </Stack>
     </Stack>
   )

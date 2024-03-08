@@ -18,10 +18,12 @@ export type InvoiceTableFilters = {
 export type ClientActivityTableFilters = {
   name: string
   category: string
+  isCustom: string
 }
 
 export type ClientActivityType = ActivityType & {
   isExecuted: boolean
+  isCustom: boolean
   activityUuid: string
   clientActivityUuid?: string
 }

@@ -13,6 +13,7 @@ import { TableEmptyRows, TableHeadCustom, TableNoData, emptyRows, useTable } fro
 import ResponseHandler from 'components/response-handler'
 import { useClientInvoiceQuery } from 'generated/graphql'
 import { TableCell, TableRow } from '@mui/material'
+import InvoiceTableRow from 'sections/client/invoice-table-row'
 import InvoiceTableToolbar from './invoice-table-toolbar'
 import { APIClientInvoice } from './types'
 
@@ -100,7 +101,7 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
                 emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
               />
 
-              <TableNoData notFound={notFound} />
+              <TableNoData notFound={!tableData.length} />
               {clientInvoice.totalsByCurrency.map(({ currency, total }, index) => {
                 return (
                   <TotalsRow key={currency}>

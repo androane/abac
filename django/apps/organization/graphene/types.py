@@ -211,7 +211,6 @@ class ClientActivityInput(graphene.InputObjectType):
     uuid = graphene.String()
     month = graphene.Int(required=True)
     year = graphene.Int(required=True)
-    is_executed = graphene.Boolean(required=True)
 
 
 class ClientFileType(DjangoObjectType):
