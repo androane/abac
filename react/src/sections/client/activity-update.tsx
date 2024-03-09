@@ -16,7 +16,7 @@ import {
   useUpdateClientActivityMutation,
   CurrencyEnum,
   UnitCostTypeEnum,
-  ActivityFragmentDoc,
+  ClientActivityFragmentDoc,
 } from 'generated/graphql'
 import getErrorMessage from 'utils/api-codes'
 import { CATEGORY_CODES, getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
@@ -87,20 +87,16 @@ const UpdateClientActivity: React.FC<Props> = ({ activity, clientUuid, date, onC
         },
         update(cache, { data: cacheData }) {
           cache.modify({
-            id: cache.identify({
-              uuid: activity?.clientActivityUuid,
-              __typename: 'ClientActivityType',
-            }),
             fields: {
-              activities(existingActivities) {
+              clientActivities(existingClientActivities = []) {
                 if (activity) {
-                  return existingActivities
+                  return existingClientActivities
                 }
-                const newActivity = cache.writeFragment({
-                  data: cacheData?.updateClientActivity,
-                  fragment: ActivityFragmentDoc,
+                const newClientActivity = cache.writeFragment({
+                  data: cacheData?.updateClientActivity?.clientActivity,
+                  fragment: ClientActivityFragmentDoc,
                 })
-                return [newActivity, ...existingActivities]
+                return [newClientActivity, ...existingClientActivities]
               },
             },
           })

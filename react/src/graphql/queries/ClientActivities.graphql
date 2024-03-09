@@ -4,8 +4,5 @@ query ClientActivities($clientUuid: String!, $year: Int, $month: Int) {
     activity {
       ...Activity
     }
-    logs {
-      ...ClientActivityLog
-    }
   }
 }

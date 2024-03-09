@@ -103,6 +103,9 @@ class ClientActivityType(DjangoObjectType):
 
     logs = graphene.List(graphene.NonNull(ClientActivityLogType), required=True)
 
+    def resolve_activity(self, info, **kwargs):
+        return info.context.activity_from_client_activity.load(self.activity_id)
+
     def resolve_logs(self, info, **kwargs):
         return self.logs.all()
 

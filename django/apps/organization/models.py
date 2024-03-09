@@ -189,12 +189,6 @@ class Activity(BaseModel):
         verbose_name_plural = "Activities"
         constraints = [
             models.UniqueConstraint(
-                fields=["name", "client", "category"],
-                condition=models.Q(deleted__isnull=True)
-                & models.Q(client__isnull=False),
-                name="organization_activity_name_client_category_unique",
-            ),
-            models.UniqueConstraint(
                 fields=["name", "organization", "category"],
                 condition=models.Q(deleted__isnull=True)
                 & models.Q(client__isnull=True),

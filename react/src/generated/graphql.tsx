@@ -369,8 +369,7 @@ export type MutationLoginArgs = {
 
 
 export type MutationToggleClientActivityArgs = {
-  activityUuid: Scalars['String']['input'];
-  clientActivityInput: ClientActivityInput;
+  clientActivityUuid: Scalars['String']['input'];
   clientUuid: Scalars['String']['input'];
 };
 
@@ -503,7 +502,6 @@ export type SolutionType = {
 
 export type ToggleClientActivity = {
   __typename?: 'ToggleClientActivity';
-  clientActivityUuid: Scalars['String']['output'];
   error?: Maybe<ErrorType>;
 };
 
@@ -649,12 +647,11 @@ export type DeleteClientUserMutation = { __typename?: 'Mutation', deleteClientUs
 
 export type ToggleClientActivityMutationVariables = Exact<{
   clientUuid: Scalars['String']['input'];
-  activityUuid: Scalars['String']['input'];
-  clientActivityInput: ClientActivityInput;
+  clientActivityUuid: Scalars['String']['input'];
 }>;
 
 
-export type ToggleClientActivityMutation = { __typename?: 'Mutation', toggleClientActivity?: { __typename?: 'ToggleClientActivity', clientActivityUuid: string, error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
+export type ToggleClientActivityMutation = { __typename?: 'Mutation', toggleClientActivity?: { __typename?: 'ToggleClientActivity', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
 
 export type UpdateClientMutationVariables = Exact<{
   clientInput: ClientInput;
@@ -728,7 +725,7 @@ export type ClientActivitiesQueryVariables = Exact<{
 }>;
 
 
-export type ClientActivitiesQuery = { __typename?: 'Query', clientActivities: Array<{ __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string, name: string } }, logs: Array<{ __typename?: 'ClientActivityLogType', uuid: string, date?: DateString | null, minutesAllocated?: number | null, quantity: number }> }> };
+export type ClientActivitiesQuery = { __typename?: 'Query', clientActivities: Array<{ __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string, name: string } } }> };
 
 export type ClientsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1183,16 +1180,14 @@ export type DeleteClientUserMutationHookResult = ReturnType<typeof useDeleteClie
 export type DeleteClientUserMutationResult = Apollo.MutationResult<DeleteClientUserMutation>;
 export type DeleteClientUserMutationOptions = Apollo.BaseMutationOptions<DeleteClientUserMutation, DeleteClientUserMutationVariables>;
 export const ToggleClientActivityDocument = gql`
-    mutation ToggleClientActivity($clientUuid: String!, $activityUuid: String!, $clientActivityInput: ClientActivityInput!) {
+    mutation ToggleClientActivity($clientUuid: String!, $clientActivityUuid: String!) {
   toggleClientActivity(
     clientUuid: $clientUuid
-    activityUuid: $activityUuid
-    clientActivityInput: $clientActivityInput
+    clientActivityUuid: $clientActivityUuid
   ) {
     error {
       ...Error
     }
-    clientActivityUuid
   }
 }
     ${ErrorFragmentDoc}`;
@@ -1212,8 +1207,7 @@ export type ToggleClientActivityMutationFn = Apollo.MutationFunction<ToggleClien
  * const [toggleClientActivityMutation, { data, loading, error }] = useToggleClientActivityMutation({
  *   variables: {
  *      clientUuid: // value for 'clientUuid'
- *      activityUuid: // value for 'activityUuid'
- *      clientActivityInput: // value for 'clientActivityInput'
+ *      clientActivityUuid: // value for 'clientActivityUuid'
  *   },
  * });
  */
@@ -1586,14 +1580,10 @@ export const ClientActivitiesDocument = gql`
     activity {
       ...Activity
     }
-    logs {
-      ...ClientActivityLog
-    }
   }
 }
     ${ClientActivityFragmentDoc}
-${ActivityFragmentDoc}
-${ClientActivityLogFragmentDoc}`;
+${ActivityFragmentDoc}`;
 
 /**
  * __useClientActivitiesQuery__

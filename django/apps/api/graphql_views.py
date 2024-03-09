@@ -7,11 +7,15 @@ from graphene_django.views import HttpError
 from graphene_file_upload.django import FileUploadGraphQLView
 from sentry_sdk import capture_exception
 
+from api.data_loaders import LOADERS
+
 logger = logging.getLogger(__name__)
 
 
 class GraphQLView(FileUploadGraphQLView):
     def get_context(self, request):
+        for loader_function_name, loader_function in LOADERS.items():
+            setattr(request, loader_function_name, loader_function())
         return request
 
     def dispatch(self, request, *args, **kwargs):

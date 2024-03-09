@@ -1,16 +1,7 @@
-mutation ToggleClientActivity(
-  $clientUuid: String!
-  $activityUuid: String!
-  $clientActivityInput: ClientActivityInput!
-) {
-  toggleClientActivity(
-    clientUuid: $clientUuid
-    activityUuid: $activityUuid
-    clientActivityInput: $clientActivityInput
-  ) {
+mutation ToggleClientActivity($clientUuid: String!, $clientActivityUuid: String!) {
+  toggleClientActivity(clientUuid: $clientUuid, clientActivityUuid: $clientActivityUuid) {
     error {
       ...Error
     }
-    clientActivityUuid
   }
 }

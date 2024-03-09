@@ -71,7 +71,7 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
     setTableData(activities)
   }, [activities])
 
-  const table = useTable({ defaultOrderBy: 'name', defaultOrder: 'asc' })
+  const table = useTable({ defaultOrderBy: 'isCustom', defaultOrder: 'asc' })
 
   const denseHeight = table.dense ? 56 : 56 + 20
 
@@ -184,7 +184,7 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
                     row={row}
                     onDeleteRow={() => handleDeleteRow(row.uuid)}
                     onEditRow={() => handleEditRow(row.uuid)}
-                    loading={loading}
+                    loadingDelete={loading}
                   />
                 ))}
 
@@ -213,6 +213,7 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
       month: date ? date.getMonth() + 1 : null,
       year: date?.getFullYear(),
     },
+    nextFetchPolicy: 'cache-first',
   })
 
   const activitiesResult = useOrganizationActivitiesQuery()
@@ -223,18 +224,18 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
         return (
           <ResponseHandler {...activitiesResult}>
             {({ organization }) => {
-              const systemActivities = organization.activities.map(organizationActivity => {
+              const organizationActivities = organization.activities.map(organizationActivity => {
                 const clientActivity = clientActivities.find(
                   ca => ca.activity.name === organizationActivity.name,
                 )
 
-                // This means that a system activity has been overriden by a custom activity
+                // This means that a system/organization activity has been overriden by a custom activity
                 if (clientActivity) {
                   return {
                     ...organizationActivity,
                     ...clientActivity.activity,
                     activityUuid: organizationActivity.uuid,
-                    clientActivityUuid: clientActivity.activity.uuid,
+                    clientActivityUuid: clientActivity.uuid,
                     isExecuted: clientActivity.isExecuted,
                     isCustom: false,
                   }
@@ -250,6 +251,7 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
 
               const customActivities = clientActivities
                 .filter(clientActivity => {
+                  // It's a custom activity if it's not an overriden organization activity
                   const isCustomActivity = !organization.activities.some(
                     a => a.name === clientActivity.activity.name,
                   )
@@ -258,7 +260,7 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
                 .map(clientActivity => ({
                   ...clientActivity.activity,
                   activityUuid: clientActivity.activity.uuid,
-                  clientActivityUuid: clientActivity.activity.uuid,
+                  clientActivityUuid: clientActivity.uuid,
                   isExecuted: clientActivity.isExecuted,
                   isCustom: true,
                 }))
@@ -266,7 +268,7 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
               return (
                 <ActivityListCard
                   clientUuid={clientId}
-                  activities={[...systemActivities, ...customActivities]}
+                  activities={[...organizationActivities, ...customActivities]}
                   date={date}
                   onChangeDate={setDate}
                 />

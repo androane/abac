@@ -69,30 +69,10 @@ def delete_client_activity(org: Organization, uuid: str) -> None:
 def toggle_client_activity(
     org: Organization,
     client_uuid: str,
-    activity_uuid: str,
-    client_activity_input: ClientActivityInput,
+    client_activity_uuid: str,
 ) -> None:
-    client = org.clients.get(uuid=client_uuid)
-
-    if client_activity_input.uuid:
-        ClientActivity.objects.filter(
-            client=client,
-            client__organization=org,
-            uuid=client_activity_input.uuid,
-        ).update(is_executed=~F("is_executed"))
-        return client_activity_input.uuid
-
-    activity = org.activities.get(uuid=activity_uuid, client__isnull=True)
-    activity.id = None
-    activity.client = client
-    activity.save()
-    activity.refresh_from_db()
-
-    client_activity = ClientActivity.objects.create(
-        client=client,
-        activity=activity,
-        is_executed=client_activity_input.is_executed,
-        month=client_activity_input.month,
-        year=client_activity_input.year,
-    )
-    return client_activity.uuid
+    ClientActivity.objects.filter(
+        client__uuid=client_uuid,
+        client__organization=org,
+        uuid=client_activity_uuid,
+    ).update(is_executed=~F("is_executed"))

@@ -129,12 +129,8 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
               <ResponseHandler {...result}>
                 {({ clientProgramManagers }) => {
                   return (
-                    <RHFSelect
-                      name="programManagerUuid"
-                      label="Responsabil"
-                      InputLabelProps={{ shrink: true }}
-                    >
-                      <MenuItem value="" />
+                    <RHFSelect name="programManagerUuid" label="Responsabil">
+                      <MenuItem value="">Alege</MenuItem>
                       {clientProgramManagers.map(pm => (
                         <MenuItem key={pm.uuid} value={pm.uuid}>
                           {pm.name}

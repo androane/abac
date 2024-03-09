@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
+from graphql_sync_dataloaders import DeferredExecutionContext
 
 from api.graphene.schema import schema
 from api.graphql_views import GraphQLView
@@ -16,6 +17,7 @@ urlpatterns = [
             GraphQLView.as_view(
                 graphiql=settings.GRAPHQL_DEBUG,
                 schema=schema,
+                execution_context_class=DeferredExecutionContext,
                 middleware=(
                     None
                     if settings.GRAPHQL_DEBUG

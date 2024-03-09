@@ -117,16 +117,13 @@ class DeleteClientActivity(BaseMutation):
 class ToggleClientActivity(BaseMutation):
     class Arguments:
         client_uuid = graphene.String(required=True)
-        activity_uuid = graphene.String(required=True)
-        client_activity_input = graphene.NonNull(ClientActivityInput)
-
-    client_activity_uuid = graphene.String(required=True)
+        client_activity_uuid = graphene.String(required=True)
 
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
-        client_activity_uuid = toggle_client_activity(user.organization, **kwargs)
+        toggle_client_activity(user.organization, **kwargs)
 
-        return {"client_activity_uuid": client_activity_uuid}
+        return {}
 
 
 class CreateClientFiles(BaseMutation):

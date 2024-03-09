@@ -8,7 +8,11 @@ import { ConfirmDialog } from 'components/custom-dialog'
 
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
-import { useToggleClientActivityMutation } from 'generated/graphql'
+import {
+  ClientActivityFragmentDoc,
+  useToggleClientActivityMutation,
+  useUpdateClientActivityMutation,
+} from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import React from 'react'
 import { ClientActivityType } from 'sections/client/types'
@@ -17,7 +21,7 @@ import { getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
 type Props = {
   clientUuid: string
   date: Date
-  loading: boolean
+  loadingDelete: boolean
   row: ClientActivityType
   onEditRow: VoidFunction
   onDeleteRow: VoidFunction
@@ -26,16 +30,71 @@ type Props = {
 const ActivityTableRow: React.FC<Props> = ({
   clientUuid,
   date,
-  loading,
+  loadingDelete,
   row,
   onEditRow,
   onDeleteRow,
 }) => {
+  const [updateClientActivity, { loading: loadingAdd }] = useUpdateClientActivityMutation()
   const [toggleClientActivity, { loading: loadingToggle }] = useToggleClientActivityMutation()
 
   const confirm = useBoolean()
 
   const popover = usePopover()
+
+  const handleToggleClientActivity = (clientActivityUuid: string) => {
+    toggleClientActivity({
+      variables: {
+        clientUuid,
+        clientActivityUuid,
+      },
+      update(cache) {
+        cache.modify({
+          id: cache.identify({ uuid: clientActivityUuid, __typename: 'ClientActivityType' }),
+          fields: {
+            isExecuted(currentIsExecuted) {
+              return !currentIsExecuted
+            },
+          },
+        })
+      },
+    })
+  }
+
+  const handleOnAddClientActivity = () => {
+    updateClientActivity({
+      variables: {
+        clientUuid,
+        clientActivityInput: {
+          uuid: row.clientActivityUuid,
+          month: date.getMonth() + 1,
+          year: date.getFullYear(),
+        },
+        activityInput: {
+          uuid: row.activityUuid,
+          name: row.name,
+          description: row.description,
+          categoryCode: row.category.code,
+          unitCost: row.unitCost,
+          unitCostCurrency: row.unitCostCurrency,
+          unitCostType: row.unitCostType,
+        },
+      },
+      update(cache, { data: cacheData }) {
+        cache.modify({
+          fields: {
+            clientActivities(existingClientActivities = []) {
+              const newClientActivity = cache.writeFragment({
+                data: cacheData?.updateClientActivity?.clientActivity,
+                fragment: ClientActivityFragmentDoc,
+              })
+              return [newClientActivity, ...existingClientActivities]
+            },
+          },
+        })
+      },
+    })
+  }
 
   return (
     <>
@@ -43,20 +102,14 @@ const ActivityTableRow: React.FC<Props> = ({
         <TableCell style={{ width: 150 }}>
           <Switch
             checked={row.isExecuted}
-            onChange={() =>
-              toggleClientActivity({
-                variables: {
-                  clientUuid,
-                  clientActivityInput: {
-                    month: date.getMonth() + 1,
-                    year: date.getFullYear(),
-                    uuid: row.clientActivityUuid,
-                  },
-                  activityUuid: row.activityUuid,
-                },
-              })
-            }
-            disabled={loadingToggle}
+            onChange={() => {
+              if (row.clientActivityUuid) {
+                handleToggleClientActivity(row.clientActivityUuid)
+              } else {
+                handleOnAddClientActivity()
+              }
+            }}
+            disabled={loadingToggle || loadingAdd}
             color="primary"
           />
         </TableCell>
@@ -139,7 +192,12 @@ const ActivityTableRow: React.FC<Props> = ({
         title="Șterge Serviciu"
         content="Ești sigur că vrei să ștergi acest serviciu?"
         action={
-          <LoadingButton variant="contained" color="error" onClick={onDeleteRow} loading={loading}>
+          <LoadingButton
+            variant="contained"
+            color="error"
+            onClick={onDeleteRow}
+            loading={loadingDelete}
+          >
             Șterge
           </LoadingButton>
         }
