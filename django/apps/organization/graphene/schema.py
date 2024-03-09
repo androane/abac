@@ -12,6 +12,7 @@ from organization.graphene.mutations import (
     ToggleClientActivity,
     UpdateClient,
     UpdateClientActivity,
+    UpdateClientActivityLogs,
     UpdateClientInvoiceStatus,
     UpdateClientUser,
     UpdateOrganizationActivity,
@@ -24,7 +25,10 @@ from organization.graphene.types import (
     InvoiceType,
     OrganizationType,
 )
-from organization.services.client_activity_service import get_client_activities
+from organization.services.client_activity_service import (
+    get_client_activities,
+    get_client_activity,
+)
 from organization.services.client_files_service import get_client_files
 from organization.services.client_invoice_service import get_client_invoice
 from organization.services.client_service import get_client, get_clients
@@ -54,6 +58,12 @@ class Query(graphene.ObjectType):
         graphene.NonNull(ClientType),
         description="Get a Client",
         uuid=graphene.String(required=True),
+    )
+    client_activity = graphene.Field(
+        ClientActivityType,
+        description="Get a single Client Activity",
+        client_activity_uuid=graphene.String(required=True),
+        required=True,
     )
     client_activities = graphene.List(
         graphene.NonNull(ClientActivityType),
@@ -98,6 +108,10 @@ class Query(graphene.ObjectType):
     @logged_in_user_required
     def resolve_client(info, user: User, **kwargs):
         return get_client(user.organization, **kwargs)
+
+    @logged_in_user_required
+    def resolve_client_activity(info, user: User, **kwargs):
+        return get_client_activity(user.organization, **kwargs)
 
     @logged_in_user_required
     def resolve_client_activities(info, user: User, **kwargs):
@@ -155,6 +169,9 @@ class Mutation(graphene.ObjectType):
     )
     toggle_client_activity = ToggleClientActivity.Field(
         description="Toggle Client Activity Executed Status"
+    )
+    update_client_activity_logs = UpdateClientActivityLogs.Field(
+        description="Update Client Activity Logs"
     )
 
     # Client File

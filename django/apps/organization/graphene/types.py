@@ -84,7 +84,6 @@ class ClientActivityLogType(DjangoObjectType):
         only_fields = (
             "uuid",
             "date",
-            "quantity",
             "minutes_allocated",
             "description",
         )
@@ -107,7 +106,7 @@ class ClientActivityType(DjangoObjectType):
         return info.context.activity_from_client_activity.load(self.activity_id)
 
     def resolve_logs(self, info, **kwargs):
-        return self.logs.all()
+        return info.context.logs_from_client_activity.load(self.id)
 
 
 class OrganizationType(DjangoObjectType):
@@ -203,11 +202,9 @@ class ClientInput(graphene.InputObjectType):
 
 class ClientActivityLogInput(graphene.InputObjectType):
     uuid = graphene.String()
-    activity_uuid = graphene.String(required=True)
-    date = graphene.Date()
+    date = graphene.Date(required=True)
     description = graphene.String()
-    minutes_allocated = graphene.Int()
-    quantity = graphene.Int(required=True)
+    minutes_allocated = graphene.Int(required=True)
 
 
 class ClientActivityInput(graphene.InputObjectType):

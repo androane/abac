@@ -8,10 +8,8 @@
 from collections import defaultdict
 
 from graphql_sync_dataloaders import SyncDataLoader
-from promise import Promise
-from promise.dataloader import DataLoader
 
-from organization.models import Activity
+from organization.models import Activity, ClientActivityLog
 
 
 def foreign_key_loader_builder(model):
@@ -38,28 +36,26 @@ def children_loader_builder(model, field, select_related_fields=None):
     """
 
     def _builder():
-        class Loader(DataLoader):
-            def batch_load_fn(self, keys):
-                d = defaultdict(list)
-                filters = {field + "__in": keys}
-                query = model.objects.filter(**filters)
-                if select_related_fields:
-                    query = query.select_related(*select_related_fields)
-                for obj in query.iterator():
-                    d[getattr(obj, field + "_id")].append(obj)
-                result = [d.get(key, []) for key in keys]
-                return Promise.resolve(result)
+        def batch_load_fn(keys):
+            d = defaultdict(list)
+            filters = {field + "__in": keys}
+            query = model.objects.filter(**filters)
+            if select_related_fields:
+                query = query.select_related(*select_related_fields)
+            for obj in query.iterator():
+                d[getattr(obj, field + "_id")].append(obj)
+            return [d.get(key, []) for key in keys]
 
-        return Loader()
+        return SyncDataLoader(batch_load_fn)
 
     return _builder
 
 
 LOADERS = {
-    # # Children Key Loaders
-    # app_categories_from_app = children_loader_builder(
-    #     AppCategory, "app", select_related_fields=["category"]
-    # )
+    # Children Key Loaders
+    "logs_from_client_activity": children_loader_builder(
+        ClientActivityLog, "client_activity"
+    ),
     # Foreign Key Loaders
     "activity_from_client_activity": foreign_key_loader_builder(Activity),
 }

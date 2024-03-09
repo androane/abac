@@ -1,0 +1,18 @@
+mutation UpdateClientActivityLogs(
+  $clientActivityUuid: String!
+  $clientActivityLogsInput: [ClientActivityLogInput!]!
+) {
+  updateClientActivityLogs(
+    clientActivityUuid: $clientActivityUuid
+    clientActivityLogsInput: $clientActivityLogsInput
+  ) {
+    error {
+      ...Error
+    }
+    clientActivity {
+      logs {
+        ...ClientActivityLog
+      }
+    }
+  }
+}

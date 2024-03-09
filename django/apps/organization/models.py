@@ -255,17 +255,10 @@ class ClientActivityLog(BaseModel):
     client_activity = models.ForeignKey(
         ClientActivity, on_delete=models.CASCADE, related_name="logs"
     )
-    quantity = models.SmallIntegerField(
-        default=1, help_text="How many of these activities"
-    )
     minutes_allocated = models.SmallIntegerField(
-        blank=True,
-        null=True,
-        help_text="Number of minutes allocated to the customer for this activity",
+        help_text="Number of minutes allocated to the client for this activity",
     )
     date = models.DateField(
-        null=True,
-        blank=True,
         help_text="Date when the activity was executed",
     )
     description = models.TextField(
@@ -290,6 +283,8 @@ class ClientSolution(BaseModel):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     solution = models.ForeignKey(Solution, on_delete=models.CASCADE)
 
+    month = models.SmallIntegerField(help_text="Month of the Solution")
+    year = models.SmallIntegerField(help_text="Year of the Solution")
     unit_cost = models.IntegerField(
         null=True, blank=True, help_text="Cost/Price of the Solution"
     )

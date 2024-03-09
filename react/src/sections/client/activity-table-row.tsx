@@ -1,5 +1,5 @@
 import LoadingButton from '@mui/lab/LoadingButton'
-import { Switch } from '@mui/material'
+import { IconButton, Switch } from '@mui/material'
 import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import TableCell from '@mui/material/TableCell'
@@ -25,6 +25,7 @@ type Props = {
   row: ClientActivityType
   onEditRow: VoidFunction
   onDeleteRow: VoidFunction
+  onEditLogs: VoidFunction
 }
 
 const ActivityTableRow: React.FC<Props> = ({
@@ -34,6 +35,7 @@ const ActivityTableRow: React.FC<Props> = ({
   row,
   onEditRow,
   onDeleteRow,
+  onEditLogs,
 }) => {
   const [updateClientActivity, { loading: loadingAdd }] = useUpdateClientActivityMutation()
   const [toggleClientActivity, { loading: loadingToggle }] = useToggleClientActivityMutation()
@@ -112,6 +114,11 @@ const ActivityTableRow: React.FC<Props> = ({
             disabled={loadingToggle || loadingAdd}
             color="primary"
           />
+          {row.clientActivityUuid && row.isExecuted && (
+            <IconButton size="small" onClick={onEditLogs} color="warning">
+              <Iconify icon="solar:clock-circle-outline" width={24} />
+            </IconButton>
+          )}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }} onClick={onEditRow}>
           <ListItemText

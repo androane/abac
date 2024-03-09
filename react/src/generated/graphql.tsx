@@ -63,16 +63,21 @@ export type ClientActivityInput = {
   year: Scalars['Int']['input'];
 };
 
+export type ClientActivityLogInput = {
+  date: Scalars['Date']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  minutesAllocated: Scalars['Int']['input'];
+  uuid?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type ClientActivityLogType = {
   __typename?: 'ClientActivityLogType';
   /** Date when the activity was executed */
-  date?: Maybe<Scalars['Date']['output']>;
+  date: Scalars['Date']['output'];
   /** Optional explanation for the log */
   description?: Maybe<Scalars['String']['output']>;
-  /** Number of minutes allocated to the customer for this activity */
-  minutesAllocated?: Maybe<Scalars['Int']['output']>;
-  /** How many of these activities */
-  quantity: Scalars['Int']['output'];
+  /** Number of minutes allocated to the client for this activity */
+  minutesAllocated: Scalars['Int']['output'];
   uuid: Scalars['String']['output'];
 };
 
@@ -309,6 +314,8 @@ export type Mutation = {
   updateClient?: Maybe<UpdateClient>;
   /** Update or Create a New Client Activity */
   updateClientActivity?: Maybe<UpdateClientActivity>;
+  /** Update Client Activity Logs */
+  updateClientActivityLogs?: Maybe<UpdateClientActivityLogs>;
   /** Update Client Invoice Status */
   updateClientInvoiceStatus?: Maybe<UpdateClientInvoiceStatus>;
   /** Update or Create a New Client User */
@@ -386,6 +393,12 @@ export type MutationUpdateClientActivityArgs = {
 };
 
 
+export type MutationUpdateClientActivityLogsArgs = {
+  clientActivityLogsInput: Array<ClientActivityLogInput>;
+  clientActivityUuid: Scalars['String']['input'];
+};
+
+
 export type MutationUpdateClientInvoiceStatusArgs = {
   invoiceUuid: Scalars['String']['input'];
   status: InvoiceStatusEnum;
@@ -440,6 +453,8 @@ export type Query = {
   client: ClientType;
   /** List all Client Activities */
   clientActivities: Array<ClientActivityType>;
+  /** Get a single Client Activity */
+  clientActivity: ClientActivityType;
   /** List all files of a Client */
   clientFiles: Array<ClientFileType>;
   clientInvoice: InvoiceType;
@@ -466,6 +481,11 @@ export type QueryClientActivitiesArgs = {
   clientUuid: Scalars['String']['input'];
   month?: InputMaybe<Scalars['Int']['input']>;
   year?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryClientActivityArgs = {
+  clientActivityUuid: Scalars['String']['input'];
 };
 
 
@@ -529,6 +549,12 @@ export type UpdateClientActivity = {
   error?: Maybe<ErrorType>;
 };
 
+export type UpdateClientActivityLogs = {
+  __typename?: 'UpdateClientActivityLogs';
+  clientActivity?: Maybe<ClientActivityType>;
+  error?: Maybe<ErrorType>;
+};
+
 export type UpdateClientInvoiceStatus = {
   __typename?: 'UpdateClientInvoiceStatus';
   error?: Maybe<ErrorType>;
@@ -574,7 +600,7 @@ export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: st
 
 export type ClientActivityFragment = { __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean };
 
-export type ClientActivityLogFragment = { __typename?: 'ClientActivityLogType', uuid: string, date?: DateString | null, minutesAllocated?: number | null, quantity: number };
+export type ClientActivityLogFragment = { __typename?: 'ClientActivityLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null };
 
 export type ClientUserFragment = { __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string } };
 
@@ -669,6 +695,14 @@ export type UpdateClientActivityMutationVariables = Exact<{
 
 export type UpdateClientActivityMutation = { __typename?: 'Mutation', updateClientActivity?: { __typename?: 'UpdateClientActivity', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientActivity?: { __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string, name: string } } } | null } | null };
 
+export type UpdateClientActivityLogsMutationVariables = Exact<{
+  clientActivityUuid: Scalars['String']['input'];
+  clientActivityLogsInput: Array<ClientActivityLogInput> | ClientActivityLogInput;
+}>;
+
+
+export type UpdateClientActivityLogsMutation = { __typename?: 'Mutation', updateClientActivityLogs?: { __typename?: 'UpdateClientActivityLogs', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientActivity?: { __typename?: 'ClientActivityType', logs: Array<{ __typename?: 'ClientActivityLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } | null } | null };
+
 export type UpdateClientInvoiceStatusMutationVariables = Exact<{
   invoiceUuid: Scalars['String']['input'];
   status: InvoiceStatusEnum;
@@ -726,6 +760,13 @@ export type ClientActivitiesQueryVariables = Exact<{
 
 
 export type ClientActivitiesQuery = { __typename?: 'Query', clientActivities: Array<{ __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'ActivityCategoryType', uuid: string, code: string, name: string } } }> };
+
+export type ClientActivityLogsQueryVariables = Exact<{
+  clientActivityUuid: Scalars['String']['input'];
+}>;
+
+
+export type ClientActivityLogsQuery = { __typename?: 'Query', clientActivity: { __typename?: 'ClientActivityType', logs: Array<{ __typename?: 'ClientActivityLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } };
 
 export type ClientsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -824,7 +865,7 @@ export const ClientActivityLogFragmentDoc = gql`
   uuid
   date
   minutesAllocated
-  quantity
+  description
 }
     `;
 export const ClientUserFragmentDoc = gql`
@@ -1306,6 +1347,51 @@ export function useUpdateClientActivityMutation(baseOptions?: Apollo.MutationHoo
 export type UpdateClientActivityMutationHookResult = ReturnType<typeof useUpdateClientActivityMutation>;
 export type UpdateClientActivityMutationResult = Apollo.MutationResult<UpdateClientActivityMutation>;
 export type UpdateClientActivityMutationOptions = Apollo.BaseMutationOptions<UpdateClientActivityMutation, UpdateClientActivityMutationVariables>;
+export const UpdateClientActivityLogsDocument = gql`
+    mutation UpdateClientActivityLogs($clientActivityUuid: String!, $clientActivityLogsInput: [ClientActivityLogInput!]!) {
+  updateClientActivityLogs(
+    clientActivityUuid: $clientActivityUuid
+    clientActivityLogsInput: $clientActivityLogsInput
+  ) {
+    error {
+      ...Error
+    }
+    clientActivity {
+      logs {
+        ...ClientActivityLog
+      }
+    }
+  }
+}
+    ${ErrorFragmentDoc}
+${ClientActivityLogFragmentDoc}`;
+export type UpdateClientActivityLogsMutationFn = Apollo.MutationFunction<UpdateClientActivityLogsMutation, UpdateClientActivityLogsMutationVariables>;
+
+/**
+ * __useUpdateClientActivityLogsMutation__
+ *
+ * To run a mutation, you first call `useUpdateClientActivityLogsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateClientActivityLogsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateClientActivityLogsMutation, { data, loading, error }] = useUpdateClientActivityLogsMutation({
+ *   variables: {
+ *      clientActivityUuid: // value for 'clientActivityUuid'
+ *      clientActivityLogsInput: // value for 'clientActivityLogsInput'
+ *   },
+ * });
+ */
+export function useUpdateClientActivityLogsMutation(baseOptions?: Apollo.MutationHookOptions<UpdateClientActivityLogsMutation, UpdateClientActivityLogsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateClientActivityLogsMutation, UpdateClientActivityLogsMutationVariables>(UpdateClientActivityLogsDocument, options);
+      }
+export type UpdateClientActivityLogsMutationHookResult = ReturnType<typeof useUpdateClientActivityLogsMutation>;
+export type UpdateClientActivityLogsMutationResult = Apollo.MutationResult<UpdateClientActivityLogsMutation>;
+export type UpdateClientActivityLogsMutationOptions = Apollo.BaseMutationOptions<UpdateClientActivityLogsMutation, UpdateClientActivityLogsMutationVariables>;
 export const UpdateClientInvoiceStatusDocument = gql`
     mutation UpdateClientInvoiceStatus($invoiceUuid: String!, $status: InvoiceStatusEnum!) {
   updateClientInvoiceStatus(invoiceUuid: $invoiceUuid, status: $status) {
@@ -1619,6 +1705,48 @@ export type ClientActivitiesQueryHookResult = ReturnType<typeof useClientActivit
 export type ClientActivitiesLazyQueryHookResult = ReturnType<typeof useClientActivitiesLazyQuery>;
 export type ClientActivitiesSuspenseQueryHookResult = ReturnType<typeof useClientActivitiesSuspenseQuery>;
 export type ClientActivitiesQueryResult = Apollo.QueryResult<ClientActivitiesQuery, ClientActivitiesQueryVariables>;
+export const ClientActivityLogsDocument = gql`
+    query ClientActivityLogs($clientActivityUuid: String!) {
+  clientActivity(clientActivityUuid: $clientActivityUuid) {
+    logs {
+      ...ClientActivityLog
+    }
+  }
+}
+    ${ClientActivityLogFragmentDoc}`;
+
+/**
+ * __useClientActivityLogsQuery__
+ *
+ * To run a query within a React component, call `useClientActivityLogsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useClientActivityLogsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useClientActivityLogsQuery({
+ *   variables: {
+ *      clientActivityUuid: // value for 'clientActivityUuid'
+ *   },
+ * });
+ */
+export function useClientActivityLogsQuery(baseOptions: Apollo.QueryHookOptions<ClientActivityLogsQuery, ClientActivityLogsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ClientActivityLogsQuery, ClientActivityLogsQueryVariables>(ClientActivityLogsDocument, options);
+      }
+export function useClientActivityLogsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ClientActivityLogsQuery, ClientActivityLogsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ClientActivityLogsQuery, ClientActivityLogsQueryVariables>(ClientActivityLogsDocument, options);
+        }
+export function useClientActivityLogsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ClientActivityLogsQuery, ClientActivityLogsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ClientActivityLogsQuery, ClientActivityLogsQueryVariables>(ClientActivityLogsDocument, options);
+        }
+export type ClientActivityLogsQueryHookResult = ReturnType<typeof useClientActivityLogsQuery>;
+export type ClientActivityLogsLazyQueryHookResult = ReturnType<typeof useClientActivityLogsLazyQuery>;
+export type ClientActivityLogsSuspenseQueryHookResult = ReturnType<typeof useClientActivityLogsSuspenseQuery>;
+export type ClientActivityLogsQueryResult = Apollo.QueryResult<ClientActivityLogsQuery, ClientActivityLogsQueryVariables>;
 export const ClientsDocument = gql`
     query Clients {
   clients {

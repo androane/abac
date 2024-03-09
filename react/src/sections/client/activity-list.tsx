@@ -29,6 +29,7 @@ import ActivityTableToolbar from 'sections/client/activity-table-toolbar'
 import ActivityTableRow from 'sections/client/activity-table-row'
 import { ClientActivityTableFilters, ClientActivityType } from 'sections/client/types'
 import UpdateClientActivity from 'sections/client/activity-update'
+import UpdateClientActivityLogs from 'sections/client/activity-logs-update'
 
 const defaultFilters = {
   name: '',
@@ -63,6 +64,7 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
   const [deleteActivity, { loading }] = useDeleteClientActivityMutation()
 
   const [activityIdToEdit, setActivityIdToEdit] = useState<null | string>(null)
+  const [activityIdLogsToEdit, setActivityIdLogsToEdit] = useState<undefined | string>(undefined)
 
   const { enqueueSnackbar } = useSnackbar()
   const [tableData, setTableData] = useState(activities)
@@ -115,7 +117,7 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
       },
     })
 
-    enqueueSnackbar('Serviciul a fost șters!')
+    enqueueSnackbar('Activitatea a fost ștersă!')
 
     showCreateActivity.onFalse()
 
@@ -138,6 +140,14 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
           clientUuid={clientUuid}
           activity={activities.find(_ => _.activityUuid === activityIdToEdit)!}
           onClose={showCreateActivity.onFalse}
+        />
+      )}
+      {activityIdLogsToEdit && (
+        <UpdateClientActivityLogs
+          date={date}
+          activityName={activities.find(_ => _.clientActivityUuid === activityIdLogsToEdit)!.name}
+          clientActivityUuid={activityIdLogsToEdit}
+          onClose={() => setActivityIdLogsToEdit(undefined)}
         />
       )}
       <ActivityTableToolbar
@@ -184,6 +194,7 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
                     row={row}
                     onDeleteRow={() => handleDeleteRow(row.uuid)}
                     onEditRow={() => handleEditRow(row.uuid)}
+                    onEditLogs={() => setActivityIdLogsToEdit(row.clientActivityUuid)}
                     loadingDelete={loading}
                   />
                 ))}
@@ -213,7 +224,6 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
       month: date ? date.getMonth() + 1 : null,
       year: date?.getFullYear(),
     },
-    nextFetchPolicy: 'cache-first',
   })
 
   const activitiesResult = useOrganizationActivitiesQuery()
