@@ -64,3 +64,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     @property
     def name(self):
         return f"{self.first_name} {self.last_name}"
+
+    def generate_client_user_email(self):
+        # We fake generate an email so that the email is not mandatory when adding a client user
+        return f"{self.uuid}@abacsoft.ro"

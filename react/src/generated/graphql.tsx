@@ -137,7 +137,7 @@ export type ClientType = {
 };
 
 export type ClientUserInput = {
-  email: Scalars['String']['input'];
+  email?: InputMaybe<Scalars['String']['input']>;
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
   ownershipPercentage?: InputMaybe<Scalars['Int']['input']>;

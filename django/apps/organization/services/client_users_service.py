@@ -40,9 +40,14 @@ def update_client_user(
         client_user: User = get_user_model()(organization=org, client=client)
         client_user_profile = ClientUserProfile(client=client)
 
-    for field in ("email", "first_name", "last_name"):
+    for field in ("first_name", "last_name"):
         setattr(client_user, field, client_user_input.get(field))
 
+    client_user.save()
+
+    client_user.email = (
+        client_user_input.get("email") or client_user.generate_client_user_email()
+    )
     client_user.save()
 
     for field in (

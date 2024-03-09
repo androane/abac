@@ -286,7 +286,7 @@ class ClientUserInput(graphene.InputObjectType):
     uuid = graphene.String()
     first_name = graphene.String(required=True)
     last_name = graphene.String(required=True)
-    email = graphene.String(required=True)
+    email = graphene.String()
     role = ClientUserRoleEnumType()
     ownership_percentage = graphene.Int()
     spv_username = graphene.String()

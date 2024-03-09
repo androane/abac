@@ -51,7 +51,7 @@ const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
       Yup.object().shape({
         firstName: Yup.string().required('Acest câmp este obligatoriu'),
         lastName: Yup.string().required('Acest câmp este obligatoriu'),
-        email: Yup.string().required('Acest câmp este obligatoriu'),
+        email: Yup.string(),
         ownershipPercentage: Yup.number().min(0).max(100).nullable(),
         role: Yup.mixed<ClientUserRoleEnum>().oneOf(Object.values(ClientUserRoleEnum)).nullable(),
         spvUsername: Yup.string().nullable(),
