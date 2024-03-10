@@ -1,7 +1,6 @@
 import isEqual from 'lodash/isEqual'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import Container from '@mui/material/Container'
 import Table from '@mui/material/Table'
@@ -9,11 +8,9 @@ import TableBody from '@mui/material/TableBody'
 import TableContainer from '@mui/material/TableContainer'
 
 import { useSnackbar } from 'components/snackbar'
-import { RouterLink } from 'routes/components'
 import { LANDING_PAGE, paths } from 'routes/paths'
 
 import CustomBreadcrumbs from 'components/custom-breadcrumbs'
-import Iconify from 'components/iconify'
 import Scrollbar from 'components/scrollbar'
 import { useSettingsContext } from 'components/settings'
 import {
@@ -221,16 +218,6 @@ const ClientListView = () => {
           { name: 'Clienti', href: paths.app.client.list },
           { name: 'Listă' },
         ]}
-        action={
-          <Button
-            component={RouterLink}
-            href={paths.app.client.new}
-            variant="contained"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-          >
-            Client Nou
-          </Button>
-        }
         sx={{
           mb: { xs: 3, md: 5 },
         }}

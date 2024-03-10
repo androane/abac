@@ -27,6 +27,7 @@ import Divider from '@mui/material/Divider'
 
 import Iconify from 'components/iconify'
 import { RHFTextField } from 'components/hook-form'
+import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 
 const DEFAULT_LOG = {
   uuid: undefined,
@@ -36,14 +37,12 @@ const DEFAULT_LOG = {
 }
 
 const LogUpdate: React.FC<{ date: Date }> = ({ date }) => {
-  const { control, setValue, watch } = useFormContext()
+  const { control, setValue } = useFormContext()
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'logs',
   })
-
-  const values = watch()
 
   return (
     <Box sx={{ p: 3 }}>
@@ -156,8 +155,8 @@ const UpdateClientActivityLogs: React.FC<Props> = ({
           Yup.object().shape({
             uuid: Yup.string(),
             description: Yup.string(),
-            minutesAllocated: Yup.number().required('Acest câmp este obligatoriu'),
-            date: Yup.date().required('Acest câmp este obligatoriu'),
+            minutesAllocated: Yup.number().required(REQUIRED_FIELD_ERROR),
+            date: Yup.date().required(REQUIRED_FIELD_ERROR),
           }),
         ),
       }),

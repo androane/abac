@@ -22,6 +22,7 @@ import {
 import getErrorMessage from 'utils/api-codes'
 import { CATEGORY_CODES, getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
 import { MenuItem } from '@mui/material'
+import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 
 type Props = {
   organizationUuid: string
@@ -48,16 +49,16 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, activity, onClose }
   const form = useForm({
     resolver: yupResolver(
       Yup.object().shape({
-        name: Yup.string().required('Acest câmp este obligatoriu'),
+        name: Yup.string().required(REQUIRED_FIELD_ERROR),
         description: Yup.string(),
-        categoryCode: Yup.string().required('Acest câmp este obligatoriu'),
+        categoryCode: Yup.string().required(REQUIRED_FIELD_ERROR),
         unitCost: Yup.number(),
         unitCostCurrency: Yup.mixed<CurrencyEnum>()
           .oneOf(Object.values(CurrencyEnum))
-          .required('Acest câmp este obligatoriu'),
+          .required(REQUIRED_FIELD_ERROR),
         unitCostType: Yup.mixed<UnitCostTypeEnum>()
           .oneOf(Object.values(UnitCostTypeEnum))
-          .required('Acest câmp este obligatoriu'),
+          .required(REQUIRED_FIELD_ERROR),
       }),
     ),
     defaultValues,
@@ -139,7 +140,7 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, activity, onClose }
                 </MenuItem>
               ))}
             </RHFSelect>
-            <RHFTextField name="unitCost" label="Cost" />
+            <RHFTextField name="unitCost" label="Cost" type="number" />
             <RHFSelect name="unitCostCurrency" label="Moneda">
               {Object.keys(CurrencyEnum).map(currency => (
                 <MenuItem key={currency} value={currency}>

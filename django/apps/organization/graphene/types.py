@@ -19,6 +19,7 @@ from organization.models import (
     ClientActivity,
     ClientActivityLog,
     ClientFile,
+    ClientSolution,
     ClientUserProfile,
     Invoice,
     InvoiceItem,
@@ -130,6 +131,16 @@ class OrganizationType(DjangoObjectType):
 
     def resolve_activities(self, info, **kwargs):
         return self.activities.filter(client__isnull=True).all()
+
+
+class ClientSolutionType(DjangoObjectType):
+    class Meta:
+        model = ClientSolution
+        only_fields = (
+            "unit_cost",
+            "unit_cost_currency",
+            "solution",
+        )
 
 
 class TotalByCurrencyType(graphene.ObjectType):
@@ -251,6 +262,9 @@ class ClientType(DjangoObjectType):
     files = graphene.List(graphene.NonNull(ClientFileType), required=True)
     users = graphene.List(graphene.NonNull(UserType), required=True)
     activities = graphene.List(graphene.NonNull(ClientActivityType), required=True)
+    client_solutions = graphene.List(
+        graphene.NonNull(ClientSolutionType), required=True
+    )
 
     def resolve_files(self, info, **kwargs):
         return self.files.all()

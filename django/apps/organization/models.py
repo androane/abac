@@ -251,21 +251,6 @@ class ClientActivity(BaseModel):
     )
 
 
-class ClientActivityLog(BaseModel):
-    client_activity = models.ForeignKey(
-        ClientActivity, on_delete=models.CASCADE, related_name="logs"
-    )
-    minutes_allocated = models.SmallIntegerField(
-        help_text="Number of minutes allocated to the client for this activity",
-    )
-    date = models.DateField(
-        help_text="Date when the activity was executed",
-    )
-    description = models.TextField(
-        help_text="Optional explanation for the log", null=True, blank=True
-    )
-
-
 class Solution(BaseModel):
     name = models.CharField(max_length=64)
 
@@ -283,12 +268,37 @@ class ClientSolution(BaseModel):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     solution = models.ForeignKey(Solution, on_delete=models.CASCADE)
 
-    month = models.SmallIntegerField(help_text="Month of the Solution")
-    year = models.SmallIntegerField(help_text="Year of the Solution")
     unit_cost = models.IntegerField(
         null=True, blank=True, help_text="Cost/Price of the Solution"
     )
     unit_cost_currency = models.CharField(max_length=3, choices=CurrencyEnum.choices)
+
+
+class ActivityLog(BaseModel):
+    class Meta:
+        abstract = True
+
+    minutes_allocated = models.SmallIntegerField(
+        help_text="Number of minutes allocated to the client for this activity",
+    )
+    date = models.DateField(
+        help_text="Date when the activity was executed",
+    )
+    description = models.TextField(
+        help_text="Optional explanation for the log", null=True, blank=True
+    )
+
+
+class ClientActivityLog(ActivityLog):
+    client_activity = models.ForeignKey(
+        ClientActivity, on_delete=models.CASCADE, related_name="logs"
+    )
+
+
+class ClientSolutionLog(ActivityLog):
+    client_solution = models.ForeignKey(
+        ClientSolution, on_delete=models.CASCADE, related_name="logs"
+    )
 
 
 class StandardInvoiceItemCategory(BaseModel):

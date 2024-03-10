@@ -22,6 +22,7 @@ import getErrorMessage from 'utils/api-codes'
 import ResponseHandler from 'components/response-handler'
 import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
 import { MenuItem } from '@mui/material'
+import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 
 type Props = {
   organizationUuid: string
@@ -47,11 +48,11 @@ const UpdateSolution: React.FC<Props> = ({ organizationUuid, solution, onClose }
   const form = useForm({
     resolver: yupResolver(
       Yup.object().shape({
-        name: Yup.string().required('Acest câmp este obligatoriu'),
-        categoryCode: Yup.string().required('Acest câmp este obligatoriu'),
+        name: Yup.string().required(REQUIRED_FIELD_ERROR),
+        categoryCode: Yup.string().required(REQUIRED_FIELD_ERROR),
         activityUuids: Yup.array()
-          .of(Yup.string().required('Acest câmp este obligatoriu'))
-          .required('Serviciile incluse sunt obligatorii'),
+          .of(Yup.string().required(REQUIRED_FIELD_ERROR))
+          .required(REQUIRED_FIELD_ERROR),
       }),
     ),
     defaultValues,

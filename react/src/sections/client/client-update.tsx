@@ -20,10 +20,12 @@ import {
   useClientProgramManagersQuery,
   useUpdateClientMutation,
   ClientFragmentDoc,
+  useOrganizationSolutionsQuery,
 } from 'generated/graphql'
 import { useAuthContext } from 'auth/hooks'
 import getErrorMessage from 'utils/api-codes'
 import { MenuItem } from '@mui/material'
+import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
 import { APIClient } from './types'
 
 type Props = {
@@ -35,7 +37,8 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
 
   const { user } = useAuthContext()
 
-  const result = useClientProgramManagersQuery()
+  const resultProgramManagers = useClientProgramManagersQuery()
+  const resultSolutions = useOrganizationSolutionsQuery()
 
   const [updateClient, { loading }] = useUpdateClientMutation()
 
@@ -64,6 +67,7 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
         spvUsername: Yup.string().nullable(),
         spvPassword: Yup.string().nullable(),
         cui: Yup.string().nullable(),
+        solutions: Yup.array().of(Yup.string().nullable()),
       }),
     ),
     defaultValues,
@@ -125,8 +129,8 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="name" label="Nume" />
-              <ResponseHandler {...result}>
+              <RHFTextField name="name" label="Nume firmă" InputLabelProps={{ shrink: true }} />
+              <ResponseHandler {...resultProgramManagers}>
                 {({ clientProgramManagers }) => {
                   return (
                     <RHFSelect name="programManagerUuid" label="Responsabil">
@@ -140,10 +144,40 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
                   )
                 }}
               </ResponseHandler>
-              <RHFTextField name="cui" label="CUI" />
+              <ResponseHandler {...resultSolutions}>
+                {({ organization }) => (
+                  <>
+                    {CATEGORY_CODES.map(categoryCode => {
+                      return (
+                        <RHFSelect
+                          key={categoryCode}
+                          name={`solutions${categoryCode}`}
+                          label={`Pachet ${getCategoryLabelFromCode(categoryCode)}`}
+                        >
+                          <MenuItem value="">Alege</MenuItem>
+                          {organization.solutions
+                            .filter(s => s.category.code === categoryCode)
+                            .map(s => (
+                              <MenuItem key={s.uuid} value={s.uuid}>
+                                {s.name}
+                              </MenuItem>
+                            ))}
+                        </RHFSelect>
+                      )
+                    })}
+                  </>
+                )}
+              </ResponseHandler>
+              <RHFTextField name="cui" label="CUI" InputLabelProps={{ shrink: true }} />
             </Box>
             <Box sx={{ pt: 3 }}>
-              <RHFTextField name="description" label="Descriere" multiline rows={5} />
+              <RHFTextField
+                name="description"
+                label="Descriere"
+                multiline
+                rows={5}
+                InputLabelProps={{ shrink: true }}
+              />
             </Box>
 
             <Box
@@ -156,8 +190,16 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="spvUsername" label="Utilizator SPV" />
-              <RHFTextField name="spvPassword" label="Parola SPV" />
+              <RHFTextField
+                name="spvUsername"
+                label="Utilizator SPV"
+                InputLabelProps={{ shrink: true }}
+              />
+              <RHFTextField
+                name="spvPassword"
+                label="Parolă SPV"
+                InputLabelProps={{ shrink: true }}
+              />
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>

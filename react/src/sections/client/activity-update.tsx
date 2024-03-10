@@ -22,6 +22,7 @@ import getErrorMessage from 'utils/api-codes'
 import { CATEGORY_CODES, getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
 import { MenuItem } from '@mui/material'
 import { ClientActivityType } from 'sections/client/types'
+import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 
 type Props = {
   activity: null | ClientActivityType
@@ -50,16 +51,16 @@ const UpdateClientActivity: React.FC<Props> = ({ activity, clientUuid, date, onC
   const form = useForm({
     resolver: yupResolver(
       Yup.object().shape({
-        name: Yup.string().required('Acest câmp este obligatoriu'),
+        name: Yup.string().required(REQUIRED_FIELD_ERROR),
         description: Yup.string(),
-        categoryCode: Yup.string().required('Acest câmp este obligatoriu'),
+        categoryCode: Yup.string().required(REQUIRED_FIELD_ERROR),
         unitCost: Yup.number(),
         unitCostCurrency: Yup.mixed<CurrencyEnum>()
           .oneOf(Object.values(CurrencyEnum))
-          .required('Acest câmp este obligatoriu'),
+          .required(REQUIRED_FIELD_ERROR),
         unitCostType: Yup.mixed<UnitCostTypeEnum>()
           .oneOf(Object.values(UnitCostTypeEnum))
-          .required('Acest câmp este obligatoriu'),
+          .required(REQUIRED_FIELD_ERROR),
       }),
     ),
     defaultValues,
@@ -139,9 +140,15 @@ const UpdateClientActivity: React.FC<Props> = ({ activity, clientUuid, date, onC
               name="name"
               label="Nume"
               disabled={activity ? !activity.isCustom : false}
+              InputLabelProps={{ shrink: true }}
             />
 
-            <RHFSelect name="categoryCode" label="Domeniu" disabled={Boolean(activity)}>
+            <RHFSelect
+              name="categoryCode"
+              label="Domeniu"
+              disabled={Boolean(activity)}
+              InputLabelProps={{ shrink: true }}
+            >
               <MenuItem value="" sx={{ color: 'text.secondary' }}>
                 Alege
               </MenuItem>
@@ -151,10 +158,16 @@ const UpdateClientActivity: React.FC<Props> = ({ activity, clientUuid, date, onC
                 </MenuItem>
               ))}
             </RHFSelect>
-            <RHFTextField name="unitCost" label="Cost" />
+            <RHFTextField
+              name="unitCost"
+              label="Cost"
+              type="number"
+              InputLabelProps={{ shrink: true }}
+            />
             <RHFSelect
               name="unitCostCurrency"
               label="Moneda"
+              InputLabelProps={{ shrink: true }}
               disabled={activity ? !activity.isCustom : false}
             >
               {Object.keys(CurrencyEnum).map(currency => (
@@ -164,6 +177,7 @@ const UpdateClientActivity: React.FC<Props> = ({ activity, clientUuid, date, onC
               ))}
             </RHFSelect>
             <RHFSelect
+              InputLabelProps={{ shrink: true }}
               name="unitCostType"
               label="Tip Cost"
               disabled={activity ? !activity.isCustom : false}
@@ -174,7 +188,13 @@ const UpdateClientActivity: React.FC<Props> = ({ activity, clientUuid, date, onC
                 </MenuItem>
               ))}
             </RHFSelect>
-            <RHFTextField multiline rows={5} name="description" label="Descriere" />
+            <RHFTextField
+              multiline
+              rows={5}
+              name="description"
+              label="Descriere"
+              InputLabelProps={{ shrink: true }}
+            />
           </Box>
           <DialogActions>
             <Button color="inherit" variant="outlined" onClick={onClose}>

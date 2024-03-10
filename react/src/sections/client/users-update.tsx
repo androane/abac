@@ -20,6 +20,7 @@ import {
 import { APIClientUser } from 'sections/client/types'
 import { ROLE_LABELS } from 'sections/client/constants'
 import getErrorMessage from 'utils/api-codes'
+import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 
 type Props = {
   clientId: string
@@ -49,8 +50,8 @@ const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
   const form = useForm({
     resolver: yupResolver(
       Yup.object().shape({
-        firstName: Yup.string().required('Acest câmp este obligatoriu'),
-        lastName: Yup.string().required('Acest câmp este obligatoriu'),
+        firstName: Yup.string().required(REQUIRED_FIELD_ERROR),
+        lastName: Yup.string().required(REQUIRED_FIELD_ERROR),
         email: Yup.string(),
         ownershipPercentage: Yup.number().min(0).max(100).nullable(),
         role: Yup.mixed<ClientUserRoleEnum>().oneOf(Object.values(ClientUserRoleEnum)).nullable(),
@@ -134,7 +135,7 @@ const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
             <RHFTextField name="lastName" label="Nume" />
             <RHFTextField name="email" label="Email" />
             <RHFTextField name="phoneNumber" label="Telefon" />
-            <RHFTextField name="ownershipPercentage" label="Procent din firma" />
+            <RHFTextField name="ownershipPercentage" label="Procent din firma" type="number" />
             <RHFSelect native name="role" label="Rol" InputLabelProps={{ shrink: true }}>
               <option key="null" value="" />
               {Object.keys(ClientUserRoleEnum).map(role => (
