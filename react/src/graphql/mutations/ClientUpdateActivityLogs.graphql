@@ -10,6 +10,7 @@ mutation UpdateClientActivityLogs(
       ...Error
     }
     clientActivity {
+      uuid
       logs {
         ...ClientActivityLog
       }

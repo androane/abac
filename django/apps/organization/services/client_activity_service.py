@@ -106,15 +106,29 @@ def update_client_activity_logs(
     client_activity = ClientActivity.objects.get(
         uuid=client_activity_uuid, client__organization=org
     )
-    logs = [
-        ClientActivityLog(
-            client_activity=client_activity,
-            date=log.date,
-            minutes_allocated=log.minutes_allocated,
-            description=log.description,
-        )
-        for log in client_activity_logs_input
-    ]
-    ClientActivityLog.objects.bulk_create(logs, ignore_conflicts=True)
+
+    existing_log_uuids = set(client_activity.logs.values_list("uuid", flat=True))
+    input_log_uuids = set([_.uuid for _ in client_activity_logs_input])
+
+    to_delete = existing_log_uuids - input_log_uuids
+    if to_delete:
+        ClientActivityLog.objects.filter(uuid__in=to_delete).delete()
+
+    for log_input in client_activity_logs_input:
+        if log_input.uuid:
+            ClientActivityLog.objects.filter(
+                uuid=log_input.uuid, client_activity=client_activity
+            ).update(
+                minutes_allocated=log_input.minutes_allocated,
+                date=log_input.date,
+                description=log_input.description,
+            )
+        else:
+            ClientActivityLog.objects.create(
+                client_activity=client_activity,
+                minutes_allocated=log_input.minutes_allocated,
+                date=log_input.date,
+                description=log_input.description,
+            )
 
     return client_activity

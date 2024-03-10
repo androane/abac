@@ -701,7 +701,7 @@ export type UpdateClientActivityLogsMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClientActivityLogsMutation = { __typename?: 'Mutation', updateClientActivityLogs?: { __typename?: 'UpdateClientActivityLogs', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientActivity?: { __typename?: 'ClientActivityType', logs: Array<{ __typename?: 'ClientActivityLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } | null } | null };
+export type UpdateClientActivityLogsMutation = { __typename?: 'Mutation', updateClientActivityLogs?: { __typename?: 'UpdateClientActivityLogs', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientActivity?: { __typename?: 'ClientActivityType', uuid: string, logs: Array<{ __typename?: 'ClientActivityLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } | null } | null };
 
 export type UpdateClientInvoiceStatusMutationVariables = Exact<{
   invoiceUuid: Scalars['String']['input'];
@@ -766,7 +766,7 @@ export type ClientActivityLogsQueryVariables = Exact<{
 }>;
 
 
-export type ClientActivityLogsQuery = { __typename?: 'Query', clientActivity: { __typename?: 'ClientActivityType', logs: Array<{ __typename?: 'ClientActivityLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } };
+export type ClientActivityLogsQuery = { __typename?: 'Query', clientActivity: { __typename?: 'ClientActivityType', uuid: string, logs: Array<{ __typename?: 'ClientActivityLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } };
 
 export type ClientsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1357,6 +1357,7 @@ export const UpdateClientActivityLogsDocument = gql`
       ...Error
     }
     clientActivity {
+      uuid
       logs {
         ...ClientActivityLog
       }
@@ -1708,6 +1709,7 @@ export type ClientActivitiesQueryResult = Apollo.QueryResult<ClientActivitiesQue
 export const ClientActivityLogsDocument = gql`
     query ClientActivityLogs($clientActivityUuid: String!) {
   clientActivity(clientActivityUuid: $clientActivityUuid) {
+    uuid
     logs {
       ...ClientActivityLog
     }

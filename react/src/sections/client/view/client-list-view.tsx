@@ -41,8 +41,6 @@ import { APIClient, ClientTableFilters } from '../types'
 const TABLE_HEAD = [
   { id: 'name', label: 'Nume' },
   { id: 'programManagerName', label: 'Responsabil' },
-  { id: 'phoneNumber1', label: 'Telefon 1' },
-  { id: 'phoneNumber2', label: 'Telefon 2' },
   { id: '', width: 88 },
 ]
 

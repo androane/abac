@@ -58,13 +58,9 @@ const LogUpdate: React.FC<{ date: Date }> = ({ date }) => {
                 alignItems="center"
               >
                 <RHFTextField
+                  type="number"
                   name={`logs[${index}].minutesAllocated`}
                   label="Minute Alocate"
-                  onFocus={() => {
-                    if (values.logs[index].minutesAllocated === 0) {
-                      setValue(`logs[${index}].minutesAllocated`, '')
-                    }
-                  }}
                   InputLabelProps={{ shrink: true }}
                 />
                 <RHFTextField
