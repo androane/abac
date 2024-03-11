@@ -4,6 +4,7 @@ from django.db.models import QuerySet
 
 from organization.graphene.types import ClientInput
 from organization.models import Client, ClientSolution, Organization
+from organization.models.activity import Solution
 
 
 def get_clients(org: Organization) -> QuerySet[Client]:
@@ -39,28 +40,27 @@ def update_or_create_client(org: Organization, client_input: ClientInput) -> Cli
         if value:
             setattr(client, field, value)
 
-    existing_solution_uuids = set(
-        ClientSolution.objects.filter(client=client).values_list(
-            "solution__uuid", flat=True
-        )
-    )
-    input_solution_uuids = set([_.solution_uuid for _ in client_input.client_solutions])
+    input_client_solution_uuids = set([_.uuid for _ in client_input.client_solutions])
+    client.client_solutions.exclude(uuid__in=input_client_solution_uuids).delete()
 
-    to_delete = existing_solution_uuids - input_solution_uuids
-    ClientSolution.objects.filter(client=client, solution__uuid__in=to_delete).delete()
-
-    solution_uuid_to_id = dict(
-        org.solutions.filter(uuid__in=input_solution_uuids).values("uuid", "id")
-    )
-    for client_solution in client_input.client_solutions:
-        ClientSolution.objects.update_or_create(
-            client=client,
-            solution_id=solution_uuid_to_id[client_solution.solution_uuid],
-            defaults={
-                "unit_cost": client_solution.unit_cost,
-                "currency": client_solution.currency,
-            },
-        )
+    for client_solution_input in client_input.client_solutions:
+        if not client_solution_input.solution_uuid:
+            continue
+        solution = Solution.objects.get(uuid=client_solution_input.solution_uuid)
+        if client_solution_input.uuid:
+            client.client_solutions.filter(
+                solution, uuid=client_solution_input.uuid
+            ).update(
+                unit_cost=client_solution_input.unit_cost,
+                unit_cost_currency=client_solution_input.unit_cost_currency,
+            )
+        else:
+            ClientSolution.objects.create(
+                client=client,
+                solution=solution,
+                unit_cost=client_solution_input.unit_cost,
+                unit_cost_currency=client_solution_input.unit_cost_currency,
+            )
 
     return client
 

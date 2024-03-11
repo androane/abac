@@ -118,7 +118,7 @@ const ClientEditView = () => {
                 ))}
               </Tabs>
 
-              {currentTab === TABS_VALUES.GENERAL && <UpdateClient client={client} />}
+              {currentTab === TABS_VALUES.GENERAL && <UpdateClient clientUuid={client.uuid} />}
               {currentTab === TABS_VALUES.ACTIVITY && <ActivityList clientId={client.uuid} />}
               {currentTab === TABS_VALUES.INVOICING && <InvoiceDetails clientId={client.uuid} />}
               {currentTab === TABS_VALUES.FILES && <FilesList clientId={client.uuid} />}

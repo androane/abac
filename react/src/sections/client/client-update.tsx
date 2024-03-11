@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import FormProvider, { RHFSelect, RHFTextField } from 'components/hook-form'
-import { useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 
 import * as Yup from 'yup'
@@ -21,18 +21,21 @@ import {
   useUpdateClientMutation,
   ClientFragmentDoc,
   useOrganizationSolutionsQuery,
+  useClientQuery,
+  ClientQuery,
+  CurrencyEnum,
 } from 'generated/graphql'
 import { useAuthContext } from 'auth/hooks'
 import getErrorMessage from 'utils/api-codes'
 import { MenuItem } from '@mui/material'
 import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
-import { APIClient } from './types'
+import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 
 type Props = {
-  client?: APIClient
+  client?: ClientQuery['client']
 }
 
-const UpdateClient: React.FC<Props> = ({ client }) => {
+export const UpdateClient: React.FC<Props> = ({ client }) => {
   const router = useRouter()
 
   const { user } = useAuthContext()
@@ -53,21 +56,39 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
       spvUsername: client?.spvUsername,
       spvPassword: client?.spvPassword,
       cui: client?.cui,
+      clientSolutions:
+        client?.clientSolutions.map(cs => ({
+          uuid: cs.uuid,
+          solutionUuid: cs.solution.uuid,
+          unitCost: cs.unitCost,
+          unitCostCurrency: cs.unitCostCurrency,
+        })) || [],
     }),
     [client, user],
   )
 
   const form = useForm({
     resolver: yupResolver(
-      Yup.object().shape({
-        name: Yup.string().required('Numele este obligatoriu'),
+      Yup.object({
+        name: Yup.string().required(REQUIRED_FIELD_ERROR),
         description: Yup.string().nullable(),
         imageUrl: Yup.mixed<any>().nullable(),
         programManagerUuid: Yup.string().nullable(),
         spvUsername: Yup.string().nullable(),
         spvPassword: Yup.string().nullable(),
         cui: Yup.string().nullable(),
-        solutions: Yup.array().of(Yup.string().nullable()),
+        clientSolutions: Yup.array()
+          .of(
+            Yup.object({
+              uuid: Yup.string(),
+              solutionUuid: Yup.string(),
+              unitCost: Yup.number().required(REQUIRED_FIELD_ERROR),
+              unitCostCurrency: Yup.mixed<CurrencyEnum>()
+                .oneOf(Object.values(CurrencyEnum))
+                .required(REQUIRED_FIELD_ERROR),
+            }).nullable(),
+          )
+          .required(REQUIRED_FIELD_ERROR),
       }),
     ),
     defaultValues,
@@ -75,6 +96,7 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
 
   const onSubmit = form.handleSubmit(async data => {
     try {
+      console.log(data)
       await updateClient({
         variables: {
           clientInput: {
@@ -85,7 +107,7 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
             spvUsername: data.spvUsername,
             spvPassword: data.spvPassword,
             cui: data.cui,
-            clientSolutions: [],
+            clientSolutions: data.clientSolutions,
           },
         },
         update(cache, { data: cacheData }) {
@@ -144,52 +166,7 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
                   )
                 }}
               </ResponseHandler>
-              <ResponseHandler {...resultSolutions}>
-                {({ organization }) => (
-                  <>
-                    {CATEGORY_CODES.map(categoryCode => {
-                      return (
-                        <RHFSelect
-                          key={categoryCode}
-                          name={`solutions${categoryCode}`}
-                          label={`Pachet ${getCategoryLabelFromCode(categoryCode)}`}
-                        >
-                          <MenuItem value="">Alege</MenuItem>
-                          {organization.solutions
-                            .filter(s => s.category.code === categoryCode)
-                            .map(s => (
-                              <MenuItem key={s.uuid} value={s.uuid}>
-                                {s.name}
-                              </MenuItem>
-                            ))}
-                        </RHFSelect>
-                      )
-                    })}
-                  </>
-                )}
-              </ResponseHandler>
               <RHFTextField name="cui" label="CUI" InputLabelProps={{ shrink: true }} />
-            </Box>
-            <Box sx={{ pt: 3 }}>
-              <RHFTextField
-                name="description"
-                label="Descriere"
-                multiline
-                rows={5}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Box>
-
-            <Box
-              sx={{ pt: 3 }}
-              rowGap={3}
-              columnGap={2}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
-              }}
-            >
               <RHFTextField
                 name="spvUsername"
                 label="Utilizator SPV"
@@ -198,6 +175,71 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
               <RHFTextField
                 name="spvPassword"
                 label="Parolă SPV"
+                InputLabelProps={{ shrink: true }}
+              />
+            </Box>
+            <Box
+              sx={{ pt: 3 }}
+              rowGap={3}
+              columnGap={2}
+              display="grid"
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(3, 1fr)',
+              }}
+            >
+              <ResponseHandler {...resultSolutions}>
+                {({ organization }) => {
+                  return (
+                    <>
+                      {CATEGORY_CODES.map((categoryCode, index) => {
+                        return (
+                          <React.Fragment key={categoryCode}>
+                            <RHFSelect
+                              InputLabelProps={{ shrink: true }}
+                              name={`clientSolutions[${index}].solutionUuid`}
+                              label={`Pachet ${getCategoryLabelFromCode(categoryCode)}`}
+                            >
+                              <MenuItem value="">Alege</MenuItem>
+                              {organization.solutions
+                                .filter(s => s.category.code === categoryCode)
+                                .map(s => (
+                                  <MenuItem key={s.uuid} value={s.uuid}>
+                                    {s.name}
+                                  </MenuItem>
+                                ))}
+                            </RHFSelect>
+                            <RHFTextField
+                              name={`clientSolutions[${index}].unitCost`}
+                              label="Cost"
+                              type="number"
+                              InputLabelProps={{ shrink: true }}
+                            />
+                            <RHFSelect
+                              name={`clientSolutions[${index}].unitCostCurrency`}
+                              label="Moneda"
+                              InputLabelProps={{ shrink: true }}
+                            >
+                              {Object.keys(CurrencyEnum).map(currency => (
+                                <MenuItem key={currency} value={currency}>
+                                  {currency}
+                                </MenuItem>
+                              ))}
+                            </RHFSelect>
+                          </React.Fragment>
+                        )
+                      })}
+                    </>
+                  )
+                }}
+              </ResponseHandler>
+            </Box>
+            <Box sx={{ pt: 3 }}>
+              <RHFTextField
+                name="description"
+                label="Descriere"
+                multiline
+                rows={5}
                 InputLabelProps={{ shrink: true }}
               />
             </Box>
@@ -214,4 +256,16 @@ const UpdateClient: React.FC<Props> = ({ client }) => {
   )
 }
 
-export default UpdateClient
+const UpdateClientContainer: React.FC<{ clientUuid: string }> = ({ clientUuid }) => {
+  const result = useClientQuery({ variables: { uuid: clientUuid } })
+
+  return (
+    <ResponseHandler {...result}>
+      {({ client }) => {
+        return <UpdateClient client={client} />
+      }}
+    </ResponseHandler>
+  )
+}
+
+export default UpdateClientContainer

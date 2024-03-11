@@ -5,7 +5,7 @@ import { LANDING_PAGE, paths } from 'routes/paths'
 import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 import { useSettingsContext } from 'components/settings'
 
-import UpdateClient from '../client-update'
+import { UpdateClient } from '../client-update'
 
 const ClientCreateView = () => {
   const settings = useSettingsContext()

@@ -22,7 +22,6 @@ from organization.models import (
     ClientSolution,
     ClientUserProfile,
     Invoice,
-    InvoiceItem,
     Organization,
     Solution,
 )
@@ -52,7 +51,7 @@ class SolutionInput(graphene.InputObjectType):
     activity_uuids = graphene.List(graphene.NonNull(graphene.String), required=True)
 
 
-class ActivityCategoryType(DjangoObjectType):
+class CategoryType(DjangoObjectType):
     class Meta:
         model = ActivityCategory
         only_fields = (
@@ -137,21 +136,18 @@ class ClientSolutionType(DjangoObjectType):
     class Meta:
         model = ClientSolution
         only_fields = (
+            "uuid",
             "unit_cost",
             "unit_cost_currency",
             "solution",
         )
 
+    unit_cost_currency = CurrencyEnumType(required=True)
+
 
 class TotalByCurrencyType(graphene.ObjectType):
     currency = CurrencyEnumType(required=True)
     total = graphene.Float(required=True)
-
-
-class InvoiceItemType(DjangoObjectType):
-    class Meta:
-        model = InvoiceItem
-        only = ("uuid", "name")
 
 
 class InvoiceType(DjangoObjectType):
@@ -164,7 +160,6 @@ class InvoiceType(DjangoObjectType):
             "date_sent",
         )
 
-    items = graphene.List(graphene.NonNull(InvoiceItemType), required=True)
     totals_by_currency = graphene.List(
         graphene.NonNull(TotalByCurrencyType), required=True
     )
@@ -178,9 +173,6 @@ class InvoiceType(DjangoObjectType):
             for currency, total in self.totals_by_currency.items()
         ]
 
-    def resolve_items(self, info, **kwargs):
-        return self.items.all()
-
 
 class ActivityInput(graphene.InputObjectType):
     uuid = graphene.String()
@@ -193,8 +185,9 @@ class ActivityInput(graphene.InputObjectType):
 
 
 class ClientSolutionInput(graphene.InputObjectType):
-    solution_uuid = graphene.String(required=True)
-    unit_cost = graphene.Int()
+    uuid = graphene.String()
+    solution_uuid = graphene.String()
+    unit_cost = graphene.Int(required=True)
     unit_cost_currency = CurrencyEnumType(required=True)
 
 
@@ -206,9 +199,7 @@ class ClientInput(graphene.InputObjectType):
     spv_username = graphene.String()
     spv_password = graphene.String()
     cui = graphene.String()
-    client_solutions = graphene.List(
-        graphene.NonNull(ClientSolutionInput), required=True
-    )
+    client_solutions = graphene.List(ClientSolutionInput, required=True)
 
 
 class ClientActivityLogInput(graphene.InputObjectType):
@@ -276,6 +267,9 @@ class ClientType(DjangoObjectType):
 
     def resolve_activities(self, info, **kwargs):
         return ClientActivity.objects.filter(client=self).all()
+
+    def resolve_client_solutions(self, info, **kwargs):
+        return self.client_solutions.all()
 
 
 class ClientUserProfileType(DjangoObjectType):

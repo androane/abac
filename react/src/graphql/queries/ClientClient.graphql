@@ -2,6 +2,7 @@ query Client($uuid: String!) {
   client(uuid: $uuid) {
     ...Client
     clientSolutions {
+      uuid
       solution {
         uuid
       }

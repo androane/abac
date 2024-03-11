@@ -107,12 +107,8 @@ def update_client_activity_logs(
         uuid=client_activity_uuid, client__organization=org
     )
 
-    existing_log_uuids = set(client_activity.logs.values_list("uuid", flat=True))
     input_log_uuids = set([_.uuid for _ in client_activity_logs_input])
-
-    to_delete = existing_log_uuids - input_log_uuids
-    if to_delete:
-        ClientActivityLog.objects.filter(uuid__in=to_delete).delete()
+    ClientActivityLog.objects.exclude(uuid__in=input_log_uuids).delete()
 
     for log_input in client_activity_logs_input:
         if log_input.uuid:

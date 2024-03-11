@@ -1,4 +1,0 @@
-fragment InvoiceItem on InvoiceItemType {
-  uuid
-  name
-}
