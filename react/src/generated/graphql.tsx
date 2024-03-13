@@ -120,8 +120,8 @@ export type ClientInput = {
 
 export type ClientSolutionInput = {
   solutionUuid?: InputMaybe<Scalars['String']['input']>;
-  unitCost: Scalars['Int']['input'];
-  unitCostCurrency: CurrencyEnum;
+  unitCost?: InputMaybe<Scalars['Int']['input']>;
+  unitCostCurrency?: InputMaybe<CurrencyEnum>;
   uuid?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -560,11 +560,13 @@ export type ActivityFragment = { __typename?: 'ActivityType', uuid: string, name
 
 export type UserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: string, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } };
 
-export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
+export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, clientSolutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost: number, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, category: { __typename?: 'CategoryType', code: string } } }> };
 
 export type ClientActivityFragment = { __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean };
 
 export type ClientActivityLogFragment = { __typename?: 'ClientActivityLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null };
+
+export type ClientCoreFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
 
 export type ClientUserFragment = { __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string } };
 
@@ -646,7 +648,7 @@ export type UpdateClientMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { __typename?: 'UpdateClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null } | null } | null };
+export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { __typename?: 'UpdateClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, clientSolutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost: number, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, category: { __typename?: 'CategoryType', code: string } } }> } | null } | null };
 
 export type UpdateClientActivityMutationVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -735,7 +737,7 @@ export type ClientQueryVariables = Exact<{
 }>;
 
 
-export type ClientQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, clientSolutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost: number, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string } }>, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null } };
+export type ClientQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, clientSolutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost: number, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, category: { __typename?: 'CategoryType', code: string } } }> } };
 
 export type ClientsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -821,6 +823,17 @@ export const ClientFragmentDoc = gql`
   cui
   spvUsername
   spvPassword
+  clientSolutions {
+    uuid
+    solution {
+      category {
+        code
+      }
+      uuid
+    }
+    unitCost
+    unitCostCurrency
+  }
 }
     `;
 export const ClientActivityFragmentDoc = gql`
@@ -835,6 +848,20 @@ export const ClientActivityLogFragmentDoc = gql`
   date
   minutesAllocated
   description
+}
+    `;
+export const ClientCoreFragmentDoc = gql`
+    fragment ClientCore on ClientType {
+  uuid
+  name
+  description
+  programManager {
+    uuid
+    name
+  }
+  cui
+  spvUsername
+  spvPassword
 }
     `;
 export const ClientUserFragmentDoc = gql`
@@ -1716,14 +1743,6 @@ export const ClientDocument = gql`
     query Client($uuid: String!) {
   client(uuid: $uuid) {
     ...Client
-    clientSolutions {
-      uuid
-      solution {
-        uuid
-      }
-      unitCost
-      unitCostCurrency
-    }
   }
 }
     ${ClientFragmentDoc}`;
@@ -1763,10 +1782,10 @@ export type ClientQueryResult = Apollo.QueryResult<ClientQuery, ClientQueryVaria
 export const ClientsDocument = gql`
     query Clients {
   clients {
-    ...Client
+    ...ClientCore
   }
 }
-    ${ClientFragmentDoc}`;
+    ${ClientCoreFragmentDoc}`;
 
 /**
  * __useClientsQuery__

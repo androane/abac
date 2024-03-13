@@ -181,6 +181,9 @@ class ClientSolution(BaseModel):
     unit_cost = models.IntegerField(help_text="Cost/Price of the Solution")
     unit_cost_currency = models.CharField(max_length=3, choices=CurrencyEnum.choices)
 
+    def __str__(self):
+        return f"{self.client.name} - {self.solution.name}"
+
 
 class ClientActivityLog(ActivityLog):
     client_activity = models.ForeignKey(

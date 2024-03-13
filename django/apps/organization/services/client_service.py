@@ -44,12 +44,16 @@ def update_or_create_client(org: Organization, client_input: ClientInput) -> Cli
     client.client_solutions.exclude(uuid__in=input_client_solution_uuids).delete()
 
     for client_solution_input in client_input.client_solutions:
-        if not client_solution_input.solution_uuid:
+        # These are optional fields in the frontend for now
+        if (
+            not client_solution_input.solution_uuid
+            or not client_solution_input.unit_cost
+        ):
             continue
         solution = Solution.objects.get(uuid=client_solution_input.solution_uuid)
         if client_solution_input.uuid:
             client.client_solutions.filter(
-                solution, uuid=client_solution_input.uuid
+                solution=solution, uuid=client_solution_input.uuid
             ).update(
                 unit_cost=client_solution_input.unit_cost,
                 unit_cost_currency=client_solution_input.unit_cost_currency,

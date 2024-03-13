@@ -187,8 +187,8 @@ class ActivityInput(graphene.InputObjectType):
 class ClientSolutionInput(graphene.InputObjectType):
     uuid = graphene.String()
     solution_uuid = graphene.String()
-    unit_cost = graphene.Int(required=True)
-    unit_cost_currency = CurrencyEnumType(required=True)
+    unit_cost = graphene.Int()
+    unit_cost_currency = CurrencyEnumType()
 
 
 class ClientInput(graphene.InputObjectType):

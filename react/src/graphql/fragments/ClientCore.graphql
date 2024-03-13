@@ -1,0 +1,12 @@
+fragment ClientCore on ClientType {
+  uuid
+  name
+  description
+  programManager {
+    uuid
+    name
+  }
+  cui
+  spvUsername
+  spvPassword
+}

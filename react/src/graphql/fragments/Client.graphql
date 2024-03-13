@@ -9,4 +9,15 @@ fragment Client on ClientType {
   cui
   spvUsername
   spvPassword
+  clientSolutions {
+    uuid
+    solution {
+      category {
+        code
+      }
+      uuid
+    }
+    unitCost
+    unitCostCurrency
+  }
 }

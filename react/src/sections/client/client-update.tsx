@@ -56,13 +56,24 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
       spvUsername: client?.spvUsername,
       spvPassword: client?.spvPassword,
       cui: client?.cui,
-      clientSolutions:
-        client?.clientSolutions.map(cs => ({
-          uuid: cs.uuid,
-          solutionUuid: cs.solution.uuid,
-          unitCost: cs.unitCost,
-          unitCostCurrency: cs.unitCostCurrency,
-        })) || [],
+      // clientSolutions:
+      //   client?.clientSolutions.map(cs => ({
+      //     uuid: cs.uuid,
+      //     solutionUuid: cs.solution.uuid,
+      //     unitCost: cs.unitCost,
+      //     unitCostCurrency: cs.unitCostCurrency,
+      //   })) || [],
+      clientSolutions: CATEGORY_CODES.map(categoryCode => {
+        const clientSolution = client?.clientSolutions.find(
+          cs => cs.solution.category.code === categoryCode,
+        )
+        return {
+          uuid: clientSolution?.uuid,
+          solutionUuid: clientSolution?.solution.uuid,
+          unitCost: clientSolution?.unitCost,
+          unitCostCurrency: clientSolution?.unitCostCurrency || CurrencyEnum.RON,
+        }
+      }),
     }),
     [client, user],
   )
@@ -82,11 +93,9 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
             Yup.object({
               uuid: Yup.string(),
               solutionUuid: Yup.string(),
-              unitCost: Yup.number().required(REQUIRED_FIELD_ERROR),
-              unitCostCurrency: Yup.mixed<CurrencyEnum>()
-                .oneOf(Object.values(CurrencyEnum))
-                .required(REQUIRED_FIELD_ERROR),
-            }).nullable(),
+              unitCost: Yup.number(),
+              unitCostCurrency: Yup.mixed<CurrencyEnum>().oneOf(Object.values(CurrencyEnum)),
+            }),
           )
           .required(REQUIRED_FIELD_ERROR),
       }),
