@@ -4,6 +4,7 @@ fragment Solution on SolutionType {
   category {
     uuid
     code
+    name
   }
   activities {
     uuid

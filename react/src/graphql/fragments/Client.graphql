@@ -12,10 +12,13 @@ fragment Client on ClientType {
   clientSolutions {
     uuid
     solution {
-      category {
-        code
-      }
       uuid
+      name
+      category {
+        uuid
+        code
+        name
+      }
     }
     unitCost
     unitCostCurrency

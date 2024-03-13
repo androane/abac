@@ -22,6 +22,7 @@ import {
   useOrganizationActivitiesQuery,
   useClientActivitiesQuery,
   useDeleteClientActivityMutation,
+  UnitCostTypeEnum,
 } from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import ActivityTableFiltersResult from 'sections/settings/activity-table-filters-result'
@@ -230,7 +231,23 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
 
   return (
     <ResponseHandler {...clientActivitiesResult}>
-      {({ clientActivities }) => {
+      {({ clientActivities, client }) => {
+        const solutionActivities = client.clientSolutions.map(cs => {
+          return {
+            uuid: cs.uuid,
+            name: cs.solution.name,
+            clientActivityUuid: cs.uuid,
+            activityUuid: cs.solution.uuid,
+            category: cs.solution.category,
+            description: '',
+            unitCost: cs.unitCost,
+            unitCostCurrency: cs.unitCostCurrency,
+            unitCostType: UnitCostTypeEnum.FIXED,
+            isCustom: true,
+            isExecuted: true,
+            isSolutionActivity: true,
+          }
+        })
         return (
           <ResponseHandler {...activitiesResult}>
             {({ organization }) => {
@@ -248,6 +265,7 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
                     clientActivityUuid: clientActivity.uuid,
                     isExecuted: clientActivity.isExecuted,
                     isCustom: false,
+                    isSolutionActivity: false,
                   }
                 }
 
@@ -256,6 +274,7 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
                   activityUuid: organizationActivity.uuid,
                   isExecuted: false,
                   isCustom: false,
+                  isSolutionActivity: false,
                 }
               })
 
@@ -273,12 +292,17 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
                   clientActivityUuid: clientActivity.uuid,
                   isExecuted: clientActivity.isExecuted,
                   isCustom: true,
+                  isSolutionActivity: false,
                 }))
 
               return (
                 <ActivityListCard
                   clientUuid={clientId}
-                  activities={[...organizationActivities, ...customActivities]}
+                  activities={[
+                    ...solutionActivities,
+                    ...organizationActivities,
+                    ...customActivities,
+                  ]}
                   date={date}
                   onChangeDate={setDate}
                 />

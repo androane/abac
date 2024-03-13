@@ -5,4 +5,7 @@ query ClientActivities($clientUuid: String!, $year: Int, $month: Int) {
       ...Activity
     }
   }
+  client(uuid: $clientUuid) {
+    ...Client
+  }
 }

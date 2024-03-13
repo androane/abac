@@ -24,6 +24,7 @@ export type ClientActivityTableFilters = {
 export type ClientActivityType = ActivityType & {
   isExecuted: boolean
   isCustom: boolean
+  isSolutionActivity: boolean
   activityUuid: string
   clientActivityUuid?: string
 }

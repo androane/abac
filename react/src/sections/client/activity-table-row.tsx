@@ -100,7 +100,7 @@ const ActivityTableRow: React.FC<Props> = ({
 
   return (
     <>
-      <TableRow hover>
+      <TableRow selected={row.isSolutionActivity}>
         <TableCell style={{ width: 150 }}>
           <Switch
             checked={row.isExecuted}
@@ -111,7 +111,7 @@ const ActivityTableRow: React.FC<Props> = ({
                 handleOnAddClientActivity()
               }
             }}
-            disabled={loadingToggle || loadingAdd}
+            disabled={loadingToggle || loadingAdd || row.isSolutionActivity}
             color="primary"
           />
           {row.clientActivityUuid && row.isExecuted && (
@@ -120,7 +120,14 @@ const ActivityTableRow: React.FC<Props> = ({
             </IconButton>
           )}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }} onClick={onEditRow}>
+        <TableCell
+          sx={{ whiteSpace: 'nowrap' }}
+          onClick={() => {
+            if (!row.isSolutionActivity) {
+              onEditRow()
+            }
+          }}
+        >
           <ListItemText
             primary={row.name}
             secondary=""
