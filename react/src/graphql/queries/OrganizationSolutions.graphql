@@ -1,6 +1,5 @@
 query OrganizationSolutions {
   organization {
-    uuid
     solutions {
       ...Solution
     }

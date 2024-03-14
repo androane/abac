@@ -11,10 +11,12 @@ mutation UpdateClientActivity(
     error {
       ...Error
     }
-    clientActivity {
-      ...ClientActivity
-      activity {
-        ...Activity
+    client {
+      clientActivity {
+        ...ClientActivity
+        activity {
+          ...Activity
+        }
       }
     }
   }

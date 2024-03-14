@@ -1,6 +1,5 @@
 query ClientUsers($clientUuid: String!) {
   client(uuid: $clientUuid) {
-    uuid
     users {
       ...ClientUser
     }

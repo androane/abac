@@ -1,6 +1,5 @@
 query ClientFiles($clientUuid: String!) {
   client(uuid: $clientUuid) {
-    uuid
     files {
       ...File
     }

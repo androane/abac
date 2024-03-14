@@ -162,8 +162,8 @@ export default function UserListView({ clientId }: Props) {
 
   return (
     <ResponseHandler {...result}>
-      {({ clientUsers }) => {
-        return <UserListCard clientId={clientId} users={clientUsers} />
+      {({ client }) => {
+        return <UserListCard clientId={clientId} users={client.users} />
       }}
     </ResponseHandler>
   )

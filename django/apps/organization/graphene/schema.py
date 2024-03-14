@@ -18,15 +18,9 @@ from organization.graphene.mutations import (
     UpdateOrganizationActivity,
     UpdateOrganizationSolution,
 )
-from organization.graphene.types import (
-    ClientActivityType,
-    ClientType,
-    InvoiceType,
-    OrganizationType,
-)
+from organization.graphene.types import ClientType, InvoiceType, OrganizationType
 from organization.services.client_invoice_service import get_client_invoice
 from organization.services.client_service import get_client
-from organization.services.client_solution_service import get_client_solution
 from user.decorators import logged_in_user_required
 from user.models import User
 
@@ -43,12 +37,6 @@ class Query(graphene.ObjectType):
         graphene.NonNull(ClientType),
         description="Get a Client",
         uuid=graphene.String(required=True),
-    )
-    client_activity = graphene.Field(
-        ClientActivityType,
-        description="Get a single Client Activity",
-        client_activity_uuid=graphene.String(required=True),
-        required=True,
     )
     client_invoice = graphene.Field(
         graphene.NonNull(InvoiceType),
@@ -68,10 +56,6 @@ class Query(graphene.ObjectType):
     @logged_in_user_required
     def resolve_client_invoice(info, user: User, **kwargs):
         return get_client_invoice(user.organization, **kwargs)
-
-    @logged_in_user_required
-    def resolve_client_solution(info, user: User, **kwargs):
-        return get_client_solution(user.organization, **kwargs)
 
 
 class Mutation(graphene.ObjectType):
