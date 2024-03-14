@@ -1,0 +1,9 @@
+query ClientSolutionLogs($clientUuid: String!, $clientSolutionUuid: String!) {
+  client(uuid: $clientUuid) {
+    clientSolution(uuid: $clientSolutionUuid) {
+      logs {
+        ...ClientSolutionLog
+      }
+    }
+  }
+}

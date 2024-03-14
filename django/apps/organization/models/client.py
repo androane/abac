@@ -178,11 +178,22 @@ class ClientSolution(BaseModel):
     )
     solution = models.ForeignKey(Solution, on_delete=models.CASCADE)
 
+    month = models.SmallIntegerField(
+        help_text="Month of the Solution", null=True, blank=True
+    )
+    year = models.SmallIntegerField(
+        help_text="Year of the Solution", null=True, blank=True
+    )
+
     unit_cost = models.IntegerField(help_text="Cost/Price of the Solution")
     unit_cost_currency = models.CharField(max_length=3, choices=CurrencyEnum.choices)
 
     def __str__(self):
-        return f"{self.client.name} - {self.solution.name}"
+        if self.month:
+            prefix = f"{self.month}.{self.year}"
+        else:
+            prefix = "GLOBAL"
+        return f"{prefix} : {self.client.name} - {self.solution.name}"
 
 
 class ClientActivityLog(ActivityLog):

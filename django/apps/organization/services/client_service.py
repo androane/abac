@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth import get_user_model
-from django.db.models import QuerySet
 
 from organization.graphene.types import ClientInput
 from organization.models import Client, ClientSolution, Organization
 from organization.models.activity import Solution
-
-
-def get_clients(org: Organization) -> QuerySet[Client]:
-    return org.clients.order_by("name").all()
 
 
 def get_client(org: Organization, uuid: str) -> Client:

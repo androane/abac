@@ -1,27 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth import get_user_model
-from django.db.models import QuerySet
 
 from organization.graphene.types import ClientUserInput
 from organization.models import Client, ClientUserProfile, Organization
 from user.models import User
-
-
-def get_client_program_managers(org: Organization) -> QuerySet[User]:
-    return (
-        get_user_model()
-        .objects.filter(organization=org, is_staff=False, client__isnull=True)
-        .exclude(email="mihai.zamfir90@gmail.com")
-        .order_by("first_name", "last_name")
-    )
-
-
-def get_client_users(org: Organization, client_uuid: str) -> QuerySet[User]:
-    client = Client.objects.get(
-        uuid=client_uuid,
-        organization=org,
-    )
-    return client.users.all()
 
 
 def update_client_user(

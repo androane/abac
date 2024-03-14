@@ -1,8 +1,10 @@
-query ClientActivityLogs($clientActivityUuid: String!) {
-  clientActivity(clientActivityUuid: $clientActivityUuid) {
-    uuid
-    logs {
-      ...ClientActivityLog
+query ClientActivityLogs($clientUuid: String!, $clientActivityUuid: String!) {
+  client(uuid: $clientUuid) {
+    clientActivity(uuid: $clientActivityUuid) {
+      uuid
+      logs {
+        ...ClientActivityLog
+      }
     }
   }
 }

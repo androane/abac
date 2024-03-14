@@ -20,24 +20,14 @@ from organization.graphene.mutations import (
 )
 from organization.graphene.types import (
     ClientActivityType,
-    ClientFileType,
     ClientType,
     InvoiceType,
     OrganizationType,
 )
-from organization.services.client_activity_service import (
-    get_client_activities,
-    get_client_activity,
-)
-from organization.services.client_files_service import get_client_files
 from organization.services.client_invoice_service import get_client_invoice
-from organization.services.client_service import get_client, get_clients
-from organization.services.client_users_service import (
-    get_client_program_managers,
-    get_client_users,
-)
+from organization.services.client_service import get_client
+from organization.services.client_solution_service import get_client_solution
 from user.decorators import logged_in_user_required
-from user.graphene.types import UserType
 from user.models import User
 
 
@@ -48,11 +38,6 @@ class Query(graphene.ObjectType):
     organization = graphene.Field(
         graphene.NonNull(OrganizationType),
         description="Get an Organization",
-    )
-    clients = graphene.List(
-        graphene.NonNull(ClientType),
-        required=True,
-        description="List all Clients",
     )
     client = graphene.Field(
         graphene.NonNull(ClientType),
@@ -65,36 +50,11 @@ class Query(graphene.ObjectType):
         client_activity_uuid=graphene.String(required=True),
         required=True,
     )
-    client_activities = graphene.List(
-        graphene.NonNull(ClientActivityType),
-        description="List all Client Activities",
-        client_uuid=graphene.String(required=True),
-        month=graphene.Int(),
-        year=graphene.Int(),
-        required=True,
-    )
     client_invoice = graphene.Field(
         graphene.NonNull(InvoiceType),
         client_uuid=graphene.String(required=True),
         month=graphene.Int(),
         year=graphene.Int(),
-    )
-    client_files = graphene.List(
-        graphene.NonNull(ClientFileType),
-        description="List all files of a Client",
-        client_uuid=graphene.String(required=True),
-        required=True,
-    )
-    client_program_managers = graphene.List(
-        graphene.NonNull(UserType),
-        description="List all Program Managers",
-        required=True,
-    )
-    client_users = graphene.List(
-        graphene.NonNull(UserType),
-        description="List all Client Users",
-        client_uuid=graphene.String(required=True),
-        required=True,
     )
 
     @logged_in_user_required
@@ -102,36 +62,16 @@ class Query(graphene.ObjectType):
         return user.organization
 
     @logged_in_user_required
-    def resolve_clients(info, user: User, **kwargs):
-        return get_clients(user.organization, **kwargs)
-
-    @logged_in_user_required
     def resolve_client(info, user: User, **kwargs):
         return get_client(user.organization, **kwargs)
-
-    @logged_in_user_required
-    def resolve_client_activity(info, user: User, **kwargs):
-        return get_client_activity(user.organization, **kwargs)
-
-    @logged_in_user_required
-    def resolve_client_activities(info, user: User, **kwargs):
-        return get_client_activities(user.organization, **kwargs)
 
     @logged_in_user_required
     def resolve_client_invoice(info, user: User, **kwargs):
         return get_client_invoice(user.organization, **kwargs)
 
     @logged_in_user_required
-    def resolve_client_files(info, user: User, **kwargs):
-        return get_client_files(user.organization, **kwargs)
-
-    @logged_in_user_required
-    def resolve_client_program_managers(info, user: User, **kwargs):
-        return get_client_program_managers(user.organization)
-
-    @logged_in_user_required
-    def resolve_client_users(info, user: User, **kwargs):
-        return get_client_users(user.organization, **kwargs)
+    def resolve_client_solution(info, user: User, **kwargs):
+        return get_client_solution(user.organization, **kwargs)
 
 
 class Mutation(graphene.ObjectType):

@@ -25,8 +25,8 @@ import {
 
 import ResponseHandler from 'components/response-handler'
 import {
-  useClientProgramManagersQuery,
-  useClientsQuery,
+  useOrganizationProgramManagersQuery,
+  useOrganizationClientsQuery,
   useDeleteClientMutation,
 } from 'generated/graphql'
 import { useRouter } from 'routes/hooks'
@@ -47,7 +47,7 @@ type Props = {
 
 const ClientListCard: React.FC<Props> = ({ clients }) => {
   const [deleteClient, { loading }] = useDeleteClientMutation()
-  const result = useClientProgramManagersQuery()
+  const result = useOrganizationProgramManagersQuery()
 
   const { enqueueSnackbar } = useSnackbar()
   const [tableData, setTableData] = useState(clients)
@@ -126,11 +126,11 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
   return (
     <Card>
       <ResponseHandler {...result}>
-        {({ clientProgramManagers }) => {
+        {({ organization }) => {
           return (
             <ClientTableToolbar
               filters={filters}
-              programManagers={clientProgramManagers.map(programManager => ({
+              programManagers={organization.programManagers.map(programManager => ({
                 id: programManager.uuid,
                 label: programManager.name,
               }))}
@@ -207,7 +207,7 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
 
 const ClientListView = () => {
   const settings = useSettingsContext()
-  const result = useClientsQuery()
+  const result = useOrganizationClientsQuery()
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -224,8 +224,8 @@ const ClientListView = () => {
       />
 
       <ResponseHandler {...result}>
-        {({ clients }) => {
-          return <ClientListCard clients={clients} />
+        {({ organization }) => {
+          return <ClientListCard clients={organization.clients} />
         }}
       </ResponseHandler>
     </Container>

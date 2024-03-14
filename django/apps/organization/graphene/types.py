@@ -2,7 +2,6 @@
 import os
 
 import graphene
-from django.contrib.auth import get_user_model
 from graphene_django import DjangoObjectType
 from graphene_file_upload.scalars import Upload
 
@@ -25,6 +24,7 @@ from organization.models import (
     Organization,
     Solution,
 )
+from organization.models.client import ClientSolutionLog
 from user.graphene.types import UserType
 
 CurrencyEnumType = graphene.Enum.from_enum(CurrencyEnum)
@@ -109,27 +109,15 @@ class ClientActivityType(DjangoObjectType):
         return info.context.logs_from_client_activity.load(self.id)
 
 
-class OrganizationType(DjangoObjectType):
+class ClientSolutionLogType(DjangoObjectType):
     class Meta:
-        model = Organization
+        model = ClientSolutionLog
         only_fields = (
             "uuid",
-            "name",
+            "date",
+            "minutes_allocated",
+            "description",
         )
-
-    solutions = graphene.List(graphene.NonNull(SolutionType), required=True)
-    activities = graphene.List(graphene.NonNull(ActivityType), required=True)
-    logo_url = graphene.NonNull(graphene.String)
-
-    def resolve_logo_url(self, info):
-        if self.logo:
-            return self.logo.url
-
-    def resolve_solutions(self, info, **kwargs):
-        return self.solutions.all()
-
-    def resolve_activities(self, info, **kwargs):
-        return self.activities.filter(client__isnull=True).all()
 
 
 class ClientSolutionType(DjangoObjectType):
@@ -143,6 +131,10 @@ class ClientSolutionType(DjangoObjectType):
         )
 
     unit_cost_currency = CurrencyEnumType(required=True)
+    logs = graphene.List(graphene.NonNull(ClientSolutionLogType), required=True)
+
+    def resolve_logs(self, info, **kwargs):
+        return info.context.logs_from_client_activity.load(self.id)
 
 
 class TotalByCurrencyType(graphene.ObjectType):
@@ -252,24 +244,87 @@ class ClientType(DjangoObjectType):
 
     files = graphene.List(graphene.NonNull(ClientFileType), required=True)
     users = graphene.List(graphene.NonNull(UserType), required=True)
-    activities = graphene.List(graphene.NonNull(ClientActivityType), required=True)
+    client_activity = graphene.NonNull(
+        ClientActivityType, uuid=graphene.String(required=True)
+    )
+    client_activities = graphene.List(
+        graphene.NonNull(ClientActivityType),
+        month=graphene.Int(),
+        year=graphene.Int(),
+        required=True,
+    )
+    client_solution = graphene.NonNull(
+        ClientSolutionType, uuid=graphene.String(required=True)
+    )
     client_solutions = graphene.List(
-        graphene.NonNull(ClientSolutionType), required=True
+        graphene.NonNull(ClientSolutionType),
+        month=graphene.Int(),
+        year=graphene.Int(),
+        required=True,
     )
 
     def resolve_files(self, info, **kwargs):
-        return self.files.all()
+        return self.files.order_by("-created").all()
 
     def resolve_users(self, info, **kwargs):
-        return get_user_model().objects.filter(
-            organization=info.contenxt.user.organization, client_profile=self
-        )
+        return self.users.all()
 
-    def resolve_activities(self, info, **kwargs):
-        return ClientActivity.objects.filter(client=self).all()
+    def resolve_client_activity(self, info, **kwargs):
+        return self.client_activities.get(uuid=kwargs.get("uuid"))
+
+    def resolve_client_solution(self, info, **kwargs):
+        return self.client_solutions.get(uuid=kwargs.get("uuid"))
+
+    def resolve_client_activities(self, info, **kwargs):
+        if kwargs.get("month") and kwargs.get("year"):
+            return self.client_activities.filter(
+                month=kwargs.get("month"),
+                year=kwargs.get("year"),
+            )
+        return self.client_activities.all()
 
     def resolve_client_solutions(self, info, **kwargs):
+        if kwargs.get("month") and kwargs.get("year"):
+            return self.client_solutions.filter(
+                month=kwargs.get("month"),
+                year=kwargs.get("year"),
+            )
         return self.client_solutions.all()
+
+
+class OrganizationType(DjangoObjectType):
+    class Meta:
+        model = Organization
+        only_fields = (
+            "uuid",
+            "name",
+        )
+
+    solutions = graphene.List(graphene.NonNull(SolutionType), required=True)
+    activities = graphene.List(graphene.NonNull(ActivityType), required=True)
+    logo_url = graphene.NonNull(graphene.String)
+    clients = graphene.NonNull(graphene.List(graphene.NonNull(ClientType)))
+    program_managers = graphene.NonNull(graphene.List(graphene.NonNull(UserType)))
+
+    def resolve_clients(self, info, **kwargs):
+        return self.clients.order_by("name").all()
+
+    def resolve_logo_url(self, info):
+        if self.logo:
+            return self.logo.url
+
+    def resolve_program_managers(self, info, **kwargs):
+        return (
+            self.users.filter(client__isnull=True)
+            .exclude(email="mihai.zamfir90@gmail.com")
+            .order_by("first_name", "last_name")
+        )
+
+    def resolve_solutions(self, info, **kwargs):
+        return self.solutions.all()
+
+    def resolve_activities(self, info, **kwargs):
+        return self.activities.filter(client__isnull=True).all()
 
 
 class ClientUserProfileType(DjangoObjectType):

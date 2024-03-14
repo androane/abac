@@ -16,6 +16,7 @@ import {
 import { useBoolean } from 'hooks/use-boolean'
 import React from 'react'
 import { ClientActivityType } from 'sections/client/types'
+import { action, info } from 'theme/palette'
 import { getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
 
 type Props = {
@@ -100,18 +101,21 @@ const ActivityTableRow: React.FC<Props> = ({
 
   return (
     <>
-      <TableRow selected={row.isSolutionActivity}>
+      <TableRow
+        sx={{ backgroundColor: row.isSolutionActivity ? action.selected : info.contrastText }}
+      >
         <TableCell style={{ width: 150 }}>
           <Switch
             checked={row.isExecuted}
             onChange={() => {
+              if (row.isSolutionActivity) return
               if (row.clientActivityUuid) {
                 handleToggleClientActivity(row.clientActivityUuid)
               } else {
                 handleOnAddClientActivity()
               }
             }}
-            disabled={loadingToggle || loadingAdd || row.isSolutionActivity}
+            disabled={loadingToggle || loadingAdd}
             color="primary"
           />
           {row.clientActivityUuid && row.isExecuted && (

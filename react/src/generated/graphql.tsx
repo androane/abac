@@ -125,8 +125,20 @@ export type ClientSolutionInput = {
   uuid?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type ClientSolutionLogType = {
+  __typename?: 'ClientSolutionLogType';
+  /** Date when the activity was executed */
+  date: Scalars['Date']['output'];
+  /** Optional explanation for the log */
+  description?: Maybe<Scalars['String']['output']>;
+  /** Number of minutes allocated for this activity */
+  minutesAllocated: Scalars['Int']['output'];
+  uuid: Scalars['String']['output'];
+};
+
 export type ClientSolutionType = {
   __typename?: 'ClientSolutionType';
+  logs: Array<ClientSolutionLogType>;
   solution: SolutionType;
   /** Cost/Price of the Solution */
   unitCost: Scalars['Int']['output'];
@@ -136,7 +148,9 @@ export type ClientSolutionType = {
 
 export type ClientType = {
   __typename?: 'ClientType';
-  activities: Array<ClientActivityType>;
+  clientActivities: Array<ClientActivityType>;
+  clientActivity: ClientActivityType;
+  clientSolution: ClientSolutionType;
   clientSolutions: Array<ClientSolutionType>;
   /** CUI - Cod Unic de Identificare */
   cui?: Maybe<Scalars['String']['output']>;
@@ -150,6 +164,28 @@ export type ClientType = {
   spvUsername?: Maybe<Scalars['String']['output']>;
   users: Array<UserType>;
   uuid: Scalars['String']['output'];
+};
+
+
+export type ClientTypeClientActivitiesArgs = {
+  month?: InputMaybe<Scalars['Int']['input']>;
+  year?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type ClientTypeClientActivityArgs = {
+  uuid: Scalars['String']['input'];
+};
+
+
+export type ClientTypeClientSolutionArgs = {
+  uuid: Scalars['String']['input'];
+};
+
+
+export type ClientTypeClientSolutionsArgs = {
+  month?: InputMaybe<Scalars['Int']['input']>;
+  year?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type ClientUserInput = {
@@ -405,8 +441,10 @@ export type MutationUpdateOrganizationSolutionArgs = {
 export type OrganizationType = {
   __typename?: 'OrganizationType';
   activities: Array<ActivityType>;
+  clients: Array<ClientType>;
   logoUrl: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  programManagers: Array<UserType>;
   solutions: Array<SolutionType>;
   uuid: Scalars['String']['output'];
 };
@@ -415,19 +453,9 @@ export type Query = {
   __typename?: 'Query';
   /** Get a Client */
   client: ClientType;
-  /** List all Client Activities */
-  clientActivities: Array<ClientActivityType>;
   /** Get a single Client Activity */
   clientActivity: ClientActivityType;
-  /** List all files of a Client */
-  clientFiles: Array<ClientFileType>;
   clientInvoice: InvoiceType;
-  /** List all Program Managers */
-  clientProgramManagers: Array<UserType>;
-  /** List all Client Users */
-  clientUsers: Array<UserType>;
-  /** List all Clients */
-  clients: Array<ClientType>;
   currentUser: UserType;
   /** Get an Organization */
   organization: OrganizationType;
@@ -441,20 +469,8 @@ export type QueryClientArgs = {
 };
 
 
-export type QueryClientActivitiesArgs = {
-  clientUuid: Scalars['String']['input'];
-  month?: InputMaybe<Scalars['Int']['input']>;
-  year?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
 export type QueryClientActivityArgs = {
   clientActivityUuid: Scalars['String']['input'];
-};
-
-
-export type QueryClientFilesArgs = {
-  clientUuid: Scalars['String']['input'];
 };
 
 
@@ -462,11 +478,6 @@ export type QueryClientInvoiceArgs = {
   clientUuid: Scalars['String']['input'];
   month?: InputMaybe<Scalars['Int']['input']>;
   year?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryClientUsersArgs = {
-  clientUuid: Scalars['String']['input'];
 };
 
 export type SolutionInput = {
@@ -567,6 +578,8 @@ export type ClientActivityFragment = { __typename?: 'ClientActivityType', uuid: 
 export type ClientActivityLogFragment = { __typename?: 'ClientActivityLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null };
 
 export type ClientCoreFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
+
+export type ClientSolutionLogFragment = { __typename?: 'ClientSolutionLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null };
 
 export type ClientUserFragment = { __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string } };
 
@@ -723,14 +736,15 @@ export type ClientActivitiesQueryVariables = Exact<{
 }>;
 
 
-export type ClientActivitiesQuery = { __typename?: 'Query', clientActivities: Array<{ __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }>, client: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, clientSolutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost: number, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> } };
+export type ClientActivitiesQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, clientActivities: Array<{ __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }>, clientSolutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost: number, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> } };
 
 export type ClientActivityLogsQueryVariables = Exact<{
+  clientUuid: Scalars['String']['input'];
   clientActivityUuid: Scalars['String']['input'];
 }>;
 
 
-export type ClientActivityLogsQuery = { __typename?: 'Query', clientActivity: { __typename?: 'ClientActivityType', uuid: string, logs: Array<{ __typename?: 'ClientActivityLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } };
+export type ClientActivityLogsQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', clientActivity: { __typename?: 'ClientActivityType', uuid: string, logs: Array<{ __typename?: 'ClientActivityLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } } };
 
 export type ClientQueryVariables = Exact<{
   uuid: Scalars['String']['input'];
@@ -738,11 +752,6 @@ export type ClientQueryVariables = Exact<{
 
 
 export type ClientQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, clientSolutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost: number, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> } };
-
-export type ClientsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type ClientsQuery = { __typename?: 'Query', clients: Array<{ __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null }> };
 
 export type ClientFilesQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -760,22 +769,35 @@ export type ClientInvoiceQueryVariables = Exact<{
 
 export type ClientInvoiceQuery = { __typename?: 'Query', clientInvoice: { __typename?: 'InvoiceType', uuid: string, month: number, year: number, dateSent?: DateString | null, totalsByCurrency: Array<{ __typename?: 'TotalByCurrencyType', currency: CurrencyEnum, total: number }> } };
 
-export type ClientProgramManagersQueryVariables = Exact<{ [key: string]: never; }>;
+export type ClientSolutionLogsQueryVariables = Exact<{
+  clientUuid: Scalars['String']['input'];
+  clientSolutionUuid: Scalars['String']['input'];
+}>;
 
 
-export type ClientProgramManagersQuery = { __typename?: 'Query', clientProgramManagers: Array<{ __typename?: 'UserType', uuid: string, name: string, email: string }> };
+export type ClientSolutionLogsQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', clientSolution: { __typename?: 'ClientSolutionType', logs: Array<{ __typename?: 'ClientSolutionLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } } };
 
 export type ClientUsersQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
 }>;
 
 
-export type ClientUsersQuery = { __typename?: 'Query', clientUsers: Array<{ __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string } }> };
+export type ClientUsersQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, users: Array<{ __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string } }> } };
 
 export type OrganizationActivitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type OrganizationActivitiesQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } }> } };
+
+export type OrganizationClientsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type OrganizationClientsQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, clients: Array<{ __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null }> } };
+
+export type OrganizationProgramManagersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type OrganizationProgramManagersQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, programManagers: Array<{ __typename?: 'UserType', uuid: string, name: string, email: string }> } };
 
 export type OrganizationSolutionsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -865,6 +887,14 @@ export const ClientCoreFragmentDoc = gql`
   cui
   spvUsername
   spvPassword
+}
+    `;
+export const ClientSolutionLogFragmentDoc = gql`
+    fragment ClientSolutionLog on ClientSolutionLogType {
+  uuid
+  date
+  minutesAllocated
+  description
 }
     `;
 export const ClientUserFragmentDoc = gql`
@@ -1656,19 +1686,32 @@ export type CurrentUserSuspenseQueryHookResult = ReturnType<typeof useCurrentUse
 export type CurrentUserQueryResult = Apollo.QueryResult<CurrentUserQuery, CurrentUserQueryVariables>;
 export const ClientActivitiesDocument = gql`
     query ClientActivities($clientUuid: String!, $year: Int, $month: Int) {
-  clientActivities(clientUuid: $clientUuid, year: $year, month: $month) {
-    ...ClientActivity
-    activity {
-      ...Activity
-    }
-  }
   client(uuid: $clientUuid) {
-    ...Client
+    uuid
+    clientActivities(year: $year, month: $month) {
+      ...ClientActivity
+      activity {
+        ...Activity
+      }
+    }
+    clientSolutions(year: $year, month: $month) {
+      uuid
+      solution {
+        uuid
+        name
+        category {
+          uuid
+          code
+          name
+        }
+      }
+      unitCost
+      unitCostCurrency
+    }
   }
 }
     ${ClientActivityFragmentDoc}
-${ActivityFragmentDoc}
-${ClientFragmentDoc}`;
+${ActivityFragmentDoc}`;
 
 /**
  * __useClientActivitiesQuery__
@@ -1705,11 +1748,13 @@ export type ClientActivitiesLazyQueryHookResult = ReturnType<typeof useClientAct
 export type ClientActivitiesSuspenseQueryHookResult = ReturnType<typeof useClientActivitiesSuspenseQuery>;
 export type ClientActivitiesQueryResult = Apollo.QueryResult<ClientActivitiesQuery, ClientActivitiesQueryVariables>;
 export const ClientActivityLogsDocument = gql`
-    query ClientActivityLogs($clientActivityUuid: String!) {
-  clientActivity(clientActivityUuid: $clientActivityUuid) {
-    uuid
-    logs {
-      ...ClientActivityLog
+    query ClientActivityLogs($clientUuid: String!, $clientActivityUuid: String!) {
+  client(uuid: $clientUuid) {
+    clientActivity(uuid: $clientActivityUuid) {
+      uuid
+      logs {
+        ...ClientActivityLog
+      }
     }
   }
 }
@@ -1727,6 +1772,7 @@ export const ClientActivityLogsDocument = gql`
  * @example
  * const { data, loading, error } = useClientActivityLogsQuery({
  *   variables: {
+ *      clientUuid: // value for 'clientUuid'
  *      clientActivityUuid: // value for 'clientActivityUuid'
  *   },
  * });
@@ -1787,45 +1833,6 @@ export type ClientQueryHookResult = ReturnType<typeof useClientQuery>;
 export type ClientLazyQueryHookResult = ReturnType<typeof useClientLazyQuery>;
 export type ClientSuspenseQueryHookResult = ReturnType<typeof useClientSuspenseQuery>;
 export type ClientQueryResult = Apollo.QueryResult<ClientQuery, ClientQueryVariables>;
-export const ClientsDocument = gql`
-    query Clients {
-  clients {
-    ...ClientCore
-  }
-}
-    ${ClientCoreFragmentDoc}`;
-
-/**
- * __useClientsQuery__
- *
- * To run a query within a React component, call `useClientsQuery` and pass it any options that fit your needs.
- * When your component renders, `useClientsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useClientsQuery({
- *   variables: {
- *   },
- * });
- */
-export function useClientsQuery(baseOptions?: Apollo.QueryHookOptions<ClientsQuery, ClientsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ClientsQuery, ClientsQueryVariables>(ClientsDocument, options);
-      }
-export function useClientsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ClientsQuery, ClientsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ClientsQuery, ClientsQueryVariables>(ClientsDocument, options);
-        }
-export function useClientsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ClientsQuery, ClientsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<ClientsQuery, ClientsQueryVariables>(ClientsDocument, options);
-        }
-export type ClientsQueryHookResult = ReturnType<typeof useClientsQuery>;
-export type ClientsLazyQueryHookResult = ReturnType<typeof useClientsLazyQuery>;
-export type ClientsSuspenseQueryHookResult = ReturnType<typeof useClientsSuspenseQuery>;
-export type ClientsQueryResult = Apollo.QueryResult<ClientsQuery, ClientsQueryVariables>;
 export const ClientFilesDocument = gql`
     query ClientFiles($clientUuid: String!) {
   client(uuid: $clientUuid) {
@@ -1918,49 +1925,58 @@ export type ClientInvoiceQueryHookResult = ReturnType<typeof useClientInvoiceQue
 export type ClientInvoiceLazyQueryHookResult = ReturnType<typeof useClientInvoiceLazyQuery>;
 export type ClientInvoiceSuspenseQueryHookResult = ReturnType<typeof useClientInvoiceSuspenseQuery>;
 export type ClientInvoiceQueryResult = Apollo.QueryResult<ClientInvoiceQuery, ClientInvoiceQueryVariables>;
-export const ClientProgramManagersDocument = gql`
-    query ClientProgramManagers {
-  clientProgramManagers {
-    ...ProgramManager
+export const ClientSolutionLogsDocument = gql`
+    query ClientSolutionLogs($clientUuid: String!, $clientSolutionUuid: String!) {
+  client(uuid: $clientUuid) {
+    clientSolution(uuid: $clientSolutionUuid) {
+      logs {
+        ...ClientSolutionLog
+      }
+    }
   }
 }
-    ${ProgramManagerFragmentDoc}`;
+    ${ClientSolutionLogFragmentDoc}`;
 
 /**
- * __useClientProgramManagersQuery__
+ * __useClientSolutionLogsQuery__
  *
- * To run a query within a React component, call `useClientProgramManagersQuery` and pass it any options that fit your needs.
- * When your component renders, `useClientProgramManagersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useClientSolutionLogsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useClientSolutionLogsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useClientProgramManagersQuery({
+ * const { data, loading, error } = useClientSolutionLogsQuery({
  *   variables: {
+ *      clientUuid: // value for 'clientUuid'
+ *      clientSolutionUuid: // value for 'clientSolutionUuid'
  *   },
  * });
  */
-export function useClientProgramManagersQuery(baseOptions?: Apollo.QueryHookOptions<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>) {
+export function useClientSolutionLogsQuery(baseOptions: Apollo.QueryHookOptions<ClientSolutionLogsQuery, ClientSolutionLogsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>(ClientProgramManagersDocument, options);
+        return Apollo.useQuery<ClientSolutionLogsQuery, ClientSolutionLogsQueryVariables>(ClientSolutionLogsDocument, options);
       }
-export function useClientProgramManagersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>) {
+export function useClientSolutionLogsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ClientSolutionLogsQuery, ClientSolutionLogsQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>(ClientProgramManagersDocument, options);
+          return Apollo.useLazyQuery<ClientSolutionLogsQuery, ClientSolutionLogsQueryVariables>(ClientSolutionLogsDocument, options);
         }
-export function useClientProgramManagersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>) {
+export function useClientSolutionLogsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ClientSolutionLogsQuery, ClientSolutionLogsQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>(ClientProgramManagersDocument, options);
+          return Apollo.useSuspenseQuery<ClientSolutionLogsQuery, ClientSolutionLogsQueryVariables>(ClientSolutionLogsDocument, options);
         }
-export type ClientProgramManagersQueryHookResult = ReturnType<typeof useClientProgramManagersQuery>;
-export type ClientProgramManagersLazyQueryHookResult = ReturnType<typeof useClientProgramManagersLazyQuery>;
-export type ClientProgramManagersSuspenseQueryHookResult = ReturnType<typeof useClientProgramManagersSuspenseQuery>;
-export type ClientProgramManagersQueryResult = Apollo.QueryResult<ClientProgramManagersQuery, ClientProgramManagersQueryVariables>;
+export type ClientSolutionLogsQueryHookResult = ReturnType<typeof useClientSolutionLogsQuery>;
+export type ClientSolutionLogsLazyQueryHookResult = ReturnType<typeof useClientSolutionLogsLazyQuery>;
+export type ClientSolutionLogsSuspenseQueryHookResult = ReturnType<typeof useClientSolutionLogsSuspenseQuery>;
+export type ClientSolutionLogsQueryResult = Apollo.QueryResult<ClientSolutionLogsQuery, ClientSolutionLogsQueryVariables>;
 export const ClientUsersDocument = gql`
     query ClientUsers($clientUuid: String!) {
-  clientUsers(clientUuid: $clientUuid) {
-    ...ClientUser
+  client(uuid: $clientUuid) {
+    uuid
+    users {
+      ...ClientUser
+    }
   }
 }
     ${ClientUserFragmentDoc}`;
@@ -2039,6 +2055,90 @@ export type OrganizationActivitiesQueryHookResult = ReturnType<typeof useOrganiz
 export type OrganizationActivitiesLazyQueryHookResult = ReturnType<typeof useOrganizationActivitiesLazyQuery>;
 export type OrganizationActivitiesSuspenseQueryHookResult = ReturnType<typeof useOrganizationActivitiesSuspenseQuery>;
 export type OrganizationActivitiesQueryResult = Apollo.QueryResult<OrganizationActivitiesQuery, OrganizationActivitiesQueryVariables>;
+export const OrganizationClientsDocument = gql`
+    query OrganizationClients {
+  organization {
+    uuid
+    clients {
+      ...ClientCore
+    }
+  }
+}
+    ${ClientCoreFragmentDoc}`;
+
+/**
+ * __useOrganizationClientsQuery__
+ *
+ * To run a query within a React component, call `useOrganizationClientsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOrganizationClientsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOrganizationClientsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useOrganizationClientsQuery(baseOptions?: Apollo.QueryHookOptions<OrganizationClientsQuery, OrganizationClientsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<OrganizationClientsQuery, OrganizationClientsQueryVariables>(OrganizationClientsDocument, options);
+      }
+export function useOrganizationClientsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<OrganizationClientsQuery, OrganizationClientsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<OrganizationClientsQuery, OrganizationClientsQueryVariables>(OrganizationClientsDocument, options);
+        }
+export function useOrganizationClientsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<OrganizationClientsQuery, OrganizationClientsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<OrganizationClientsQuery, OrganizationClientsQueryVariables>(OrganizationClientsDocument, options);
+        }
+export type OrganizationClientsQueryHookResult = ReturnType<typeof useOrganizationClientsQuery>;
+export type OrganizationClientsLazyQueryHookResult = ReturnType<typeof useOrganizationClientsLazyQuery>;
+export type OrganizationClientsSuspenseQueryHookResult = ReturnType<typeof useOrganizationClientsSuspenseQuery>;
+export type OrganizationClientsQueryResult = Apollo.QueryResult<OrganizationClientsQuery, OrganizationClientsQueryVariables>;
+export const OrganizationProgramManagersDocument = gql`
+    query OrganizationProgramManagers {
+  organization {
+    uuid
+    programManagers {
+      ...ProgramManager
+    }
+  }
+}
+    ${ProgramManagerFragmentDoc}`;
+
+/**
+ * __useOrganizationProgramManagersQuery__
+ *
+ * To run a query within a React component, call `useOrganizationProgramManagersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOrganizationProgramManagersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOrganizationProgramManagersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useOrganizationProgramManagersQuery(baseOptions?: Apollo.QueryHookOptions<OrganizationProgramManagersQuery, OrganizationProgramManagersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<OrganizationProgramManagersQuery, OrganizationProgramManagersQueryVariables>(OrganizationProgramManagersDocument, options);
+      }
+export function useOrganizationProgramManagersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<OrganizationProgramManagersQuery, OrganizationProgramManagersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<OrganizationProgramManagersQuery, OrganizationProgramManagersQueryVariables>(OrganizationProgramManagersDocument, options);
+        }
+export function useOrganizationProgramManagersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<OrganizationProgramManagersQuery, OrganizationProgramManagersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<OrganizationProgramManagersQuery, OrganizationProgramManagersQueryVariables>(OrganizationProgramManagersDocument, options);
+        }
+export type OrganizationProgramManagersQueryHookResult = ReturnType<typeof useOrganizationProgramManagersQuery>;
+export type OrganizationProgramManagersLazyQueryHookResult = ReturnType<typeof useOrganizationProgramManagersLazyQuery>;
+export type OrganizationProgramManagersSuspenseQueryHookResult = ReturnType<typeof useOrganizationProgramManagersSuspenseQuery>;
+export type OrganizationProgramManagersQueryResult = Apollo.QueryResult<OrganizationProgramManagersQuery, OrganizationProgramManagersQueryVariables>;
 export const OrganizationSolutionsDocument = gql`
     query OrganizationSolutions {
   organization {

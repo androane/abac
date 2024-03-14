@@ -15,27 +15,6 @@ from organization.models import (
 )
 
 
-def get_client_activity(
-    org: Organization,
-    client_activity_uuid: str,
-) -> ClientActivity:
-    return ClientActivity.objects.get(
-        client__organization=org,
-        uuid=client_activity_uuid,
-    )
-
-
-def get_client_activities(
-    org: Organization,
-    client_uuid: str,
-    month: int,
-    year: int,
-) -> list[ClientActivity]:
-    return ClientActivity.objects.filter(
-        month=month, year=year, client__uuid=client_uuid, client__organization=org
-    ).select_related("activity")
-
-
 def update_client_activity(
     org: Organization,
     client_uuid: str,

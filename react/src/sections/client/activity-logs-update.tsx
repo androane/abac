@@ -49,6 +49,7 @@ const LogUpdate: React.FC<{ date: Date }> = ({ date }) => {
       {fields.map((item, index) => {
         return (
           <Stack
+            key={item.id}
             direction={{ xs: 'column', md: 'row' }}
             spacing={2}
             sx={{ width: 1, mb: 5 }}
@@ -214,6 +215,7 @@ const UpdateClientActivityLogs: React.FC<Props> = ({
 }
 
 type ContainerProps = {
+  clientUuid: string
   date: Date
   activityName: string
   clientActivityUuid: string
@@ -221,6 +223,7 @@ type ContainerProps = {
 }
 
 const UpdateClientActivityLogsContainer: React.FC<ContainerProps> = ({
+  clientUuid,
   date,
   activityName,
   clientActivityUuid,
@@ -228,19 +231,20 @@ const UpdateClientActivityLogsContainer: React.FC<ContainerProps> = ({
 }) => {
   const result = useClientActivityLogsQuery({
     variables: {
+      clientUuid,
       clientActivityUuid,
     },
   })
 
   return (
     <ResponseHandler {...result}>
-      {({ clientActivity }) => {
+      {({ client }) => {
         return (
           <UpdateClientActivityLogs
             date={date}
             activityName={activityName}
             clientActivityUuid={clientActivityUuid}
-            logs={clientActivity.logs}
+            logs={client.clientActivity.logs}
             onClose={onClose}
           />
         )

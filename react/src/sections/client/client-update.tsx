@@ -17,7 +17,7 @@ import { paths } from 'routes/paths'
 import ResponseHandler from 'components/response-handler'
 import { useSnackbar } from 'components/snackbar'
 import {
-  useClientProgramManagersQuery,
+  useOrganizationProgramManagersQuery,
   useUpdateClientMutation,
   ClientFragmentDoc,
   useOrganizationSolutionsQuery,
@@ -40,7 +40,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
 
   const { user } = useAuthContext()
 
-  const resultProgramManagers = useClientProgramManagersQuery()
+  const resultProgramManagers = useOrganizationProgramManagersQuery()
   const resultSolutions = useOrganizationSolutionsQuery()
 
   const [updateClient, { loading }] = useUpdateClientMutation()
@@ -162,11 +162,11 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
             >
               <RHFTextField name="name" label="Nume firmă" InputLabelProps={{ shrink: true }} />
               <ResponseHandler {...resultProgramManagers}>
-                {({ clientProgramManagers }) => {
+                {({ organization }) => {
                   return (
                     <RHFSelect name="programManagerUuid" label="Responsabil">
                       <MenuItem value="">Alege</MenuItem>
-                      {clientProgramManagers.map(pm => (
+                      {organization.programManagers.map(pm => (
                         <MenuItem key={pm.uuid} value={pm.uuid}>
                           {pm.name}
                         </MenuItem>

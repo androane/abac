@@ -5,7 +5,7 @@ import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 import Iconify from 'components/iconify'
 import ResponseHandler from 'components/response-handler'
 import { useSettingsContext } from 'components/settings'
-import { useClientsQuery } from 'generated/graphql'
+import { useOrganizationClientsQuery } from 'generated/graphql'
 import { useCallback, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import { LANDING_PAGE, paths } from 'routes/paths'
@@ -61,7 +61,7 @@ const ClientEditView = () => {
 
   const settings = useSettingsContext()
 
-  const result = useClientsQuery()
+  const result = useOrganizationClientsQuery()
 
   const [currentTab, setCurrentTab] = useState(TABS_VALUES.GENERAL)
 
@@ -72,8 +72,8 @@ const ClientEditView = () => {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <ResponseHandler {...result}>
-        {({ clients }) => {
-          const client = clients.find(_ => _.uuid === id)
+        {({ organization }) => {
+          const client = organization.clients.find(_ => _.uuid === id)
           if (!client) {
             return <Navigate to={paths.page404} replace />
           }

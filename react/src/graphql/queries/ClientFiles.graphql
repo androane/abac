@@ -1,5 +1,3 @@
-#import "./fragments/Client.graphql"
-
 query ClientFiles($clientUuid: String!) {
   client(uuid: $clientUuid) {
     uuid

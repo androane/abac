@@ -145,6 +145,7 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
       )}
       {activityIdLogsToEdit && (
         <UpdateClientActivityLogs
+          clientUuid={clientUuid}
           date={date}
           activityName={activities.find(_ => _.clientActivityUuid === activityIdLogsToEdit)!.name}
           clientActivityUuid={activityIdLogsToEdit}
@@ -231,7 +232,7 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
 
   return (
     <ResponseHandler {...clientActivitiesResult}>
-      {({ clientActivities, client }) => {
+      {({ client }) => {
         const solutionActivities = client.clientSolutions.map(cs => {
           return {
             uuid: cs.uuid,
@@ -252,7 +253,7 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
           <ResponseHandler {...activitiesResult}>
             {({ organization }) => {
               const organizationActivities = organization.activities.map(organizationActivity => {
-                const clientActivity = clientActivities.find(
+                const clientActivity = client.clientActivities.find(
                   ca => ca.activity.name === organizationActivity.name,
                 )
 
@@ -278,7 +279,7 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
                 }
               })
 
-              const customActivities = clientActivities
+              const customActivities = client.clientActivities
                 .filter(clientActivity => {
                   // It's a custom activity if it's not an overriden organization activity
                   const isCustomActivity = !organization.activities.some(
@@ -327,6 +328,10 @@ function applyFilter({
   const stabilizedThis = inputData.map((el, index) => [el, index] as const)
 
   stabilizedThis.sort((a, b) => {
+    // Make the solution activities appear first
+    if (!a[0].isSolutionActivity && b[0].isSolutionActivity) {
+      return 1
+    }
     const order = comparator(a[0], b[0])
     if (order !== 0) return order
     return a[1] - b[1]

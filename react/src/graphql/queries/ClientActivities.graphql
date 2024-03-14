@@ -1,11 +1,25 @@
 query ClientActivities($clientUuid: String!, $year: Int, $month: Int) {
-  clientActivities(clientUuid: $clientUuid, year: $year, month: $month) {
-    ...ClientActivity
-    activity {
-      ...Activity
-    }
-  }
   client(uuid: $clientUuid) {
-    ...Client
+    uuid
+    clientActivities(year: $year, month: $month) {
+      ...ClientActivity
+      activity {
+        ...Activity
+      }
+    }
+    clientSolutions(year: $year, month: $month) {
+      uuid
+      solution {
+        uuid
+        name
+        category {
+          uuid
+          code
+          name
+        }
+      }
+      unitCost
+      unitCostCurrency
+    }
   }
 }
