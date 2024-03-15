@@ -7,7 +7,7 @@ query ClientActivities($clientUuid: String!, $year: Int, $month: Int) {
         ...Activity
       }
     }
-    clientSolutions(year: $year, month: $month) {
+    solutions(year: $year, month: $month) {
       uuid
       solution {
         uuid

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from typing import Optional
+
 from django.db.models import F
 
 from organization.graphene.types import (
@@ -13,6 +15,7 @@ from organization.models import (
     ClientActivityLog,
     Organization,
 )
+from organization.models.client import Client, ClientSolution
 
 
 def update_client_activity(
@@ -107,3 +110,32 @@ def update_client_activity_logs(
             )
 
     return client_activity
+
+
+def get_client_solutions(client: Client, month: Optional[int], year: Optional[int]):
+    global_client_solutions = client.client_solutions.filter(
+        month__isnull=True, year__isnull=True
+    ).all()
+
+    # Returning the global solution for the client
+    if not month and not year:
+        global_client_solutions
+
+    client_solutions = []
+    # Returning the solution for the client for the given month and year
+    for global_client_solution in global_client_solutions:
+        try:
+            client_solution = client.client_solutions.get(
+                solution__category=global_client_solution.solution.category,
+                month=month,
+                year=year,
+            )
+        except ClientSolution.DoesNotExist:
+            client_solution = global_client_solution
+            client_solution.id = None
+            client_solution.month = month
+            client_solution.year = year
+            client_solution.save()
+
+        client_solutions.append(client_solution)
+    return client_solutions

@@ -60,6 +60,8 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
   date,
   onChangeDate,
 }) => {
+  console.log('activities', activities)
+
   const showCreateActivity = useBoolean()
 
   const [deleteActivity, { loading }] = useDeleteClientActivityMutation()
@@ -233,7 +235,7 @@ const ActivityListView: React.FC<Props> = ({ clientUuid }) => {
   return (
     <ResponseHandler {...clientActivitiesResult}>
       {({ client }) => {
-        const solutionActivities = client.clientSolutions.map(cs => {
+        const solutionActivities = client.solutions.map(cs => {
           return {
             uuid: cs.uuid,
             name: cs.solution.name,
@@ -249,6 +251,9 @@ const ActivityListView: React.FC<Props> = ({ clientUuid }) => {
             isSolutionActivity: true,
           }
         })
+
+        console.log('solutionActivities', solutionActivities)
+
         return (
           <ResponseHandler {...activitiesResult}>
             {({ organization }) => {

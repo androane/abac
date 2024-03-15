@@ -56,7 +56,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
       spvPassword: client?.spvPassword,
       cui: client?.cui,
       clientSolutions: CATEGORY_CODES.map(categoryCode => {
-        const clientSolution = client?.clientSolutions.find(
+        const clientSolution = client?.solutions.find(
           cs => cs.solution.category.code === categoryCode,
         )
         return {

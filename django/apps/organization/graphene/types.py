@@ -256,7 +256,7 @@ class ClientType(DjangoObjectType):
     client_solution = graphene.NonNull(
         ClientSolutionType, uuid=graphene.String(required=True)
     )
-    client_solutions = graphene.List(
+    solutions = graphene.List(
         graphene.NonNull(ClientSolutionType),
         month=graphene.Int(),
         year=graphene.Int(),
@@ -283,13 +283,10 @@ class ClientType(DjangoObjectType):
             )
         return self.client_activities.all()
 
-    def resolve_client_solutions(self, info, **kwargs):
-        if kwargs.get("month") and kwargs.get("year"):
-            return self.client_solutions.filter(
-                month=kwargs.get("month"),
-                year=kwargs.get("year"),
-            )
-        return self.client_solutions.all()
+    def resolve_solutions(self, info, **kwargs):
+        from organization.services.client_activity_service import get_client_solutions
+
+        return get_client_solutions(self, kwargs.get("month"), kwargs.get("year"))
 
 
 class OrganizationType(DjangoObjectType):
