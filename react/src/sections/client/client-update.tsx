@@ -19,7 +19,6 @@ import { useSnackbar } from 'components/snackbar'
 import {
   useOrganizationProgramManagersQuery,
   useUpdateClientMutation,
-  ClientFragmentDoc,
   useOrganizationSolutionsQuery,
   useClientQuery,
   ClientQuery,
@@ -56,13 +55,6 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
       spvUsername: client?.spvUsername,
       spvPassword: client?.spvPassword,
       cui: client?.cui,
-      // clientSolutions:
-      //   client?.clientSolutions.map(cs => ({
-      //     uuid: cs.uuid,
-      //     solutionUuid: cs.solution.uuid,
-      //     unitCost: cs.unitCost,
-      //     unitCostCurrency: cs.unitCostCurrency,
-      //   })) || [],
       clientSolutions: CATEGORY_CODES.map(categoryCode => {
         const clientSolution = client?.clientSolutions.find(
           cs => cs.solution.category.code === categoryCode,
@@ -105,7 +97,6 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
 
   const onSubmit = form.handleSubmit(async data => {
     try {
-      console.log(data)
       await updateClient({
         variables: {
           clientInput: {
@@ -118,22 +109,6 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
             cui: data.cui,
             clientSolutions: data.clientSolutions,
           },
-        },
-        update(cache, { data: cacheData }) {
-          cache.modify({
-            fields: {
-              clients(existingClients = []) {
-                if (client) {
-                  return existingClients
-                }
-                const newClient = cache.writeFragment({
-                  data: cacheData?.updateClient?.client,
-                  fragment: ClientFragmentDoc,
-                })
-                return [newClient, ...existingClients]
-              },
-            },
-          })
         },
       })
       form.reset()

@@ -171,6 +171,9 @@ class ClientActivity(BaseModel):
         Activity, on_delete=models.CASCADE, related_name="client_activities"
     )
 
+    def __str__(self):
+        return f"{self.month}.{self.year} : {self.client.name} - {self.activity.name}"
+
 
 class ClientSolution(BaseModel):
     client = models.ForeignKey(

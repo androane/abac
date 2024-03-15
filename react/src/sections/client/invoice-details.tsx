@@ -122,15 +122,15 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({
 }
 
 type Props = {
-  clientId: string
+  clientUuid: string
 }
 
-const InvoiceDetailsView: React.FC<Props> = ({ clientId }) => {
+const InvoiceDetailsView: React.FC<Props> = ({ clientUuid }) => {
   const [invoiceDate, setInvoiceDate] = useState<null | Date>(startOfMonth(new Date()))
 
   const result = useClientInvoiceQuery({
     variables: {
-      clientUuid: clientId,
+      clientUuid,
       month: invoiceDate ? invoiceDate.getMonth() + 1 : null,
       year: invoiceDate?.getFullYear(),
     },

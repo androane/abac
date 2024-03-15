@@ -10,7 +10,7 @@ def get_client(org: Organization, uuid: str) -> Client:
     return org.clients.get(uuid=uuid)
 
 
-def update_or_create_client(org: Organization, client_input: ClientInput) -> Client:
+def _get_client(org: Organization, client_input: ClientInput) -> Client:
     program_manager = None
     if client_input.program_manager_uuid:
         program_manager = get_user_model().objects.get(
@@ -35,6 +35,11 @@ def update_or_create_client(org: Organization, client_input: ClientInput) -> Cli
         if value:
             setattr(client, field, value)
 
+    client.save()
+    return client
+
+
+def _set_client_solutions(client: Client, client_input: ClientInput) -> None:
     input_client_solution_uuids = set([_.uuid for _ in client_input.client_solutions])
     client.client_solutions.exclude(uuid__in=input_client_solution_uuids).delete()
 
@@ -61,6 +66,10 @@ def update_or_create_client(org: Organization, client_input: ClientInput) -> Cli
                 unit_cost_currency=client_solution_input.unit_cost_currency,
             )
 
+
+def update_or_create_client(org: Organization, client_input: ClientInput) -> Client:
+    client = _get_client(org, client_input)
+    _set_client_solutions(client, client_input)
     return client
 
 

@@ -88,16 +88,17 @@ const UpdateClientActivity: React.FC<Props> = ({ activity, clientUuid, date, onC
         },
         update(cache, { data: cacheData }) {
           cache.modify({
+            id: cache.identify({ uuid: clientUuid, __typename: 'ClientType' }),
             fields: {
-              clientActivities(existingClientActivities = []) {
+              activities(existingActivities = []) {
                 if (activity) {
-                  return existingClientActivities
+                  return existingActivities
                 }
-                const newClientActivity = cache.writeFragment({
+                const newActivity = cache.writeFragment({
                   data: cacheData?.updateClientActivity?.clientActivity,
                   fragment: ClientActivityFragmentDoc,
                 })
-                return [newClientActivity, ...existingClientActivities]
+                return [newActivity, ...existingActivities]
               },
             },
           })

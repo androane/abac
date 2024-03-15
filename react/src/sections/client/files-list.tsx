@@ -9,17 +9,17 @@ import FileDetails from 'sections/client/files-details'
 import { enqueueSnackbar } from 'notistack'
 
 type Props = {
-  clientId: string
+  clientUuid: string
 }
 
-const FilesList: React.FC<Props> = ({ clientId }) => {
+const FilesList: React.FC<Props> = ({ clientUuid }) => {
   const upload = useBoolean()
 
   const [deleteFile] = useDeleteClientFileMutation()
 
   const result = useClientFilesQuery({
     variables: {
-      clientUuid: clientId,
+      clientUuid,
     },
   })
 
@@ -57,7 +57,7 @@ const FilesList: React.FC<Props> = ({ clientId }) => {
                   <FileDetails
                     key={file.name}
                     onDeleteFile={() => handleDeleteFile(file.uuid)}
-                    clientId={clientId}
+                    clientUuid={clientUuid}
                     file={file}
                   />
                 ))}
@@ -71,7 +71,7 @@ const FilesList: React.FC<Props> = ({ clientId }) => {
                 }}
               />
             )}
-            <CreateFiles clientId={clientId} open={upload.value} onClose={upload.onFalse} />
+            <CreateFiles clientUuid={clientUuid} open={upload.value} onClose={upload.onFalse} />
           </>
         )
       }}

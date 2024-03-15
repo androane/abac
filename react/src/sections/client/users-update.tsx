@@ -23,12 +23,12 @@ import getErrorMessage from 'utils/api-codes'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 
 type Props = {
-  clientId: string
+  clientUuid: string
   user?: APIClientUser
   onClose: () => void
 }
 
-const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
+const UpdateUser: React.FC<Props> = ({ clientUuid, user, onClose }) => {
   const [updateClientUser, { loading }] = useUpdateClientUserMutation()
 
   const { enqueueSnackbar } = useSnackbar()
@@ -67,7 +67,7 @@ const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
     try {
       await updateClientUser({
         variables: {
-          clientUuid: clientId,
+          clientUuid,
           clientUserInput: {
             uuid: user?.uuid,
             firstName: data.firstName,
@@ -82,16 +82,17 @@ const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
         },
         update(cache, { data: cacheData }) {
           cache.modify({
+            id: cache.identify({ uuid: clientUuid, __typename: 'ClientType' }),
             fields: {
-              clientUsers(existingClientUsers = []) {
+              users(existingUsers = []) {
                 if (user) {
-                  return existingClientUsers
+                  return existingUsers
                 }
                 const newUser = cache.writeFragment({
                   data: cacheData?.updateClientUser?.clientUser,
                   fragment: ClientUserFragmentDoc,
                 })
-                return [newUser, ...existingClientUsers]
+                return [newUser, ...existingUsers]
               },
             },
           })
@@ -99,7 +100,7 @@ const UpdateUser: React.FC<Props> = ({ clientId, user, onClose }) => {
       })
 
       form.reset()
-      enqueueSnackbar('Persoana actualizata cu succes!')
+      enqueueSnackbar('Persoana de contact a fost actualizată!')
       onClose()
     } catch (error) {
       enqueueSnackbar(getErrorMessage((error as Error).message), {

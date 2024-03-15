@@ -148,7 +148,7 @@ export type ClientSolutionType = {
 
 export type ClientType = {
   __typename?: 'ClientType';
-  clientActivities: Array<ClientActivityType>;
+  activities: Array<ClientActivityType>;
   clientActivity: ClientActivityType;
   clientSolution: ClientSolutionType;
   clientSolutions: Array<ClientSolutionType>;
@@ -167,7 +167,7 @@ export type ClientType = {
 };
 
 
-export type ClientTypeClientActivitiesArgs = {
+export type ClientTypeActivitiesArgs = {
   month?: InputMaybe<Scalars['Int']['input']>;
   year?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -453,8 +453,6 @@ export type Query = {
   __typename?: 'Query';
   /** Get a Client */
   client: ClientType;
-  /** Get a single Client Activity */
-  clientActivity: ClientActivityType;
   clientInvoice: InvoiceType;
   currentUser: UserType;
   /** Get an Organization */
@@ -466,11 +464,6 @@ export type Query = {
 
 export type QueryClientArgs = {
   uuid: Scalars['String']['input'];
-};
-
-
-export type QueryClientActivityArgs = {
-  clientActivityUuid: Scalars['String']['input'];
 };
 
 
@@ -736,7 +729,7 @@ export type ClientActivitiesQueryVariables = Exact<{
 }>;
 
 
-export type ClientActivitiesQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, clientActivities: Array<{ __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }>, clientSolutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost: number, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> } };
+export type ClientActivitiesQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, activities: Array<{ __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }>, clientSolutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost: number, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> } };
 
 export type ClientActivityLogsQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -775,7 +768,7 @@ export type ClientSolutionLogsQueryVariables = Exact<{
 }>;
 
 
-export type ClientSolutionLogsQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', clientSolution: { __typename?: 'ClientSolutionType', logs: Array<{ __typename?: 'ClientSolutionLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } } };
+export type ClientSolutionLogsQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', clientSolution: { __typename?: 'ClientSolutionType', uuid: string, logs: Array<{ __typename?: 'ClientSolutionLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } } };
 
 export type ClientUsersQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -1688,7 +1681,7 @@ export const ClientActivitiesDocument = gql`
     query ClientActivities($clientUuid: String!, $year: Int, $month: Int) {
   client(uuid: $clientUuid) {
     uuid
-    clientActivities(year: $year, month: $month) {
+    activities(year: $year, month: $month) {
       ...ClientActivity
       activity {
         ...Activity
@@ -1929,6 +1922,7 @@ export const ClientSolutionLogsDocument = gql`
     query ClientSolutionLogs($clientUuid: String!, $clientSolutionUuid: String!) {
   client(uuid: $clientUuid) {
     clientSolution(uuid: $clientSolutionUuid) {
+      uuid
       logs {
         ...ClientSolutionLog
       }

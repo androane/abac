@@ -17,12 +17,12 @@ import { Link } from 'react-router-dom'
 import { APIClientFile } from './types'
 
 type Props = {
-  clientId: string
+  clientUuid: string
   file: APIClientFile
   onDeleteFile(): void
 }
 
-const FileDetails: React.FC<Props> = ({ onDeleteFile, clientId, file, ...other }) => {
+const FileDetails: React.FC<Props> = ({ onDeleteFile, clientUuid, file, ...other }) => {
   const popover = usePopover()
 
   const confirm = useBoolean()

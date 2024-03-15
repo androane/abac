@@ -14,14 +14,14 @@ import LoadingButton from '@mui/lab/LoadingButton'
 
 interface Props extends DialogProps {
   title?: string
-  clientId: string
+  clientUuid: string
   open: boolean
   onClose: VoidFunction
 }
 
 const CreateFiles: React.FC<Props> = ({
   title = 'Incarca Fisiere',
-  clientId,
+  clientUuid,
   open,
   onClose,
   ...other
@@ -54,7 +54,7 @@ const CreateFiles: React.FC<Props> = ({
   const handleUpload = async () => {
     await createFiles({
       variables: {
-        clientUuid: clientId,
+        clientUuid,
         clientFilesInput: files.map(file => ({
           file,
         })),

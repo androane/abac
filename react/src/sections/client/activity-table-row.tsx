@@ -24,7 +24,7 @@ type Props = {
   date: Date
   loadingDelete: boolean
   row: ClientActivityType
-  onEditRow: VoidFunction
+  onEditRow(clientActivityUuid?: string): void
   onDeleteRow: VoidFunction
   onEditLogs: VoidFunction
 }
@@ -85,13 +85,14 @@ const ActivityTableRow: React.FC<Props> = ({
       },
       update(cache, { data: cacheData }) {
         cache.modify({
+          id: cache.identify({ uuid: clientUuid, __typename: 'ClientType' }),
           fields: {
-            clientActivities(existingClientActivities = []) {
-              const newClientActivity = cache.writeFragment({
+            activities(existingActivities = []) {
+              const newActivity = cache.writeFragment({
                 data: cacheData?.updateClientActivity?.clientActivity,
                 fragment: ClientActivityFragmentDoc,
               })
-              return [newClientActivity, ...existingClientActivities]
+              return [newActivity, ...existingActivities]
             },
           },
         })
@@ -128,7 +129,7 @@ const ActivityTableRow: React.FC<Props> = ({
           sx={{ whiteSpace: 'nowrap' }}
           onClick={() => {
             if (!row.isSolutionActivity) {
-              onEditRow()
+              onEditRow(row.activityUuid)
             }
           }}
         >

@@ -2,7 +2,7 @@ import {
   ActivityType,
   ClientFilesQuery,
   ClientInvoiceQuery,
-  ClientsQuery,
+  OrganizationClientsQuery,
   ClientUsersQuery,
 } from 'generated/graphql'
 
@@ -29,7 +29,7 @@ export type ClientActivityType = ActivityType & {
   clientActivityUuid?: string
 }
 
-export type APIClientUser = ClientUsersQuery['clientUsers'][0]
-export type APIClient = ClientsQuery['clients'][0]
+export type APIClientUser = ClientUsersQuery['client']['users'][0]
+export type APIClient = OrganizationClientsQuery['organization']['clients'][0]
 export type APIClientInvoice = ClientInvoiceQuery['clientInvoice']
 export type APIClientFile = ClientFilesQuery['client']['files'][0]

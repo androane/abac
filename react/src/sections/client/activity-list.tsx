@@ -64,8 +64,8 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
 
   const [deleteActivity, { loading }] = useDeleteClientActivityMutation()
 
-  const [activityIdToEdit, setActivityIdToEdit] = useState<null | string>(null)
-  const [activityIdLogsToEdit, setActivityIdLogsToEdit] = useState<undefined | string>(undefined)
+  const [activityUuidToEdit, setActivityUuidToEdit] = useState<undefined | string>()
+  const [activityUuidLogsToEdit, setActivityUuidLogsToEdit] = useState<undefined | string>()
 
   const { enqueueSnackbar } = useSnackbar()
   const [tableData, setTableData] = useState(activities)
@@ -126,11 +126,11 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
   }
 
   const handleEditRow = useCallback(
-    (id: null | string) => {
-      setActivityIdToEdit(id)
+    (uuid?: string) => {
+      setActivityUuidToEdit(uuid)
       showCreateActivity.onTrue()
     },
-    [showCreateActivity, setActivityIdToEdit],
+    [showCreateActivity, setActivityUuidToEdit],
   )
 
   return (
@@ -139,21 +139,21 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
         <UpdateClientActivity
           date={date}
           clientUuid={clientUuid}
-          activity={activities.find(_ => _.activityUuid === activityIdToEdit)!}
+          activity={activities.find(_ => _.activityUuid === activityUuidToEdit)!}
           onClose={showCreateActivity.onFalse}
         />
       )}
-      {activityIdLogsToEdit && (
+      {activityUuidLogsToEdit && (
         <UpdateClientActivityLogs
           clientUuid={clientUuid}
           date={date}
-          activityName={activities.find(_ => _.clientActivityUuid === activityIdLogsToEdit)!.name}
-          clientActivityUuid={activityIdLogsToEdit}
-          onClose={() => setActivityIdLogsToEdit(undefined)}
+          activityName={activities.find(_ => _.clientActivityUuid === activityUuidLogsToEdit)!.name}
+          clientActivityUuid={activityUuidLogsToEdit}
+          onClose={() => setActivityUuidLogsToEdit(undefined)}
         />
       )}
       <ActivityTableToolbar
-        onAddActivity={() => handleEditRow(null)}
+        onAddActivity={handleEditRow}
         date={date}
         onChangeDate={onChangeDate}
         filters={filters}
@@ -195,8 +195,8 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
                     date={date}
                     row={row}
                     onDeleteRow={() => handleDeleteRow(row.uuid)}
-                    onEditRow={() => handleEditRow(row.uuid)}
-                    onEditLogs={() => setActivityIdLogsToEdit(row.clientActivityUuid)}
+                    onEditRow={handleEditRow}
+                    onEditLogs={() => setActivityUuidLogsToEdit(row.clientActivityUuid)}
                     loadingDelete={loading}
                   />
                 ))}
@@ -214,15 +214,15 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
 }
 
 type Props = {
-  clientId: string
+  clientUuid: string
 }
 
-const ActivityListView: React.FC<Props> = ({ clientId }) => {
+const ActivityListView: React.FC<Props> = ({ clientUuid }) => {
   const [date, setDate] = useState(startOfMonth(new Date()))
 
   const clientActivitiesResult = useClientActivitiesQuery({
     variables: {
-      clientUuid: clientId,
+      clientUuid,
       month: date ? date.getMonth() + 1 : null,
       year: date?.getFullYear(),
     },
@@ -253,18 +253,16 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
           <ResponseHandler {...activitiesResult}>
             {({ organization }) => {
               const organizationActivities = organization.activities.map(organizationActivity => {
-                const clientActivity = client.clientActivities.find(
+                const overwrittenOrganizationAcitivty = client.activities.find(
                   ca => ca.activity.name === organizationActivity.name,
                 )
-
-                // This means that a system/organization activity has been overriden by a custom activity
-                if (clientActivity) {
+                // Organization activities can be overwritten
+                if (overwrittenOrganizationAcitivty) {
                   return {
-                    ...organizationActivity,
-                    ...clientActivity.activity,
+                    ...overwrittenOrganizationAcitivty.activity,
                     activityUuid: organizationActivity.uuid,
-                    clientActivityUuid: clientActivity.uuid,
-                    isExecuted: clientActivity.isExecuted,
+                    clientActivityUuid: overwrittenOrganizationAcitivty.uuid,
+                    isExecuted: overwrittenOrganizationAcitivty.isExecuted,
                     isCustom: false,
                     isSolutionActivity: false,
                   }
@@ -273,17 +271,18 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
                 return {
                   ...organizationActivity,
                   activityUuid: organizationActivity.uuid,
+                  clientActivityUuid: undefined,
                   isExecuted: false,
                   isCustom: false,
                   isSolutionActivity: false,
                 }
               })
 
-              const customActivities = client.clientActivities
-                .filter(clientActivity => {
-                  // It's a custom activity if it's not an overriden organization activity
+              const customActivities = client.activities
+                .filter(ca => {
+                  // Overrwritten organization activities are not considered custom
                   const isCustomActivity = !organization.activities.some(
-                    a => a.name === clientActivity.activity.name,
+                    a => a.name === ca.activity.name,
                   )
                   return isCustomActivity
                 })
@@ -298,7 +297,7 @@ const ActivityListView: React.FC<Props> = ({ clientId }) => {
 
               return (
                 <ActivityListCard
-                  clientUuid={clientId}
+                  clientUuid={clientUuid}
                   activities={[
                     ...solutionActivities,
                     ...organizationActivities,

@@ -1,7 +1,7 @@
 query ClientActivities($clientUuid: String!, $year: Int, $month: Int) {
   client(uuid: $clientUuid) {
     uuid
-    clientActivities(year: $year, month: $month) {
+    activities(year: $year, month: $month) {
       ...ClientActivity
       activity {
         ...Activity

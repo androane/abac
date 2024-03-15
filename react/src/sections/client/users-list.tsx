@@ -36,15 +36,15 @@ const TABLE_HEAD = [
 ]
 
 type CardProps = {
-  clientId: string
+  clientUuid: string
   users: APIClientUser[]
 }
 
-const UserListCard: React.FC<CardProps> = ({ clientId, users }) => {
+const UserListCard: React.FC<CardProps> = ({ clientUuid, users }) => {
   const [deleteUser, { loading }] = useDeleteClientUserMutation()
 
   const showCreateUser = useBoolean()
-  const [userIdToEdit, setUserIdToEdit] = useState<null | string>(null)
+  const [userUuidToEdit, setUserUuidToEdit] = useState<undefined | string>()
 
   const { enqueueSnackbar } = useSnackbar()
   const [tableData, setTableData] = useState(users)
@@ -78,21 +78,28 @@ const UserListCard: React.FC<CardProps> = ({ clientId, users }) => {
   }
 
   const handleEditRow = useCallback(
-    (id: null | string) => {
-      setUserIdToEdit(id)
+    (uuid?: string) => {
+      setUserUuidToEdit(uuid)
       showCreateUser.onTrue()
     },
-    [showCreateUser, setUserIdToEdit],
+    [showCreateUser, setUserUuidToEdit],
   )
 
   return (
     <>
-      <AddButton count={users.length} label="Persoane" onClick={showCreateUser.onTrue} />
+      <AddButton
+        count={users.length}
+        label="Persoane"
+        onClick={() => {
+          showCreateUser.onTrue()
+          setUserUuidToEdit(undefined)
+        }}
+      />
       <Card>
         {showCreateUser.value && (
           <UpdateUser
-            clientId={clientId}
-            user={users.find(_ => _.uuid === userIdToEdit)}
+            clientUuid={clientUuid}
+            user={users.find(_ => _.uuid === userUuidToEdit)}
             onClose={showCreateUser.onFalse}
           />
         )}
@@ -140,7 +147,6 @@ const UserListCard: React.FC<CardProps> = ({ clientId, users }) => {
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           onRowsPerPageChange={table.onChangeRowsPerPage}
-          //
           dense={table.dense}
           onChangeDense={table.onChangeDense}
         />
@@ -150,21 +156,23 @@ const UserListCard: React.FC<CardProps> = ({ clientId, users }) => {
 }
 
 type Props = {
-  clientId: string
+  clientUuid: string
 }
 
-export default function UserListView({ clientId }: Props) {
+const UserList: React.FC<Props> = ({ clientUuid }) => {
   const result = useClientUsersQuery({
     variables: {
-      clientUuid: clientId,
+      clientUuid,
     },
   })
 
   return (
     <ResponseHandler {...result}>
       {({ client }) => {
-        return <UserListCard clientId={clientId} users={client.users} />
+        return <UserListCard clientUuid={clientUuid} users={client.users} />
       }}
     </ResponseHandler>
   )
 }
+
+export default UserList
