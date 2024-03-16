@@ -1,16 +1,14 @@
 import Box from '@mui/material/Box'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
-
-import { APIInvoiceItem } from './types'
+import { InvoiceItemType } from 'generated/graphql'
 
 type Props = {
   index: number
-  invoiceIsLocked: boolean
-  row: APIInvoiceItem
+  row: InvoiceItemType
 }
 
-const InvoiceTableRow: React.FC<Props> = ({ index, invoiceIsLocked, row }) => {
+const InvoiceTableRow: React.FC<Props> = ({ index, row }) => {
   return (
     <TableRow hover>
       <TableCell>{index}</TableCell>
@@ -26,6 +24,8 @@ const InvoiceTableRow: React.FC<Props> = ({ index, invoiceIsLocked, row }) => {
           {row.name}
         </Box>
       </TableCell>
+      <TableCell>{row.quantity}</TableCell>
+      <TableCell>{`${row.cost} ${row.currency}`}</TableCell>
     </TableRow>
   )
 }

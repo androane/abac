@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+from collections import defaultdict
+
 import pendulum
 
-from organization.constants import InvoiceStatusEnum
+from organization.constants import CurrencyEnum, InvoiceStatusEnum, UnitCostTypeEnum
 from organization.models import Client, Invoice, Organization
+from organization.models.activity import Activity
 
 
 def get_client_invoice(
@@ -22,7 +25,62 @@ def get_client_invoice(
 
 def generate_invoice_items(invoice: Invoice) -> list[str]:
     client = invoice.client
-    return client
+
+    items = []
+
+    client_solutions = client.client_solutions.filter(
+        year=invoice.year, month=invoice.month
+    ).all()
+    for client_solution in client_solutions:
+        items.append(
+            {
+                "name": client_solution.solution.name,
+                "quantity": 1,
+                "cost": client_solution.unit_cost,
+                "currency": client_solution.unit_cost_currency,
+            }
+        )
+
+    client_activities = (
+        client.client_activities.filter(
+            is_executed=True,
+            month=invoice.month,
+            year=invoice.year,
+        )
+        .select_related("activity", "activity__category")
+        .all()
+    )
+
+    activity_items = defaultdict(lambda: defaultdict(int))
+    for client_activity in client_activities:
+        activity: Activity = client_activity.activity
+
+        if activity.unit_cost_type == UnitCostTypeEnum.FIXED.value:
+            cost = activity.unit_cost
+        elif activity.unit_cost_type == UnitCostTypeEnum.HOURLY.value:
+            total_time = sum(
+                client_activity.logs.values_list("minutes_allocated", flat=True)
+            )
+            cost = activity.unit_cost * total_time / 60
+
+        activity_items[activity.category][activity.unit_cost_currency] += cost
+
+    for category, data in activity_items.items():
+        for currency, cost in data.items():
+            items.append(
+                {
+                    "name": f"Servicii extra {category.get_translated_name()}",
+                    "quantity": 1,
+                    "cost": cost,
+                    "currency": currency,
+                }
+            )
+
+    for item in items:
+        if item["currency"] != CurrencyEnum.RON.value:
+            item["name"] = item["name"] + f" ({item.currency})"
+
+    return items
 
 
 def update_client_invoice_status(

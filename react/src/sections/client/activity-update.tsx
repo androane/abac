@@ -21,11 +21,11 @@ import {
 import getErrorMessage from 'utils/api-codes'
 import { CATEGORY_CODES, getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
 import { MenuItem } from '@mui/material'
-import { ClientActivityType } from 'sections/client/types'
+import { GenericActivityType } from 'sections/client/types'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 
 type Props = {
-  activity: null | ClientActivityType
+  activity: null | GenericActivityType
   clientUuid: string
   date: Date
   onClose: () => void

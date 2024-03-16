@@ -27,7 +27,7 @@ import {
 import ActivityTableFiltersResult from 'sections/settings/activity-table-filters-result'
 import ActivityTableToolbar from 'sections/client/activity-table-toolbar'
 import ActivityTableRow from 'sections/client/activity-table-row'
-import { ClientActivityTableFilters, ClientActivityType } from 'sections/client/types'
+import { ClientActivityTableFilters, GenericActivityType } from 'sections/client/types'
 import UpdateClientActivity from 'sections/client/activity-update'
 import { UpdateClientActivityLogs, UpdateClientSolutionLogs } from 'sections/client/logs-update'
 
@@ -48,7 +48,7 @@ const TABLE_HEAD = [
 
 type ActivityListCardProps = {
   clientUuid: string
-  activities: ClientActivityType[]
+  activities: GenericActivityType[]
   date: Date
   onChangeDate: (newDate: Date) => void
 }
@@ -243,8 +243,8 @@ const ActivityListView: React.FC<Props> = ({ clientUuid }) => {
   const clientActivitiesResult = useClientActivitiesQuery({
     variables: {
       clientUuid,
-      month: date ? date.getMonth() + 1 : null,
-      year: date?.getFullYear(),
+      month: date.getMonth() + 1,
+      year: date.getFullYear(),
     },
   })
 
@@ -335,7 +335,7 @@ function applyFilter({
   comparator,
   filters,
 }: {
-  inputData: ClientActivityType[]
+  inputData: GenericActivityType[]
   comparator: (a: any, b: any) => number
   filters: ClientActivityTableFilters
 }) {

@@ -15,7 +15,7 @@ import {
 } from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import React from 'react'
-import { ClientActivityType } from 'sections/client/types'
+import { GenericActivityType } from 'sections/client/types'
 import { action, info } from 'theme/palette'
 import { getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
 
@@ -23,7 +23,7 @@ type Props = {
   clientUuid: string
   date: Date
   loadingDelete: boolean
-  row: ClientActivityType
+  row: GenericActivityType
   onEditRow(clientActivityUuid?: string): void
   onDeleteRow: VoidFunction
   onEditLogs: VoidFunction

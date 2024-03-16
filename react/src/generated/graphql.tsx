@@ -272,10 +272,10 @@ export type ErrorType = {
 
 export type InvoiceItemType = {
   __typename?: 'InvoiceItemType';
+  cost: Scalars['Int']['output'];
+  currency: CurrencyEnum;
   name: Scalars['String']['output'];
   quantity: Scalars['Int']['output'];
-  unitCost: Scalars['Int']['output'];
-  unitCostCurrency: CurrencyEnum;
 };
 
 /** An enumeration. */
@@ -783,7 +783,7 @@ export type ClientInvoiceQueryVariables = Exact<{
 }>;
 
 
-export type ClientInvoiceQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, invoice: { __typename?: 'InvoiceType', dateSent?: DateString | null, items: Array<{ __typename?: 'InvoiceItemType', name: string, quantity: number, unitCost: number, unitCostCurrency: CurrencyEnum }> } } };
+export type ClientInvoiceQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, invoice: { __typename?: 'InvoiceType', uuid: string, dateSent?: DateString | null, items: Array<{ __typename?: 'InvoiceItemType', name: string, quantity: number, cost: number, currency: CurrencyEnum }> } } };
 
 export type ClientSolutionLogsQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -1944,12 +1944,13 @@ export const ClientInvoiceDocument = gql`
   client(uuid: $clientUuid) {
     uuid
     invoice(year: $year, month: $month) {
+      uuid
       dateSent
       items {
         name
         quantity
-        unitCost
-        unitCostCurrency
+        cost
+        currency
       }
     }
   }

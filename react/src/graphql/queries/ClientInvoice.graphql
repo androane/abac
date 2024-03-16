@@ -2,12 +2,13 @@ query ClientInvoice($clientUuid: String!, $year: Int!, $month: Int!) {
   client(uuid: $clientUuid) {
     uuid
     invoice(year: $year, month: $month) {
+      uuid
       dateSent
       items {
         name
         quantity
-        unitCost
-        unitCostCurrency
+        cost
+        currency
       }
     }
   }

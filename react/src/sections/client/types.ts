@@ -21,7 +21,7 @@ export type ClientActivityTableFilters = {
   isCustom: string
 }
 
-export type ClientActivityType = ActivityType & {
+export type GenericActivityType = ActivityType & {
   isExecuted: boolean
   isCustom: boolean
   activityUuid: string
@@ -29,7 +29,7 @@ export type ClientActivityType = ActivityType & {
   clientSolutionUuid?: string
 }
 
-export type APIClientUser = ClientUsersQuery['client']['users'][0]
 export type APIClient = OrganizationClientsQuery['organization']['clients'][0]
-export type APIClientInvoice = ClientInvoiceQuery['clientInvoice']
+export type APIClientUser = ClientUsersQuery['client']['users'][0]
+export type APIClientInvoice = ClientInvoiceQuery['client']['invoice']
 export type APIClientFile = ClientFilesQuery['client']['files'][0]

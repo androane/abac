@@ -13,16 +13,16 @@ import React from 'react'
 
 type Props = {
   invoiceId: string
-  invoiceDate: null | Date
+  invoiceDate: Date
   invoiceDateSent?: null | string
-  onChangeInvoiceDate: (newDate: null | Date) => void
+  onChangeDate: (newDate: Date) => void
 }
 
 const InvoiceTableToolbar: React.FC<Props> = ({
   invoiceId,
   invoiceDate,
   invoiceDateSent,
-  onChangeInvoiceDate,
+  onChangeDate,
 }) => {
   const [updateInvoiceStatus, { loading }] = useUpdateClientInvoiceStatusMutation()
   const popover = usePopover()
@@ -47,7 +47,7 @@ const InvoiceTableToolbar: React.FC<Props> = ({
 
   const statusToLabel = {
     [InvoiceStatusEnum.DRAFT]: 'Draft',
-    [InvoiceStatusEnum.SENT]: 'Trimisa',
+    [InvoiceStatusEnum.SENT]: 'Trimisă',
   }
 
   return (
@@ -68,7 +68,7 @@ const InvoiceTableToolbar: React.FC<Props> = ({
         minDate={new Date('2024-01-01')}
         disableFuture
         value={invoiceDate}
-        onChange={onChangeInvoiceDate}
+        onChange={newDate => newDate && onChangeDate(newDate)}
         slotProps={{ textField: { fullWidth: true } }}
         views={['month', 'year']}
         sx={{

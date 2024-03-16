@@ -149,8 +149,8 @@ class TotalByCurrencyType(graphene.ObjectType):
 class InvoiceItemType(graphene.ObjectType):
     name = graphene.String(required=True)
     quantity = graphene.Int(required=True)
-    unit_cost = graphene.Int(required=True)
-    unit_cost_currency = CurrencyEnumType(required=True)
+    cost = graphene.Int(required=True)
+    currency = CurrencyEnumType(required=True)
 
 
 class InvoiceType(DjangoObjectType):
