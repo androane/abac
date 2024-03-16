@@ -103,13 +103,13 @@ const ActivityTableRow: React.FC<Props> = ({
   return (
     <>
       <TableRow
-        sx={{ backgroundColor: row.isSolutionActivity ? action.selected : info.contrastText }}
+        sx={{ backgroundColor: row.clientSolutionUuid ? action.selected : info.contrastText }}
       >
         <TableCell style={{ width: 150 }}>
           <Switch
             checked={row.isExecuted}
             onChange={() => {
-              if (row.isSolutionActivity) return
+              if (row.clientSolutionUuid) return
               if (row.clientActivityUuid) {
                 handleToggleClientActivity(row.clientActivityUuid)
               } else {
@@ -119,7 +119,7 @@ const ActivityTableRow: React.FC<Props> = ({
             disabled={loadingToggle || loadingAdd}
             color="primary"
           />
-          {row.clientActivityUuid && row.isExecuted && (
+          {(row.clientActivityUuid || row.clientSolutionUuid) && row.isExecuted && (
             <IconButton size="small" onClick={onEditLogs} color="warning">
               <Iconify icon="solar:clock-circle-outline" width={24} />
             </IconButton>
@@ -128,7 +128,7 @@ const ActivityTableRow: React.FC<Props> = ({
         <TableCell
           sx={{ whiteSpace: 'nowrap' }}
           onClick={() => {
-            if (!row.isSolutionActivity) {
+            if (!row.clientSolutionUuid) {
               onEditRow(row.activityUuid)
             }
           }}

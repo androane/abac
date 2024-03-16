@@ -1,7 +1,5 @@
-#import "./fragments/AuthUser.graphql"
-
 query CurrentUser {
   currentUser {
-    ...User
+    ...AuthUser
   }
 }

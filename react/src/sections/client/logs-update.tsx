@@ -15,7 +15,10 @@ import { useSnackbar } from 'components/snackbar'
 import {
   useUpdateClientActivityLogsMutation,
   useClientActivityLogsQuery,
+  useClientSolutionLogsQuery,
+  useUpdateClientSolutionLogsMutation,
   ClientActivityLogType,
+  ClientSolutionLogType,
 } from 'generated/graphql'
 import getErrorMessage from 'utils/api-codes'
 import ResponseHandler from 'components/response-handler'
@@ -117,19 +120,22 @@ const LogUpdate: React.FC<{ date: Date }> = ({ date }) => {
 type Props = {
   date: Date
   activityName: string
-  clientActivityUuid: string
-  logs: ClientActivityLogType[]
+  uuid: string
+  logs: ClientActivityLogType[] | ClientSolutionLogType[]
   onClose: () => void
+  isSolution?: boolean
 }
 
-const UpdateClientActivityLogs: React.FC<Props> = ({
+const UpdateLogs: React.FC<Props> = ({
   date,
   activityName,
-  clientActivityUuid,
+  uuid,
   logs: initialLogs,
   onClose,
+  isSolution = false,
 }) => {
-  const [updateClientActivityLogs, { loading }] = useUpdateClientActivityLogsMutation()
+  const [updateClientActivityLogs, { loading: loading1 }] = useUpdateClientActivityLogsMutation()
+  const [updateClientSolutionLogs, { loading: loading2 }] = useUpdateClientSolutionLogsMutation()
 
   const { enqueueSnackbar } = useSnackbar()
 
@@ -162,19 +168,30 @@ const UpdateClientActivityLogs: React.FC<Props> = ({
   })
 
   const onSubmit = form.handleSubmit(async data => {
+    const logsInput = data.logs
+      ? data.logs.map(log => ({
+          ...log,
+          minutesAllocated: log.minutesAllocated || 0,
+          date: format(log.date, 'yyyy-MM-dd'),
+        }))
+      : []
+
     try {
-      await updateClientActivityLogs({
-        variables: {
-          clientActivityUuid,
-          clientActivityLogsInput: data.logs
-            ? data.logs.map(log => ({
-                ...log,
-                minutesAllocated: log.minutesAllocated || 0,
-                date: format(log.date, 'yyyy-MM-dd'),
-              }))
-            : [],
-        },
-      })
+      if (isSolution) {
+        await updateClientSolutionLogs({
+          variables: {
+            clientSolutionUuid: uuid,
+            logsInput,
+          },
+        })
+      } else {
+        await updateClientActivityLogs({
+          variables: {
+            clientActivityUuid: uuid,
+            logsInput,
+          },
+        })
+      }
       form.reset()
       enqueueSnackbar('Loguri actualizate cu succes!')
       onClose()
@@ -204,7 +221,7 @@ const UpdateClientActivityLogs: React.FC<Props> = ({
             <Button color="inherit" variant="outlined" onClick={onClose}>
               {'<'} Înapoi
             </Button>
-            <LoadingButton type="submit" variant="contained" loading={loading}>
+            <LoadingButton type="submit" variant="contained" loading={loading1 || loading2}>
               Salvează
             </LoadingButton>
           </DialogActions>
@@ -214,7 +231,7 @@ const UpdateClientActivityLogs: React.FC<Props> = ({
   )
 }
 
-type ContainerProps = {
+type UpdateClientActivityLogsProps = {
   clientUuid: string
   date: Date
   activityName: string
@@ -222,7 +239,7 @@ type ContainerProps = {
   onClose: () => void
 }
 
-const UpdateClientActivityLogsContainer: React.FC<ContainerProps> = ({
+export const UpdateClientActivityLogs: React.FC<UpdateClientActivityLogsProps> = ({
   clientUuid,
   date,
   activityName,
@@ -240,10 +257,10 @@ const UpdateClientActivityLogsContainer: React.FC<ContainerProps> = ({
     <ResponseHandler {...result}>
       {({ client }) => {
         return (
-          <UpdateClientActivityLogs
+          <UpdateLogs
             date={date}
             activityName={activityName}
-            clientActivityUuid={clientActivityUuid}
+            uuid={clientActivityUuid}
             logs={client.clientActivity.logs}
             onClose={onClose}
           />
@@ -253,4 +270,42 @@ const UpdateClientActivityLogsContainer: React.FC<ContainerProps> = ({
   )
 }
 
-export default UpdateClientActivityLogsContainer
+type UpdateClientSolutionLogsProps = {
+  clientUuid: string
+  date: Date
+  activityName: string
+  clientSolutionUuid: string
+  onClose: () => void
+}
+
+export const UpdateClientSolutionLogs: React.FC<UpdateClientSolutionLogsProps> = ({
+  clientUuid,
+  date,
+  activityName,
+  clientSolutionUuid,
+  onClose,
+}) => {
+  const result = useClientSolutionLogsQuery({
+    variables: {
+      clientUuid,
+      clientSolutionUuid,
+    },
+  })
+
+  return (
+    <ResponseHandler {...result}>
+      {({ client }) => {
+        return (
+          <UpdateLogs
+            date={date}
+            activityName={activityName}
+            uuid={clientSolutionUuid}
+            logs={client.clientSolution.logs}
+            onClose={onClose}
+            isSolution
+          />
+        )
+      }}
+    </ResponseHandler>
+  )
+}

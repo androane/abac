@@ -10,6 +10,7 @@ from collections import defaultdict
 from graphql_sync_dataloaders import SyncDataLoader
 
 from organization.models import Activity, ClientActivityLog
+from organization.models.client import ClientSolutionLog
 
 
 def foreign_key_loader_builder(model):
@@ -55,6 +56,9 @@ LOADERS = {
     # Children Key Loaders
     "logs_from_client_activity": children_loader_builder(
         ClientActivityLog, "client_activity"
+    ),
+    "logs_from_client_solution": children_loader_builder(
+        ClientSolutionLog, "client_solution"
     ),
     # Foreign Key Loaders
     "activity_from_client_activity": foreign_key_loader_builder(Activity),

@@ -25,7 +25,7 @@ import {
 
 import ResponseHandler from 'components/response-handler'
 import {
-  useOrganizationProgramManagersQuery,
+  useOrganizationUsersQuery,
   useOrganizationClientsQuery,
   useDeleteClientMutation,
 } from 'generated/graphql'
@@ -47,7 +47,7 @@ type Props = {
 
 const ClientListCard: React.FC<Props> = ({ clients }) => {
   const [deleteClient, { loading }] = useDeleteClientMutation()
-  const result = useOrganizationProgramManagersQuery()
+  const result = useOrganizationUsersQuery()
 
   const { enqueueSnackbar } = useSnackbar()
   const [tableData, setTableData] = useState(clients)
@@ -130,9 +130,9 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
           return (
             <ClientTableToolbar
               filters={filters}
-              programManagers={organization.programManagers.map(programManager => ({
-                id: programManager.uuid,
-                label: programManager.name,
+              users={organization.users.map(user => ({
+                id: user.uuid,
+                label: user.name,
               }))}
               onFilters={handleFilters}
             />

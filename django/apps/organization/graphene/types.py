@@ -134,7 +134,7 @@ class ClientSolutionType(DjangoObjectType):
     logs = graphene.List(graphene.NonNull(ClientSolutionLogType), required=True)
 
     def resolve_logs(self, info, **kwargs):
-        return info.context.logs_from_client_activity.load(self.id)
+        return info.context.logs_from_client_solution.load(self.id)
 
 
 class TotalByCurrencyType(graphene.ObjectType):
@@ -194,7 +194,7 @@ class ClientInput(graphene.InputObjectType):
     client_solutions = graphene.List(ClientSolutionInput, required=True)
 
 
-class ClientActivityLogInput(graphene.InputObjectType):
+class LogInput(graphene.InputObjectType):
     uuid = graphene.String()
     date = graphene.Date(required=True)
     description = graphene.String()
@@ -286,7 +286,7 @@ class ClientType(DjangoObjectType):
     def resolve_solutions(self, info, **kwargs):
         from organization.services.client_activity_service import get_client_solutions
 
-        return get_client_solutions(self, kwargs.get("month"), kwargs.get("year"))
+        return get_client_solutions(self, **kwargs)
 
 
 class OrganizationType(DjangoObjectType):
@@ -301,7 +301,7 @@ class OrganizationType(DjangoObjectType):
     activities = graphene.List(graphene.NonNull(ActivityType), required=True)
     logo_url = graphene.NonNull(graphene.String)
     clients = graphene.NonNull(graphene.List(graphene.NonNull(ClientType)))
-    program_managers = graphene.NonNull(graphene.List(graphene.NonNull(UserType)))
+    users = graphene.NonNull(graphene.List(graphene.NonNull(UserType)))
 
     def resolve_clients(self, info, **kwargs):
         return self.clients.order_by("name").all()
@@ -310,7 +310,7 @@ class OrganizationType(DjangoObjectType):
         if self.logo:
             return self.logo.url
 
-    def resolve_program_managers(self, info, **kwargs):
+    def resolve_users(self, info, **kwargs):
         return (
             self.users.filter(client__isnull=True)
             .exclude(email="mihai.zamfir90@gmail.com")

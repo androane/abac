@@ -1,0 +1,13 @@
+mutation UpdateClientSolutionLogs($clientSolutionUuid: String!, $logsInput: [LogInput!]!) {
+  updateClientSolutionLogs(clientSolutionUuid: $clientSolutionUuid, logsInput: $logsInput) {
+    error {
+      ...Error
+    }
+    clientSolution {
+      uuid
+      logs {
+        ...ClientSolutionLog
+      }
+    }
+  }
+}

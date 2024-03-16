@@ -13,18 +13,18 @@ import Checkbox from '@mui/material/Checkbox'
 import InputLabel from '@mui/material/InputLabel'
 import { ClientTableFilters } from './types'
 
-type ProgramManager = {
+type User = {
   id: string
   label: string
 }
 
 type Props = {
-  programManagers: ProgramManager[]
+  users: User[]
   filters: ClientTableFilters
   onFilters: (name: string, value: string) => void
 }
 
-const ClientTableToolbar: React.FC<Props> = ({ programManagers, filters, onFilters }) => {
+const ClientTableToolbar: React.FC<Props> = ({ users, filters, onFilters }) => {
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       onFilters('name', event.target.value)
@@ -74,10 +74,10 @@ const ClientTableToolbar: React.FC<Props> = ({ programManagers, filters, onFilte
             <Checkbox disableRipple size="small" checked={!filters.programManagerId} />
             Toti
           </MenuItem>
-          {programManagers.map(pm => (
-            <MenuItem key={pm.id} value={pm.id}>
-              <Checkbox disableRipple size="small" checked={filters.programManagerId === pm.id} />
-              {pm.label}
+          {users.map(user => (
+            <MenuItem key={user.id} value={user.id}>
+              <Checkbox disableRipple size="small" checked={filters.programManagerId === user.id} />
+              {user.label}
             </MenuItem>
           ))}
         </Select>

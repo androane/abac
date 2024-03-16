@@ -6,14 +6,15 @@ from organization.graphene.types import (
     ActivityInput,
     ActivityType,
     ClientActivityInput,
-    ClientActivityLogInput,
     ClientActivityType,
     ClientFileInput,
     ClientInput,
+    ClientSolutionType,
     ClientType,
     ClientUserInput,
     InvoiceStatusEnumType,
     InvoiceType,
+    LogInput,
     SolutionInput,
     SolutionType,
 )
@@ -21,13 +22,16 @@ from organization.services.client_activity_service import (
     delete_client_activity,
     toggle_client_activity,
     update_client_activity,
-    update_client_activity_logs,
 )
 from organization.services.client_files_service import (
     create_client_files,
     delete_client_file,
 )
 from organization.services.client_invoice_service import update_client_invoice_status
+from organization.services.client_logs_service import (
+    update_client_activity_logs,
+    update_client_solution_logs,
+)
 from organization.services.client_service import delete_client, update_or_create_client
 from organization.services.client_users_service import (
     delete_client_user,
@@ -131,9 +135,7 @@ class ToggleClientActivity(BaseMutation):
 class UpdateClientActivityLogs(BaseMutation):
     class Arguments:
         client_activity_uuid = graphene.String(required=True)
-        client_activity_logs_input = graphene.List(
-            graphene.NonNull(ClientActivityLogInput), required=True
-        )
+        logs_input = graphene.List(graphene.NonNull(LogInput), required=True)
 
     client_activity = graphene.Field(ClientActivityType)
 
@@ -142,6 +144,20 @@ class UpdateClientActivityLogs(BaseMutation):
         client_activity = update_client_activity_logs(user.organization, **kwargs)
 
         return {"client_activity": client_activity}
+
+
+class UpdateClientSolutionLogs(BaseMutation):
+    class Arguments:
+        client_solution_uuid = graphene.String(required=True)
+        logs_input = graphene.List(graphene.NonNull(LogInput), required=True)
+
+    client_solution = graphene.Field(ClientSolutionType)
+
+    @logged_in_user_required
+    def mutate(self, user: User, **kwargs):
+        client_solution = update_client_solution_logs(user.organization, **kwargs)
+
+        return {"client_solution": client_solution}
 
 
 class CreateClientFiles(BaseMutation):

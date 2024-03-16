@@ -1,0 +1,8 @@
+query OrganizationUsers {
+  organization {
+    uuid
+    users {
+      ...User
+    }
+  }
+}

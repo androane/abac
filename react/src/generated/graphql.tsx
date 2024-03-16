@@ -63,13 +63,6 @@ export type ClientActivityInput = {
   year: Scalars['Int']['input'];
 };
 
-export type ClientActivityLogInput = {
-  date: Scalars['Date']['input'];
-  description?: InputMaybe<Scalars['String']['input']>;
-  minutesAllocated: Scalars['Int']['input'];
-  uuid?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type ClientActivityLogType = {
   __typename?: 'ClientActivityLogType';
   /** Date when the activity was executed */
@@ -288,6 +281,13 @@ export type InvoiceType = {
   year: Scalars['Int']['output'];
 };
 
+export type LogInput = {
+  date: Scalars['Date']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  minutesAllocated: Scalars['Int']['input'];
+  uuid?: InputMaybe<Scalars['String']['input']>;
+};
+
 /**
  * Authentication mutation. Post the email and password, and get a token
  * you can use for subsequent requests.
@@ -336,6 +336,8 @@ export type Mutation = {
   updateClientActivityLogs?: Maybe<UpdateClientActivityLogs>;
   /** Update Client Invoice Status */
   updateClientInvoiceStatus?: Maybe<UpdateClientInvoiceStatus>;
+  /** Update Client Solution Logs */
+  updateClientSolutionLogs?: Maybe<UpdateClientSolutionLogs>;
   /** Update or Create a New Client User */
   updateClientUser?: Maybe<UpdateClientUser>;
   /** Update or Create a New Activity */
@@ -412,14 +414,20 @@ export type MutationUpdateClientActivityArgs = {
 
 
 export type MutationUpdateClientActivityLogsArgs = {
-  clientActivityLogsInput: Array<ClientActivityLogInput>;
   clientActivityUuid: Scalars['String']['input'];
+  logsInput: Array<LogInput>;
 };
 
 
 export type MutationUpdateClientInvoiceStatusArgs = {
   invoiceUuid: Scalars['String']['input'];
   status: InvoiceStatusEnum;
+};
+
+
+export type MutationUpdateClientSolutionLogsArgs = {
+  clientSolutionUuid: Scalars['String']['input'];
+  logsInput: Array<LogInput>;
 };
 
 
@@ -444,8 +452,8 @@ export type OrganizationType = {
   clients: Array<ClientType>;
   logoUrl: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  programManagers: Array<UserType>;
   solutions: Array<SolutionType>;
+  users: Array<UserType>;
   uuid: Scalars['String']['output'];
 };
 
@@ -529,6 +537,12 @@ export type UpdateClientInvoiceStatus = {
   invoice?: Maybe<InvoiceType>;
 };
 
+export type UpdateClientSolutionLogs = {
+  __typename?: 'UpdateClientSolutionLogs';
+  clientSolution?: Maybe<ClientSolutionType>;
+  error?: Maybe<ErrorType>;
+};
+
 export type UpdateClientUser = {
   __typename?: 'UpdateClientUser';
   clientUser?: Maybe<UserType>;
@@ -562,7 +576,7 @@ export type UserType = {
 
 export type ActivityFragment = { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } };
 
-export type UserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: string, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } };
+export type AuthUserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: string, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } };
 
 export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost: number, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> };
 
@@ -580,9 +594,9 @@ export type ErrorFragment = { __typename?: 'ErrorType', field?: string | null, m
 
 export type FileFragment = { __typename?: 'ClientFileType', uuid: string, name: string, updated: DateTimeString, url: string, size: number };
 
-export type ProgramManagerFragment = { __typename?: 'UserType', uuid: string, name: string, email: string };
-
 export type SolutionFragment = { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> };
+
+export type UserFragment = { __typename?: 'UserType', uuid: string, name: string, email: string };
 
 export type ChangePasswordMutationVariables = Exact<{
   currentPassword: Scalars['String']['input'];
@@ -667,7 +681,7 @@ export type UpdateClientActivityMutation = { __typename?: 'Mutation', updateClie
 
 export type UpdateClientActivityLogsMutationVariables = Exact<{
   clientActivityUuid: Scalars['String']['input'];
-  clientActivityLogsInput: Array<ClientActivityLogInput> | ClientActivityLogInput;
+  logsInput: Array<LogInput> | LogInput;
 }>;
 
 
@@ -680,6 +694,14 @@ export type UpdateClientInvoiceStatusMutationVariables = Exact<{
 
 
 export type UpdateClientInvoiceStatusMutation = { __typename?: 'Mutation', updateClientInvoiceStatus?: { __typename?: 'UpdateClientInvoiceStatus', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, invoice?: { __typename?: 'InvoiceType', uuid: string, dateSent?: DateString | null } | null } | null };
+
+export type UpdateClientSolutionLogsMutationVariables = Exact<{
+  clientSolutionUuid: Scalars['String']['input'];
+  logsInput: Array<LogInput> | LogInput;
+}>;
+
+
+export type UpdateClientSolutionLogsMutation = { __typename?: 'Mutation', updateClientSolutionLogs?: { __typename?: 'UpdateClientSolutionLogs', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientSolution?: { __typename?: 'ClientSolutionType', uuid: string, logs: Array<{ __typename?: 'ClientSolutionLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } | null } | null };
 
 export type UpdateClientUserMutationVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -787,15 +809,15 @@ export type OrganizationClientsQueryVariables = Exact<{ [key: string]: never; }>
 
 export type OrganizationClientsQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, clients: Array<{ __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null }> } };
 
-export type OrganizationProgramManagersQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type OrganizationProgramManagersQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, programManagers: Array<{ __typename?: 'UserType', uuid: string, name: string, email: string }> } };
-
 export type OrganizationSolutionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type OrganizationSolutionsQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, solutions: Array<{ __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> }> } };
+
+export type OrganizationUsersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type OrganizationUsersQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, users: Array<{ __typename?: 'UserType', uuid: string, name: string, email: string }> } };
 
 export const ActivityFragmentDoc = gql`
     fragment Activity on ActivityType {
@@ -812,8 +834,8 @@ export const ActivityFragmentDoc = gql`
   }
 }
     `;
-export const UserFragmentDoc = gql`
-    fragment User on UserType {
+export const AuthUserFragmentDoc = gql`
+    fragment AuthUser on UserType {
   uuid
   email
   name
@@ -920,13 +942,6 @@ export const FileFragmentDoc = gql`
   size
 }
     `;
-export const ProgramManagerFragmentDoc = gql`
-    fragment ProgramManager on UserType {
-  uuid
-  name
-  email
-}
-    `;
 export const SolutionFragmentDoc = gql`
     fragment Solution on SolutionType {
   uuid
@@ -940,6 +955,13 @@ export const SolutionFragmentDoc = gql`
     uuid
     name
   }
+}
+    `;
+export const UserFragmentDoc = gql`
+    fragment User on UserType {
+  uuid
+  name
+  email
 }
     `;
 export const ChangePasswordDocument = gql`
@@ -987,12 +1009,12 @@ export const LoginDocument = gql`
     }
     token
     user {
-      ...User
+      ...AuthUser
     }
   }
 }
     ${ErrorFragmentDoc}
-${UserFragmentDoc}`;
+${AuthUserFragmentDoc}`;
 export type LoginMutationFn = Apollo.MutationFunction<LoginMutation, LoginMutationVariables>;
 
 /**
@@ -1365,10 +1387,10 @@ export type UpdateClientActivityMutationHookResult = ReturnType<typeof useUpdate
 export type UpdateClientActivityMutationResult = Apollo.MutationResult<UpdateClientActivityMutation>;
 export type UpdateClientActivityMutationOptions = Apollo.BaseMutationOptions<UpdateClientActivityMutation, UpdateClientActivityMutationVariables>;
 export const UpdateClientActivityLogsDocument = gql`
-    mutation UpdateClientActivityLogs($clientActivityUuid: String!, $clientActivityLogsInput: [ClientActivityLogInput!]!) {
+    mutation UpdateClientActivityLogs($clientActivityUuid: String!, $logsInput: [LogInput!]!) {
   updateClientActivityLogs(
     clientActivityUuid: $clientActivityUuid
-    clientActivityLogsInput: $clientActivityLogsInput
+    logsInput: $logsInput
   ) {
     error {
       ...Error
@@ -1399,7 +1421,7 @@ export type UpdateClientActivityLogsMutationFn = Apollo.MutationFunction<UpdateC
  * const [updateClientActivityLogsMutation, { data, loading, error }] = useUpdateClientActivityLogsMutation({
  *   variables: {
  *      clientActivityUuid: // value for 'clientActivityUuid'
- *      clientActivityLogsInput: // value for 'clientActivityLogsInput'
+ *      logsInput: // value for 'logsInput'
  *   },
  * });
  */
@@ -1450,6 +1472,52 @@ export function useUpdateClientInvoiceStatusMutation(baseOptions?: Apollo.Mutati
 export type UpdateClientInvoiceStatusMutationHookResult = ReturnType<typeof useUpdateClientInvoiceStatusMutation>;
 export type UpdateClientInvoiceStatusMutationResult = Apollo.MutationResult<UpdateClientInvoiceStatusMutation>;
 export type UpdateClientInvoiceStatusMutationOptions = Apollo.BaseMutationOptions<UpdateClientInvoiceStatusMutation, UpdateClientInvoiceStatusMutationVariables>;
+export const UpdateClientSolutionLogsDocument = gql`
+    mutation UpdateClientSolutionLogs($clientSolutionUuid: String!, $logsInput: [LogInput!]!) {
+  updateClientSolutionLogs(
+    clientSolutionUuid: $clientSolutionUuid
+    logsInput: $logsInput
+  ) {
+    error {
+      ...Error
+    }
+    clientSolution {
+      uuid
+      logs {
+        ...ClientSolutionLog
+      }
+    }
+  }
+}
+    ${ErrorFragmentDoc}
+${ClientSolutionLogFragmentDoc}`;
+export type UpdateClientSolutionLogsMutationFn = Apollo.MutationFunction<UpdateClientSolutionLogsMutation, UpdateClientSolutionLogsMutationVariables>;
+
+/**
+ * __useUpdateClientSolutionLogsMutation__
+ *
+ * To run a mutation, you first call `useUpdateClientSolutionLogsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateClientSolutionLogsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateClientSolutionLogsMutation, { data, loading, error }] = useUpdateClientSolutionLogsMutation({
+ *   variables: {
+ *      clientSolutionUuid: // value for 'clientSolutionUuid'
+ *      logsInput: // value for 'logsInput'
+ *   },
+ * });
+ */
+export function useUpdateClientSolutionLogsMutation(baseOptions?: Apollo.MutationHookOptions<UpdateClientSolutionLogsMutation, UpdateClientSolutionLogsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateClientSolutionLogsMutation, UpdateClientSolutionLogsMutationVariables>(UpdateClientSolutionLogsDocument, options);
+      }
+export type UpdateClientSolutionLogsMutationHookResult = ReturnType<typeof useUpdateClientSolutionLogsMutation>;
+export type UpdateClientSolutionLogsMutationResult = Apollo.MutationResult<UpdateClientSolutionLogsMutation>;
+export type UpdateClientSolutionLogsMutationOptions = Apollo.BaseMutationOptions<UpdateClientSolutionLogsMutation, UpdateClientSolutionLogsMutationVariables>;
 export const UpdateClientUserDocument = gql`
     mutation UpdateClientUser($clientUuid: String!, $clientUserInput: ClientUserInput!) {
   updateClientUser(clientUuid: $clientUuid, clientUserInput: $clientUserInput) {
@@ -1641,10 +1709,10 @@ export type UpdateOrganizationSolutionMutationOptions = Apollo.BaseMutationOptio
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {
-    ...User
+    ...AuthUser
   }
 }
-    ${UserFragmentDoc}`;
+    ${AuthUserFragmentDoc}`;
 
 /**
  * __useCurrentUserQuery__
@@ -2091,48 +2159,6 @@ export type OrganizationClientsQueryHookResult = ReturnType<typeof useOrganizati
 export type OrganizationClientsLazyQueryHookResult = ReturnType<typeof useOrganizationClientsLazyQuery>;
 export type OrganizationClientsSuspenseQueryHookResult = ReturnType<typeof useOrganizationClientsSuspenseQuery>;
 export type OrganizationClientsQueryResult = Apollo.QueryResult<OrganizationClientsQuery, OrganizationClientsQueryVariables>;
-export const OrganizationProgramManagersDocument = gql`
-    query OrganizationProgramManagers {
-  organization {
-    uuid
-    programManagers {
-      ...ProgramManager
-    }
-  }
-}
-    ${ProgramManagerFragmentDoc}`;
-
-/**
- * __useOrganizationProgramManagersQuery__
- *
- * To run a query within a React component, call `useOrganizationProgramManagersQuery` and pass it any options that fit your needs.
- * When your component renders, `useOrganizationProgramManagersQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useOrganizationProgramManagersQuery({
- *   variables: {
- *   },
- * });
- */
-export function useOrganizationProgramManagersQuery(baseOptions?: Apollo.QueryHookOptions<OrganizationProgramManagersQuery, OrganizationProgramManagersQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<OrganizationProgramManagersQuery, OrganizationProgramManagersQueryVariables>(OrganizationProgramManagersDocument, options);
-      }
-export function useOrganizationProgramManagersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<OrganizationProgramManagersQuery, OrganizationProgramManagersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<OrganizationProgramManagersQuery, OrganizationProgramManagersQueryVariables>(OrganizationProgramManagersDocument, options);
-        }
-export function useOrganizationProgramManagersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<OrganizationProgramManagersQuery, OrganizationProgramManagersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<OrganizationProgramManagersQuery, OrganizationProgramManagersQueryVariables>(OrganizationProgramManagersDocument, options);
-        }
-export type OrganizationProgramManagersQueryHookResult = ReturnType<typeof useOrganizationProgramManagersQuery>;
-export type OrganizationProgramManagersLazyQueryHookResult = ReturnType<typeof useOrganizationProgramManagersLazyQuery>;
-export type OrganizationProgramManagersSuspenseQueryHookResult = ReturnType<typeof useOrganizationProgramManagersSuspenseQuery>;
-export type OrganizationProgramManagersQueryResult = Apollo.QueryResult<OrganizationProgramManagersQuery, OrganizationProgramManagersQueryVariables>;
 export const OrganizationSolutionsDocument = gql`
     query OrganizationSolutions {
   organization {
@@ -2175,3 +2201,45 @@ export type OrganizationSolutionsQueryHookResult = ReturnType<typeof useOrganiza
 export type OrganizationSolutionsLazyQueryHookResult = ReturnType<typeof useOrganizationSolutionsLazyQuery>;
 export type OrganizationSolutionsSuspenseQueryHookResult = ReturnType<typeof useOrganizationSolutionsSuspenseQuery>;
 export type OrganizationSolutionsQueryResult = Apollo.QueryResult<OrganizationSolutionsQuery, OrganizationSolutionsQueryVariables>;
+export const OrganizationUsersDocument = gql`
+    query OrganizationUsers {
+  organization {
+    uuid
+    users {
+      ...User
+    }
+  }
+}
+    ${UserFragmentDoc}`;
+
+/**
+ * __useOrganizationUsersQuery__
+ *
+ * To run a query within a React component, call `useOrganizationUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOrganizationUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOrganizationUsersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useOrganizationUsersQuery(baseOptions?: Apollo.QueryHookOptions<OrganizationUsersQuery, OrganizationUsersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<OrganizationUsersQuery, OrganizationUsersQueryVariables>(OrganizationUsersDocument, options);
+      }
+export function useOrganizationUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<OrganizationUsersQuery, OrganizationUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<OrganizationUsersQuery, OrganizationUsersQueryVariables>(OrganizationUsersDocument, options);
+        }
+export function useOrganizationUsersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<OrganizationUsersQuery, OrganizationUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<OrganizationUsersQuery, OrganizationUsersQueryVariables>(OrganizationUsersDocument, options);
+        }
+export type OrganizationUsersQueryHookResult = ReturnType<typeof useOrganizationUsersQuery>;
+export type OrganizationUsersLazyQueryHookResult = ReturnType<typeof useOrganizationUsersLazyQuery>;
+export type OrganizationUsersSuspenseQueryHookResult = ReturnType<typeof useOrganizationUsersSuspenseQuery>;
+export type OrganizationUsersQueryResult = Apollo.QueryResult<OrganizationUsersQuery, OrganizationUsersQueryVariables>;

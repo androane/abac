@@ -41,7 +41,9 @@ def _get_client(org: Organization, client_input: ClientInput) -> Client:
 
 def _set_client_solutions(client: Client, client_input: ClientInput) -> None:
     input_client_solution_uuids = set([_.uuid for _ in client_input.client_solutions])
-    client.client_solutions.exclude(uuid__in=input_client_solution_uuids).delete()
+    client.client_solutions.exclude(uuid__in=input_client_solution_uuids).filter(
+        month__isnull=True, year__isnull=True
+    ).delete()
 
     for client_solution_input in client_input.client_solutions:
         # These are optional fields in the frontend for now

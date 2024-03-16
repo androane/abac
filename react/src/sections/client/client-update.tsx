@@ -17,12 +17,12 @@ import { paths } from 'routes/paths'
 import ResponseHandler from 'components/response-handler'
 import { useSnackbar } from 'components/snackbar'
 import {
-  useOrganizationProgramManagersQuery,
   useUpdateClientMutation,
   useOrganizationSolutionsQuery,
   useClientQuery,
   ClientQuery,
   CurrencyEnum,
+  useOrganizationUsersQuery,
 } from 'generated/graphql'
 import { useAuthContext } from 'auth/hooks'
 import getErrorMessage from 'utils/api-codes'
@@ -39,7 +39,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
 
   const { user } = useAuthContext()
 
-  const resultProgramManagers = useOrganizationProgramManagersQuery()
+  const resultUsers = useOrganizationUsersQuery()
   const resultSolutions = useOrganizationSolutionsQuery()
 
   const [updateClient, { loading }] = useUpdateClientMutation()
@@ -136,14 +136,14 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
               }}
             >
               <RHFTextField name="name" label="Nume firmă" InputLabelProps={{ shrink: true }} />
-              <ResponseHandler {...resultProgramManagers}>
+              <ResponseHandler {...resultUsers}>
                 {({ organization }) => {
                   return (
                     <RHFSelect name="programManagerUuid" label="Responsabil">
                       <MenuItem value="">Alege</MenuItem>
-                      {organization.programManagers.map(pm => (
-                        <MenuItem key={pm.uuid} value={pm.uuid}>
-                          {pm.name}
+                      {organization.users.map(u => (
+                        <MenuItem key={u.uuid} value={u.uuid}>
+                          {u.name}
                         </MenuItem>
                       ))}
                     </RHFSelect>

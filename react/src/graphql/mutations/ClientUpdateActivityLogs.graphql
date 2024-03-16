@@ -1,11 +1,5 @@
-mutation UpdateClientActivityLogs(
-  $clientActivityUuid: String!
-  $clientActivityLogsInput: [ClientActivityLogInput!]!
-) {
-  updateClientActivityLogs(
-    clientActivityUuid: $clientActivityUuid
-    clientActivityLogsInput: $clientActivityLogsInput
-  ) {
+mutation UpdateClientActivityLogs($clientActivityUuid: String!, $logsInput: [LogInput!]!) {
+  updateClientActivityLogs(clientActivityUuid: $clientActivityUuid, logsInput: $logsInput) {
     error {
       ...Error
     }

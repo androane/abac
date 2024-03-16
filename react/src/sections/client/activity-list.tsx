@@ -24,13 +24,12 @@ import {
   useDeleteClientActivityMutation,
   UnitCostTypeEnum,
 } from 'generated/graphql'
-import { useBoolean } from 'hooks/use-boolean'
 import ActivityTableFiltersResult from 'sections/settings/activity-table-filters-result'
 import ActivityTableToolbar from 'sections/client/activity-table-toolbar'
 import ActivityTableRow from 'sections/client/activity-table-row'
 import { ClientActivityTableFilters, ClientActivityType } from 'sections/client/types'
 import UpdateClientActivity from 'sections/client/activity-update'
-import UpdateClientActivityLogs from 'sections/client/activity-logs-update'
+import { UpdateClientActivityLogs, UpdateClientSolutionLogs } from 'sections/client/logs-update'
 
 const defaultFilters = {
   name: '',
@@ -60,14 +59,15 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
   date,
   onChangeDate,
 }) => {
-  console.log('activities', activities)
-
-  const showCreateActivity = useBoolean()
-
   const [deleteActivity, { loading }] = useDeleteClientActivityMutation()
 
   const [activityUuidToEdit, setActivityUuidToEdit] = useState<undefined | string>()
-  const [activityUuidLogsToEdit, setActivityUuidLogsToEdit] = useState<undefined | string>()
+  const [clientActivityUuidLogsToEdit, setClientActivityUuidLogsToEdit] = useState<
+    undefined | string
+  >()
+  const [clientSolutionUuidLogsToEdit, setClientSolutionUuidLogsToEdit] = useState<
+    undefined | string
+  >()
 
   const { enqueueSnackbar } = useSnackbar()
   const [tableData, setTableData] = useState(activities)
@@ -122,7 +122,7 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
 
     enqueueSnackbar('Activitatea a fost ștersă!')
 
-    showCreateActivity.onFalse()
+    setActivityUuidToEdit(undefined)
 
     table.onUpdatePageDeleteRow(dataInPage.length)
   }
@@ -130,28 +130,40 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
   const handleEditRow = useCallback(
     (uuid?: string) => {
       setActivityUuidToEdit(uuid)
-      showCreateActivity.onTrue()
     },
-    [showCreateActivity, setActivityUuidToEdit],
+    [setActivityUuidToEdit],
   )
 
   return (
     <Card>
-      {showCreateActivity.value && (
+      {activityUuidToEdit && (
         <UpdateClientActivity
           date={date}
           clientUuid={clientUuid}
           activity={activities.find(_ => _.activityUuid === activityUuidToEdit)!}
-          onClose={showCreateActivity.onFalse}
+          onClose={() => setActivityUuidToEdit(undefined)}
         />
       )}
-      {activityUuidLogsToEdit && (
+      {clientActivityUuidLogsToEdit && (
         <UpdateClientActivityLogs
           clientUuid={clientUuid}
           date={date}
-          activityName={activities.find(_ => _.clientActivityUuid === activityUuidLogsToEdit)!.name}
-          clientActivityUuid={activityUuidLogsToEdit}
-          onClose={() => setActivityUuidLogsToEdit(undefined)}
+          activityName={
+            activities.find(_ => _.clientActivityUuid === clientActivityUuidLogsToEdit)!.name
+          }
+          clientActivityUuid={clientActivityUuidLogsToEdit}
+          onClose={() => setClientActivityUuidLogsToEdit(undefined)}
+        />
+      )}
+      {clientSolutionUuidLogsToEdit && (
+        <UpdateClientSolutionLogs
+          clientUuid={clientUuid}
+          date={date}
+          activityName={
+            activities.find(_ => _.clientSolutionUuid === clientSolutionUuidLogsToEdit)!.name
+          }
+          clientSolutionUuid={clientSolutionUuidLogsToEdit}
+          onClose={() => setClientSolutionUuidLogsToEdit(undefined)}
         />
       )}
       <ActivityTableToolbar
@@ -198,7 +210,13 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
                     row={row}
                     onDeleteRow={() => handleDeleteRow(row.uuid)}
                     onEditRow={handleEditRow}
-                    onEditLogs={() => setActivityUuidLogsToEdit(row.clientActivityUuid)}
+                    onEditLogs={() => {
+                      if (row.clientSolutionUuid) {
+                        setClientSolutionUuidLogsToEdit(row.clientSolutionUuid)
+                      } else {
+                        setClientActivityUuidLogsToEdit(row.clientActivityUuid)
+                      }
+                    }}
                     loadingDelete={loading}
                   />
                 ))}
@@ -239,7 +257,7 @@ const ActivityListView: React.FC<Props> = ({ clientUuid }) => {
           return {
             uuid: cs.uuid,
             name: cs.solution.name,
-            clientActivityUuid: cs.uuid,
+            clientSolutionUuid: cs.uuid,
             activityUuid: cs.solution.uuid,
             category: cs.solution.category,
             description: '',
@@ -248,11 +266,8 @@ const ActivityListView: React.FC<Props> = ({ clientUuid }) => {
             unitCostType: UnitCostTypeEnum.FIXED,
             isCustom: true,
             isExecuted: true,
-            isSolutionActivity: true,
           }
         })
-
-        console.log('solutionActivities', solutionActivities)
 
         return (
           <ResponseHandler {...activitiesResult}>
@@ -262,24 +277,20 @@ const ActivityListView: React.FC<Props> = ({ clientUuid }) => {
                   ca => ca.activity.name === organizationActivity.name,
                 )
                 // Organization activities can be overwritten
-                if (overwrittenOrganizationAcitivty) {
-                  return {
-                    ...overwrittenOrganizationAcitivty.activity,
-                    activityUuid: organizationActivity.uuid,
-                    clientActivityUuid: overwrittenOrganizationAcitivty.uuid,
-                    isExecuted: overwrittenOrganizationAcitivty.isExecuted,
-                    isCustom: false,
-                    isSolutionActivity: false,
-                  }
-                }
-
+                const activity = overwrittenOrganizationAcitivty
+                  ? {
+                      ...overwrittenOrganizationAcitivty.activity,
+                      clientActivityUuid: overwrittenOrganizationAcitivty.uuid,
+                      isExecuted: overwrittenOrganizationAcitivty.isExecuted,
+                    }
+                  : {
+                      ...organizationActivity,
+                      isExecuted: false,
+                    }
                 return {
-                  ...organizationActivity,
+                  ...activity,
                   activityUuid: organizationActivity.uuid,
-                  clientActivityUuid: undefined,
-                  isExecuted: false,
                   isCustom: false,
-                  isSolutionActivity: false,
                 }
               })
 
@@ -297,7 +308,6 @@ const ActivityListView: React.FC<Props> = ({ clientUuid }) => {
                   clientActivityUuid: clientActivity.uuid,
                   isExecuted: clientActivity.isExecuted,
                   isCustom: true,
-                  isSolutionActivity: false,
                 }))
 
               return (
@@ -333,7 +343,7 @@ function applyFilter({
 
   stabilizedThis.sort((a, b) => {
     // Make the solution activities appear first
-    if (!a[0].isSolutionActivity && b[0].isSolutionActivity) {
+    if (!a[0].clientSolutionUuid && b[0].clientSolutionUuid) {
       return 1
     }
     const order = comparator(a[0], b[0])

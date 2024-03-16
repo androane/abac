@@ -176,6 +176,16 @@ class ClientActivity(BaseModel):
 
 
 class ClientSolution(BaseModel):
+    class Meta:
+        verbose_name_plural = "Client Activities"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["month", "year", "client", "solution"],
+                condition=models.Q(deleted__isnull=True),
+                name="organization_client_activity_month_year_client_solution_unique",
+            )
+        ]
+
     client = models.ForeignKey(
         Client, on_delete=models.CASCADE, related_name="client_solutions"
     )
@@ -192,11 +202,11 @@ class ClientSolution(BaseModel):
     unit_cost_currency = models.CharField(max_length=3, choices=CurrencyEnum.choices)
 
     def __str__(self):
+        suffix = ""
         if self.month:
-            prefix = f"{self.month}.{self.year}"
-        else:
-            prefix = "GLOBAL"
-        return f"{prefix} : {self.client.name} - {self.solution.name}"
+            suffix = f" - {self.month}.{self.year}"
+
+        return f"{self.client.name} - {self.solution.name} {suffix}"
 
 
 class ClientActivityLog(ActivityLog):

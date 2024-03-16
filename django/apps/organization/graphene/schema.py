@@ -14,6 +14,7 @@ from organization.graphene.mutations import (
     UpdateClientActivity,
     UpdateClientActivityLogs,
     UpdateClientInvoiceStatus,
+    UpdateClientSolutionLogs,
     UpdateClientUser,
     UpdateOrganizationActivity,
     UpdateOrganizationSolution,
@@ -96,6 +97,9 @@ class Mutation(graphene.ObjectType):
     )
     update_client_activity_logs = UpdateClientActivityLogs.Field(
         description="Update Client Activity Logs"
+    )
+    update_client_solution_logs = UpdateClientSolutionLogs.Field(
+        description="Update Client Solution Logs"
     )
 
     # Client File

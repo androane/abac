@@ -1,8 +1,0 @@
-query OrganizationProgramManagers {
-  organization {
-    uuid
-    programManagers {
-      ...ProgramManager
-    }
-  }
-}

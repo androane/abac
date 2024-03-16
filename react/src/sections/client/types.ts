@@ -24,9 +24,9 @@ export type ClientActivityTableFilters = {
 export type ClientActivityType = ActivityType & {
   isExecuted: boolean
   isCustom: boolean
-  isSolutionActivity: boolean
   activityUuid: string
   clientActivityUuid?: string
+  clientSolutionUuid?: string
 }
 
 export type APIClientUser = ClientUsersQuery['client']['users'][0]
