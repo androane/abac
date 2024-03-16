@@ -19,7 +19,7 @@ from organization.graphene.mutations import (
     UpdateOrganizationActivity,
     UpdateOrganizationSolution,
 )
-from organization.graphene.types import ClientType, InvoiceType, OrganizationType
+from organization.graphene.types import ClientType, OrganizationType
 from organization.services.client_invoice_service import get_client_invoice
 from organization.services.client_service import get_client
 from user.decorators import logged_in_user_required
@@ -38,12 +38,6 @@ class Query(graphene.ObjectType):
         graphene.NonNull(ClientType),
         description="Get a Client",
         uuid=graphene.String(required=True),
-    )
-    client_invoice = graphene.Field(
-        graphene.NonNull(InvoiceType),
-        client_uuid=graphene.String(required=True),
-        month=graphene.Int(),
-        year=graphene.Int(),
     )
 
     @logged_in_user_required

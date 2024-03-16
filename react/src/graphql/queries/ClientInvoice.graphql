@@ -1,12 +1,15 @@
 query ClientInvoice($clientUuid: String!, $year: Int, $month: Int) {
-  clientInvoice(clientUuid: $clientUuid, year: $year, month: $month) {
+  client(uuid: $clientUuid) {
     uuid
-    month
-    year
-    dateSent
-    totalsByCurrency {
-      currency
-      total
+    invoice(year: $year, month: $month) {
+      uuid
+      month
+      year
+      dateSent
+      totalsByCurrency {
+        currency
+        total
+      }
     }
   }
 }

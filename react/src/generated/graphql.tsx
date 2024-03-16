@@ -142,14 +142,15 @@ export type ClientSolutionType = {
 export type ClientType = {
   __typename?: 'ClientType';
   activities: Array<ClientActivityType>;
-  clientActivity: ClientActivityType;
-  clientSolution: ClientSolutionType;
+  activity: ClientActivityType;
   /** CUI - Cod Unic de Identificare */
   cui?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   files: Array<ClientFileType>;
+  invoice: InvoiceType;
   name: Scalars['String']['output'];
   programManager?: Maybe<UserType>;
+  solution: ClientSolutionType;
   solutions: Array<ClientSolutionType>;
   /** SPV Password */
   spvPassword?: Maybe<Scalars['String']['output']>;
@@ -166,12 +167,18 @@ export type ClientTypeActivitiesArgs = {
 };
 
 
-export type ClientTypeClientActivityArgs = {
+export type ClientTypeActivityArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type ClientTypeClientSolutionArgs = {
+export type ClientTypeInvoiceArgs = {
+  month?: InputMaybe<Scalars['Int']['input']>;
+  year?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type ClientTypeSolutionArgs = {
   uuid: Scalars['String']['input'];
 };
 
@@ -461,7 +468,6 @@ export type Query = {
   __typename?: 'Query';
   /** Get a Client */
   client: ClientType;
-  clientInvoice: InvoiceType;
   currentUser: UserType;
   /** Get an Organization */
   organization: OrganizationType;
@@ -472,13 +478,6 @@ export type Query = {
 
 export type QueryClientArgs = {
   uuid: Scalars['String']['input'];
-};
-
-
-export type QueryClientInvoiceArgs = {
-  clientUuid: Scalars['String']['input'];
-  month?: InputMaybe<Scalars['Int']['input']>;
-  year?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type SolutionInput = {
@@ -759,7 +758,7 @@ export type ClientActivityLogsQueryVariables = Exact<{
 }>;
 
 
-export type ClientActivityLogsQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', clientActivity: { __typename?: 'ClientActivityType', uuid: string, logs: Array<{ __typename?: 'ClientActivityLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } } };
+export type ClientActivityLogsQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, activity: { __typename?: 'ClientActivityType', uuid: string, logs: Array<{ __typename?: 'ClientActivityLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } } };
 
 export type ClientQueryVariables = Exact<{
   uuid: Scalars['String']['input'];
@@ -782,7 +781,7 @@ export type ClientInvoiceQueryVariables = Exact<{
 }>;
 
 
-export type ClientInvoiceQuery = { __typename?: 'Query', clientInvoice: { __typename?: 'InvoiceType', uuid: string, month: number, year: number, dateSent?: DateString | null, totalsByCurrency: Array<{ __typename?: 'TotalByCurrencyType', currency: CurrencyEnum, total: number }> } };
+export type ClientInvoiceQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, invoice: { __typename?: 'InvoiceType', uuid: string, month: number, year: number, dateSent?: DateString | null, totalsByCurrency: Array<{ __typename?: 'TotalByCurrencyType', currency: CurrencyEnum, total: number }> } } };
 
 export type ClientSolutionLogsQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -790,7 +789,7 @@ export type ClientSolutionLogsQueryVariables = Exact<{
 }>;
 
 
-export type ClientSolutionLogsQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', clientSolution: { __typename?: 'ClientSolutionType', uuid: string, logs: Array<{ __typename?: 'ClientSolutionLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } } };
+export type ClientSolutionLogsQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, solution: { __typename?: 'ClientSolutionType', uuid: string, logs: Array<{ __typename?: 'ClientSolutionLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } } };
 
 export type ClientUsersQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -1811,7 +1810,8 @@ export type ClientActivitiesQueryResult = Apollo.QueryResult<ClientActivitiesQue
 export const ClientActivityLogsDocument = gql`
     query ClientActivityLogs($clientUuid: String!, $clientActivityUuid: String!) {
   client(uuid: $clientUuid) {
-    clientActivity(uuid: $clientActivityUuid) {
+    uuid
+    activity(uuid: $clientActivityUuid) {
       uuid
       logs {
         ...ClientActivityLog
@@ -1939,14 +1939,17 @@ export type ClientFilesSuspenseQueryHookResult = ReturnType<typeof useClientFile
 export type ClientFilesQueryResult = Apollo.QueryResult<ClientFilesQuery, ClientFilesQueryVariables>;
 export const ClientInvoiceDocument = gql`
     query ClientInvoice($clientUuid: String!, $year: Int, $month: Int) {
-  clientInvoice(clientUuid: $clientUuid, year: $year, month: $month) {
+  client(uuid: $clientUuid) {
     uuid
-    month
-    year
-    dateSent
-    totalsByCurrency {
-      currency
-      total
+    invoice(year: $year, month: $month) {
+      uuid
+      month
+      year
+      dateSent
+      totalsByCurrency {
+        currency
+        total
+      }
     }
   }
 }
@@ -1989,7 +1992,8 @@ export type ClientInvoiceQueryResult = Apollo.QueryResult<ClientInvoiceQuery, Cl
 export const ClientSolutionLogsDocument = gql`
     query ClientSolutionLogs($clientUuid: String!, $clientSolutionUuid: String!) {
   client(uuid: $clientUuid) {
-    clientSolution(uuid: $clientSolutionUuid) {
+    uuid
+    solution(uuid: $clientSolutionUuid) {
       uuid
       logs {
         ...ClientSolutionLog

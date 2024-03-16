@@ -244,23 +244,24 @@ class ClientType(DjangoObjectType):
 
     files = graphene.List(graphene.NonNull(ClientFileType), required=True)
     users = graphene.List(graphene.NonNull(UserType), required=True)
-    client_activity = graphene.NonNull(
-        ClientActivityType, uuid=graphene.String(required=True)
-    )
+    activity = graphene.NonNull(ClientActivityType, uuid=graphene.String(required=True))
     activities = graphene.List(
         graphene.NonNull(ClientActivityType),
         month=graphene.Int(),
         year=graphene.Int(),
         required=True,
     )
-    client_solution = graphene.NonNull(
-        ClientSolutionType, uuid=graphene.String(required=True)
-    )
+    solution = graphene.NonNull(ClientSolutionType, uuid=graphene.String(required=True))
     solutions = graphene.List(
         graphene.NonNull(ClientSolutionType),
         month=graphene.Int(),
         year=graphene.Int(),
         required=True,
+    )
+    invoice = graphene.NonNull(
+        InvoiceType,
+        month=graphene.Int(),
+        year=graphene.Int(),
     )
 
     def resolve_files(self, info, **kwargs):
@@ -269,10 +270,10 @@ class ClientType(DjangoObjectType):
     def resolve_users(self, info, **kwargs):
         return self.users.all()
 
-    def resolve_client_activity(self, info, **kwargs):
+    def resolve_activity(self, info, **kwargs):
         return self.client_activities.get(uuid=kwargs.get("uuid"))
 
-    def resolve_client_solution(self, info, **kwargs):
+    def resolve_solution(self, info, **kwargs):
         return self.client_solutions.get(uuid=kwargs.get("uuid"))
 
     def resolve_activities(self, info, **kwargs):
@@ -287,6 +288,9 @@ class ClientType(DjangoObjectType):
         from organization.services.client_activity_service import get_client_solutions
 
         return get_client_solutions(self, **kwargs)
+
+    def resolve_invoice(self, info, **kwargs):
+        return self.invoice
 
 
 class OrganizationType(DjangoObjectType):

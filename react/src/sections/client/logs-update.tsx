@@ -261,7 +261,7 @@ export const UpdateClientActivityLogs: React.FC<UpdateClientActivityLogsProps> =
             date={date}
             activityName={activityName}
             uuid={clientActivityUuid}
-            logs={client.clientActivity.logs}
+            logs={client.activity.logs}
             onClose={onClose}
           />
         )
@@ -300,7 +300,7 @@ export const UpdateClientSolutionLogs: React.FC<UpdateClientSolutionLogsProps> =
             date={date}
             activityName={activityName}
             uuid={clientSolutionUuid}
-            logs={client.clientSolution.logs}
+            logs={client.solution.logs}
             onClose={onClose}
             isSolution
           />

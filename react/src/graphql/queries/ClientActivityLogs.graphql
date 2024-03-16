@@ -1,6 +1,7 @@
 query ClientActivityLogs($clientUuid: String!, $clientActivityUuid: String!) {
   client(uuid: $clientUuid) {
-    clientActivity(uuid: $clientActivityUuid) {
+    uuid
+    activity(uuid: $clientActivityUuid) {
       uuid
       logs {
         ...ClientActivityLog
