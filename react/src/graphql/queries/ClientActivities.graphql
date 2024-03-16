@@ -1,4 +1,4 @@
-query ClientActivities($clientUuid: String!, $year: Int, $month: Int) {
+query ClientActivities($clientUuid: String!, $year: Int!, $month: Int!) {
   client(uuid: $clientUuid) {
     uuid
     activities(year: $year, month: $month) {

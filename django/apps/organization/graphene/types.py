@@ -25,6 +25,10 @@ from organization.models import (
     Solution,
 )
 from organization.models.client import ClientSolutionLog
+from organization.services.client_invoice_service import (
+    generate_invoice_items,
+    get_client_invoice,
+)
 from user.graphene.types import UserType
 
 CurrencyEnumType = graphene.Enum.from_enum(CurrencyEnum)
@@ -142,6 +146,13 @@ class TotalByCurrencyType(graphene.ObjectType):
     total = graphene.Float(required=True)
 
 
+class InvoiceItemType(graphene.ObjectType):
+    name = graphene.String(required=True)
+    quantity = graphene.Int(required=True)
+    unit_cost = graphene.Int(required=True)
+    unit_cost_currency = CurrencyEnumType(required=True)
+
+
 class InvoiceType(DjangoObjectType):
     class Meta:
         model = Invoice
@@ -152,18 +163,10 @@ class InvoiceType(DjangoObjectType):
             "date_sent",
         )
 
-    totals_by_currency = graphene.List(
-        graphene.NonNull(TotalByCurrencyType), required=True
-    )
+    items = graphene.List(graphene.NonNull(InvoiceItemType), required=True)
 
-    def resolve_totals_by_currency(self, info, **kwargs):
-        return [
-            {
-                "currency": currency,
-                "total": total,
-            }
-            for currency, total in self.totals_by_currency.items()
-        ]
+    def resolve_items(self, info, **kwargs):
+        return generate_invoice_items(self)
 
 
 class ActivityInput(graphene.InputObjectType):
@@ -247,8 +250,8 @@ class ClientType(DjangoObjectType):
     activity = graphene.NonNull(ClientActivityType, uuid=graphene.String(required=True))
     activities = graphene.List(
         graphene.NonNull(ClientActivityType),
-        month=graphene.Int(),
-        year=graphene.Int(),
+        month=graphene.Int(required=True),
+        year=graphene.Int(required=True),
         required=True,
     )
     solution = graphene.NonNull(ClientSolutionType, uuid=graphene.String(required=True))
@@ -260,8 +263,8 @@ class ClientType(DjangoObjectType):
     )
     invoice = graphene.NonNull(
         InvoiceType,
-        month=graphene.Int(),
-        year=graphene.Int(),
+        month=graphene.Int(required=True),
+        year=graphene.Int(required=True),
     )
 
     def resolve_files(self, info, **kwargs):
@@ -277,12 +280,9 @@ class ClientType(DjangoObjectType):
         return self.client_solutions.get(uuid=kwargs.get("uuid"))
 
     def resolve_activities(self, info, **kwargs):
-        if kwargs.get("month") and kwargs.get("year"):
-            return self.client_activities.filter(
-                month=kwargs.get("month"),
-                year=kwargs.get("year"),
-            )
-        return self.client_activities.all()
+        from organization.services.client_activity_service import get_client_activities
+
+        return get_client_activities(self, **kwargs)
 
     def resolve_solutions(self, info, **kwargs):
         from organization.services.client_activity_service import get_client_solutions
@@ -290,7 +290,7 @@ class ClientType(DjangoObjectType):
         return get_client_solutions(self, **kwargs)
 
     def resolve_invoice(self, info, **kwargs):
-        return self.invoice
+        return get_client_invoice(self, **kwargs)
 
 
 class OrganizationType(DjangoObjectType):

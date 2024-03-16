@@ -71,6 +71,15 @@ def toggle_client_activity(
     ).update(is_executed=~F("is_executed"))
 
 
+def get_client_activities(
+    client: Client, month: int, year: int
+) -> Iterable[ClientActivity]:
+    return client.client_activities.filter(
+        month=month,
+        year=year,
+    )
+
+
 def get_client_solutions(
     client: Client, month: Optional[int] = None, year: Optional[int] = None
 ) -> list[ClientSolution]:

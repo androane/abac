@@ -162,8 +162,8 @@ export type ClientType = {
 
 
 export type ClientTypeActivitiesArgs = {
-  month?: InputMaybe<Scalars['Int']['input']>;
-  year?: InputMaybe<Scalars['Int']['input']>;
+  month: Scalars['Int']['input'];
+  year: Scalars['Int']['input'];
 };
 
 
@@ -173,8 +173,8 @@ export type ClientTypeActivityArgs = {
 
 
 export type ClientTypeInvoiceArgs = {
-  month?: InputMaybe<Scalars['Int']['input']>;
-  year?: InputMaybe<Scalars['Int']['input']>;
+  month: Scalars['Int']['input'];
+  year: Scalars['Int']['input'];
 };
 
 
@@ -270,6 +270,14 @@ export type ErrorType = {
   message: Scalars['String']['output'];
 };
 
+export type InvoiceItemType = {
+  __typename?: 'InvoiceItemType';
+  name: Scalars['String']['output'];
+  quantity: Scalars['Int']['output'];
+  unitCost: Scalars['Int']['output'];
+  unitCostCurrency: CurrencyEnum;
+};
+
 /** An enumeration. */
 export enum InvoiceStatusEnum {
   DRAFT = 'DRAFT',
@@ -280,9 +288,9 @@ export type InvoiceType = {
   __typename?: 'InvoiceType';
   /** Date when the invoice was sent to the customer */
   dateSent?: Maybe<Scalars['Date']['output']>;
+  items: Array<InvoiceItemType>;
   /** Month of the invoice */
   month: Scalars['Int']['output'];
-  totalsByCurrency: Array<TotalByCurrencyType>;
   uuid: Scalars['String']['output'];
   /** Year of the invoice */
   year: Scalars['Int']['output'];
@@ -498,12 +506,6 @@ export type SolutionType = {
 export type ToggleClientActivity = {
   __typename?: 'ToggleClientActivity';
   error?: Maybe<ErrorType>;
-};
-
-export type TotalByCurrencyType = {
-  __typename?: 'TotalByCurrencyType';
-  currency: CurrencyEnum;
-  total: Scalars['Float']['output'];
 };
 
 /** An enumeration. */
@@ -745,8 +747,8 @@ export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename
 
 export type ClientActivitiesQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
-  year?: InputMaybe<Scalars['Int']['input']>;
-  month?: InputMaybe<Scalars['Int']['input']>;
+  year: Scalars['Int']['input'];
+  month: Scalars['Int']['input'];
 }>;
 
 
@@ -776,12 +778,12 @@ export type ClientFilesQuery = { __typename?: 'Query', client: { __typename?: 'C
 
 export type ClientInvoiceQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
-  year?: InputMaybe<Scalars['Int']['input']>;
-  month?: InputMaybe<Scalars['Int']['input']>;
+  year: Scalars['Int']['input'];
+  month: Scalars['Int']['input'];
 }>;
 
 
-export type ClientInvoiceQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, invoice: { __typename?: 'InvoiceType', uuid: string, month: number, year: number, dateSent?: DateString | null, totalsByCurrency: Array<{ __typename?: 'TotalByCurrencyType', currency: CurrencyEnum, total: number }> } } };
+export type ClientInvoiceQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, invoice: { __typename?: 'InvoiceType', dateSent?: DateString | null, items: Array<{ __typename?: 'InvoiceItemType', name: string, quantity: number, unitCost: number, unitCostCurrency: CurrencyEnum }> } } };
 
 export type ClientSolutionLogsQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -1745,7 +1747,7 @@ export type CurrentUserLazyQueryHookResult = ReturnType<typeof useCurrentUserLaz
 export type CurrentUserSuspenseQueryHookResult = ReturnType<typeof useCurrentUserSuspenseQuery>;
 export type CurrentUserQueryResult = Apollo.QueryResult<CurrentUserQuery, CurrentUserQueryVariables>;
 export const ClientActivitiesDocument = gql`
-    query ClientActivities($clientUuid: String!, $year: Int, $month: Int) {
+    query ClientActivities($clientUuid: String!, $year: Int!, $month: Int!) {
   client(uuid: $clientUuid) {
     uuid
     activities(year: $year, month: $month) {
@@ -1938,17 +1940,16 @@ export type ClientFilesLazyQueryHookResult = ReturnType<typeof useClientFilesLaz
 export type ClientFilesSuspenseQueryHookResult = ReturnType<typeof useClientFilesSuspenseQuery>;
 export type ClientFilesQueryResult = Apollo.QueryResult<ClientFilesQuery, ClientFilesQueryVariables>;
 export const ClientInvoiceDocument = gql`
-    query ClientInvoice($clientUuid: String!, $year: Int, $month: Int) {
+    query ClientInvoice($clientUuid: String!, $year: Int!, $month: Int!) {
   client(uuid: $clientUuid) {
     uuid
     invoice(year: $year, month: $month) {
-      uuid
-      month
-      year
       dateSent
-      totalsByCurrency {
-        currency
-        total
+      items {
+        name
+        quantity
+        unitCost
+        unitCostCurrency
       }
     }
   }

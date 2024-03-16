@@ -20,7 +20,6 @@ from organization.graphene.mutations import (
     UpdateOrganizationSolution,
 )
 from organization.graphene.types import ClientType, OrganizationType
-from organization.services.client_invoice_service import get_client_invoice
 from organization.services.client_service import get_client
 from user.decorators import logged_in_user_required
 from user.models import User
@@ -47,10 +46,6 @@ class Query(graphene.ObjectType):
     @logged_in_user_required
     def resolve_client(info, user: User, **kwargs):
         return get_client(user.organization, **kwargs)
-
-    @logged_in_user_required
-    def resolve_client_invoice(info, user: User, **kwargs):
-        return get_client_invoice(user.organization, **kwargs)
 
 
 class Mutation(graphene.ObjectType):

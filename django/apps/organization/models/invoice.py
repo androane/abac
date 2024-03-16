@@ -1,18 +1,10 @@
 # -*- coding: utf-8 -*-
-from collections import defaultdict
 from datetime import date
-from typing import TypedDict
 
 from django.db import models
 
 from core.models import BaseModel
-from organization.constants import CurrencyEnum
 from organization.models.client import Client
-
-
-class TotalByCurrency(TypedDict):
-    currency: CurrencyEnum
-    total: float
 
 
 class Invoice(BaseModel):
@@ -53,10 +45,3 @@ class Invoice(BaseModel):
     @property
     def date(self) -> date:
         return date(self.year, self.month, 1)
-
-    @property
-    def totals_by_currency(self) -> list[TotalByCurrency]:
-        totals = defaultdict(float)
-        for item in self.items.all():
-            totals[item.unit_price_currency] += item.total
-        return totals
