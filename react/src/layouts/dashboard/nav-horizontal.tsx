@@ -45,7 +45,7 @@ function NavHorizontal() {
           <NavSectionHorizontal
             data={navData}
             slotProps={{
-              currentRole: user?.role,
+              currentRole: user?.name,
             }}
             sx={{
               ...theme.mixins.toolbar,

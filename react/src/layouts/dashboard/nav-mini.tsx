@@ -45,7 +45,7 @@ export default function NavMini() {
         <NavSectionMini
           data={navData}
           slotProps={{
-            currentRole: user?.role,
+            currentRole: user?.name,
           }}
         />
       </Stack>

@@ -597,7 +597,7 @@ export type FileFragment = { __typename?: 'ClientFileType', uuid: string, name: 
 
 export type SolutionFragment = { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> };
 
-export type UserFragment = { __typename?: 'UserType', uuid: string, name: string, email: string };
+export type UserFragment = { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string };
 
 export type ChangePasswordMutationVariables = Exact<{
   currentPassword: Scalars['String']['input'];
@@ -818,7 +818,7 @@ export type OrganizationSolutionsQuery = { __typename?: 'Query', organization: {
 export type OrganizationUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type OrganizationUsersQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, users: Array<{ __typename?: 'UserType', uuid: string, name: string, email: string }> } };
+export type OrganizationUsersQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, users: Array<{ __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string }> } };
 
 export const ActivityFragmentDoc = gql`
     fragment Activity on ActivityType {
@@ -963,6 +963,7 @@ export const UserFragmentDoc = gql`
   uuid
   name
   email
+  photoUrl
 }
     `;
 export const ChangePasswordDocument = gql`
