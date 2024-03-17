@@ -13,6 +13,8 @@ import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
 import { APIClient } from 'sections/client/types'
 import LoadingButton from '@mui/lab/LoadingButton'
+import { useAuthContext } from 'auth/hooks'
+import { UserPermissionsEnum } from 'generated/graphql'
 
 type Props = {
   loading: boolean
@@ -25,6 +27,8 @@ export default function ClientTableRow({ loading, row, onEditRow, onDeleteRow }:
   const confirm = useBoolean()
 
   const popover = usePopover()
+
+  const { hasPermission } = useAuthContext()
 
   return (
     <>
@@ -69,17 +73,18 @@ export default function ClientTableRow({ loading, row, onEditRow, onDeleteRow }:
         arrow="right-top"
         sx={{ width: 140 }}
       >
-        <MenuItem
-          onClick={() => {
-            confirm.onTrue()
-            popover.onClose()
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          Șterge
-        </MenuItem>
-
+        {hasPermission(UserPermissionsEnum.HAS_ORGANIZATION_ADMIN) && (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue()
+              popover.onClose()
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Șterge
+          </MenuItem>
+        )}
         <MenuItem
           onClick={() => {
             onEditRow()

@@ -32,7 +32,6 @@ const TABS = [
     value: TABS_VALUES.GENERAL,
     label: 'Informații Generale',
     icon: 'solar:user-id-outline',
-    requiredPermission: UserPermissionsEnum.HAS_CLIENT_GENERAL_INFORMATION_ACCESS,
   },
   {
     value: TABS_VALUES.ACTIVITY,

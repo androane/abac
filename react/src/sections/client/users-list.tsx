@@ -29,9 +29,6 @@ const TABLE_HEAD = [
   { id: 'name', label: 'Nume' },
   { id: 'email', label: 'Email' },
   { id: 'phoneNumber', label: 'Telefon' },
-  { id: 'role', label: 'Rol' },
-  { id: 'spvUsername', label: 'Utilizator SPV' },
-  { id: 'spvPassword', label: 'Parola SPV' },
   { id: '', width: 88 },
 ]
 

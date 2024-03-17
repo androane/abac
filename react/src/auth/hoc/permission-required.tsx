@@ -1,4 +1,4 @@
-import { useAuthContext } from 'auth/hooks/use-auth-context'
+import { useAuthContext } from 'auth/hooks'
 import { UserPermissionsEnum } from 'generated/graphql'
 import { LANDING_PAGE } from 'routes/paths'
 import { Navigate } from 'react-router-dom'

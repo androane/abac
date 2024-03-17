@@ -30,6 +30,11 @@ from organization.services.client_invoice_service import (
     get_client_invoice,
 )
 from user.graphene.types import UserType
+from user.permissions import (
+    UserPermissionsEnum,
+    field_permission_required,
+    permission_required,
+)
 
 CurrencyEnumType = graphene.Enum.from_enum(CurrencyEnum)
 UnitCostTypeEnumType = graphene.Enum.from_enum(UnitCostTypeEnum)
@@ -276,6 +281,9 @@ class ClientType(DjangoObjectType):
     def resolve_activity(self, info, **kwargs):
         return self.client_activities.get(uuid=kwargs.get("uuid"))
 
+    @permission_required(
+        UserPermissionsEnum.HAS_CLIENT_GENERAL_INFORMATION_ACCESS.value
+    )
     def resolve_solution(self, info, **kwargs):
         return self.client_solutions.get(uuid=kwargs.get("uuid"))
 
@@ -289,6 +297,7 @@ class ClientType(DjangoObjectType):
 
         return get_client_solutions(self, **kwargs)
 
+    @permission_required(UserPermissionsEnum.HAS_CLIENT_INVOICE_ACCESS.value)
     def resolve_invoice(self, info, **kwargs):
         return get_client_invoice(self, **kwargs)
 
@@ -324,6 +333,7 @@ class OrganizationType(DjangoObjectType):
     def resolve_solutions(self, info, **kwargs):
         return self.solutions.all()
 
+    # No permission required for activities
     def resolve_activities(self, info, **kwargs):
         return self.activities.filter(client__isnull=True).all()
 
@@ -341,6 +351,30 @@ class ClientUserProfileType(DjangoObjectType):
         )
 
     role = ClientUserRoleEnumType()
+
+    @field_permission_required(
+        UserPermissionsEnum.HAS_CLIENT_GENERAL_INFORMATION_ACCESS.value
+    )
+    def resolve_role(self, info, **kwargs):
+        return self.role
+
+    @field_permission_required(
+        UserPermissionsEnum.HAS_CLIENT_GENERAL_INFORMATION_ACCESS.value
+    )
+    def resolve_spv_username(self, info, **kwargs):
+        return self.spv_username
+
+    @field_permission_required(
+        UserPermissionsEnum.HAS_CLIENT_GENERAL_INFORMATION_ACCESS.value
+    )
+    def resolve_spv_password(self, info, **kwargs):
+        return self.spv_password
+
+    @field_permission_required(
+        UserPermissionsEnum.HAS_CLIENT_GENERAL_INFORMATION_ACCESS.value
+    )
+    def resolve_ownership_percentage(self, info, **kwargs):
+        return self.ownership_percentage
 
 
 class ClientUserInput(graphene.InputObjectType):

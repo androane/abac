@@ -6,7 +6,7 @@ import { hideScroll } from 'theme/css'
 import Logo from 'components/logo'
 import { NavSectionMini } from 'components/nav-section'
 
-import { useAuthContext } from 'auth/hooks/use-auth-context'
+import { useAuthContext } from 'auth/hooks'
 import NavToggleButton from '../common/nav-toggle-button'
 import { NAV } from '../config-layout'
 import useNavData from './config-navigation'

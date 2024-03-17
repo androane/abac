@@ -1,6 +1,6 @@
 import { paths } from 'routes/paths'
 
-import { useAuthContext } from 'auth/hooks/use-auth-context'
+import { useAuthContext } from 'auth/hooks'
 import SvgColor from 'components/svg-color'
 import SettingsIcon from '@mui/icons-material/Settings'
 import { UserPermissionsEnum } from 'generated/graphql'

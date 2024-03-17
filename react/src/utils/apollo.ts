@@ -28,6 +28,8 @@ const errorLink = onError(result => {
     if (graphQLErrors) {
       graphQLErrors.forEach(error => {
         const errorCode = error?.extensions?.errorCode
+        console.log('errorCode')
+        console.log(errorCode)
         if (errorCode !== GraphQLErrorsEnum.UNAUTHORIZED_ACCESS) {
           captureMessage(error.message, {
             level: 'error',

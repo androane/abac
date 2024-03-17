@@ -16,11 +16,13 @@ import {
   useUpdateClientUserMutation,
   ClientUserRoleEnum,
   ClientUserFragmentDoc,
+  UserPermissionsEnum,
 } from 'generated/graphql'
 import { APIClientUser } from 'sections/client/types'
 import { ROLE_LABELS } from 'sections/client/constants'
 import getErrorMessage from 'utils/api-codes'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
+import { useAuthContext } from 'auth/hooks'
 
 type Props = {
   clientUuid: string
@@ -30,6 +32,10 @@ type Props = {
 
 const UpdateUser: React.FC<Props> = ({ clientUuid, user, onClose }) => {
   const [updateClientUser, { loading }] = useUpdateClientUserMutation()
+
+  const { hasPermission } = useAuthContext()
+
+  const showFields = hasPermission(UserPermissionsEnum.HAS_CLIENT_GENERAL_INFORMATION_ACCESS)
 
   const { enqueueSnackbar } = useSnackbar()
 
@@ -136,30 +142,36 @@ const UpdateUser: React.FC<Props> = ({ clientUuid, user, onClose }) => {
             <RHFTextField name="lastName" label="Nume" />
             <RHFTextField name="email" label="Email" />
             <RHFTextField name="phoneNumber" label="Telefon" />
-            <RHFTextField name="ownershipPercentage" label="Procent din firma" type="number" />
-            <RHFSelect native name="role" label="Rol" InputLabelProps={{ shrink: true }}>
-              <option key="null" value="" />
-              {Object.keys(ClientUserRoleEnum).map(role => (
-                <option key={role} value={role}>
-                  {ROLE_LABELS[role as ClientUserRoleEnum]}
-                </option>
-              ))}
-            </RHFSelect>
+            {showFields && (
+              <RHFTextField name="ownershipPercentage" label="Procent din firma" type="number" />
+            )}
+            {showFields && (
+              <RHFSelect native name="role" label="Rol" InputLabelProps={{ shrink: true }}>
+                <option key="null" value="" />
+                {Object.keys(ClientUserRoleEnum).map(role => (
+                  <option key={role} value={role}>
+                    {ROLE_LABELS[role as ClientUserRoleEnum]}
+                  </option>
+                ))}
+              </RHFSelect>
+            )}
           </Box>
 
           <br />
-          <Box
-            rowGap={3}
-            columnGap={2}
-            display="grid"
-            gridTemplateColumns={{
-              xs: 'repeat(1, 1fr)',
-              sm: 'repeat(2, 1fr)',
-            }}
-          >
-            <RHFTextField name="spvUsername" label="Utilizator SPV" />
-            <RHFTextField name="spvPassword" label="Parola SPV" />
-          </Box>
+          {showFields && (
+            <Box
+              rowGap={3}
+              columnGap={2}
+              display="grid"
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(2, 1fr)',
+              }}
+            >
+              <RHFTextField name="spvUsername" label="Utilizator SPV" />
+              <RHFTextField name="spvPassword" label="Parola SPV" />
+            </Box>
+          )}
 
           <DialogActions>
             <Button color="inherit" variant="outlined" onClick={onClose}>

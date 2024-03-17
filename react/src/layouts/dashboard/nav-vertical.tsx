@@ -12,7 +12,7 @@ import Logo from 'components/logo'
 import { NavSectionVertical } from 'components/nav-section'
 import Scrollbar from 'components/scrollbar'
 
-import { useAuthContext } from 'auth/hooks/use-auth-context'
+import { useAuthContext } from 'auth/hooks'
 import NavToggleButton from '../common/nav-toggle-button'
 import { NAV } from '../config-layout'
 import useNavData from './config-navigation'

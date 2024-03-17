@@ -48,6 +48,7 @@ from organization.services.organization_solution_service import (
 from user.decorators import logged_in_user_required
 from user.graphene.types import UserType
 from user.models import User
+from user.permissions import UserPermissionsEnum, permission_required
 
 
 class UpdateClient(BaseMutation):
@@ -57,6 +58,7 @@ class UpdateClient(BaseMutation):
     client = graphene.Field(ClientType)
 
     @logged_in_user_required
+    @permission_required(UserPermissionsEnum.HAS_CLIENT_ADD_ACCESS.value)
     def mutate(self, user: User, **kwargs):
         client = update_or_create_client(user.organization, **kwargs)
 
@@ -70,6 +72,7 @@ class DeleteClient(BaseMutation):
         client_uuid = graphene.String(required=True)
 
     @logged_in_user_required
+    @permission_required(UserPermissionsEnum.HAS_ORGANIZATION_ADMIN.value)
     def mutate(self, user: User, **kwargs):
         delete_client(user.organization, **kwargs)
 
@@ -84,6 +87,7 @@ class UpdateClientInvoiceStatus(BaseMutation):
     invoice = graphene.Field(InvoiceType)
 
     @logged_in_user_required
+    @permission_required(UserPermissionsEnum.HAS_CLIENT_INVOICE_ACCESS.value)
     def mutate(self, user: User, **kwargs):
         invoice = update_client_invoice_status(user.organization, **kwargs)
 
@@ -221,6 +225,7 @@ class UpdateOrganizationActivity(BaseMutation):
     activity = graphene.Field(ActivityType)
 
     @logged_in_user_required
+    @permission_required(UserPermissionsEnum.HAS_SETTINGS_ACCESS.value)
     def mutate(self, user: User, **kwargs):
         activity = update_activity(user.organization, **kwargs)
 
@@ -234,6 +239,7 @@ class DeleteOrganizationActivity(BaseMutation):
         uuid = graphene.String(required=True)
 
     @logged_in_user_required
+    @permission_required(UserPermissionsEnum.HAS_SETTINGS_ACCESS.value)
     def mutate(self, user: User, **kwargs):
         delete_activity(user.organization, **kwargs)
 
@@ -247,6 +253,7 @@ class UpdateOrganizationSolution(BaseMutation):
     solution = graphene.Field(SolutionType)
 
     @logged_in_user_required
+    @permission_required(UserPermissionsEnum.HAS_SETTINGS_ACCESS.value)
     def mutate(self, user: User, **kwargs):
         solution = update_solution(user.organization, **kwargs)
 
@@ -260,6 +267,7 @@ class DeleteOrganizationSolution(BaseMutation):
         uuid = graphene.String(required=True)
 
     @logged_in_user_required
+    @permission_required(UserPermissionsEnum.HAS_SETTINGS_ACCESS.value)
     def mutate(self, user: User, **kwargs):
         delete_solution(user.organization, **kwargs)
 
