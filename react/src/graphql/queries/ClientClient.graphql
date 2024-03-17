@@ -1,4 +1,4 @@
-query Client($uuid: String!) {
+query ClientClient($uuid: String!) {
   client(uuid: $uuid) {
     ...Client
   }

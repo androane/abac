@@ -343,6 +343,8 @@ export type Mutation = {
   logout?: Maybe<LogoutUser>;
   /** Toggle Client Activity Executed Status */
   toggleClientActivity?: Maybe<ToggleClientActivity>;
+  /** Toggle a permission for a given User */
+  toggleUserPermission?: Maybe<ToggleUserPermission>;
   /** Update or Create a New Client */
   updateClient?: Maybe<UpdateClient>;
   /** Update or Create a New Client Activity */
@@ -413,6 +415,12 @@ export type MutationLoginArgs = {
 export type MutationToggleClientActivityArgs = {
   clientActivityUuid: Scalars['String']['input'];
   clientUuid: Scalars['String']['input'];
+};
+
+
+export type MutationToggleUserPermissionArgs = {
+  permission: UserPermissionsEnum;
+  userUuid: Scalars['String']['input'];
 };
 
 
@@ -511,6 +519,11 @@ export type SolutionType = {
 
 export type ToggleClientActivity = {
   __typename?: 'ToggleClientActivity';
+  error?: Maybe<ErrorType>;
+};
+
+export type ToggleUserPermission = {
+  __typename?: 'ToggleUserPermission';
   error?: Maybe<ErrorType>;
 };
 
@@ -745,6 +758,14 @@ export type DeleteOrganizationSolutionMutationVariables = Exact<{
 
 export type DeleteOrganizationSolutionMutation = { __typename?: 'Mutation', deleteOrganizationSolution?: { __typename?: 'DeleteOrganizationSolution', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
 
+export type OrganizationToggleUserPermissionMutationVariables = Exact<{
+  userUuid: Scalars['String']['input'];
+  permission: UserPermissionsEnum;
+}>;
+
+
+export type OrganizationToggleUserPermissionMutation = { __typename?: 'Mutation', toggleUserPermission?: { __typename?: 'ToggleUserPermission', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
+
 export type UpdateOrganizationActivityMutationVariables = Exact<{
   activityInput: ActivityInput;
 }>;
@@ -781,12 +802,12 @@ export type ClientActivityLogsQueryVariables = Exact<{
 
 export type ClientActivityLogsQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, activity: { __typename?: 'ClientActivityType', uuid: string, logs: Array<{ __typename?: 'ClientActivityLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } } };
 
-export type ClientQueryVariables = Exact<{
+export type ClientClientQueryVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
 
 
-export type ClientQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost: number, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> } };
+export type ClientClientQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost: number, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> } };
 
 export type ClientFilesQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -1668,6 +1689,42 @@ export function useDeleteOrganizationSolutionMutation(baseOptions?: Apollo.Mutat
 export type DeleteOrganizationSolutionMutationHookResult = ReturnType<typeof useDeleteOrganizationSolutionMutation>;
 export type DeleteOrganizationSolutionMutationResult = Apollo.MutationResult<DeleteOrganizationSolutionMutation>;
 export type DeleteOrganizationSolutionMutationOptions = Apollo.BaseMutationOptions<DeleteOrganizationSolutionMutation, DeleteOrganizationSolutionMutationVariables>;
+export const OrganizationToggleUserPermissionDocument = gql`
+    mutation OrganizationToggleUserPermission($userUuid: String!, $permission: UserPermissionsEnum!) {
+  toggleUserPermission(userUuid: $userUuid, permission: $permission) {
+    error {
+      ...Error
+    }
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type OrganizationToggleUserPermissionMutationFn = Apollo.MutationFunction<OrganizationToggleUserPermissionMutation, OrganizationToggleUserPermissionMutationVariables>;
+
+/**
+ * __useOrganizationToggleUserPermissionMutation__
+ *
+ * To run a mutation, you first call `useOrganizationToggleUserPermissionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useOrganizationToggleUserPermissionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [organizationToggleUserPermissionMutation, { data, loading, error }] = useOrganizationToggleUserPermissionMutation({
+ *   variables: {
+ *      userUuid: // value for 'userUuid'
+ *      permission: // value for 'permission'
+ *   },
+ * });
+ */
+export function useOrganizationToggleUserPermissionMutation(baseOptions?: Apollo.MutationHookOptions<OrganizationToggleUserPermissionMutation, OrganizationToggleUserPermissionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<OrganizationToggleUserPermissionMutation, OrganizationToggleUserPermissionMutationVariables>(OrganizationToggleUserPermissionDocument, options);
+      }
+export type OrganizationToggleUserPermissionMutationHookResult = ReturnType<typeof useOrganizationToggleUserPermissionMutation>;
+export type OrganizationToggleUserPermissionMutationResult = Apollo.MutationResult<OrganizationToggleUserPermissionMutation>;
+export type OrganizationToggleUserPermissionMutationOptions = Apollo.BaseMutationOptions<OrganizationToggleUserPermissionMutation, OrganizationToggleUserPermissionMutationVariables>;
 export const UpdateOrganizationActivityDocument = gql`
     mutation UpdateOrganizationActivity($activityInput: ActivityInput!) {
   updateOrganizationActivity(activityInput: $activityInput) {
@@ -1895,8 +1952,8 @@ export type ClientActivityLogsQueryHookResult = ReturnType<typeof useClientActiv
 export type ClientActivityLogsLazyQueryHookResult = ReturnType<typeof useClientActivityLogsLazyQuery>;
 export type ClientActivityLogsSuspenseQueryHookResult = ReturnType<typeof useClientActivityLogsSuspenseQuery>;
 export type ClientActivityLogsQueryResult = Apollo.QueryResult<ClientActivityLogsQuery, ClientActivityLogsQueryVariables>;
-export const ClientDocument = gql`
-    query Client($uuid: String!) {
+export const ClientClientDocument = gql`
+    query ClientClient($uuid: String!) {
   client(uuid: $uuid) {
     ...Client
   }
@@ -1904,37 +1961,37 @@ export const ClientDocument = gql`
     ${ClientFragmentDoc}`;
 
 /**
- * __useClientQuery__
+ * __useClientClientQuery__
  *
- * To run a query within a React component, call `useClientQuery` and pass it any options that fit your needs.
- * When your component renders, `useClientQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useClientClientQuery` and pass it any options that fit your needs.
+ * When your component renders, `useClientClientQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useClientQuery({
+ * const { data, loading, error } = useClientClientQuery({
  *   variables: {
  *      uuid: // value for 'uuid'
  *   },
  * });
  */
-export function useClientQuery(baseOptions: Apollo.QueryHookOptions<ClientQuery, ClientQueryVariables>) {
+export function useClientClientQuery(baseOptions: Apollo.QueryHookOptions<ClientClientQuery, ClientClientQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ClientQuery, ClientQueryVariables>(ClientDocument, options);
+        return Apollo.useQuery<ClientClientQuery, ClientClientQueryVariables>(ClientClientDocument, options);
       }
-export function useClientLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ClientQuery, ClientQueryVariables>) {
+export function useClientClientLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ClientClientQuery, ClientClientQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ClientQuery, ClientQueryVariables>(ClientDocument, options);
+          return Apollo.useLazyQuery<ClientClientQuery, ClientClientQueryVariables>(ClientClientDocument, options);
         }
-export function useClientSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ClientQuery, ClientQueryVariables>) {
+export function useClientClientSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ClientClientQuery, ClientClientQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<ClientQuery, ClientQueryVariables>(ClientDocument, options);
+          return Apollo.useSuspenseQuery<ClientClientQuery, ClientClientQueryVariables>(ClientClientDocument, options);
         }
-export type ClientQueryHookResult = ReturnType<typeof useClientQuery>;
-export type ClientLazyQueryHookResult = ReturnType<typeof useClientLazyQuery>;
-export type ClientSuspenseQueryHookResult = ReturnType<typeof useClientSuspenseQuery>;
-export type ClientQueryResult = Apollo.QueryResult<ClientQuery, ClientQueryVariables>;
+export type ClientClientQueryHookResult = ReturnType<typeof useClientClientQuery>;
+export type ClientClientLazyQueryHookResult = ReturnType<typeof useClientClientLazyQuery>;
+export type ClientClientSuspenseQueryHookResult = ReturnType<typeof useClientClientSuspenseQuery>;
+export type ClientClientQueryResult = Apollo.QueryResult<ClientClientQuery, ClientClientQueryVariables>;
 export const ClientFilesDocument = gql`
     query ClientFiles($clientUuid: String!) {
   client(uuid: $clientUuid) {

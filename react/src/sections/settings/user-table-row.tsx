@@ -11,17 +11,23 @@ import { useBoolean } from 'hooks/use-boolean'
 import { ConfirmDialog } from 'components/custom-dialog'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
-import { OrganizationUserFragment } from 'generated/graphql'
-import { ListItemText } from '@mui/material'
+import { CoreUserFragment } from 'generated/graphql'
 
 type Props = {
-  row: OrganizationUserFragment
+  row: CoreUserFragment
   onEditRow: VoidFunction
+  onEditPermissions: VoidFunction
   onDeleteRow: VoidFunction
   loading: boolean
 }
 
-const UserTableRow: React.FC<Props> = ({ row, onEditRow, onDeleteRow, loading }) => {
+const UserTableRow: React.FC<Props> = ({
+  row,
+  onEditRow,
+  onDeleteRow,
+  onEditPermissions,
+  loading,
+}) => {
   const confirm = useBoolean()
 
   const popover = usePopover()
@@ -46,15 +52,17 @@ const UserTableRow: React.FC<Props> = ({ row, onEditRow, onDeleteRow, loading })
           </Box>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          <ListItemText
-            primary="Permisiuni"
-            secondary=""
-            primaryTypographyProps={{ typography: 'body2' }}
-            secondaryTypographyProps={{
-              component: 'span',
-              color: 'text.disabled',
+          <Box
+            onClick={onEditPermissions}
+            sx={{
+              cursor: 'pointer',
+              '&:hover': {
+                textDecoration: 'underline',
+              },
             }}
-          />
+          >
+            Permisiuni
+          </Box>
         </TableCell>
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>

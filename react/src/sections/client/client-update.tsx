@@ -20,8 +20,8 @@ import { useSnackbar } from 'components/snackbar'
 import {
   useUpdateClientMutation,
   useOrganizationSolutionsQuery,
-  useClientQuery,
-  ClientQuery,
+  useClientClientQuery,
+  ClientClientQuery,
   CurrencyEnum,
   useOrganizationUsersQuery,
   UserPermissionsEnum,
@@ -32,7 +32,7 @@ import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 
 type Props = {
-  client?: ClientQuery['client']
+  client?: ClientClientQuery['client']
 }
 
 export const UpdateClient: React.FC<Props> = ({ client }) => {
@@ -274,7 +274,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
 }
 
 const UpdateClientContainer: React.FC<{ clientUuid: string }> = ({ clientUuid }) => {
-  const result = useClientQuery({ variables: { uuid: clientUuid } })
+  const result = useClientClientQuery({ variables: { uuid: clientUuid } })
 
   return (
     <ResponseHandler {...result}>

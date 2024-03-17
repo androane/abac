@@ -45,8 +45,9 @@ from organization.services.organization_solution_service import (
     delete_solution,
     update_solution,
 )
+from organization.services.organization_user_service import toggle_user_permission
 from user.decorators import logged_in_user_required
-from user.graphene.types import UserType
+from user.graphene.types import UserPermissionsEnumType, UserType
 from user.models import User
 from user.permissions import UserPermissionsEnum, permission_required
 
@@ -214,6 +215,19 @@ class DeleteClientUser(BaseMutation):
     @logged_in_user_required
     def mutate(self, user: User, **kwargs):
         delete_client_user(user.organization, **kwargs)
+
+        return {}
+
+
+class ToggleUserPermission(BaseMutation):
+    class Arguments:
+        user_uuid = graphene.String(required=True)
+        permission = UserPermissionsEnumType(required=True)
+
+    @logged_in_user_required
+    @permission_required(UserPermissionsEnum.HAS_ORGANIZATION_ADMIN.value)
+    def mutate(self, user: User, **kwargs):
+        toggle_user_permission(user.organization, **kwargs)
 
         return {}
 

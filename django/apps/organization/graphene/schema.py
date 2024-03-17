@@ -10,6 +10,7 @@ from organization.graphene.mutations import (
     DeleteOrganizationActivity,
     DeleteOrganizationSolution,
     ToggleClientActivity,
+    ToggleUserPermission,
     UpdateClient,
     UpdateClientActivity,
     UpdateClientActivityLogs,
@@ -49,6 +50,11 @@ class Query(graphene.ObjectType):
 
 
 class Mutation(graphene.ObjectType):
+    # Organization User
+    toggle_user_permission = ToggleUserPermission.Field(
+        description="Toggle a permission for a given User"
+    )
+
     # Organization Activity
     update_organization_activity = UpdateOrganizationActivity.Field(
         description="Update or Create a New Activity"

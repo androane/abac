@@ -23,11 +23,11 @@ import {
 import ResponseHandler from 'components/response-handler'
 import {
   useOrganizationUsersQuery,
-  OrganizationUserFragment,
+  CoreUserFragment,
   useDeleteOrganizationSolutionMutation,
   UserPermissionsEnum,
 } from 'generated/graphql'
-import UpdateUser from 'sections/settings/user-update'
+import UpdateUserPermissions from 'sections/settings/user-permissions-update'
 import { withUserPermission } from 'auth/hoc'
 import UserTableRow from 'sections/settings/user-table-row'
 
@@ -39,13 +39,13 @@ const TABLE_HEAD = [
 
 type Props = {
   organizationUuid: string
-  users: OrganizationUserFragment[]
+  users: CoreUserFragment[]
 }
 
 const UsersList: React.FC<Props> = ({ organizationUuid, users }) => {
   const [deleteSolution, { loading }] = useDeleteOrganizationSolutionMutation()
 
-  const [userUuidToEdit, setUserUuidToEdit] = useState<undefined | string>()
+  const [userUuidToEditPermissions, setUserUuidToEditPermissions] = useState<undefined | string>()
 
   const { enqueueSnackbar } = useSnackbar()
   const [tableData, setTableData] = useState(users)
@@ -67,24 +67,24 @@ const UsersList: React.FC<Props> = ({ organizationUuid, users }) => {
     await deleteSolution({
       variables: { uuid },
       update(cache) {
-        const normalizedId = cache.identify({ uuid, __typename: 'SolutionType' })
+        const normalizedId = cache.identify({ uuid, __typename: 'UserType' })
         cache.evict({ id: normalizedId })
         cache.gc()
       },
     })
 
-    enqueueSnackbar('Pachetul a fost șters!')
+    enqueueSnackbar('Utilizatorul a fost șters!')
 
-    setUserUuidToEdit(undefined)
+    setUserUuidToEditPermissions(undefined)
 
     table.onUpdatePageDeleteRow(dataInPage.length)
   }
 
   const handleEditRow = useCallback(
     (uuid?: string) => {
-      setUserUuidToEdit(uuid)
+      setUserUuidToEditPermissions(uuid)
     },
-    [setUserUuidToEdit],
+    [setUserUuidToEditPermissions],
   )
 
   return (
@@ -98,11 +98,10 @@ const UsersList: React.FC<Props> = ({ organizationUuid, users }) => {
         }}
       /> */}
       <Card>
-        {userUuidToEdit && (
-          <UpdateUser
-            organizationUuid={organizationUuid}
-            user={users.find(_ => _.uuid === userUuidToEdit)}
-            onClose={() => setUserUuidToEdit(undefined)}
+        {userUuidToEditPermissions && (
+          <UpdateUserPermissions
+            userUuid={userUuidToEditPermissions}
+            onClose={() => setUserUuidToEditPermissions(undefined)}
           />
         )}
 
@@ -130,6 +129,7 @@ const UsersList: React.FC<Props> = ({ organizationUuid, users }) => {
                       row={row}
                       onDeleteRow={() => handleDeleteRow(row.uuid)}
                       onEditRow={() => handleEditRow(row.uuid)}
+                      onEditPermissions={() => setUserUuidToEditPermissions(row.uuid)}
                       loading={loading}
                     />
                   ))}

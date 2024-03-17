@@ -1,0 +1,7 @@
+mutation OrganizationToggleUserPermission($userUuid: String!, $permission: UserPermissionsEnum!) {
+  toggleUserPermission(userUuid: $userUuid, permission: $permission) {
+    error {
+      ...Error
+    }
+  }
+}
