@@ -221,7 +221,7 @@ const SolutionListView = () => {
         heading="Pachete"
         links={[
           { name: 'Pagina Principală', href: LANDING_PAGE },
-          { name: 'Pachete', href: paths.app.settings.solution.list },
+          { name: 'Pachete', href: paths.app.settings.solutions },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

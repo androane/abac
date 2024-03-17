@@ -37,11 +37,15 @@ const useNavData = () => {
           children: [
             {
               title: 'Servicii',
-              path: paths.app.settings.activity.list,
+              path: paths.app.settings.activities,
             },
             {
               title: 'Pachete',
-              path: paths.app.settings.solution.list,
+              path: paths.app.settings.solutions,
+            },
+            {
+              title: 'Utilizatori',
+              path: paths.app.settings.users,
             },
           ],
         },

@@ -229,7 +229,7 @@ const ActivityListView = () => {
         heading="Servicii"
         links={[
           { name: 'Pagina Principală', href: LANDING_PAGE },
-          { name: 'Servicii', href: paths.app.settings.activity.list },
+          { name: 'Servicii', href: paths.app.settings.activities },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

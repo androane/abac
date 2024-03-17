@@ -58,10 +58,13 @@ def generate_invoice_items(invoice: Invoice) -> list[str]:
         if activity.unit_cost_type == UnitCostTypeEnum.FIXED.value:
             cost = activity.unit_cost
         elif activity.unit_cost_type == UnitCostTypeEnum.HOURLY.value:
-            total_time = sum(
-                client_activity.logs.values_list("minutes_allocated", flat=True)
-            )
-            cost = activity.unit_cost * total_time / 60
+            cost = 0
+            if activity.unit_cost:
+                total_time = sum(
+                    client_activity.logs.values_list("minutes_allocated", flat=True)
+                )
+                if total_time and activity.unit_cost:
+                    cost = activity.unit_cost * total_time / 60
 
         activity_items[activity.category][activity.unit_cost_currency] += cost
 

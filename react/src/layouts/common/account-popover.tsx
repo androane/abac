@@ -90,7 +90,7 @@ const AccountPopover = () => {
 
         <Divider />
         <Stack sx={{ p: 1 }}>
-          <MenuItem onClick={showChangePassword.onTrue}>Schimba Parola</MenuItem>
+          <MenuItem onClick={showChangePassword.onTrue}>Schimbă Parola</MenuItem>
         </Stack>
         <Divider sx={{ borderStyle: 'dashed' }} />
 
@@ -98,7 +98,7 @@ const AccountPopover = () => {
           onClick={handleLogout}
           sx={{ m: 1, fontWeight: 'fontWeightBold', color: 'error.main' }}
         >
-          Iesi din Cont
+          Ieși din Cont
         </MenuItem>
       </CustomPopover>
 

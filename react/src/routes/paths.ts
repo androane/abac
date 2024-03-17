@@ -15,18 +15,12 @@ export const paths = {
       list: `/${ROOTS.CLIENT}/list`,
       new: `/${ROOTS.CLIENT}/new`,
       edit: (id: string) => `/${ROOTS.CLIENT}/${id}/edit`,
-      invoice: {
-        list: `/${ROOTS.CLIENT}/invoice/list`,
-      },
     },
     settings: {
       root: `/${ROOTS.SETTINGS}`,
-      activity: {
-        list: `/${ROOTS.SETTINGS}/activity/list`,
-      },
-      solution: {
-        list: `/${ROOTS.SETTINGS}/solution/list`,
-      },
+      activities: `/${ROOTS.SETTINGS}/activities`,
+      solutions: `/${ROOTS.SETTINGS}/solutions`,
+      users: `/${ROOTS.SETTINGS}/users`,
     },
   },
 }

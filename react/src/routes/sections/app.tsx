@@ -12,6 +12,7 @@ const ClientCreateView = lazy(() => import('sections/client/view/client-create-v
 const ClientEditView = lazy(() => import('sections/client/view/client-edit-view'))
 const SettingsActivityView = lazy(() => import('sections/settings/view/activity-list-view'))
 const SettingsSolutionView = lazy(() => import('sections/settings/view/solution-list-view'))
+const SettingsUsersView = lazy(() => import('sections/settings/view/user-list-view'))
 
 const clients = {
   path: ROOTS.CLIENT,
@@ -29,20 +30,17 @@ const clients = {
 const settings = {
   path: ROOTS.SETTINGS,
   children: [
-    { element: <SettingsActivityView />, index: true },
     {
-      path: 'activity',
-      children: [
-        { element: <SettingsActivityView />, index: true },
-        { path: 'list', element: <SettingsActivityView /> },
-      ],
+      path: 'activities',
+      element: <SettingsActivityView />,
     },
     {
-      path: 'solution',
-      children: [
-        { element: <SettingsSolutionView />, index: true },
-        { path: 'list', element: <SettingsSolutionView /> },
-      ],
+      path: 'solutions',
+      element: <SettingsSolutionView />,
+    },
+    {
+      path: 'users',
+      element: <SettingsUsersView />,
     },
   ],
 }
