@@ -5,4 +5,8 @@ fragment User on UserType {
   photoUrl
   role
   permissions
+  clientsWithAccess {
+    uuid
+    name
+  }
 }

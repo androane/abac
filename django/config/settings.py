@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_extensions",
     "graphene_django",
+    "guardian",
     "safedelete",
     "simple_history",
     "storages",
@@ -96,7 +97,8 @@ if not (len(sys.argv) > 1 and sys.argv[1] == "collectstatic"):
 
 AUTH_USER_MODEL = "user.User"
 # Silences the User model uniqueness check on email. We allow duplicate emails for deleted users.
-SILENCED_SYSTEM_CHECKS = ["auth.E003"]
+# The latter one comes from django-guardian I think
+SILENCED_SYSTEM_CHECKS = ["auth.E003", "auth.W004"]
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -111,6 +113,8 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+AUTHENTICATION_BACKENDS = ("guardian.backends.ObjectPermissionBackend",)
 
 
 LANGUAGE_CODE = "en-us"
@@ -178,6 +182,9 @@ if SENTRY_DSN:
 GRAPHENE = {
     "ATOMIC_MUTATIONS": True,
 }
+
+# django-guardian
+GUARDIAN_MONKEY_PATCH = False
 
 # Custom settings
 DEFAULT_TIMEZONE = "Europe/Bucharest"

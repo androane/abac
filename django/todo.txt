@@ -2,4 +2,5 @@ Permissions data loader
 
 Update User doar campurile la care are voie
 filtrare asociati
+la toggle permission, nu fac cache, ma bazez pe raspuns
 

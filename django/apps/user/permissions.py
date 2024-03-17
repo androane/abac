@@ -17,6 +17,9 @@ class UserPermissionsEnum(BaseEnum):
     HAS_CLIENT_INFORMATION_ACCESS = "has_client_information_access"
     HAS_CLIENT_ACTIVITY_COSTS_ACCESS = "has_client_activity_costs_access"
     HAS_CLIENT_ADD_ACCESS = "has_client_add_access"
+    HAS_CLIENT_ACCESS = "has_client_access"
+    HAS_ALL_CLIENTS_ACCESS = "has_all_clients_access"
+    HAS_OWN_CLIENTS_ACCESS = "has_own_clients_access"
 
 
 USER_PERMISSIONS = {
@@ -27,6 +30,9 @@ USER_PERMISSIONS = {
     UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS.value: "Has access to client general information",
     UserPermissionsEnum.HAS_CLIENT_ACTIVITY_COSTS_ACCESS.value: "Has access to client activities costs",
     UserPermissionsEnum.HAS_CLIENT_ADD_ACCESS.value: "Has access to add clients",
+    UserPermissionsEnum.HAS_CLIENT_ACCESS.value: "Has access to a specific client",
+    UserPermissionsEnum.HAS_ALL_CLIENTS_ACCESS.value: "Has access to all clients",
+    UserPermissionsEnum.HAS_OWN_CLIENTS_ACCESS.value: "Has access to clients the user is PM-ing",
 }
 
 

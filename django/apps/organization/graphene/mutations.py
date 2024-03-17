@@ -45,7 +45,10 @@ from organization.services.organization_solution_service import (
     delete_solution,
     update_solution,
 )
-from organization.services.organization_user_service import toggle_user_permission
+from organization.services.organization_user_permissions import (
+    toggle_user_permission,
+    update_user_client_permissions,
+)
 from user.decorators import logged_in_user_required
 from user.graphene.types import UserPermissionsEnumType, UserType
 from user.models import User
@@ -228,6 +231,19 @@ class ToggleUserPermission(BaseMutation):
     @permission_required(UserPermissionsEnum.HAS_ORGANIZATION_ADMIN.value)
     def mutate(self, user: User, **kwargs):
         toggle_user_permission(user.organization, **kwargs)
+
+        return {}
+
+
+class UpdateUserClientPermissions(BaseMutation):
+    class Arguments:
+        user_uuid = graphene.String(required=True)
+        client_uuids = graphene.List(graphene.NonNull(graphene.String), required=True)
+
+    @logged_in_user_required
+    @permission_required(UserPermissionsEnum.HAS_ORGANIZATION_ADMIN.value)
+    def mutate(self, user: User, **kwargs):
+        update_user_client_permissions(user.organization, **kwargs)
 
         return {}
 

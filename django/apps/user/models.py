@@ -4,6 +4,7 @@ import logging
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
+from guardian.mixins import GuardianUserMixin
 
 from core.models import BaseModel
 from user.managers import UserManager
@@ -12,7 +13,7 @@ from user.permissions import USER_PERMISSIONS
 logger = logging.getLogger(__name__)
 
 
-class User(BaseModel, AbstractBaseUser, PermissionsMixin):
+class User(BaseModel, AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     USERNAME_FIELD = "email"
 
     objects = UserManager()

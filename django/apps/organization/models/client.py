@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from guardian.models import UserObjectPermissionBase
 
 from core.models import BaseModel
 from organization.constants import ClientUserRoleEnum, CurrencyEnum
@@ -219,3 +220,7 @@ class ClientSolutionLog(ActivityLog):
     client_solution = models.ForeignKey(
         ClientSolution, on_delete=models.CASCADE, related_name="logs"
     )
+
+
+class ClientUserObjectPermission(UserObjectPermissionBase):
+    content_object = models.ForeignKey(Client, on_delete=models.CASCADE)

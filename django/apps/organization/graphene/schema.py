@@ -19,6 +19,7 @@ from organization.graphene.mutations import (
     UpdateClientUser,
     UpdateOrganizationActivity,
     UpdateOrganizationSolution,
+    UpdateUserClientPermissions,
 )
 from organization.graphene.types import ClientType, OrganizationType
 from organization.services.client_service import get_client
@@ -53,6 +54,9 @@ class Mutation(graphene.ObjectType):
     # Organization User
     toggle_user_permission = ToggleUserPermission.Field(
         description="Toggle a permission for a given User"
+    )
+    update_user_client_permissions = UpdateUserClientPermissions.Field(
+        description="Update User access to Clients via permissions"
     )
 
     # Organization Activity

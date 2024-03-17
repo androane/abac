@@ -10,10 +10,11 @@ import {
   useOrganizationUserQuery,
   OrganizationUserQuery,
   UserPermissionsEnum,
+  useOrganizationClientsQuery,
 } from 'generated/graphql'
 import getErrorMessage from 'utils/api-codes'
 import ResponseHandler from 'components/response-handler'
-import { FormControlLabel, Switch, Tab, Tabs } from '@mui/material'
+import { Box, FormControlLabel, Switch, Tab, Tabs } from '@mui/material'
 import { useCallback, useState } from 'react'
 
 enum TABS_VALUES {
@@ -62,6 +63,7 @@ type Props = {
 
 const UpdateUserPermissions: React.FC<Props> = ({ user, onClose }) => {
   const [togglePermission, { loading }] = useOrganizationToggleUserPermissionMutation()
+  const result = useOrganizationClientsQuery()
 
   const { enqueueSnackbar } = useSnackbar()
 
@@ -115,7 +117,7 @@ const UpdateUserPermissions: React.FC<Props> = ({ user, onClose }) => {
         <Tabs
           variant="fullWidth"
           textColor="secondary"
-          indicatorColor="secondary"
+          indicatorColor="primary"
           value={currentTab}
           onChange={handleChangeTab}
           sx={{
@@ -143,22 +145,77 @@ const UpdateUserPermissions: React.FC<Props> = ({ user, onClose }) => {
               }
             />
           ))}
-        {currentTab === TABS_VALUES.CLIENTS &&
-          Permissions.map(([perm, label]) => (
-            <FormControlLabel
-              sx={{ mb: 2 }}
-              label={label}
-              key={perm}
-              control={
-                <Switch
-                  checked={user.permissions.includes(perm as UserPermissionsEnum)}
-                  onChange={() => onToggle(perm as UserPermissionsEnum)}
-                  disabled={loading}
-                  color="primary"
-                />
-              }
-            />
-          ))}
+        {currentTab === TABS_VALUES.CLIENTS && (
+          <>
+            <Box
+              rowGap={3}
+              columnGap={2}
+              display="grid"
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(2, 1fr)',
+              }}
+            >
+              <FormControlLabel
+                sx={{ mb: 2 }}
+                label="Access la toti clientii din firma"
+                control={
+                  <Switch
+                    checked={user.permissions.includes(UserPermissionsEnum.HAS_ALL_CLIENTS_ACCESS)}
+                    onChange={() => onToggle(UserPermissionsEnum.HAS_ALL_CLIENTS_ACCESS)}
+                    disabled={loading}
+                    color="primary"
+                  />
+                }
+              />
+              <FormControlLabel
+                sx={{ mb: 2 }}
+                label="Access la toti clientii de care este responsabil"
+                control={
+                  <Switch
+                    checked={user.permissions.includes(UserPermissionsEnum.HAS_OWN_CLIENTS_ACCESS)}
+                    onChange={() => onToggle(UserPermissionsEnum.HAS_OWN_CLIENTS_ACCESS)}
+                    disabled={loading}
+                    color="primary"
+                  />
+                }
+              />
+            </Box>
+            <Box
+              rowGap={3}
+              columnGap={2}
+              display="grid"
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(3, 1fr)',
+              }}
+            >
+              <ResponseHandler {...result}>
+                {({ organization }) => {
+                  return (
+                    <>
+                      {organization.clients.map(client => (
+                        <FormControlLabel
+                          key={client.uuid}
+                          sx={{ mb: 2 }}
+                          label={client.name}
+                          control={
+                            <Switch
+                              checked={false}
+                              onChange={() => {}}
+                              disabled={loading}
+                              color="primary"
+                            />
+                          }
+                        />
+                      ))}
+                    </>
+                  )
+                }}
+              </ResponseHandler>
+            </Box>
+          </>
+        )}
         <DialogActions>
           <Button color="inherit" variant="outlined" onClick={onClose}>
             {'<'} Înapoi

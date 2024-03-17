@@ -361,6 +361,8 @@ export type Mutation = {
   updateOrganizationActivity?: Maybe<UpdateOrganizationActivity>;
   /** Update or Create a New Solution */
   updateOrganizationSolution?: Maybe<UpdateOrganizationSolution>;
+  /** Update User access to Clients via permissions */
+  updateUserClientPermissions?: Maybe<UpdateUserClientPermissions>;
 };
 
 
@@ -467,6 +469,12 @@ export type MutationUpdateOrganizationActivityArgs = {
 
 export type MutationUpdateOrganizationSolutionArgs = {
   solutionInput: SolutionInput;
+};
+
+
+export type MutationUpdateUserClientPermissionsArgs = {
+  clientUuids: Array<Scalars['String']['input']>;
+  userUuid: Scalars['String']['input'];
 };
 
 export type OrganizationType = {
@@ -581,19 +589,28 @@ export type UpdateOrganizationSolution = {
   solution?: Maybe<SolutionType>;
 };
 
+export type UpdateUserClientPermissions = {
+  __typename?: 'UpdateUserClientPermissions';
+  error?: Maybe<ErrorType>;
+};
+
 /** An enumeration. */
 export enum UserPermissionsEnum {
+  HAS_ALL_CLIENTS_ACCESS = 'HAS_ALL_CLIENTS_ACCESS',
+  HAS_CLIENT_ACCESS = 'HAS_CLIENT_ACCESS',
   HAS_CLIENT_ACTIVITY_COSTS_ACCESS = 'HAS_CLIENT_ACTIVITY_COSTS_ACCESS',
   HAS_CLIENT_ADD_ACCESS = 'HAS_CLIENT_ADD_ACCESS',
   HAS_CLIENT_INFORMATION_ACCESS = 'HAS_CLIENT_INFORMATION_ACCESS',
   HAS_CLIENT_INVOICE_ACCESS = 'HAS_CLIENT_INVOICE_ACCESS',
   HAS_ORGANIZATION_ADMIN = 'HAS_ORGANIZATION_ADMIN',
+  HAS_OWN_CLIENTS_ACCESS = 'HAS_OWN_CLIENTS_ACCESS',
   HAS_SETTINGS_ACCESS = 'HAS_SETTINGS_ACCESS'
 }
 
 export type UserType = {
   __typename?: 'UserType';
   clientProfile: ClientUserProfileType;
+  clientsWithAccess: Array<ClientType>;
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
@@ -629,7 +646,7 @@ export type FileFragment = { __typename?: 'ClientFileType', uuid: string, name: 
 
 export type SolutionFragment = { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> };
 
-export type UserFragment = { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: string, permissions: Array<UserPermissionsEnum> };
+export type UserFragment = { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: string, permissions: Array<UserPermissionsEnum>, clientsWithAccess: Array<{ __typename?: 'ClientType', uuid: string, name: string }> };
 
 export type ChangePasswordMutationVariables = Exact<{
   currentPassword: Scalars['String']['input'];
@@ -780,6 +797,14 @@ export type UpdateOrganizationSolutionMutationVariables = Exact<{
 
 export type UpdateOrganizationSolutionMutation = { __typename?: 'Mutation', updateOrganizationSolution?: { __typename?: 'UpdateOrganizationSolution', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, solution?: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> } | null } | null };
 
+export type OrganizationUpdateUserClientPermissionsMutationVariables = Exact<{
+  userUuid: Scalars['String']['input'];
+  clientUuids: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type OrganizationUpdateUserClientPermissionsMutation = { __typename?: 'Mutation', updateUserClientPermissions?: { __typename?: 'UpdateUserClientPermissions', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
+
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -860,7 +885,7 @@ export type OrganizationUserQueryVariables = Exact<{
 }>;
 
 
-export type OrganizationUserQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, user: { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: string, permissions: Array<UserPermissionsEnum> } } };
+export type OrganizationUserQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, user: { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: string, permissions: Array<UserPermissionsEnum>, clientsWithAccess: Array<{ __typename?: 'ClientType', uuid: string, name: string }> } } };
 
 export type OrganizationUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1023,6 +1048,10 @@ export const UserFragmentDoc = gql`
   photoUrl
   role
   permissions
+  clientsWithAccess {
+    uuid
+    name
+  }
 }
     `;
 export const ChangePasswordDocument = gql`
@@ -1803,6 +1832,42 @@ export function useUpdateOrganizationSolutionMutation(baseOptions?: Apollo.Mutat
 export type UpdateOrganizationSolutionMutationHookResult = ReturnType<typeof useUpdateOrganizationSolutionMutation>;
 export type UpdateOrganizationSolutionMutationResult = Apollo.MutationResult<UpdateOrganizationSolutionMutation>;
 export type UpdateOrganizationSolutionMutationOptions = Apollo.BaseMutationOptions<UpdateOrganizationSolutionMutation, UpdateOrganizationSolutionMutationVariables>;
+export const OrganizationUpdateUserClientPermissionsDocument = gql`
+    mutation OrganizationUpdateUserClientPermissions($userUuid: String!, $clientUuids: [String!]!) {
+  updateUserClientPermissions(userUuid: $userUuid, clientUuids: $clientUuids) {
+    error {
+      ...Error
+    }
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type OrganizationUpdateUserClientPermissionsMutationFn = Apollo.MutationFunction<OrganizationUpdateUserClientPermissionsMutation, OrganizationUpdateUserClientPermissionsMutationVariables>;
+
+/**
+ * __useOrganizationUpdateUserClientPermissionsMutation__
+ *
+ * To run a mutation, you first call `useOrganizationUpdateUserClientPermissionsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useOrganizationUpdateUserClientPermissionsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [organizationUpdateUserClientPermissionsMutation, { data, loading, error }] = useOrganizationUpdateUserClientPermissionsMutation({
+ *   variables: {
+ *      userUuid: // value for 'userUuid'
+ *      clientUuids: // value for 'clientUuids'
+ *   },
+ * });
+ */
+export function useOrganizationUpdateUserClientPermissionsMutation(baseOptions?: Apollo.MutationHookOptions<OrganizationUpdateUserClientPermissionsMutation, OrganizationUpdateUserClientPermissionsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<OrganizationUpdateUserClientPermissionsMutation, OrganizationUpdateUserClientPermissionsMutationVariables>(OrganizationUpdateUserClientPermissionsDocument, options);
+      }
+export type OrganizationUpdateUserClientPermissionsMutationHookResult = ReturnType<typeof useOrganizationUpdateUserClientPermissionsMutation>;
+export type OrganizationUpdateUserClientPermissionsMutationResult = Apollo.MutationResult<OrganizationUpdateUserClientPermissionsMutation>;
+export type OrganizationUpdateUserClientPermissionsMutationOptions = Apollo.BaseMutationOptions<OrganizationUpdateUserClientPermissionsMutation, OrganizationUpdateUserClientPermissionsMutationVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {

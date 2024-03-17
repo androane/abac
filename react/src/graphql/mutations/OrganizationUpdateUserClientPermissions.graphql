@@ -1,0 +1,7 @@
+mutation OrganizationUpdateUserClientPermissions($userUuid: String!, $clientUuids: [String!]!) {
+  updateUserClientPermissions(userUuid: $userUuid, clientUuids: $clientUuids) {
+    error {
+      ...Error
+    }
+  }
+}
