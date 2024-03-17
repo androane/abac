@@ -29,6 +29,10 @@ from organization.services.client_invoice_service import (
     generate_invoice_items,
     get_client_invoice,
 )
+from organization.services.organization_user_service import (
+    get_organization_users,
+    get_organzation_user,
+)
 from user.graphene.types import UserType
 from user.permissions import (
     UserPermissionsEnum,
@@ -85,6 +89,12 @@ class ActivityType(DjangoObjectType):
 
     unit_cost_currency = CurrencyEnumType(required=True)
     unit_cost_type = UnitCostTypeEnumType(required=True)
+
+    @field_permission_required(
+        UserPermissionsEnum.HAS_CLIENT_ACTIVITY_COSTS_ACCESS.value
+    )
+    def resolve_unit_cost(self, info, **kwargs):
+        return self.unit_cost
 
 
 class ClientActivityLogType(DjangoObjectType):
@@ -144,6 +154,12 @@ class ClientSolutionType(DjangoObjectType):
 
     def resolve_logs(self, info, **kwargs):
         return info.context.logs_from_client_solution.load(self.id)
+
+    @field_permission_required(
+        UserPermissionsEnum.HAS_CLIENT_ACTIVITY_COSTS_ACCESS.value
+    )
+    def resolve_unit_cost(self, info, **kwargs):
+        return self.unit_cost
 
 
 class TotalByCurrencyType(graphene.ObjectType):
@@ -252,20 +268,20 @@ class ClientType(DjangoObjectType):
 
     files = graphene.List(graphene.NonNull(ClientFileType), required=True)
     users = graphene.List(graphene.NonNull(UserType), required=True)
-    activity = graphene.NonNull(ClientActivityType, uuid=graphene.String(required=True))
     activities = graphene.List(
         graphene.NonNull(ClientActivityType),
         month=graphene.Int(required=True),
         year=graphene.Int(required=True),
         required=True,
     )
-    solution = graphene.NonNull(ClientSolutionType, uuid=graphene.String(required=True))
+    activity = graphene.NonNull(ClientActivityType, uuid=graphene.String(required=True))
     solutions = graphene.List(
         graphene.NonNull(ClientSolutionType),
         month=graphene.Int(),
         year=graphene.Int(),
         required=True,
     )
+    solution = graphene.NonNull(ClientSolutionType, uuid=graphene.String(required=True))
     invoice = graphene.NonNull(
         InvoiceType,
         month=graphene.Int(required=True),
@@ -278,22 +294,22 @@ class ClientType(DjangoObjectType):
     def resolve_users(self, info, **kwargs):
         return self.users.all()
 
-    def resolve_activity(self, info, **kwargs):
-        return self.client_activities.get(uuid=kwargs.get("uuid"))
-
-    @permission_required(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS.value)
-    def resolve_solution(self, info, **kwargs):
-        return self.client_solutions.get(uuid=kwargs.get("uuid"))
-
     def resolve_activities(self, info, **kwargs):
         from organization.services.client_activity_service import get_client_activities
 
         return get_client_activities(self, **kwargs)
 
+    def resolve_activity(self, info, **kwargs):
+        return self.client_activities.get(uuid=kwargs.get("uuid"))
+
     def resolve_solutions(self, info, **kwargs):
         from organization.services.client_activity_service import get_client_solutions
 
         return get_client_solutions(self, **kwargs)
+
+    @permission_required(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS.value)
+    def resolve_solution(self, info, **kwargs):
+        return self.client_solutions.get(uuid=kwargs.get("uuid"))
 
     @permission_required(UserPermissionsEnum.HAS_CLIENT_INVOICE_ACCESS.value)
     def resolve_invoice(self, info, **kwargs):
@@ -313,6 +329,7 @@ class OrganizationType(DjangoObjectType):
     logo_url = graphene.NonNull(graphene.String)
     clients = graphene.NonNull(graphene.List(graphene.NonNull(ClientType)))
     users = graphene.NonNull(graphene.List(graphene.NonNull(UserType)))
+    user = graphene.NonNull(UserType, uuid=graphene.String(required=True))
 
     def resolve_clients(self, info, **kwargs):
         return self.clients.order_by("name").all()
@@ -322,11 +339,10 @@ class OrganizationType(DjangoObjectType):
             return self.logo.url
 
     def resolve_users(self, info, **kwargs):
-        return (
-            self.users.filter(client__isnull=True)
-            .exclude(email="mihai.zamfir90@gmail.com")
-            .order_by("first_name", "last_name")
-        )
+        return get_organization_users(self, **kwargs)
+
+    def resolve_user(self, info, **kwargs):
+        return get_organzation_user(self, **kwargs)
 
     def resolve_solutions(self, info, **kwargs):
         return self.solutions.all()

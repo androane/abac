@@ -468,8 +468,14 @@ export type OrganizationType = {
   logoUrl: Scalars['String']['output'];
   name: Scalars['String']['output'];
   solutions: Array<SolutionType>;
+  user: UserType;
   users: Array<UserType>;
   uuid: Scalars['String']['output'];
+};
+
+
+export type OrganizationTypeUserArgs = {
+  uuid: Scalars['String']['input'];
 };
 
 export type Query = {
@@ -602,15 +608,15 @@ export type ClientSolutionLogFragment = { __typename?: 'ClientSolutionLogType', 
 
 export type ClientUserFragment = { __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string } };
 
+export type CoreUserFragment = { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: string };
+
 export type ErrorFragment = { __typename?: 'ErrorType', field?: string | null, message: string };
 
 export type FileFragment = { __typename?: 'ClientFileType', uuid: string, name: string, updated: DateTimeString, url: string, size: number };
 
-export type OrganizationSettingsUserFragment = { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: string, permissions: Array<UserPermissionsEnum> };
-
-export type OrganizationUserFragment = { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: string };
-
 export type SolutionFragment = { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> };
+
+export type UserFragment = { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: string, permissions: Array<UserPermissionsEnum> };
 
 export type ChangePasswordMutationVariables = Exact<{
   currentPassword: Scalars['String']['input'];
@@ -823,15 +829,17 @@ export type OrganizationClientsQueryVariables = Exact<{ [key: string]: never; }>
 
 export type OrganizationClientsQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, clients: Array<{ __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null }> } };
 
-export type OrganizationSettingsUsersQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type OrganizationSettingsUsersQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, users: Array<{ __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: string, permissions: Array<UserPermissionsEnum> }> } };
-
 export type OrganizationSolutionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type OrganizationSolutionsQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, solutions: Array<{ __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> }> } };
+
+export type OrganizationUserQueryVariables = Exact<{
+  uuid: Scalars['String']['input'];
+}>;
+
+
+export type OrganizationUserQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, user: { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: string, permissions: Array<UserPermissionsEnum> } } };
 
 export type OrganizationUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -947,6 +955,15 @@ export const ClientUserFragmentDoc = gql`
   }
 }
     `;
+export const CoreUserFragmentDoc = gql`
+    fragment CoreUser on UserType {
+  uuid
+  name
+  email
+  photoUrl
+  role
+}
+    `;
 export const ErrorFragmentDoc = gql`
     fragment Error on ErrorType {
   field
@@ -962,25 +979,6 @@ export const FileFragmentDoc = gql`
   size
 }
     `;
-export const OrganizationSettingsUserFragmentDoc = gql`
-    fragment OrganizationSettingsUser on UserType {
-  uuid
-  name
-  email
-  photoUrl
-  role
-  permissions
-}
-    `;
-export const OrganizationUserFragmentDoc = gql`
-    fragment OrganizationUser on UserType {
-  uuid
-  name
-  email
-  photoUrl
-  role
-}
-    `;
 export const SolutionFragmentDoc = gql`
     fragment Solution on SolutionType {
   uuid
@@ -994,6 +992,16 @@ export const SolutionFragmentDoc = gql`
     uuid
     name
   }
+}
+    `;
+export const UserFragmentDoc = gql`
+    fragment User on UserType {
+  uuid
+  name
+  email
+  photoUrl
+  role
+  permissions
 }
     `;
 export const ChangePasswordDocument = gql`
@@ -2196,48 +2204,6 @@ export type OrganizationClientsQueryHookResult = ReturnType<typeof useOrganizati
 export type OrganizationClientsLazyQueryHookResult = ReturnType<typeof useOrganizationClientsLazyQuery>;
 export type OrganizationClientsSuspenseQueryHookResult = ReturnType<typeof useOrganizationClientsSuspenseQuery>;
 export type OrganizationClientsQueryResult = Apollo.QueryResult<OrganizationClientsQuery, OrganizationClientsQueryVariables>;
-export const OrganizationSettingsUsersDocument = gql`
-    query OrganizationSettingsUsers {
-  organization {
-    uuid
-    users {
-      ...OrganizationSettingsUser
-    }
-  }
-}
-    ${OrganizationSettingsUserFragmentDoc}`;
-
-/**
- * __useOrganizationSettingsUsersQuery__
- *
- * To run a query within a React component, call `useOrganizationSettingsUsersQuery` and pass it any options that fit your needs.
- * When your component renders, `useOrganizationSettingsUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useOrganizationSettingsUsersQuery({
- *   variables: {
- *   },
- * });
- */
-export function useOrganizationSettingsUsersQuery(baseOptions?: Apollo.QueryHookOptions<OrganizationSettingsUsersQuery, OrganizationSettingsUsersQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<OrganizationSettingsUsersQuery, OrganizationSettingsUsersQueryVariables>(OrganizationSettingsUsersDocument, options);
-      }
-export function useOrganizationSettingsUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<OrganizationSettingsUsersQuery, OrganizationSettingsUsersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<OrganizationSettingsUsersQuery, OrganizationSettingsUsersQueryVariables>(OrganizationSettingsUsersDocument, options);
-        }
-export function useOrganizationSettingsUsersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<OrganizationSettingsUsersQuery, OrganizationSettingsUsersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<OrganizationSettingsUsersQuery, OrganizationSettingsUsersQueryVariables>(OrganizationSettingsUsersDocument, options);
-        }
-export type OrganizationSettingsUsersQueryHookResult = ReturnType<typeof useOrganizationSettingsUsersQuery>;
-export type OrganizationSettingsUsersLazyQueryHookResult = ReturnType<typeof useOrganizationSettingsUsersLazyQuery>;
-export type OrganizationSettingsUsersSuspenseQueryHookResult = ReturnType<typeof useOrganizationSettingsUsersSuspenseQuery>;
-export type OrganizationSettingsUsersQueryResult = Apollo.QueryResult<OrganizationSettingsUsersQuery, OrganizationSettingsUsersQueryVariables>;
 export const OrganizationSolutionsDocument = gql`
     query OrganizationSolutions {
   organization {
@@ -2280,16 +2246,59 @@ export type OrganizationSolutionsQueryHookResult = ReturnType<typeof useOrganiza
 export type OrganizationSolutionsLazyQueryHookResult = ReturnType<typeof useOrganizationSolutionsLazyQuery>;
 export type OrganizationSolutionsSuspenseQueryHookResult = ReturnType<typeof useOrganizationSolutionsSuspenseQuery>;
 export type OrganizationSolutionsQueryResult = Apollo.QueryResult<OrganizationSolutionsQuery, OrganizationSolutionsQueryVariables>;
+export const OrganizationUserDocument = gql`
+    query OrganizationUser($uuid: String!) {
+  organization {
+    uuid
+    user(uuid: $uuid) {
+      ...User
+    }
+  }
+}
+    ${UserFragmentDoc}`;
+
+/**
+ * __useOrganizationUserQuery__
+ *
+ * To run a query within a React component, call `useOrganizationUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOrganizationUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOrganizationUserQuery({
+ *   variables: {
+ *      uuid: // value for 'uuid'
+ *   },
+ * });
+ */
+export function useOrganizationUserQuery(baseOptions: Apollo.QueryHookOptions<OrganizationUserQuery, OrganizationUserQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<OrganizationUserQuery, OrganizationUserQueryVariables>(OrganizationUserDocument, options);
+      }
+export function useOrganizationUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<OrganizationUserQuery, OrganizationUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<OrganizationUserQuery, OrganizationUserQueryVariables>(OrganizationUserDocument, options);
+        }
+export function useOrganizationUserSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<OrganizationUserQuery, OrganizationUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<OrganizationUserQuery, OrganizationUserQueryVariables>(OrganizationUserDocument, options);
+        }
+export type OrganizationUserQueryHookResult = ReturnType<typeof useOrganizationUserQuery>;
+export type OrganizationUserLazyQueryHookResult = ReturnType<typeof useOrganizationUserLazyQuery>;
+export type OrganizationUserSuspenseQueryHookResult = ReturnType<typeof useOrganizationUserSuspenseQuery>;
+export type OrganizationUserQueryResult = Apollo.QueryResult<OrganizationUserQuery, OrganizationUserQueryVariables>;
 export const OrganizationUsersDocument = gql`
     query OrganizationUsers {
   organization {
     uuid
     users {
-      ...OrganizationUser
+      ...CoreUser
     }
   }
 }
-    ${OrganizationUserFragmentDoc}`;
+    ${CoreUserFragmentDoc}`;
 
 /**
  * __useOrganizationUsersQuery__

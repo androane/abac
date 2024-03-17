@@ -2,7 +2,7 @@ query OrganizationUsers {
   organization {
     uuid
     users {
-      ...OrganizationUser
+      ...CoreUser
     }
   }
 }

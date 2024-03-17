@@ -1,0 +1,8 @@
+query OrganizationUser($uuid: String!) {
+  organization {
+    uuid
+    user(uuid: $uuid) {
+      ...User
+    }
+  }
+}

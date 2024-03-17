@@ -1,8 +1,0 @@
-query OrganizationSettingsUsers {
-  organization {
-    uuid
-    users {
-      ...OrganizationSettingsUser
-    }
-  }
-}
