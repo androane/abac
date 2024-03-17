@@ -29,9 +29,16 @@ type Props = {
   clientUuid: string
   date: Date
   onClose: () => void
+  canSeeCosts: boolean
 }
 
-const UpdateClientActivity: React.FC<Props> = ({ activity, clientUuid, date, onClose }) => {
+const UpdateClientActivity: React.FC<Props> = ({
+  activity,
+  clientUuid,
+  date,
+  onClose,
+  canSeeCosts,
+}) => {
   const [updateClientActivity, { loading }] = useUpdateClientActivityMutation()
 
   const { enqueueSnackbar } = useSnackbar()
@@ -159,24 +166,28 @@ const UpdateClientActivity: React.FC<Props> = ({ activity, clientUuid, date, onC
                 </MenuItem>
               ))}
             </RHFSelect>
-            <RHFTextField
-              name="unitCost"
-              label="Cost"
-              type="number"
-              InputLabelProps={{ shrink: true }}
-            />
-            <RHFSelect
-              name="unitCostCurrency"
-              label="Moneda"
-              InputLabelProps={{ shrink: true }}
-              disabled={activity ? !activity.isCustom : false}
-            >
-              {Object.keys(CurrencyEnum).map(currency => (
-                <MenuItem key={currency} value={currency}>
-                  {currency}
-                </MenuItem>
-              ))}
-            </RHFSelect>
+            {canSeeCosts && (
+              <>
+                <RHFTextField
+                  name="unitCost"
+                  label="Cost"
+                  type="number"
+                  InputLabelProps={{ shrink: true }}
+                />
+                <RHFSelect
+                  name="unitCostCurrency"
+                  label="Moneda"
+                  InputLabelProps={{ shrink: true }}
+                  disabled={activity ? !activity.isCustom : false}
+                >
+                  {Object.keys(CurrencyEnum).map(currency => (
+                    <MenuItem key={currency} value={currency}>
+                      {currency}
+                    </MenuItem>
+                  ))}
+                </RHFSelect>
+              </>
+            )}
             <RHFSelect
               InputLabelProps={{ shrink: true }}
               name="unitCostType"

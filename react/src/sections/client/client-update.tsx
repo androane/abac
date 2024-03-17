@@ -10,6 +10,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Grid from '@mui/material/Unstable_Grid2'
+import { MenuItem } from '@mui/material'
 
 import { useRouter } from 'routes/hooks'
 import { paths } from 'routes/paths'
@@ -23,10 +24,10 @@ import {
   ClientQuery,
   CurrencyEnum,
   useOrganizationUsersQuery,
+  UserPermissionsEnum,
 } from 'generated/graphql'
 import { useAuthContext } from 'auth/hooks'
 import getErrorMessage from 'utils/api-codes'
-import { MenuItem } from '@mui/material'
 import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 
@@ -36,6 +37,11 @@ type Props = {
 
 export const UpdateClient: React.FC<Props> = ({ client }) => {
   const router = useRouter()
+
+  const { hasPermission } = useAuthContext()
+
+  const canUpdate = hasPermission(UserPermissionsEnum.HAS_CLIENT_ADD_ACCESS)
+  const canSeeCosts = hasPermission(UserPermissionsEnum.HAS_CLIENT_ACTIVITY_COSTS_ACCESS)
 
   const { user } = useAuthContext()
 
@@ -135,11 +141,16 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="name" label="Nume firmă" InputLabelProps={{ shrink: true }} />
+              <RHFTextField
+                disabled={!canUpdate}
+                name="name"
+                label="Nume firmă"
+                InputLabelProps={{ shrink: true }}
+              />
               <ResponseHandler {...resultUsers}>
                 {({ organization }) => {
                   return (
-                    <RHFSelect name="programManagerUuid" label="Responsabil">
+                    <RHFSelect disabled={!canUpdate} name="programManagerUuid" label="Responsabil">
                       <MenuItem value="">Alege</MenuItem>
                       {organization.users.map(u => (
                         <MenuItem key={u.uuid} value={u.uuid}>
@@ -150,13 +161,20 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
                   )
                 }}
               </ResponseHandler>
-              <RHFTextField name="cui" label="CUI" InputLabelProps={{ shrink: true }} />
               <RHFTextField
+                disabled={!canUpdate}
+                name="cui"
+                label="CUI"
+                InputLabelProps={{ shrink: true }}
+              />
+              <RHFTextField
+                disabled={!canUpdate}
                 name="spvUsername"
                 label="Utilizator SPV"
                 InputLabelProps={{ shrink: true }}
               />
               <RHFTextField
+                disabled={!canUpdate}
                 name="spvPassword"
                 label="Parolă SPV"
                 InputLabelProps={{ shrink: true }}
@@ -180,6 +198,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
                         return (
                           <React.Fragment key={categoryCode}>
                             <RHFSelect
+                              disabled={!canUpdate}
                               InputLabelProps={{ shrink: true }}
                               name={`clientSolutions[${index}].solutionUuid`}
                               label={`Pachet ${getCategoryLabelFromCode(categoryCode)}`}
@@ -193,23 +212,34 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
                                   </MenuItem>
                                 ))}
                             </RHFSelect>
-                            <RHFTextField
-                              name={`clientSolutions[${index}].unitCost`}
-                              label="Cost"
-                              type="number"
-                              InputLabelProps={{ shrink: true }}
-                            />
-                            <RHFSelect
-                              name={`clientSolutions[${index}].unitCostCurrency`}
-                              label="Moneda"
-                              InputLabelProps={{ shrink: true }}
-                            >
-                              {Object.keys(CurrencyEnum).map(currency => (
-                                <MenuItem key={currency} value={currency}>
-                                  {currency}
-                                </MenuItem>
-                              ))}
-                            </RHFSelect>
+                            {canSeeCosts ? (
+                              <>
+                                <RHFTextField
+                                  disabled={!canUpdate}
+                                  name={`clientSolutions[${index}].unitCost`}
+                                  label="Cost"
+                                  type="number"
+                                  InputLabelProps={{ shrink: true }}
+                                />
+                                <RHFSelect
+                                  disabled={!canUpdate}
+                                  name={`clientSolutions[${index}].unitCostCurrency`}
+                                  label="Moneda"
+                                  InputLabelProps={{ shrink: true }}
+                                >
+                                  {Object.keys(CurrencyEnum).map(currency => (
+                                    <MenuItem key={currency} value={currency}>
+                                      {currency}
+                                    </MenuItem>
+                                  ))}
+                                </RHFSelect>
+                              </>
+                            ) : (
+                              <>
+                                <div />
+                                <div />
+                              </>
+                            )}
                           </React.Fragment>
                         )
                       })}
@@ -220,6 +250,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
             </Box>
             <Box sx={{ pt: 3 }}>
               <RHFTextField
+                disabled={!canUpdate}
                 name="description"
                 label="Descriere"
                 multiline
@@ -228,11 +259,13 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
               />
             </Box>
 
-            <Stack alignItems="flex-end" sx={{ mt: 3 }}>
-              <LoadingButton type="submit" variant="contained" loading={loading}>
-                {client ? 'Salvează' : 'Adaugă Client'}
-              </LoadingButton>
-            </Stack>
+            {canUpdate && (
+              <Stack alignItems="flex-end" sx={{ mt: 3 }}>
+                <LoadingButton type="submit" variant="contained" loading={loading}>
+                  {client ? 'Salvează' : 'Adaugă Client'}
+                </LoadingButton>
+              </Stack>
+            )}
           </Card>
         </Grid>
       </Grid>

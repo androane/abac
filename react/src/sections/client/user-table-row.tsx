@@ -10,26 +10,28 @@ import Iconify from 'components/iconify'
 
 import { useBoolean } from 'hooks/use-boolean'
 import { ROLE_LABELS } from 'sections/client/constants'
-import { ClientUserRoleEnum, UserPermissionsEnum } from 'generated/graphql'
+import { ClientUserRoleEnum } from 'generated/graphql'
 import { APIClientUser } from 'sections/client/types'
 import LoadingButton from '@mui/lab/LoadingButton'
-import { useAuthContext } from 'auth/hooks'
 
 type Props = {
   loading: boolean
+  canSeeInformation: boolean
   row: APIClientUser
   onEditRow: VoidFunction
   onDeleteRow: VoidFunction
 }
 
-const UserTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRow }) => {
+const UserTableRow: React.FC<Props> = ({
+  canSeeInformation,
+  loading,
+  row,
+  onEditRow,
+  onDeleteRow,
+}) => {
   const confirm = useBoolean()
 
   const popover = usePopover()
-
-  const { hasPermission } = useAuthContext()
-
-  const showFields = hasPermission(UserPermissionsEnum.HAS_CLIENT_GENERAL_INFORMATION_ACCESS)
 
   return (
     <>
@@ -69,7 +71,7 @@ const UserTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRow })
             }}
           />
         </TableCell>
-        {showFields && (
+        {canSeeInformation && (
           <TableCell sx={{ whiteSpace: 'nowrap' }}>
             <ListItemText
               primary={ROLE_LABELS[row.clientProfile.role as ClientUserRoleEnum]}
@@ -82,32 +84,28 @@ const UserTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRow })
             />
           </TableCell>
         )}
-        {showFields && (
-          <TableCell sx={{ whiteSpace: 'nowrap' }}>
-            <ListItemText
-              primary={row.clientProfile.spvUsername}
-              secondary=""
-              primaryTypographyProps={{ typography: 'body2' }}
-              secondaryTypographyProps={{
-                component: 'span',
-                color: 'text.disabled',
-              }}
-            />
-          </TableCell>
-        )}
-        {showFields && (
-          <TableCell sx={{ whiteSpace: 'nowrap' }}>
-            <ListItemText
-              primary={row.clientProfile.spvPassword}
-              secondary=""
-              primaryTypographyProps={{ typography: 'body2' }}
-              secondaryTypographyProps={{
-                component: 'span',
-                color: 'text.disabled',
-              }}
-            />
-          </TableCell>
-        )}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <ListItemText
+            primary={row.clientProfile.spvUsername}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <ListItemText
+            primary={row.clientProfile.spvPassword}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
+        </TableCell>
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />

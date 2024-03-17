@@ -23,6 +23,7 @@ import {
   useClientActivitiesQuery,
   useDeleteClientActivityMutation,
   UnitCostTypeEnum,
+  UserPermissionsEnum,
 } from 'generated/graphql'
 import ActivityTableFiltersResult from 'sections/settings/activity-table-filters-result'
 import ActivityTableToolbar from 'sections/client/activity-table-toolbar'
@@ -30,21 +31,13 @@ import ActivityTableRow from 'sections/client/activity-table-row'
 import { ClientActivityTableFilters, GenericActivityType } from 'sections/client/types'
 import UpdateClientActivity from 'sections/client/activity-update'
 import { UpdateClientActivityLogs, UpdateClientSolutionLogs } from 'sections/client/logs-update'
+import { useAuthContext } from 'auth/hooks'
 
 const defaultFilters = {
   name: '',
   category: '',
   isCustom: '',
 }
-
-const TABLE_HEAD = [
-  { id: 'isExecuted', label: 'Efectuat?' },
-  { id: 'name', label: 'Nume' },
-  { id: 'isCustom', label: 'Este specifică clientului?' },
-  { id: 'category', label: 'Domeniu' },
-  { id: 'unitCost', label: 'Suma' },
-  { id: 'unitCostType', label: 'Tip Cost' },
-]
 
 type ActivityListCardProps = {
   clientUuid: string
@@ -59,7 +52,24 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
   date,
   onChangeDate,
 }) => {
+  let TABLE_HEAD = [
+    { id: 'isExecuted', label: 'Efectuat?' },
+    { id: 'name', label: 'Nume' },
+    { id: 'isCustom', label: 'Este specifică clientului?' },
+    { id: 'category', label: 'Domeniu' },
+    { id: 'unitCost', label: 'Suma' },
+    { id: 'unitCostType', label: 'Tip Cost' },
+  ]
+
+  const { hasPermission } = useAuthContext()
+
   const [deleteActivity, { loading }] = useDeleteClientActivityMutation()
+
+  const canSeeCosts = hasPermission(UserPermissionsEnum.HAS_CLIENT_ACTIVITY_COSTS_ACCESS)
+
+  if (!canSeeCosts) {
+    TABLE_HEAD = TABLE_HEAD.filter(_ => _.id !== 'unitCost')
+  }
 
   const [activityUuidToEdit, setActivityUuidToEdit] = useState<undefined | string>()
   const [clientActivityUuidLogsToEdit, setClientActivityUuidLogsToEdit] = useState<
@@ -142,6 +152,7 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
           clientUuid={clientUuid}
           activity={activities.find(_ => _.activityUuid === activityUuidToEdit)!}
           onClose={() => setActivityUuidToEdit(undefined)}
+          canSeeCosts={canSeeCosts}
         />
       )}
       {clientActivityUuidLogsToEdit && (
@@ -218,6 +229,7 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
                       }
                     }}
                     loadingDelete={loading}
+                    canSeeCosts={canSeeCosts}
                   />
                 ))}
 

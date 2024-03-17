@@ -2,4 +2,4 @@ Permissions data loader
 Update User doar campurile la care are voie
 de ascuns preturi pt userii fara permisiune
 
- intrebare access informatii generale clienti
+intrebare access informatii generale clienti

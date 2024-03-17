@@ -1,12 +1,14 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 
-import { hideScroll } from 'theme/css'
+import { bgGradient, hideScroll } from 'theme/css'
 
 import Logo from 'components/logo'
 import { NavSectionMini } from 'components/nav-section'
 
 import { useAuthContext } from 'auth/hooks'
+import { alpha } from '@mui/material/styles'
+import { grey } from 'theme/palette'
 import NavToggleButton from '../common/nav-toggle-button'
 import { NAV } from '../config-layout'
 import useNavData from './config-navigation'
@@ -19,6 +21,11 @@ export default function NavMini() {
   return (
     <Box
       sx={{
+        ...bgGradient({
+          direction: '135deg',
+          startColor: alpha(grey[200], 0.2),
+          endColor: alpha(grey[400], 0.2),
+        }),
         flexShrink: { lg: 0 },
         width: { lg: NAV.W_MINI },
       }}

@@ -3,16 +3,19 @@ import { useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import Stack from '@mui/material/Stack'
+import { alpha, useTheme } from '@mui/material/styles'
 
 import { usePathname } from 'routes/hooks'
 
 import { useResponsive } from 'hooks/use-responsive'
+import { bgGradient } from 'theme/css'
 
 import Logo from 'components/logo'
 import { NavSectionVertical } from 'components/nav-section'
 import Scrollbar from 'components/scrollbar'
 
 import { useAuthContext } from 'auth/hooks'
+import { grey } from 'theme/palette'
 import NavToggleButton from '../common/nav-toggle-button'
 import { NAV } from '../config-layout'
 import useNavData from './config-navigation'
@@ -24,6 +27,7 @@ type Props = {
 
 export default function NavVertical({ openNav, onCloseNav }: Props) {
   const { user } = useAuthContext()
+  const theTheme = useTheme()
 
   const pathname = usePathname()
 
@@ -65,6 +69,11 @@ export default function NavVertical({ openNav, onCloseNav }: Props) {
   return (
     <Box
       sx={{
+        ...bgGradient({
+          direction: '135deg',
+          startColor: alpha(grey[200], 0.2),
+          endColor: alpha(grey[400], 0.2),
+        }),
         flexShrink: { lg: 0 },
         width: { lg: NAV.W_VERTICAL },
       }}

@@ -18,19 +18,17 @@ import {
 } from 'components/table'
 
 import ResponseHandler from 'components/response-handler'
-import { useClientUsersQuery, useDeleteClientUserMutation } from 'generated/graphql'
+import {
+  UserPermissionsEnum,
+  useClientUsersQuery,
+  useDeleteClientUserMutation,
+} from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import UpdateUser from 'sections/client/users-update'
 import AddButton from 'components/add-button'
 import { APIClientUser } from 'sections/client/types'
+import { useAuthContext } from 'auth/hooks'
 import UserTableRow from './user-table-row'
-
-const TABLE_HEAD = [
-  { id: 'name', label: 'Nume' },
-  { id: 'email', label: 'Email' },
-  { id: 'phoneNumber', label: 'Telefon' },
-  { id: '', width: 88 },
-]
 
 type CardProps = {
   clientUuid: string
@@ -40,6 +38,23 @@ type CardProps = {
 const UserListCard: React.FC<CardProps> = ({ clientUuid, users }) => {
   const [deleteUser, { loading }] = useDeleteClientUserMutation()
 
+  const { hasPermission } = useAuthContext()
+
+  let TABLE_HEAD = [
+    { id: 'name', label: 'Nume' },
+    { id: 'email', label: 'Email' },
+    { id: 'phoneNumber', label: 'Telefon' },
+    { id: 'role', label: 'Rol' },
+    { id: 'spvUsername', label: 'Utilizator SPV' },
+    { id: 'spvPassword', label: 'Parola SPV' },
+    { id: '', width: 88 },
+  ]
+
+  const canSeeInformation = hasPermission(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS)
+
+  if (!canSeeInformation) {
+    TABLE_HEAD = TABLE_HEAD.filter(_ => _.id !== 'role')
+  }
   const showCreateUser = useBoolean()
   const [userUuidToEdit, setUserUuidToEdit] = useState<undefined | string>()
 
@@ -98,6 +113,7 @@ const UserListCard: React.FC<CardProps> = ({ clientUuid, users }) => {
             clientUuid={clientUuid}
             user={users.find(_ => _.uuid === userUuidToEdit)}
             onClose={showCreateUser.onFalse}
+            canSeeInformation={canSeeInformation}
           />
         )}
         <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
@@ -125,6 +141,7 @@ const UserListCard: React.FC<CardProps> = ({ clientUuid, users }) => {
                       row={row}
                       onDeleteRow={() => handleDeleteRow(row.uuid)}
                       onEditRow={() => handleEditRow(row.uuid)}
+                      canSeeInformation={canSeeInformation}
                     />
                   ))}
 

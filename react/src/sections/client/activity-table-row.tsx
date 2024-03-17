@@ -27,6 +27,7 @@ type Props = {
   onEditRow(clientActivityUuid?: string): void
   onDeleteRow: VoidFunction
   onEditLogs: VoidFunction
+  canSeeCosts: boolean
 }
 
 const ActivityTableRow: React.FC<Props> = ({
@@ -37,6 +38,7 @@ const ActivityTableRow: React.FC<Props> = ({
   onEditRow,
   onDeleteRow,
   onEditLogs,
+  canSeeCosts,
 }) => {
   const [updateClientActivity, { loading: loadingAdd }] = useUpdateClientActivityMutation()
   const [toggleClientActivity, { loading: loadingToggle }] = useToggleClientActivityMutation()
@@ -161,17 +163,19 @@ const ActivityTableRow: React.FC<Props> = ({
             }}
           />
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          <ListItemText
-            primary={row.unitCost ? `${row.unitCost} ${row.unitCostCurrency}` : ''}
-            secondary=""
-            primaryTypographyProps={{ typography: 'body2' }}
-            secondaryTypographyProps={{
-              component: 'span',
-              color: 'text.disabled',
-            }}
-          />
-        </TableCell>
+        {canSeeCosts && (
+          <TableCell sx={{ whiteSpace: 'nowrap' }}>
+            <ListItemText
+              primary={row.unitCost ? `${row.unitCost} ${row.unitCostCurrency}` : ''}
+              secondary=""
+              primaryTypographyProps={{ typography: 'body2' }}
+              secondaryTypographyProps={{
+                component: 'span',
+                color: 'text.disabled',
+              }}
+            />
+          </TableCell>
+        )}
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
             primary={getUnitCostTypeLabel(row.unitCostType)}

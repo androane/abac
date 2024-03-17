@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                     ("has_settings_access", "Has access to settings"),
                     ("has_invoice_access", "Has access to client invoices"),
                     (
-                        "has_client_general_information_costs_access",
+                        "has_client_information_access",
                         "Has access to client general information",
                     ),
                     (

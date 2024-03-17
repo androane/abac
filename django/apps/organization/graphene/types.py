@@ -281,9 +281,7 @@ class ClientType(DjangoObjectType):
     def resolve_activity(self, info, **kwargs):
         return self.client_activities.get(uuid=kwargs.get("uuid"))
 
-    @permission_required(
-        UserPermissionsEnum.HAS_CLIENT_GENERAL_INFORMATION_ACCESS.value
-    )
+    @permission_required(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS.value)
     def resolve_solution(self, info, **kwargs):
         return self.client_solutions.get(uuid=kwargs.get("uuid"))
 
@@ -352,27 +350,19 @@ class ClientUserProfileType(DjangoObjectType):
 
     role = ClientUserRoleEnumType()
 
-    @field_permission_required(
-        UserPermissionsEnum.HAS_CLIENT_GENERAL_INFORMATION_ACCESS.value
-    )
+    @field_permission_required(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS.value)
     def resolve_role(self, info, **kwargs):
         return self.role
 
-    @field_permission_required(
-        UserPermissionsEnum.HAS_CLIENT_GENERAL_INFORMATION_ACCESS.value
-    )
+    @field_permission_required(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS.value)
     def resolve_spv_username(self, info, **kwargs):
         return self.spv_username
 
-    @field_permission_required(
-        UserPermissionsEnum.HAS_CLIENT_GENERAL_INFORMATION_ACCESS.value
-    )
+    @field_permission_required(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS.value)
     def resolve_spv_password(self, info, **kwargs):
         return self.spv_password
 
-    @field_permission_required(
-        UserPermissionsEnum.HAS_CLIENT_GENERAL_INFORMATION_ACCESS.value
-    )
+    @field_permission_required(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS.value)
     def resolve_ownership_percentage(self, info, **kwargs):
         return self.ownership_percentage
 
