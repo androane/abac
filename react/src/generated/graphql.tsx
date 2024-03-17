@@ -562,6 +562,16 @@ export type UpdateOrganizationSolution = {
   solution?: Maybe<SolutionType>;
 };
 
+/** An enumeration. */
+export enum UserPermissionsEnum {
+  HAS_CLIENT_ACTIVITY_COSTS_ACCESS = 'HAS_CLIENT_ACTIVITY_COSTS_ACCESS',
+  HAS_CLIENT_ADD_ACCESS = 'HAS_CLIENT_ADD_ACCESS',
+  HAS_CLIENT_GENERAL_INFORMATION_ACCESS = 'HAS_CLIENT_GENERAL_INFORMATION_ACCESS',
+  HAS_CLIENT_INVOICE_ACCESS = 'HAS_CLIENT_INVOICE_ACCESS',
+  HAS_ORGANIZATION_ADMIN = 'HAS_ORGANIZATION_ADMIN',
+  HAS_SETTINGS_ACCESS = 'HAS_SETTINGS_ACCESS'
+}
+
 export type UserType = {
   __typename?: 'UserType';
   clientProfile: ClientUserProfileType;
@@ -570,6 +580,7 @@ export type UserType = {
   lastName: Scalars['String']['output'];
   name: Scalars['String']['output'];
   organization: OrganizationType;
+  permissions: Array<UserPermissionsEnum>;
   photoUrl: Scalars['String']['output'];
   role: Scalars['String']['output'];
   uuid: Scalars['String']['output'];
@@ -577,7 +588,7 @@ export type UserType = {
 
 export type ActivityFragment = { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } };
 
-export type AuthUserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: string, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } };
+export type AuthUserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: string, permissions: Array<UserPermissionsEnum>, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } };
 
 export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost: number, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> };
 
@@ -595,9 +606,11 @@ export type ErrorFragment = { __typename?: 'ErrorType', field?: string | null, m
 
 export type FileFragment = { __typename?: 'ClientFileType', uuid: string, name: string, updated: DateTimeString, url: string, size: number };
 
-export type SolutionFragment = { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> };
+export type OrganizationSettingsUserFragment = { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: string, permissions: Array<UserPermissionsEnum> };
 
-export type UserFragment = { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string };
+export type OrganizationUserFragment = { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: string };
+
+export type SolutionFragment = { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> };
 
 export type ChangePasswordMutationVariables = Exact<{
   currentPassword: Scalars['String']['input'];
@@ -613,7 +626,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginUser', token?: string | null, error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: string, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } } | null } | null };
+export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginUser', token?: string | null, error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: string, permissions: Array<UserPermissionsEnum>, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } } | null } | null };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -743,7 +756,7 @@ export type UpdateOrganizationSolutionMutation = { __typename?: 'Mutation', upda
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: string, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } } };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: string, permissions: Array<UserPermissionsEnum>, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } } };
 
 export type ClientActivitiesQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -810,6 +823,11 @@ export type OrganizationClientsQueryVariables = Exact<{ [key: string]: never; }>
 
 export type OrganizationClientsQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, clients: Array<{ __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null }> } };
 
+export type OrganizationSettingsUsersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type OrganizationSettingsUsersQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, users: Array<{ __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: string, permissions: Array<UserPermissionsEnum> }> } };
+
 export type OrganizationSolutionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -818,7 +836,7 @@ export type OrganizationSolutionsQuery = { __typename?: 'Query', organization: {
 export type OrganizationUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type OrganizationUsersQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, users: Array<{ __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string }> } };
+export type OrganizationUsersQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, users: Array<{ __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: string }> } };
 
 export const ActivityFragmentDoc = gql`
     fragment Activity on ActivityType {
@@ -847,6 +865,7 @@ export const AuthUserFragmentDoc = gql`
     name
     logoUrl
   }
+  permissions
 }
     `;
 export const ClientFragmentDoc = gql`
@@ -943,6 +962,25 @@ export const FileFragmentDoc = gql`
   size
 }
     `;
+export const OrganizationSettingsUserFragmentDoc = gql`
+    fragment OrganizationSettingsUser on UserType {
+  uuid
+  name
+  email
+  photoUrl
+  role
+  permissions
+}
+    `;
+export const OrganizationUserFragmentDoc = gql`
+    fragment OrganizationUser on UserType {
+  uuid
+  name
+  email
+  photoUrl
+  role
+}
+    `;
 export const SolutionFragmentDoc = gql`
     fragment Solution on SolutionType {
   uuid
@@ -956,14 +994,6 @@ export const SolutionFragmentDoc = gql`
     uuid
     name
   }
-}
-    `;
-export const UserFragmentDoc = gql`
-    fragment User on UserType {
-  uuid
-  name
-  email
-  photoUrl
 }
     `;
 export const ChangePasswordDocument = gql`
@@ -2166,6 +2196,48 @@ export type OrganizationClientsQueryHookResult = ReturnType<typeof useOrganizati
 export type OrganizationClientsLazyQueryHookResult = ReturnType<typeof useOrganizationClientsLazyQuery>;
 export type OrganizationClientsSuspenseQueryHookResult = ReturnType<typeof useOrganizationClientsSuspenseQuery>;
 export type OrganizationClientsQueryResult = Apollo.QueryResult<OrganizationClientsQuery, OrganizationClientsQueryVariables>;
+export const OrganizationSettingsUsersDocument = gql`
+    query OrganizationSettingsUsers {
+  organization {
+    uuid
+    users {
+      ...OrganizationSettingsUser
+    }
+  }
+}
+    ${OrganizationSettingsUserFragmentDoc}`;
+
+/**
+ * __useOrganizationSettingsUsersQuery__
+ *
+ * To run a query within a React component, call `useOrganizationSettingsUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOrganizationSettingsUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOrganizationSettingsUsersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useOrganizationSettingsUsersQuery(baseOptions?: Apollo.QueryHookOptions<OrganizationSettingsUsersQuery, OrganizationSettingsUsersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<OrganizationSettingsUsersQuery, OrganizationSettingsUsersQueryVariables>(OrganizationSettingsUsersDocument, options);
+      }
+export function useOrganizationSettingsUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<OrganizationSettingsUsersQuery, OrganizationSettingsUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<OrganizationSettingsUsersQuery, OrganizationSettingsUsersQueryVariables>(OrganizationSettingsUsersDocument, options);
+        }
+export function useOrganizationSettingsUsersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<OrganizationSettingsUsersQuery, OrganizationSettingsUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<OrganizationSettingsUsersQuery, OrganizationSettingsUsersQueryVariables>(OrganizationSettingsUsersDocument, options);
+        }
+export type OrganizationSettingsUsersQueryHookResult = ReturnType<typeof useOrganizationSettingsUsersQuery>;
+export type OrganizationSettingsUsersLazyQueryHookResult = ReturnType<typeof useOrganizationSettingsUsersLazyQuery>;
+export type OrganizationSettingsUsersSuspenseQueryHookResult = ReturnType<typeof useOrganizationSettingsUsersSuspenseQuery>;
+export type OrganizationSettingsUsersQueryResult = Apollo.QueryResult<OrganizationSettingsUsersQuery, OrganizationSettingsUsersQueryVariables>;
 export const OrganizationSolutionsDocument = gql`
     query OrganizationSolutions {
   organization {
@@ -2213,11 +2285,11 @@ export const OrganizationUsersDocument = gql`
   organization {
     uuid
     users {
-      ...User
+      ...OrganizationUser
     }
   }
 }
-    ${UserFragmentDoc}`;
+    ${OrganizationUserFragmentDoc}`;
 
 /**
  * __useOrganizationUsersQuery__

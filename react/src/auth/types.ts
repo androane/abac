@@ -1,4 +1,4 @@
-import { UserFragment } from 'generated/graphql'
+import { AuthUserFragment, UserPermissionsEnum } from 'generated/graphql'
 
 export type ActionMapType<M extends { [index: string]: any }> = {
   [Key in keyof M]: M[Key] extends undefined
@@ -11,7 +11,7 @@ export type ActionMapType<M extends { [index: string]: any }> = {
       }
 }
 
-export type AuthUserType = null | undefined | UserFragment
+export type AuthUserType = null | undefined | AuthUserFragment
 
 export type AuthStateType = {
   status?: string
@@ -33,4 +33,5 @@ export type AuthContextType = CanRemove & {
   unauthenticated: boolean
   login: (email: string, password: string, rememberMe: boolean) => Promise<void>
   logout: () => Promise<void>
+  hasPermission: (permission: UserPermissionsEnum) => boolean
 }

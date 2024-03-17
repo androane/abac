@@ -14,9 +14,10 @@ import Scrollbar from 'components/scrollbar'
 import { TableEmptyRows, TableHeadCustom, TableNoData, emptyRows, useTable } from 'components/table'
 
 import ResponseHandler from 'components/response-handler'
-import { useClientInvoiceQuery } from 'generated/graphql'
+import { UserPermissionsEnum, useClientInvoiceQuery } from 'generated/graphql'
 import { ListItemText, TableCell, TableRow } from '@mui/material'
 import InvoiceTableRow from 'sections/client/invoice-table-row'
+import { withUserPermission } from 'auth/hoc'
 import InvoiceTableToolbar from './invoice-table-toolbar'
 import { APIClientInvoice } from './types'
 
@@ -124,7 +125,7 @@ type Props = {
   clientUuid: string
 }
 
-const InvoiceDetailsView: React.FC<Props> = ({ clientUuid }) => {
+const InvoiceDetails: React.FC<Props> = ({ clientUuid }) => {
   const [date, setDate] = useState(startOfMonth(new Date()))
 
   const result = useClientInvoiceQuery({
@@ -144,4 +145,4 @@ const InvoiceDetailsView: React.FC<Props> = ({ clientUuid }) => {
   )
 }
 
-export default InvoiceDetailsView
+export default withUserPermission(UserPermissionsEnum.HAS_CLIENT_INVOICE_ACCESS)(InvoiceDetails)

@@ -28,6 +28,7 @@ import {
   useOrganizationSolutionsQuery,
   SolutionFragment,
   useDeleteOrganizationSolutionMutation,
+  UserPermissionsEnum,
 } from 'generated/graphql'
 import { SolutionTableFilters } from 'sections/settings/types'
 import SolutionTableFiltersResult from 'sections/settings/solution-table-filters-result'
@@ -35,6 +36,7 @@ import SolutionTableRow from 'sections/settings/solution-table-row'
 import AddButton from 'components/add-button'
 import { useBoolean } from 'hooks/use-boolean'
 import UpdateSolution from 'sections/settings/solution-update'
+import { withUserPermission } from 'auth/hoc'
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Nume' },
@@ -269,4 +271,4 @@ function applyFilter({
   return inputData
 }
 
-export default SolutionListView
+export default withUserPermission(UserPermissionsEnum.HAS_SETTINGS_ACCESS)(SolutionListView)

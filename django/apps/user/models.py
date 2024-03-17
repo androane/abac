@@ -7,6 +7,7 @@ from django.db import models
 
 from core.models import BaseModel
 from user.managers import UserManager
+from user.permissions import USER_PERMISSIONS
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,10 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
                 name="users_user_email_uniq_hbcdef",
             )
         ]
+        permissions = tuple(
+            (perm_codename, perm_name)
+            for perm_codename, perm_name in USER_PERMISSIONS.items()
+        )
 
     def __str__(self):
         return f"{self.name} - {self.email}"

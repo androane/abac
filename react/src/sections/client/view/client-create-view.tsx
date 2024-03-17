@@ -5,6 +5,8 @@ import { LANDING_PAGE, paths } from 'routes/paths'
 import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 import { useSettingsContext } from 'components/settings'
 
+import { withUserPermission } from 'auth/hoc'
+import { UserPermissionsEnum } from 'generated/graphql'
 import { UpdateClient } from '../client-update'
 
 const ClientCreateView = () => {
@@ -35,4 +37,4 @@ const ClientCreateView = () => {
   )
 }
 
-export default ClientCreateView
+export default withUserPermission(UserPermissionsEnum.HAS_CLIENT_ADD_ACCESS)(ClientCreateView)

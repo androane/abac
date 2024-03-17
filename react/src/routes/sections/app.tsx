@@ -18,8 +18,11 @@ const clients = {
   children: [
     { element: <ClientListView />, index: true },
     { path: 'list', element: <ClientListView /> },
-    { path: 'new', element: <ClientCreateView /> },
-    { path: ':id/edit', element: <ClientEditView /> },
+    {
+      path: 'new',
+      element: <ClientCreateView />,
+    },
+    { path: ':uuid/edit', element: <ClientEditView /> },
   ],
 }
 

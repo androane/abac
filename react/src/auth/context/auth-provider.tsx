@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useReducer } from 'react'
 
-import { useLoginMutation, useLogoutMutation } from 'generated/graphql'
+import { UserPermissionsEnum, useLoginMutation, useLogoutMutation } from 'generated/graphql'
 import { ActionMapType, AuthStateType, AuthUserType } from '../types'
 import { AuthContext } from './auth-context'
 import { clearAuthData, getAuthData, setAuthData } from './utils'
@@ -128,6 +128,17 @@ export function AuthProvider({ children }: Props) {
     })
   }, [logoutMutation])
 
+  const hasPermission = useCallback(
+    (permission: UserPermissionsEnum) => {
+      const permissions = state.user?.permissions || []
+      return (
+        permissions.includes(permission) ||
+        permissions.includes(UserPermissionsEnum.HAS_ORGANIZATION_ADMIN)
+      )
+    },
+    [state.user],
+  )
+
   const memoizedValue = useMemo(
     () => ({
       user: state.user,
@@ -136,8 +147,9 @@ export function AuthProvider({ children }: Props) {
       unauthenticated: Boolean(state.user),
       login,
       logout,
+      hasPermission,
     }),
-    [login, logout, state],
+    [login, logout, state, hasPermission],
   )
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>

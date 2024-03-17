@@ -5,11 +5,12 @@ import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 import Iconify from 'components/iconify'
 import ResponseHandler from 'components/response-handler'
 import { useSettingsContext } from 'components/settings'
-import { useOrganizationClientsQuery } from 'generated/graphql'
+import { UserPermissionsEnum, useOrganizationClientsQuery } from 'generated/graphql'
 import { useCallback, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import { LANDING_PAGE, paths } from 'routes/paths'
 import { info } from 'theme/palette'
+import { useAuthContext } from 'auth/hooks'
 import FilesList from '../files-list'
 import UsersList from '../users-list'
 import ActivityList from '../activity-list'
@@ -31,6 +32,7 @@ const TABS = [
     value: TABS_VALUES.GENERAL,
     label: 'Informații Generale',
     icon: 'solar:user-id-outline',
+    requiredPermission: UserPermissionsEnum.HAS_CLIENT_GENERAL_INFORMATION_ACCESS,
   },
   {
     value: TABS_VALUES.ACTIVITY,
@@ -41,6 +43,7 @@ const TABS = [
     value: TABS_VALUES.INVOICING,
     label: 'Facturare',
     icon: 'solar:dollar-outline',
+    requiredPermission: UserPermissionsEnum.HAS_CLIENT_INVOICE_ACCESS,
   },
   {
     value: TABS_VALUES.FILES,
@@ -57,13 +60,21 @@ const TABS = [
 const ClientEditView = () => {
   const params = useParams()
 
-  const { id } = params
+  const { hasPermission } = useAuthContext()
+
+  const { uuid } = params
 
   const settings = useSettingsContext()
 
   const result = useOrganizationClientsQuery()
 
-  const [currentTab, setCurrentTab] = useState(TABS_VALUES.GENERAL)
+  const tabs = TABS.filter(
+    tab =>
+      !('requiredPermission' in tab) ||
+      hasPermission(tab.requiredPermission as UserPermissionsEnum),
+  )
+
+  const [currentTab, setCurrentTab] = useState(tabs[0].value)
 
   const handleChangeTab = useCallback((_: React.SyntheticEvent, newValue: TABS_VALUES) => {
     setCurrentTab(newValue)
@@ -73,7 +84,7 @@ const ClientEditView = () => {
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <ResponseHandler {...result}>
         {({ organization }) => {
-          const client = organization.clients.find(_ => _.uuid === id)
+          const client = organization.clients.find(_ => _.uuid === uuid)
           if (!client) {
             return <Navigate to={paths.page404} replace />
           }
@@ -108,7 +119,7 @@ const ClientEditView = () => {
                   mb: { xs: 3, md: 5 },
                 }}
               >
-                {TABS.map(tab => (
+                {tabs.map(tab => (
                   <Tab
                     key={tab.value}
                     label={tab.label}

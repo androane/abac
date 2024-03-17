@@ -1,0 +1,7 @@
+fragment OrganizationUser on UserType {
+  uuid
+  name
+  email
+  photoUrl
+  role
+}

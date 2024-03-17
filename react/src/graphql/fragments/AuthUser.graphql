@@ -9,4 +9,5 @@ fragment AuthUser on UserType {
     name
     logoUrl
   }
+  permissions
 }

@@ -28,6 +28,7 @@ import {
   useOrganizationActivitiesQuery,
   ActivityFragment,
   useDeleteOrganizationActivityMutation,
+  UserPermissionsEnum,
 } from 'generated/graphql'
 import { ActivityTableFilters } from 'sections/settings/types'
 import ActivityTableFiltersResult from 'sections/settings/activity-table-filters-result'
@@ -36,6 +37,7 @@ import AddButton from 'components/add-button'
 import { useBoolean } from 'hooks/use-boolean'
 import UpdateActivity from 'sections/settings/activity-update'
 import ActivityTableToolbar from 'sections/settings/activity-table-toolbar'
+import { withUserPermission } from 'auth/hoc'
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Nume' },
@@ -280,4 +282,4 @@ function applyFilter({
   return inputData
 }
 
-export default ActivityListView
+export default withUserPermission(UserPermissionsEnum.HAS_SETTINGS_ACCESS)(ActivityListView)
