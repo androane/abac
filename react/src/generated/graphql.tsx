@@ -133,8 +133,7 @@ export type ClientSolutionType = {
   __typename?: 'ClientSolutionType';
   logs: Array<ClientSolutionLogType>;
   solution: SolutionType;
-  /** Cost/Price of the Solution */
-  unitCost: Scalars['Int']['output'];
+  unitCost?: Maybe<Scalars['Int']['output']>;
   unitCostCurrency: CurrencyEnum;
   uuid: Scalars['String']['output'];
 };
@@ -381,7 +380,7 @@ export type MutationCreateClientFilesArgs = {
 
 
 export type MutationDeleteClientArgs = {
-  clientUuid: Scalars['String']['input'];
+  uuid: Scalars['String']['input'];
 };
 
 
@@ -612,7 +611,6 @@ export type UpdateUserClientPermissions = {
 /** An enumeration. */
 export enum UserPermissionsEnum {
   HAS_ALL_CLIENTS_ACCESS = 'HAS_ALL_CLIENTS_ACCESS',
-  HAS_CLIENT_ACCESS = 'HAS_CLIENT_ACCESS',
   HAS_CLIENT_ACTIVITY_COSTS_ACCESS = 'HAS_CLIENT_ACTIVITY_COSTS_ACCESS',
   HAS_CLIENT_ADD_ACCESS = 'HAS_CLIENT_ADD_ACCESS',
   HAS_CLIENT_INFORMATION_ACCESS = 'HAS_CLIENT_INFORMATION_ACCESS',
@@ -641,7 +639,7 @@ export type ActivityFragment = { __typename?: 'ActivityType', uuid: string, name
 
 export type AuthUserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: string, permissions: Array<UserPermissionsEnum>, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } };
 
-export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost: number, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> };
+export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> };
 
 export type ClientActivityFragment = { __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean };
 
@@ -693,7 +691,7 @@ export type CreateClientFilesMutationVariables = Exact<{
 export type CreateClientFilesMutation = { __typename?: 'Mutation', createClientFiles?: { __typename?: 'CreateClientFiles', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, files: Array<{ __typename?: 'ClientFileType', uuid: string, name: string, updated: DateTimeString, url: string, size: number }> } | null } | null };
 
 export type DeleteClientMutationVariables = Exact<{
-  clientUuid: Scalars['String']['input'];
+  uuid: Scalars['String']['input'];
 }>;
 
 
@@ -733,7 +731,7 @@ export type UpdateClientMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { __typename?: 'UpdateClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost: number, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> } | null } | null };
+export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { __typename?: 'UpdateClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> } | null } | null };
 
 export type UpdateClientActivityMutationVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -840,7 +838,7 @@ export type ClientActivitiesQueryVariables = Exact<{
 }>;
 
 
-export type ClientActivitiesQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, activities: Array<{ __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }>, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost: number, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> } };
+export type ClientActivitiesQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, activities: Array<{ __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }>, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> } };
 
 export type ClientActivityLogsQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -855,7 +853,7 @@ export type ClientClientQueryVariables = Exact<{
 }>;
 
 
-export type ClientClientQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost: number, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> } };
+export type ClientClientQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> } };
 
 export type ClientFilesQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -1233,8 +1231,8 @@ export type CreateClientFilesMutationHookResult = ReturnType<typeof useCreateCli
 export type CreateClientFilesMutationResult = Apollo.MutationResult<CreateClientFilesMutation>;
 export type CreateClientFilesMutationOptions = Apollo.BaseMutationOptions<CreateClientFilesMutation, CreateClientFilesMutationVariables>;
 export const DeleteClientDocument = gql`
-    mutation DeleteClient($clientUuid: String!) {
-  deleteClient(clientUuid: $clientUuid) {
+    mutation DeleteClient($uuid: String!) {
+  deleteClient(uuid: $uuid) {
     error {
       ...Error
     }
@@ -1256,7 +1254,7 @@ export type DeleteClientMutationFn = Apollo.MutationFunction<DeleteClientMutatio
  * @example
  * const [deleteClientMutation, { data, loading, error }] = useDeleteClientMutation({
  *   variables: {
- *      clientUuid: // value for 'clientUuid'
+ *      uuid: // value for 'uuid'
  *   },
  * });
  */

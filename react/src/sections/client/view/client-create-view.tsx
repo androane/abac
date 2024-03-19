@@ -22,7 +22,7 @@ const ClientCreateView = () => {
             href: LANDING_PAGE,
           },
           {
-            name: 'Clienti',
+            name: 'Clienți',
             href: paths.app.client.list,
           },
           { name: 'Client Nou' },

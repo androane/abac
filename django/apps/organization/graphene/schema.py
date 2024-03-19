@@ -48,7 +48,7 @@ class Query(graphene.ObjectType):
 
     @logged_in_user_required
     def resolve_client(info, user: User, **kwargs):
-        return get_client(user.organization, **kwargs)
+        return get_client(user, **kwargs)
 
 
 class Mutation(graphene.ObjectType):

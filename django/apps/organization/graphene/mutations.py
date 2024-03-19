@@ -2,6 +2,7 @@
 import graphene
 
 from api.graphene.mutations import BaseMutation
+from api.permission_decorators import permission_required
 from organization.graphene.types import (
     ActivityInput,
     ActivityType,
@@ -53,7 +54,7 @@ from organization.services.organization_user_permissions import (
 from user.decorators import logged_in_user_required
 from user.graphene.types import UserPermissionsEnumType, UserType
 from user.models import User
-from user.permissions import UserPermissionsEnum, permission_required
+from user.permissions import UserPermissionsEnum
 
 
 class UpdateClient(BaseMutation):
@@ -74,12 +75,12 @@ class UpdateClient(BaseMutation):
 
 class DeleteClient(BaseMutation):
     class Arguments:
-        client_uuid = graphene.String(required=True)
+        uuid = graphene.String(required=True)
 
     @logged_in_user_required
     @permission_required(UserPermissionsEnum.HAS_ORGANIZATION_ADMIN.value)
     def mutate(self, user: User, **kwargs):
-        delete_client(user.organization, **kwargs)
+        delete_client(user, **kwargs)
 
         return {}
 

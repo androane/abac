@@ -103,7 +103,7 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
 
   const handleDeleteRow = async (uuid: string) => {
     await deleteClient({
-      variables: { clientUuid: uuid },
+      variables: { uuid },
       update(cache) {
         const normalizedId = cache.identify({ uuid, __typename: 'ClientType' })
         cache.evict({ id: normalizedId })
@@ -211,10 +211,10 @@ const ClientListView = () => {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Lista Clienti"
+        heading="Listă Clienți"
         links={[
           { name: 'Pagina Principală', href: LANDING_PAGE },
-          { name: 'Clienti', href: paths.app.client.list },
+          { name: 'Clienți', href: paths.app.client.list },
           { name: 'Listă' },
         ]}
         sx={{

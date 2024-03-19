@@ -1,45 +1,45 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth import get_user_model
+from typing import TYPE_CHECKING
 
-from organization.graphene.types import ClientInput
+from django.contrib.auth import get_user_model
+from django.db.models import Q
+
 from organization.models import Client, ClientSolution, Organization
 from organization.models.activity import Solution
+from organization.models.client import ClientUserObjectPermission
+from user.models import User
+from user.permissions import UserPermissionsEnum
+
+if TYPE_CHECKING:
+    from organization.graphene.types import ClientInput
 
 
-def get_client(org: Organization, uuid: str) -> Client:
-    return org.clients.get(uuid=uuid)
+def get_clients(user: User):
+    all_clients = user.organization.clients
 
+    permissions = user.user_permissions.values_list("codename", flat=True)
+    if UserPermissionsEnum.HAS_ORGANIZATION_ADMIN.value in permissions:
+        return all_clients
 
-def _get_client(org: Organization, client_input: ClientInput) -> Client:
-    program_manager = None
-    if client_input.program_manager_uuid:
-        program_manager = get_user_model().objects.get(
-            is_staff=False, uuid=client_input.program_manager_uuid
-        )
+    if UserPermissionsEnum.HAS_ALL_CLIENTS_ACCESS.value in permissions:
+        return all_clients
 
-    if client_input.uuid:
-        client = org.clients.get(uuid=client_input.uuid)
-    else:
-        client = Client(organization=org)
-
-    client.program_manager = program_manager
-    fields = (
-        "name",
-        "description",
-        "spv_username",
-        "spv_password",
-        "cui",
+    client_ids = ClientUserObjectPermission.objects.filter(user=user).values_list(
+        "content_object_id", flat=True
     )
-    for field in fields:
-        value = client_input.get(field)
-        if value:
-            setattr(client, field, value)
+    condition = Q(id__in=client_ids)
 
-    client.save()
-    return client
+    if UserPermissionsEnum.HAS_OWN_CLIENTS_ACCESS.value in permissions:
+        condition |= Q(program_manager=user)
+
+    return all_clients.filter(condition)
 
 
-def _set_client_solutions(client: Client, client_input: ClientInput) -> None:
+def get_client(user: User, uuid: str) -> Client:
+    return get_clients(user).get(uuid=uuid)
+
+
+def _set_client_solutions(client: Client, client_input: "ClientInput") -> None:
     input_client_solution_uuids = set([_.uuid for _ in client_input.client_solutions])
     client.client_solutions.exclude(uuid__in=input_client_solution_uuids).filter(
         month__isnull=True, year__isnull=True
@@ -69,11 +69,37 @@ def _set_client_solutions(client: Client, client_input: ClientInput) -> None:
             )
 
 
-def update_or_create_client(org: Organization, client_input: ClientInput) -> Client:
-    client = _get_client(org, client_input)
+def update_or_create_client(org: Organization, client_input: "ClientInput") -> Client:
+    program_manager = None
+    if client_input.program_manager_uuid:
+        program_manager = get_user_model().objects.get(
+            is_staff=False, uuid=client_input.program_manager_uuid
+        )
+
+    if client_input.uuid:
+        client = org.clients.get(uuid=client_input.uuid)
+    else:
+        client = Client(organization=org)
+
+    client.program_manager = program_manager
+    fields = (
+        "name",
+        "description",
+        "spv_username",
+        "spv_password",
+        "cui",
+    )
+    for field in fields:
+        value = client_input.get(field)
+        if value:
+            setattr(client, field, value)
+
+    client.save()
+
     _set_client_solutions(client, client_input)
+
     return client
 
 
-def delete_client(org: Organization, client_uuid: str) -> None:
-    org.clients.get(uuid=client_uuid).delete()
+def delete_client(user: User, uuid: str) -> None:
+    get_client(user, uuid).delete()

@@ -5,6 +5,7 @@ import graphene
 from graphene_django import DjangoObjectType
 from graphene_file_upload.scalars import Upload
 
+from api.permission_decorators import field_permission_required, permission_required
 from organization.constants import (
     ClientUserRoleEnum,
     CurrencyEnum,
@@ -29,16 +30,13 @@ from organization.services.client_invoice_service import (
     generate_invoice_items,
     get_client_invoice,
 )
+from organization.services.client_service import get_clients
 from organization.services.organization_user_service import (
     get_organization_users,
     get_organzation_user,
 )
 from user.graphene.types import UserType
-from user.permissions import (
-    UserPermissionsEnum,
-    field_permission_required,
-    permission_required,
-)
+from user.permissions import UserPermissionsEnum
 
 CurrencyEnumType = graphene.Enum.from_enum(CurrencyEnum)
 UnitCostTypeEnumType = graphene.Enum.from_enum(UnitCostTypeEnum)
@@ -150,6 +148,7 @@ class ClientSolutionType(DjangoObjectType):
             "solution",
         )
 
+    unit_cost = graphene.Int()
     unit_cost_currency = CurrencyEnumType(required=True)
     logs = graphene.List(graphene.NonNull(ClientSolutionLogType), required=True)
 
@@ -333,7 +332,7 @@ class OrganizationType(DjangoObjectType):
     user = graphene.NonNull(UserType, uuid=graphene.String(required=True))
 
     def resolve_clients(self, info, **kwargs):
-        return self.clients.order_by("name").all()
+        return get_clients(info.context.user).order_by("name")
 
     def resolve_logo_url(self, info):
         if self.logo:

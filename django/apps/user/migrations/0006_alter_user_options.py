@@ -26,7 +26,6 @@ class Migration(migrations.Migration):
                         "Has access to client activities costs",
                     ),
                     ("has_client_add_access", "Has access to add clients"),
-                    ("has_client_access", "Has access to a specific client"),
                     ("has_all_clients_access", "Has access to all clients"),
                     (
                         "has_own_clients_access",

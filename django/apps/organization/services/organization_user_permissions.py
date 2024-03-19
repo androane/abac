@@ -9,12 +9,6 @@ from organization.models.organization import Organization
 from user.models import User
 from user.permissions import UserPermissionsEnum
 
-# These permissions are mutually exclusive, i.e. they can;t be both assigned to a user at the same time
-PERMISSIONS = (
-    UserPermissionsEnum.HAS_ALL_CLIENTS_ACCESS.value,
-    UserPermissionsEnum.HAS_OWN_CLIENTS_ACCESS.value,
-)
-
 
 def update_user_client_permissions(
     org: Organization, user_uuid: str, client_uuids: list[str]

@@ -97,7 +97,7 @@ const ClientEditView = () => {
                     href: LANDING_PAGE,
                   },
                   {
-                    name: 'Clienti',
+                    name: 'Clienți',
                     href: paths.app.client.list,
                   },
                   {

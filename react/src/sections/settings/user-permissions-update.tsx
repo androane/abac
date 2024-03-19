@@ -30,7 +30,7 @@ const TABS = [
   },
   {
     value: TABS_VALUES.CLIENTS,
-    label: 'Permisiuni Clienti',
+    label: 'Permisiuni Clienți',
   },
 ]
 

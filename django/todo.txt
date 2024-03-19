@@ -2,5 +2,7 @@ Permissions data loader
 
 Update User doar campurile la care are voie
 filtrare asociati
-la toggle permission, nu fac cache, ma bazez pe raspuns
-
+numar bucat la pachete resurse umane
+de verificat ca history trackuieste userul
+sa vada doar clientii la care are access
+client create, update cache
