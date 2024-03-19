@@ -3,5 +3,9 @@ mutation OrganizationToggleUserPermission($userUuid: String!, $permission: UserP
     error {
       ...Error
     }
+    user {
+      uuid
+      permissions
+    }
   }
 }

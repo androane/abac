@@ -343,6 +343,8 @@ export type Mutation = {
   logout?: Maybe<LogoutUser>;
   /** Toggle Client Activity Executed Status */
   toggleClientActivity?: Maybe<ToggleClientActivity>;
+  /** Toggle User Client Permissions */
+  toggleUserClientPermissions?: Maybe<ToggleUserClientPermission>;
   /** Toggle a permission for a given User */
   toggleUserPermission?: Maybe<ToggleUserPermission>;
   /** Update or Create a New Client */
@@ -361,7 +363,7 @@ export type Mutation = {
   updateOrganizationActivity?: Maybe<UpdateOrganizationActivity>;
   /** Update or Create a New Solution */
   updateOrganizationSolution?: Maybe<UpdateOrganizationSolution>;
-  /** Update User access to Clients via permissions */
+  /** Update User access to a give Clients */
   updateUserClientPermissions?: Maybe<UpdateUserClientPermissions>;
 };
 
@@ -417,6 +419,12 @@ export type MutationLoginArgs = {
 export type MutationToggleClientActivityArgs = {
   clientActivityUuid: Scalars['String']['input'];
   clientUuid: Scalars['String']['input'];
+};
+
+
+export type MutationToggleUserClientPermissionsArgs = {
+  clientUuid: Scalars['String']['input'];
+  userUuid: Scalars['String']['input'];
 };
 
 
@@ -530,9 +538,16 @@ export type ToggleClientActivity = {
   error?: Maybe<ErrorType>;
 };
 
+export type ToggleUserClientPermission = {
+  __typename?: 'ToggleUserClientPermission';
+  error?: Maybe<ErrorType>;
+  user: UserType;
+};
+
 export type ToggleUserPermission = {
   __typename?: 'ToggleUserPermission';
   error?: Maybe<ErrorType>;
+  user: UserType;
 };
 
 /** An enumeration. */
@@ -775,13 +790,21 @@ export type DeleteOrganizationSolutionMutationVariables = Exact<{
 
 export type DeleteOrganizationSolutionMutation = { __typename?: 'Mutation', deleteOrganizationSolution?: { __typename?: 'DeleteOrganizationSolution', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
 
+export type OrganizationToggleUserClientPermissionsMutationVariables = Exact<{
+  userUuid: Scalars['String']['input'];
+  clientUuid: Scalars['String']['input'];
+}>;
+
+
+export type OrganizationToggleUserClientPermissionsMutation = { __typename?: 'Mutation', toggleUserClientPermissions?: { __typename?: 'ToggleUserClientPermission', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user: { __typename?: 'UserType', uuid: string, clientsWithAccess: Array<{ __typename?: 'ClientType', uuid: string, name: string }> } } | null };
+
 export type OrganizationToggleUserPermissionMutationVariables = Exact<{
   userUuid: Scalars['String']['input'];
   permission: UserPermissionsEnum;
 }>;
 
 
-export type OrganizationToggleUserPermissionMutation = { __typename?: 'Mutation', toggleUserPermission?: { __typename?: 'ToggleUserPermission', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
+export type OrganizationToggleUserPermissionMutation = { __typename?: 'Mutation', toggleUserPermission?: { __typename?: 'ToggleUserPermission', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user: { __typename?: 'UserType', uuid: string, permissions: Array<UserPermissionsEnum> } } | null };
 
 export type UpdateOrganizationActivityMutationVariables = Exact<{
   activityInput: ActivityInput;
@@ -1718,11 +1741,58 @@ export function useDeleteOrganizationSolutionMutation(baseOptions?: Apollo.Mutat
 export type DeleteOrganizationSolutionMutationHookResult = ReturnType<typeof useDeleteOrganizationSolutionMutation>;
 export type DeleteOrganizationSolutionMutationResult = Apollo.MutationResult<DeleteOrganizationSolutionMutation>;
 export type DeleteOrganizationSolutionMutationOptions = Apollo.BaseMutationOptions<DeleteOrganizationSolutionMutation, DeleteOrganizationSolutionMutationVariables>;
+export const OrganizationToggleUserClientPermissionsDocument = gql`
+    mutation OrganizationToggleUserClientPermissions($userUuid: String!, $clientUuid: String!) {
+  toggleUserClientPermissions(userUuid: $userUuid, clientUuid: $clientUuid) {
+    error {
+      ...Error
+    }
+    user {
+      uuid
+      clientsWithAccess {
+        uuid
+        name
+      }
+    }
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type OrganizationToggleUserClientPermissionsMutationFn = Apollo.MutationFunction<OrganizationToggleUserClientPermissionsMutation, OrganizationToggleUserClientPermissionsMutationVariables>;
+
+/**
+ * __useOrganizationToggleUserClientPermissionsMutation__
+ *
+ * To run a mutation, you first call `useOrganizationToggleUserClientPermissionsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useOrganizationToggleUserClientPermissionsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [organizationToggleUserClientPermissionsMutation, { data, loading, error }] = useOrganizationToggleUserClientPermissionsMutation({
+ *   variables: {
+ *      userUuid: // value for 'userUuid'
+ *      clientUuid: // value for 'clientUuid'
+ *   },
+ * });
+ */
+export function useOrganizationToggleUserClientPermissionsMutation(baseOptions?: Apollo.MutationHookOptions<OrganizationToggleUserClientPermissionsMutation, OrganizationToggleUserClientPermissionsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<OrganizationToggleUserClientPermissionsMutation, OrganizationToggleUserClientPermissionsMutationVariables>(OrganizationToggleUserClientPermissionsDocument, options);
+      }
+export type OrganizationToggleUserClientPermissionsMutationHookResult = ReturnType<typeof useOrganizationToggleUserClientPermissionsMutation>;
+export type OrganizationToggleUserClientPermissionsMutationResult = Apollo.MutationResult<OrganizationToggleUserClientPermissionsMutation>;
+export type OrganizationToggleUserClientPermissionsMutationOptions = Apollo.BaseMutationOptions<OrganizationToggleUserClientPermissionsMutation, OrganizationToggleUserClientPermissionsMutationVariables>;
 export const OrganizationToggleUserPermissionDocument = gql`
     mutation OrganizationToggleUserPermission($userUuid: String!, $permission: UserPermissionsEnum!) {
   toggleUserPermission(userUuid: $userUuid, permission: $permission) {
     error {
       ...Error
+    }
+    user {
+      uuid
+      permissions
     }
   }
 }

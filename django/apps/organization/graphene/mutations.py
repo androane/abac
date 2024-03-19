@@ -46,6 +46,7 @@ from organization.services.organization_solution_service import (
     update_solution,
 )
 from organization.services.organization_user_permissions import (
+    toggle_user_client_permission,
     toggle_user_permission,
     update_user_client_permissions,
 )
@@ -227,12 +228,14 @@ class ToggleUserPermission(BaseMutation):
         user_uuid = graphene.String(required=True)
         permission = UserPermissionsEnumType(required=True)
 
+    user = graphene.NonNull(UserType)
+
     @logged_in_user_required
     @permission_required(UserPermissionsEnum.HAS_ORGANIZATION_ADMIN.value)
     def mutate(self, user: User, **kwargs):
-        toggle_user_permission(user.organization, **kwargs)
+        target_user = toggle_user_permission(user.organization, **kwargs)
 
-        return {}
+        return {"user": target_user}
 
 
 class UpdateUserClientPermissions(BaseMutation):
@@ -246,6 +249,21 @@ class UpdateUserClientPermissions(BaseMutation):
         update_user_client_permissions(user.organization, **kwargs)
 
         return {}
+
+
+class ToggleUserClientPermission(BaseMutation):
+    class Arguments:
+        user_uuid = graphene.String(required=True)
+        client_uuid = graphene.NonNull(graphene.String)
+
+    user = graphene.NonNull(UserType)
+
+    @logged_in_user_required
+    @permission_required(UserPermissionsEnum.HAS_ORGANIZATION_ADMIN.value)
+    def mutate(self, user: User, **kwargs):
+        target_user = toggle_user_client_permission(user.organization, **kwargs)
+
+        return {"user": target_user}
 
 
 class UpdateOrganizationActivity(BaseMutation):

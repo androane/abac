@@ -11,11 +11,12 @@ import {
   OrganizationUserQuery,
   UserPermissionsEnum,
   useOrganizationClientsQuery,
+  useOrganizationToggleUserClientPermissionsMutation,
 } from 'generated/graphql'
 import getErrorMessage from 'utils/api-codes'
 import ResponseHandler from 'components/response-handler'
-import { Box, FormControlLabel, Switch, Tab, Tabs } from '@mui/material'
-import { useCallback, useState } from 'react'
+import { Box, Checkbox, Divider, FormControlLabel, Switch, Tab, Tabs } from '@mui/material'
+import React, { useCallback, useState } from 'react'
 
 enum TABS_VALUES {
   GENERAL = 'g',
@@ -40,7 +41,7 @@ const Permissions = [
   ],
   [
     UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS,
-    'Are permisiunea de a vedea detalii despre clienți (Asociați, prețuri pachete de bază etc)?',
+    'Are permisiunea de a vedea informații detaliate despre clienți (Asociați, prețuri pachete de bază etc)?',
   ],
   [
     UserPermissionsEnum.HAS_CLIENT_ACTIVITY_COSTS_ACCESS,
@@ -56,6 +57,185 @@ const Permissions = [
   ],
 ]
 
+type ClientPermissionsTabProps = {
+  onTogglePermission(permission: UserPermissionsEnum): void
+  user: OrganizationUserQuery['organization']['user']
+  loading: boolean
+}
+
+const ClientPermissionsTab: React.FC<ClientPermissionsTabProps> = ({
+  user,
+  onTogglePermission,
+  loading,
+}) => {
+  const { enqueueSnackbar } = useSnackbar()
+
+  const result = useOrganizationClientsQuery()
+
+  const [toggleClientPermission, { loading: loadingClientPerm }] =
+    useOrganizationToggleUserClientPermissionsMutation()
+
+  const onToggleClientPermission = async (clientUuid: string) => {
+    try {
+      await toggleClientPermission({
+        variables: {
+          userUuid: user.uuid,
+          clientUuid,
+        },
+        optimisticResponse: {
+          __typename: 'Mutation',
+          toggleUserClientPermissions: {
+            __typename: 'ToggleUserClientPermission',
+            error: null,
+            user: {
+              ...user,
+              clientsWithAccess: user.clientsWithAccess.find(c => c.uuid === clientUuid)
+                ? user.clientsWithAccess.filter(c => c.uuid !== clientUuid)
+                : [
+                    ...user.clientsWithAccess,
+                    {
+                      uuid: clientUuid,
+                      name: '',
+                      __typename: 'ClientType',
+                    },
+                  ],
+              __typename: 'UserType',
+            },
+          },
+        },
+      })
+    } catch (error) {
+      enqueueSnackbar(getErrorMessage((error as Error).message), {
+        variant: 'error',
+      })
+    }
+  }
+
+  return (
+    <>
+      <Box
+        rowGap={3}
+        columnGap={2}
+        display="grid"
+        gridTemplateColumns={{
+          xs: 'repeat(1, 1fr)',
+          sm: 'repeat(2, 1fr)',
+        }}
+      >
+        <FormControlLabel
+          sx={{ mb: 2 }}
+          label="Are access la toți clienții din firmă?"
+          control={
+            <Switch
+              checked={user.permissions.includes(UserPermissionsEnum.HAS_ALL_CLIENTS_ACCESS)}
+              onChange={() => onTogglePermission(UserPermissionsEnum.HAS_ALL_CLIENTS_ACCESS)}
+              disabled={loading}
+              color="primary"
+            />
+          }
+        />
+        <FormControlLabel
+          sx={{ mb: 2 }}
+          label="Are access la toți clienții de care este responsabil?"
+          control={
+            <Switch
+              checked={user.permissions.includes(UserPermissionsEnum.HAS_OWN_CLIENTS_ACCESS)}
+              onChange={() => onTogglePermission(UserPermissionsEnum.HAS_OWN_CLIENTS_ACCESS)}
+              disabled={loading}
+              color="primary"
+            />
+          }
+        />
+      </Box>
+      <Divider sx={{ borderStyle: 'dashed', mt: 3, mb: 3 }} />
+      <Box
+        rowGap={3}
+        columnGap={2}
+        display="grid"
+        gridTemplateColumns={{
+          xs: 'repeat(1, 1fr)',
+          sm: 'repeat(3, 1fr)',
+        }}
+      >
+        <ResponseHandler {...result}>
+          {({ organization }) => {
+            return (
+              <>
+                {organization.clients.map(client => {
+                  const hasClientPermissionAsPM =
+                    user.permissions.includes(UserPermissionsEnum.HAS_OWN_CLIENTS_ACCESS) &&
+                    client.programManager?.uuid === user.uuid
+
+                  const hasAllClientsPermission = user.permissions.includes(
+                    UserPermissionsEnum.HAS_ALL_CLIENTS_ACCESS,
+                  )
+
+                  const hasClientPermission = Boolean(
+                    user.clientsWithAccess.find(c => c.uuid === client.uuid),
+                  )
+
+                  return (
+                    <FormControlLabel
+                      key={client.uuid}
+                      label={client.name}
+                      control={
+                        <Checkbox
+                          size="medium"
+                          checked={
+                            hasClientPermission ||
+                            hasClientPermissionAsPM ||
+                            hasAllClientsPermission
+                          }
+                          onChange={() => onToggleClientPermission(client.uuid)}
+                          disabled={
+                            loadingClientPerm ||
+                            loading ||
+                            hasClientPermissionAsPM ||
+                            hasAllClientsPermission
+                          }
+                          color="primary"
+                        />
+                      }
+                    />
+                  )
+                })}
+              </>
+            )
+          }}
+        </ResponseHandler>
+      </Box>
+    </>
+  )
+}
+
+type GeneralPermissionsTabProps = {
+  user: OrganizationUserQuery['organization']['user']
+  onTogglePermission(permission: UserPermissionsEnum): void
+  loading: boolean
+}
+
+const GeneralPermissionsTab: React.FC<GeneralPermissionsTabProps> = ({
+  user,
+  onTogglePermission,
+  loading,
+}) => {
+  return Permissions.map(([perm, label]) => (
+    <FormControlLabel
+      sx={{ mb: 2 }}
+      label={label}
+      key={perm}
+      control={
+        <Switch
+          checked={user.permissions.includes(perm as UserPermissionsEnum)}
+          onChange={() => onTogglePermission(perm as UserPermissionsEnum)}
+          disabled={loading}
+          color="primary"
+        />
+      }
+    />
+  ))
+}
+
 type Props = {
   user: OrganizationUserQuery['organization']['user']
   onClose: () => void
@@ -63,7 +243,6 @@ type Props = {
 
 const UpdateUserPermissions: React.FC<Props> = ({ user, onClose }) => {
   const [togglePermission, { loading }] = useOrganizationToggleUserPermissionMutation()
-  const result = useOrganizationClientsQuery()
 
   const { enqueueSnackbar } = useSnackbar()
 
@@ -73,25 +252,26 @@ const UpdateUserPermissions: React.FC<Props> = ({ user, onClose }) => {
     setCurrentTab(newValue)
   }, [])
 
-  const onToggle = async (permission: UserPermissionsEnum) => {
+  const onTogglePermission = async (permission: UserPermissionsEnum) => {
     try {
       await togglePermission({
         variables: {
           userUuid: user.uuid,
           permission,
         },
-        update(cache) {
-          cache.modify({
-            id: cache.identify({ uuid: user.uuid, __typename: 'UserType' }),
-            fields: {
-              permissions(currentPermissions) {
-                if (currentPermissions.includes(permission)) {
-                  return currentPermissions.filter((p: UserPermissionsEnum) => p !== permission)
-                }
-                return [...currentPermissions, permission]
-              },
+        optimisticResponse: {
+          __typename: 'Mutation',
+          toggleUserPermission: {
+            __typename: 'ToggleUserPermission',
+            error: null,
+            user: {
+              ...user,
+              permissions: user.permissions.includes(permission)
+                ? user.permissions.filter(p => p !== permission)
+                : [...user.permissions, permission],
+              __typename: 'UserType',
             },
-          })
+          },
         },
       })
     } catch (error) {
@@ -129,92 +309,19 @@ const UpdateUserPermissions: React.FC<Props> = ({ user, onClose }) => {
           ))}
         </Tabs>
 
-        {currentTab === TABS_VALUES.GENERAL &&
-          Permissions.map(([perm, label]) => (
-            <FormControlLabel
-              sx={{ mb: 2 }}
-              label={label}
-              key={perm}
-              control={
-                <Switch
-                  checked={user.permissions.includes(perm as UserPermissionsEnum)}
-                  onChange={() => onToggle(perm as UserPermissionsEnum)}
-                  disabled={loading}
-                  color="primary"
-                />
-              }
-            />
-          ))}
+        {currentTab === TABS_VALUES.GENERAL && (
+          <GeneralPermissionsTab
+            user={user}
+            onTogglePermission={onTogglePermission}
+            loading={loading}
+          />
+        )}
         {currentTab === TABS_VALUES.CLIENTS && (
-          <>
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
-              }}
-            >
-              <FormControlLabel
-                sx={{ mb: 2 }}
-                label="Access la toti clientii din firma"
-                control={
-                  <Switch
-                    checked={user.permissions.includes(UserPermissionsEnum.HAS_ALL_CLIENTS_ACCESS)}
-                    onChange={() => onToggle(UserPermissionsEnum.HAS_ALL_CLIENTS_ACCESS)}
-                    disabled={loading}
-                    color="primary"
-                  />
-                }
-              />
-              <FormControlLabel
-                sx={{ mb: 2 }}
-                label="Access la toti clientii de care este responsabil"
-                control={
-                  <Switch
-                    checked={user.permissions.includes(UserPermissionsEnum.HAS_OWN_CLIENTS_ACCESS)}
-                    onChange={() => onToggle(UserPermissionsEnum.HAS_OWN_CLIENTS_ACCESS)}
-                    disabled={loading}
-                    color="primary"
-                  />
-                }
-              />
-            </Box>
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(3, 1fr)',
-              }}
-            >
-              <ResponseHandler {...result}>
-                {({ organization }) => {
-                  return (
-                    <>
-                      {organization.clients.map(client => (
-                        <FormControlLabel
-                          key={client.uuid}
-                          sx={{ mb: 2 }}
-                          label={client.name}
-                          control={
-                            <Switch
-                              checked={false}
-                              onChange={() => {}}
-                              disabled={loading}
-                              color="primary"
-                            />
-                          }
-                        />
-                      ))}
-                    </>
-                  )
-                }}
-              </ResponseHandler>
-            </Box>
-          </>
+          <ClientPermissionsTab
+            user={user}
+            onTogglePermission={onTogglePermission}
+            loading={loading}
+          />
         )}
         <DialogActions>
           <Button color="inherit" variant="outlined" onClick={onClose}>
