@@ -3,7 +3,7 @@ import functools
 
 from core.exceptions import PermissionException
 from core.graphql_errors import GraphQLErrorForbidden
-from user.permissions import check_permission
+from user.permissions import validate_has_permission
 
 
 def permission_required(permission):
@@ -17,7 +17,7 @@ def permission_required(permission):
             else:
                 user = info.context.user
             try:
-                check_permission(user, permission, func)
+                validate_has_permission(user, permission, func)
             except PermissionException as e:
                 raise GraphQLErrorForbidden(str(e))
 
@@ -34,7 +34,7 @@ def field_permission_required(permission):
         def decorator(self, info, *args, **kwargs):
             user = info.context.user
             try:
-                check_permission(user, permission, func)
+                validate_has_permission(user, permission, func)
             except PermissionException:
                 return None
             return func(self, info, *args, **kwargs)

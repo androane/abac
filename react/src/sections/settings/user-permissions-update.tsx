@@ -34,7 +34,7 @@ const TABS = [
   },
 ]
 
-const Permissions = [
+const PERMISSIONS: [UserPermissionsEnum, string][] = [
   [
     UserPermissionsEnum.HAS_CLIENT_ADD_ACCESS,
     'Are permisiunea de a adăuga clienți și de a actualiza informații despre aceștia?',
@@ -219,15 +219,15 @@ const GeneralPermissionsTab: React.FC<GeneralPermissionsTabProps> = ({
   onTogglePermission,
   loading,
 }) => {
-  return Permissions.map(([perm, label]) => (
+  return PERMISSIONS.map(([perm, label]) => (
     <FormControlLabel
       sx={{ mb: 2 }}
       label={label}
       key={perm}
       control={
         <Switch
-          checked={user.permissions.includes(perm as UserPermissionsEnum)}
-          onChange={() => onTogglePermission(perm as UserPermissionsEnum)}
+          checked={user.permissions.includes(perm)}
+          onChange={() => onTogglePermission(perm)}
           disabled={loading}
           color="primary"
         />

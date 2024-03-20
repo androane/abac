@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useReducer } from 'react'
+import { useApolloClient } from '@apollo/client'
 
 import { UserPermissionsEnum, useLoginMutation, useLogoutMutation } from 'generated/graphql'
 import { ActionMapType, AuthStateType, AuthUserType } from '../types'
@@ -58,6 +59,7 @@ export function AuthProvider({ children }: Props) {
   const [state, dispatch] = useReducer(reducer, initialState)
   const [loginMutation] = useLoginMutation()
   const [logoutMutation] = useLogoutMutation()
+  const client = useApolloClient()
 
   const initialize = useCallback(async () => {
     try {
@@ -123,10 +125,11 @@ export function AuthProvider({ children }: Props) {
     await logoutMutation()
 
     clearAuthData()
+    client.resetStore()
     dispatch({
       type: Types.LOGOUT,
     })
-  }, [logoutMutation])
+  }, [logoutMutation, client])
 
   const hasPermission = useCallback(
     (permission: UserPermissionsEnum) => {

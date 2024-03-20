@@ -1,13 +1,31 @@
 # -*- coding: utf-8 -*-
+from typing import TYPE_CHECKING
+
 from django.contrib.auth import get_user_model
 
-from organization.graphene.types import ClientUserInput
+from core.exceptions import PermissionException
+from organization.constants import ClientUserRoleEnum
 from organization.models import Client, ClientUserProfile, Organization
 from user.models import User
+from user.permissions import UserPermissionsEnum, validate_has_permission
+
+if TYPE_CHECKING:
+    from organization.graphene.types import ClientUserInput
+
+
+def get_client_users(user: User, client: Client) -> list[User]:
+    try:
+        validate_has_permission(user, UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS)
+    except PermissionException:
+        return client.users.exclude(
+            client_profile__role=ClientUserRoleEnum.ASSOCIATE.value
+        )
+
+    return client.users.all()
 
 
 def update_client_user(
-    org: Organization, client_uuid: str, client_user_input: ClientUserInput
+    org: Organization, client_uuid: str, client_user_input: "ClientUserInput"
 ) -> User:
     client = Client.objects.get(
         uuid=client_uuid,

@@ -33,7 +33,7 @@ USER_PERMISSIONS = {
 }
 
 
-def check_permission(user: "User", permission: UserPermissionsEnum, func=None):
+def validate_has_permission(user: "User", permission: UserPermissionsEnum, func=None):
     permissions = {permission, UserPermissionsEnum.HAS_ORGANIZATION_ADMIN.value}
     if not set(user.user_permissions.values_list("codename", flat=True)).intersection(
         permissions

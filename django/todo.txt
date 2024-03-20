@@ -1,8 +1,5 @@
 Permissions data loader
 
-Update User doar campurile la care are voie
 filtrare asociati
 numar bucat la pachete resurse umane
-de verificat ca history trackuieste userul
-sa vada doar clientii la care are access
-client create, update cache
+daca nu are general information (deci nu paote avea asociati), poate adauga asociati?

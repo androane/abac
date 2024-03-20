@@ -31,6 +31,7 @@ from organization.services.client_invoice_service import (
     get_client_invoice,
 )
 from organization.services.client_service import get_clients
+from organization.services.client_users_service import get_client_users
 from organization.services.organization_user_service import (
     get_organization_users,
     get_organzation_user,
@@ -292,7 +293,7 @@ class ClientType(DjangoObjectType):
         return self.files.order_by("-created").all()
 
     def resolve_users(self, info, **kwargs):
-        return self.users.all()
+        return get_client_users(info.context.user, self)
 
     def resolve_activities(self, info, **kwargs):
         from organization.services.client_activity_service import get_client_activities

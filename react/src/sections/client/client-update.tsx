@@ -25,6 +25,7 @@ import {
   CurrencyEnum,
   useOrganizationUsersQuery,
   UserPermissionsEnum,
+  ClientFragmentDoc,
 } from 'generated/graphql'
 import { useAuthContext } from 'auth/hooks'
 import getErrorMessage from 'utils/api-codes'
@@ -42,6 +43,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
 
   const canUpdate = hasPermission(UserPermissionsEnum.HAS_CLIENT_ADD_ACCESS)
   const canSeeCosts = hasPermission(UserPermissionsEnum.HAS_CLIENT_ACTIVITY_COSTS_ACCESS)
+  const canSeeInformation = hasPermission(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS)
 
   const { user } = useAuthContext()
 
@@ -91,7 +93,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
             Yup.object({
               uuid: Yup.string(),
               solutionUuid: Yup.string(),
-              unitCost: Yup.number(),
+              unitCost: Yup.number().nullable(),
               unitCostCurrency: Yup.mixed<CurrencyEnum>().oneOf(Object.values(CurrencyEnum)),
             }),
           )
@@ -115,6 +117,23 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
             cui: data.cui,
             clientSolutions: data.clientSolutions,
           },
+        },
+        update(cache, { data: cacheData }) {
+          cache.modify({
+            id: cache.identify({ uuid: user?.organization.uuid, __typename: 'OrganizationType' }),
+            fields: {
+              clients(existingClients) {
+                if (client) {
+                  return existingClients
+                }
+                const newClient = cache.writeFragment({
+                  data: cacheData?.updateClient?.client,
+                  fragment: ClientFragmentDoc,
+                })
+                return [newClient, ...existingClients]
+              },
+            },
+          })
         },
       })
       form.reset()
@@ -212,7 +231,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
                                   </MenuItem>
                                 ))}
                             </RHFSelect>
-                            {canSeeCosts ? (
+                            {canSeeInformation && canSeeCosts ? (
                               <>
                                 <RHFTextField
                                   disabled={!canUpdate}
