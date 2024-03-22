@@ -38,11 +38,10 @@ const TABLE_HEAD = [
 ]
 
 type Props = {
-  organizationUuid: string
   users: CoreUserFragment[]
 }
 
-const UsersList: React.FC<Props> = ({ organizationUuid, users }) => {
+const UsersList: React.FC<Props> = ({ users }) => {
   const [deleteSolution, { loading }] = useDeleteOrganizationSolutionMutation()
 
   const [userUuidToEditPermissions, setUserUuidToEditPermissions] = useState<undefined | string>()
@@ -177,7 +176,7 @@ const UserListView = () => {
 
       <ResponseHandler {...result}>
         {({ organization }) => {
-          return <UsersList organizationUuid={organization.uuid} users={organization.users} />
+          return <UsersList users={organization.users} />
         }}
       </ResponseHandler>
     </Container>

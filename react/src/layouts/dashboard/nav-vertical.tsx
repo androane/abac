@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import Stack from '@mui/material/Stack'
-import { alpha, useTheme } from '@mui/material/styles'
+import { alpha } from '@mui/material/styles'
 
 import { usePathname } from 'routes/hooks'
 
@@ -27,7 +27,6 @@ type Props = {
 
 export default function NavVertical({ openNav, onCloseNav }: Props) {
   const { user } = useAuthContext()
-  const theTheme = useTheme()
 
   const pathname = usePathname()
 
