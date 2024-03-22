@@ -12,8 +12,8 @@ import MenuItem from '@mui/material/MenuItem'
 import Checkbox from '@mui/material/Checkbox'
 import InputLabel from '@mui/material/InputLabel'
 import { ClientActivityTableFilters } from 'sections/client/types'
-import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
 import { Button } from '@mui/material'
+import CategorySelect from 'components/category-select'
 
 type Props = {
   onAddActivity(): void
@@ -83,28 +83,7 @@ const ActivityTableToolbar: React.FC<Props> = ({
         }}
       >
         <InputLabel>Domeniu</InputLabel>
-
-        <Select
-          value={filters.category}
-          onChange={handleFilterCategory}
-          input={<OutlinedInput label="Domeniu" />}
-          MenuProps={{
-            PaperProps: {
-              sx: { maxHeight: 240 },
-            },
-          }}
-        >
-          <MenuItem key="all" value="">
-            <Checkbox disableRipple size="small" checked={!filters.category} />
-            Toate
-          </MenuItem>
-          {CATEGORY_CODES.map(category => (
-            <MenuItem key={category} value={category}>
-              <Checkbox disableRipple size="small" checked={filters.category === category} />
-              {getCategoryLabelFromCode(category)}
-            </MenuItem>
-          ))}
-        </Select>
+        <CategorySelect onChange={handleFilterCategory} />
       </FormControl>
 
       <FormControl

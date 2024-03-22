@@ -23,6 +23,7 @@ import { CATEGORY_CODES, getCategoryLabelFromCode, getUnitCostTypeLabel } from '
 import { MenuItem } from '@mui/material'
 import { GenericActivityType } from 'sections/client/types'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
+import { useLocalStorageContext } from 'components/local-storage'
 
 type Props = {
   activity: null | GenericActivityType
@@ -41,19 +42,21 @@ const UpdateClientActivity: React.FC<Props> = ({
 }) => {
   const [updateClientActivity, { loading }] = useUpdateClientActivityMutation()
 
+  const localStorage = useLocalStorageContext()
+
   const { enqueueSnackbar } = useSnackbar()
 
   const defaultValues = useMemo(
     () => ({
       name: activity?.name || '',
       description: activity?.description || '',
-      categoryCode: activity?.category.code || '',
+      categoryCode: activity?.category.code || localStorage.category,
       unitCost: activity?.unitCost || undefined,
       unitCostCurrency: activity?.unitCostCurrency || CurrencyEnum.RON,
       unitCostType: activity?.unitCostType || UnitCostTypeEnum.HOURLY,
       quantity: activity?.quantity || 1,
     }),
-    [activity],
+    [activity, localStorage.category],
   )
 
   const form = useForm({

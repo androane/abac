@@ -25,18 +25,23 @@ import {
   UnitCostTypeEnum,
   UserPermissionsEnum,
 } from 'generated/graphql'
-import ActivityTableFiltersResult from 'sections/settings/activity-table-filters-result'
+import ActivityTableFiltersResult from 'sections/client/activity-table-filters-result'
 import ActivityTableToolbar from 'sections/client/activity-table-toolbar'
 import ActivityTableRow from 'sections/client/activity-table-row'
 import { ClientActivityTableFilters, GenericActivityType } from 'sections/client/types'
 import UpdateClientActivity from 'sections/client/activity-update'
 import { UpdateClientActivityLogs, UpdateClientSolutionLogs } from 'sections/client/logs-update'
 import { useAuthContext } from 'auth/hooks'
+import {
+  APP_STORAGE_KEYS,
+  DEFAULT_APP_STORAGE,
+  useLocalStorageContext,
+} from 'components/local-storage'
 
 const defaultFilters = {
   name: '',
-  category: '',
   isCustom: '',
+  category: DEFAULT_APP_STORAGE.category,
 }
 
 type ActivityListCardProps = {
@@ -87,11 +92,17 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
     setTableData(activities)
   }, [activities])
 
-  const table = useTable({ defaultOrderBy: 'isCustom', defaultOrder: 'asc' })
+  const table = useTable({
+    defaultOrderBy: 'isCustom',
+    defaultOrder: 'asc',
+    defaultRowsPerPage: 100,
+  })
 
   const denseHeight = table.dense ? 56 : 56 + 20
 
-  const [filters, setFilters] = useState(defaultFilters)
+  const localStorage = useLocalStorageContext()
+
+  const [filters, setFilters] = useState({ ...defaultFilters, category: localStorage.category })
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -118,8 +129,9 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
   )
 
   const handleResetFilters = useCallback(() => {
+    localStorage.onUpdate(APP_STORAGE_KEYS.CATEGORY, DEFAULT_APP_STORAGE.category)
     setFilters(defaultFilters)
-  }, [])
+  }, [localStorage])
 
   const handleDeleteRow = async (uuid: string) => {
     await deleteActivity({

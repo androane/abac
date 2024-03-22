@@ -9,6 +9,7 @@ import { AuthProvider } from 'auth/context'
 import { MotionLazy } from 'components/animate/motion-lazy'
 import ProgressBar from 'components/progress-bar'
 import { SettingsDrawer, SettingsProvider } from 'components/settings'
+import { DEFAULT_APP_STORAGE, LocalStorageProvider } from 'components/local-storage'
 import SnackbarProvider from 'components/snackbar/snackbar-provider'
 import Router from 'routes/sections'
 
@@ -28,16 +29,18 @@ export default function App() {
             themeStretch: false,
           }}
         >
-          <ThemeProvider>
-            <MotionLazy>
-              <SnackbarProvider>
-                <SettingsDrawer />
-                <ProgressBar />
+          <LocalStorageProvider defaultLocalStorage={DEFAULT_APP_STORAGE}>
+            <ThemeProvider>
+              <MotionLazy>
+                <SnackbarProvider>
+                  <SettingsDrawer />
+                  <ProgressBar />
 
-                <Router />
-              </SnackbarProvider>
-            </MotionLazy>
-          </ThemeProvider>
+                  <Router />
+                </SnackbarProvider>
+              </MotionLazy>
+            </ThemeProvider>
+          </LocalStorageProvider>
         </SettingsProvider>
       </LocalizationProvider>
     </AuthProvider>

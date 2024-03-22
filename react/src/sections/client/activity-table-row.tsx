@@ -16,7 +16,7 @@ import {
 import { useBoolean } from 'hooks/use-boolean'
 import React from 'react'
 import { GenericActivityType } from 'sections/client/types'
-import { action, info } from 'theme/palette'
+import { action } from 'theme/palette'
 import { getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
 
 type Props = {
@@ -105,9 +105,7 @@ const ActivityTableRow: React.FC<Props> = ({
 
   return (
     <>
-      <TableRow
-        sx={{ backgroundColor: row.clientSolutionUuid ? action.selected : info.contrastText }}
-      >
+      <TableRow sx={{ backgroundColor: action.selected }}>
         <TableCell style={{ width: 150 }}>
           <Switch
             checked={row.isExecuted}

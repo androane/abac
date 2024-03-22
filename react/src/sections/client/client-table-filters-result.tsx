@@ -16,13 +16,13 @@ type Props = StackProps & {
   results: number
 }
 
-export default function ClientTableFiltersResult({
+const ClientTableFiltersResult: React.FC<Props> = ({
   filters,
   onFilters,
   onResetFilters,
   results,
   ...other
-}: Props) {
+}) => {
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '')
   }, [onFilters])
@@ -30,9 +30,9 @@ export default function ClientTableFiltersResult({
   return (
     <Stack spacing={1.5} {...other}>
       <Box sx={{ typography: 'body2' }}>
-        <strong>{results}</strong>
+        <strong>{results} </strong>
         <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
-          rezultate găsite
+          clienți
         </Box>
       </Box>
 
@@ -85,3 +85,5 @@ function Block({ label, children, sx, ...other }: BlockProps) {
     </Stack>
   )
 }
+
+export default ClientTableFiltersResult

@@ -30,9 +30,9 @@ const SolutionTableFiltersResult: React.FC<Props> = ({
   return (
     <Stack spacing={1.5} {...other}>
       <Box sx={{ typography: 'body2' }}>
-        <strong>{results}</strong>
+        <strong>{results} </strong>
         <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
-          rezultate găsite
+          pachete
         </Box>
       </Box>
 
