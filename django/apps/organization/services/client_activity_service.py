@@ -18,7 +18,7 @@ def update_client_activity(
     client = org.clients.get(uuid=client_uuid)
     category = ActivityCategory.objects.get(code=activity_input.category_code)
 
-    def set_activity_attrs(activity):
+    def set_activity_attrs(activity: Activity):
         attrs = (
             "name",
             "description",
@@ -33,9 +33,12 @@ def update_client_activity(
         client_activity = ClientActivity.objects.get(
             client=client,
             uuid=client_activity_input.uuid,
-            month=client_activity_input.month,
             year=client_activity_input.year,
+            month=client_activity_input.month,
         )
+        client_activity.quantity = client_activity_input.quantity
+        client_activity.save()
+
         activity = client_activity.activity
         set_activity_attrs(activity)
         activity.save()
@@ -48,8 +51,9 @@ def update_client_activity(
             is_executed=True,
             client=client,
             activity=activity,
-            month=client_activity_input.month,
             year=client_activity_input.year,
+            month=client_activity_input.month,
+            quantity=client_activity_input.quantity,
         )
 
     return client_activity

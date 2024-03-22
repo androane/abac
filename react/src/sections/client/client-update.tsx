@@ -10,7 +10,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Grid from '@mui/material/Unstable_Grid2'
-import { MenuItem } from '@mui/material'
+import { Divider, MenuItem } from '@mui/material'
 
 import { useRouter } from 'routes/hooks'
 import { paths } from 'routes/paths'
@@ -137,7 +137,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
         },
       })
       form.reset()
-      enqueueSnackbar(client ? 'Client actualizat cu succes!' : 'Client creat cu succes!')
+      enqueueSnackbar(client ? 'Client actualizat!' : 'Clientul a fost creat!')
       router.push(paths.app.client.list)
     } catch (error) {
       enqueueSnackbar(getErrorMessage((error as Error).message), {
@@ -186,19 +186,11 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
                 label="CUI"
                 InputLabelProps={{ shrink: true }}
               />
-              <RHFTextField
-                disabled={!canUpdate}
-                name="spvUsername"
-                label="Utilizator SPV"
-                InputLabelProps={{ shrink: true }}
-              />
-              <RHFTextField
-                disabled={!canUpdate}
-                name="spvPassword"
-                label="Parolă SPV"
-                InputLabelProps={{ shrink: true }}
-              />
+              <div />
             </Box>
+
+            <Divider sx={{ borderStyle: 'dashed', mt: 6, mb: 4 }} />
+
             <Box
               sx={{ pt: 3 }}
               rowGap={3}
@@ -266,6 +258,29 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
                   )
                 }}
               </ResponseHandler>
+            </Box>
+            <Divider sx={{ borderStyle: 'dashed', mt: 6, mb: 6 }} />
+            <Box
+              rowGap={3}
+              columnGap={2}
+              display="grid"
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(2, 1fr)',
+              }}
+            >
+              <RHFTextField
+                disabled={!canUpdate}
+                name="spvUsername"
+                label="Utilizator SPV"
+                InputLabelProps={{ shrink: true }}
+              />
+              <RHFTextField
+                disabled={!canUpdate}
+                name="spvPassword"
+                label="Parolă SPV"
+                InputLabelProps={{ shrink: true }}
+              />
             </Box>
             <Box sx={{ pt: 3 }}>
               <RHFTextField

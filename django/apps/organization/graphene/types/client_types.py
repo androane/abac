@@ -6,95 +6,14 @@ from graphene_django import DjangoObjectType
 from graphene_file_upload.scalars import Upload
 
 from api.permission_decorators import field_permission_required, permission_required
-from organization.constants import (
-    ClientUserRoleEnum,
-    CurrencyEnum,
-    InvoiceStatusEnum,
-    UnitCostTypeEnum,
-)
-from organization.models import (
-    Activity,
-    ActivityCategory,
-    Client,
-    ClientActivity,
-    ClientActivityLog,
-    ClientFile,
-    ClientSolution,
-    ClientUserProfile,
-    Invoice,
-    Organization,
-    Solution,
-)
-from organization.models.client import ClientSolutionLog
-from organization.services.client_invoice_service import (
-    generate_invoice_items,
-    get_client_invoice,
-)
-from organization.services.client_service import get_clients
+from organization.graphene.types.enums import ClientUserRoleEnumType, CurrencyEnumType
+from organization.graphene.types.invoice_types import InvoiceType
+from organization.models import Client, ClientActivity, ClientActivityLog, ClientSolution
+from organization.models.client import ClientFile, ClientSolutionLog, ClientUserProfile
+from organization.services.client_invoice_service import get_client_invoice
 from organization.services.client_users_service import get_client_users
-from organization.services.organization_user_service import (
-    get_organization_users,
-    get_organzation_user,
-)
 from user.graphene.types import UserType
 from user.permissions import UserPermissionsEnum
-
-CurrencyEnumType = graphene.Enum.from_enum(CurrencyEnum)
-UnitCostTypeEnumType = graphene.Enum.from_enum(UnitCostTypeEnum)
-InvoiceStatusEnumType = graphene.Enum.from_enum(InvoiceStatusEnum)
-ClientUserRoleEnumType = graphene.Enum.from_enum(ClientUserRoleEnum)
-UserPermissionsEnumType = graphene.Enum.from_enum(UserPermissionsEnum)
-
-
-class SolutionType(DjangoObjectType):
-    class Meta:
-        model = Solution
-        only_fields = (
-            "uuid",
-            "name",
-            "category",
-            "activities",
-        )
-
-
-class SolutionInput(graphene.InputObjectType):
-    uuid = graphene.String()
-    name = graphene.String(required=True)
-    category_code = graphene.String(required=True)
-    activity_uuids = graphene.List(graphene.NonNull(graphene.String), required=True)
-
-
-class CategoryType(DjangoObjectType):
-    class Meta:
-        model = ActivityCategory
-        only_fields = (
-            "uuid",
-            "name",
-            "code",
-        )
-
-
-class ActivityType(DjangoObjectType):
-    class Meta:
-        model = Activity
-        only_fields = (
-            "uuid",
-            "name",
-            "description",
-            "unit_cost",
-            "unit_cost_currency",
-            "unit_cost_type",
-            "category",
-        )
-
-    unit_cost_currency = CurrencyEnumType(required=True)
-    unit_cost_type = UnitCostTypeEnumType(required=True)
-
-    @field_permission_required(
-        UserPermissionsEnum.HAS_CLIENT_ACTIVITY_COSTS_ACCESS.value
-    )
-    def resolve_unit_cost(self, info, **kwargs):
-        return self.unit_cost
 
 
 class ClientActivityLogType(DjangoObjectType):
@@ -117,6 +36,7 @@ class ClientActivityType(DjangoObjectType):
             "year",
             "is_executed",
             "activity",
+            "quantity",
         )
 
     logs = graphene.List(graphene.NonNull(ClientActivityLogType), required=True)
@@ -147,6 +67,7 @@ class ClientSolutionType(DjangoObjectType):
             "unit_cost",
             "unit_cost_currency",
             "solution",
+            "quantity",
         )
 
     unit_cost = graphene.Int()
@@ -161,75 +82,6 @@ class ClientSolutionType(DjangoObjectType):
     )
     def resolve_unit_cost(self, info, **kwargs):
         return self.unit_cost
-
-
-class TotalByCurrencyType(graphene.ObjectType):
-    currency = CurrencyEnumType(required=True)
-    total = graphene.Float(required=True)
-
-
-class InvoiceItemType(graphene.ObjectType):
-    name = graphene.String(required=True)
-    quantity = graphene.Int(required=True)
-    cost = graphene.Int(required=True)
-    currency = CurrencyEnumType(required=True)
-
-
-class InvoiceType(DjangoObjectType):
-    class Meta:
-        model = Invoice
-        only_fields = (
-            "uuid",
-            "month",
-            "year",
-            "date_sent",
-        )
-
-    items = graphene.List(graphene.NonNull(InvoiceItemType), required=True)
-
-    def resolve_items(self, info, **kwargs):
-        return generate_invoice_items(self)
-
-
-class ActivityInput(graphene.InputObjectType):
-    uuid = graphene.String()
-    category_code = graphene.String(required=True)
-    name = graphene.String(required=True)
-    description = graphene.String()
-    unit_cost = graphene.Int()
-    unit_cost_currency = CurrencyEnumType(required=True)
-    unit_cost_type = UnitCostTypeEnumType(required=True)
-
-
-class ClientSolutionInput(graphene.InputObjectType):
-    uuid = graphene.String()
-    solution_uuid = graphene.String()
-    unit_cost = graphene.Int()
-    unit_cost_currency = CurrencyEnumType()
-
-
-class ClientInput(graphene.InputObjectType):
-    uuid = graphene.String()
-    name = graphene.String(required=True)
-    description = graphene.String()
-    program_manager_uuid = graphene.String()
-    spv_username = graphene.String()
-    spv_password = graphene.String()
-    cui = graphene.String()
-    client_solutions = graphene.List(ClientSolutionInput, required=True)
-
-
-class LogInput(graphene.InputObjectType):
-    uuid = graphene.String()
-    date = graphene.Date(required=True)
-    description = graphene.String()
-    minutes_allocated = graphene.Int(required=True)
-
-
-class ClientActivityInput(graphene.InputObjectType):
-    uuid = graphene.String()
-    month = graphene.Int(required=True)
-    year = graphene.Int(required=True)
 
 
 class ClientFileType(DjangoObjectType):
@@ -248,10 +100,6 @@ class ClientFileType(DjangoObjectType):
     def resolve_name(self, info):
         # Using os.path.basename to get rid of the path and only return the actual file name
         return os.path.basename(self.file.name)
-
-
-class ClientFileInput(graphene.InputObjectType):
-    file = Upload(required=True)
 
 
 class ClientType(DjangoObjectType):
@@ -317,42 +165,6 @@ class ClientType(DjangoObjectType):
         return get_client_invoice(self, **kwargs)
 
 
-class OrganizationType(DjangoObjectType):
-    class Meta:
-        model = Organization
-        only_fields = (
-            "uuid",
-            "name",
-        )
-
-    solutions = graphene.List(graphene.NonNull(SolutionType), required=True)
-    activities = graphene.List(graphene.NonNull(ActivityType), required=True)
-    logo_url = graphene.NonNull(graphene.String)
-    clients = graphene.NonNull(graphene.List(graphene.NonNull(ClientType)))
-    users = graphene.NonNull(graphene.List(graphene.NonNull(UserType)))
-    user = graphene.NonNull(UserType, uuid=graphene.String(required=True))
-
-    def resolve_clients(self, info, **kwargs):
-        return get_clients(info.context.user).order_by("name")
-
-    def resolve_logo_url(self, info):
-        if self.logo:
-            return self.logo.url
-
-    def resolve_users(self, info, **kwargs):
-        return get_organization_users(self, **kwargs)
-
-    def resolve_user(self, info, **kwargs):
-        return get_organzation_user(self, **kwargs)
-
-    def resolve_solutions(self, info, **kwargs):
-        return self.solutions.all()
-
-    # No permission required for activities
-    def resolve_activities(self, info, **kwargs):
-        return self.activities.filter(client__isnull=True).all()
-
-
 class ClientUserProfileType(DjangoObjectType):
     class Meta:
         model = ClientUserProfile
@@ -382,6 +194,37 @@ class ClientUserProfileType(DjangoObjectType):
     @field_permission_required(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS.value)
     def resolve_ownership_percentage(self, info, **kwargs):
         return self.ownership_percentage
+
+
+# INPUTS
+class ClientActivityInput(graphene.InputObjectType):
+    uuid = graphene.String()
+    month = graphene.Int(required=True)
+    year = graphene.Int(required=True)
+    quantity = graphene.Int(required=True)
+
+
+class ClientSolutionInput(graphene.InputObjectType):
+    uuid = graphene.String()
+    solution_uuid = graphene.String()
+    unit_cost = graphene.Int()
+    unit_cost_currency = CurrencyEnumType()
+    quantity = graphene.Int()
+
+
+class ClientInput(graphene.InputObjectType):
+    uuid = graphene.String()
+    name = graphene.String(required=True)
+    description = graphene.String()
+    program_manager_uuid = graphene.String()
+    spv_username = graphene.String()
+    spv_password = graphene.String()
+    cui = graphene.String()
+    client_solutions = graphene.List(ClientSolutionInput, required=True)
+
+
+class ClientFileInput(graphene.InputObjectType):
+    file = Upload(required=True)
 
 
 class ClientUserInput(graphene.InputObjectType):

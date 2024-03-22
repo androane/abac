@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
+from typing import Iterable
 
 import pendulum
 
 from organization.constants import CurrencyEnum, InvoiceStatusEnum, UnitCostTypeEnum
 from organization.models import Client, Invoice, Organization
 from organization.models.activity import Activity
+from organization.models.client import ClientActivity
 
 
 def get_client_invoice(
@@ -35,13 +37,13 @@ def generate_invoice_items(invoice: Invoice) -> list[str]:
         items.append(
             {
                 "name": client_solution.solution.name,
-                "quantity": 1,
+                "quantity": client_solution.quantity,
                 "cost": client_solution.unit_cost,
                 "currency": client_solution.unit_cost_currency,
             }
         )
 
-    client_activities = (
+    client_activities: Iterable[ClientActivity] = (
         client.client_activities.filter(
             is_executed=True,
             month=invoice.month,
@@ -56,7 +58,7 @@ def generate_invoice_items(invoice: Invoice) -> list[str]:
         activity: Activity = client_activity.activity
 
         if activity.unit_cost_type == UnitCostTypeEnum.FIXED.value:
-            cost = activity.unit_cost
+            cost = activity.unit_cost * client_activity.quantity
         elif activity.unit_cost_type == UnitCostTypeEnum.HOURLY.value:
             cost = 0
             if activity.unit_cost:

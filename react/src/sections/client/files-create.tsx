@@ -60,7 +60,7 @@ const CreateFiles: React.FC<Props> = ({
         })),
       },
     })
-    enqueueSnackbar('Fisierele au fost incarcate cu success')
+    enqueueSnackbar('Fișierele au fost incarcate!')
 
     onClose()
   }

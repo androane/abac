@@ -193,7 +193,7 @@ const UpdateLogs: React.FC<Props> = ({
         })
       }
       form.reset()
-      enqueueSnackbar('Loguri actualizate cu succes!')
+      enqueueSnackbar('Logurile au fost actualizate!')
       onClose()
     } catch (error) {
       enqueueSnackbar(getErrorMessage((error as Error).message), {

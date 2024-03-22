@@ -1,0 +1,15 @@
+fragment ClientSolution on ClientSolutionType {
+  uuid
+  solution {
+    uuid
+    name
+    category {
+      uuid
+      code
+      name
+    }
+  }
+  unitCost
+  unitCostCurrency
+  quantity
+}

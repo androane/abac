@@ -88,7 +88,7 @@ const UpdateSolution: React.FC<Props> = ({ organizationUuid, solution, onClose }
         },
       })
       form.reset()
-      enqueueSnackbar('Pachet actualizat cu succes!')
+      enqueueSnackbar('Pachetutl a fost actualizat!')
       onClose()
     } catch (error) {
       enqueueSnackbar(getErrorMessage((error as Error).message), {

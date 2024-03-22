@@ -161,6 +161,7 @@ class ClientActivity(BaseModel):
 
     month = models.SmallIntegerField(help_text="Month of the Activity")
     year = models.SmallIntegerField(help_text="Year of the Activity")
+    quantity = models.SmallIntegerField(help_text="Quantity of the Activity", default=1)
     is_executed = models.BooleanField(
         default=True, help_text="Is the activity executed?"
     )
@@ -198,6 +199,7 @@ class ClientSolution(BaseModel):
     year = models.SmallIntegerField(
         help_text="Year of the Solution", null=True, blank=True
     )
+    quantity = models.SmallIntegerField(help_text="Quantity of the Activity", default=1)
 
     unit_cost = models.IntegerField(help_text="Cost/Price of the Solution")
     unit_cost_currency = models.CharField(max_length=3, choices=CurrencyEnum.choices)

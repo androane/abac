@@ -1,6 +1,0 @@
-fragment ClientSolutionLog on ClientSolutionLogType {
-  uuid
-  date
-  minutesAllocated
-  description
-}

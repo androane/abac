@@ -27,6 +27,7 @@ export type GenericActivityType = ActivityType & {
   activityUuid: string
   clientActivityUuid?: string
   clientSolutionUuid?: string
+  quantity: number
 }
 
 export type APIClient = OrganizationClientsQuery['organization']['clients'][0]

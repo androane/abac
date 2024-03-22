@@ -37,7 +37,7 @@ const InvoiceTableToolbar: React.FC<Props> = ({
           status: newStatus,
         },
       })
-      enqueueSnackbar('Status actualizat cu success')
+      enqueueSnackbar('Statusul a fost actualizat!')
     } catch (error) {
       enqueueSnackbar(getErrorMessage((error as Error).message), {
         variant: 'error',

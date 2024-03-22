@@ -139,15 +139,23 @@ const UpdateUser: React.FC<Props> = ({ clientUuid, user, onClose, canSeeInformat
             <RHFTextField name="phoneNumber" label="Telefon" />
             {canSeeInformation && (
               <>
-                <RHFTextField name="ownershipPercentage" label="Procent din firma" type="number" />
                 <RHFSelect native name="role" label="Rol" InputLabelProps={{ shrink: true }}>
-                  <option key="null" value="" />
+                  <option value="" />
                   {Object.keys(ClientUserRoleEnum).map(role => (
                     <option key={role} value={role}>
                       {ROLE_LABELS[role as ClientUserRoleEnum]}
                     </option>
                   ))}
                 </RHFSelect>
+                {form.watch('role') === ClientUserRoleEnum.ASSOCIATE ? (
+                  <RHFTextField
+                    name="ownershipPercentage"
+                    label="Procent din firma"
+                    type="number"
+                  />
+                ) : (
+                  <div />
+                )}
               </>
             )}
           </Box>

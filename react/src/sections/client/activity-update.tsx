@@ -51,6 +51,7 @@ const UpdateClientActivity: React.FC<Props> = ({
       unitCost: activity?.unitCost || undefined,
       unitCostCurrency: activity?.unitCostCurrency || CurrencyEnum.RON,
       unitCostType: activity?.unitCostType || UnitCostTypeEnum.HOURLY,
+      quantity: activity?.quantity || 1,
     }),
     [activity],
   )
@@ -68,6 +69,9 @@ const UpdateClientActivity: React.FC<Props> = ({
         unitCostType: Yup.mixed<UnitCostTypeEnum>()
           .oneOf(Object.values(UnitCostTypeEnum))
           .required(REQUIRED_FIELD_ERROR),
+        quantity: Yup.number()
+          .required(REQUIRED_FIELD_ERROR)
+          .min(1, 'Cantitatea trebuie să fie mai mare de 0'),
       }),
     ),
     defaultValues,
@@ -91,6 +95,7 @@ const UpdateClientActivity: React.FC<Props> = ({
             uuid: activity?.clientActivityUuid,
             month: date.getMonth() + 1,
             year: date.getFullYear(),
+            quantity: data.quantity,
           },
         },
         update(cache, { data: cacheData }) {
@@ -112,7 +117,7 @@ const UpdateClientActivity: React.FC<Props> = ({
         },
       })
       form.reset()
-      enqueueSnackbar('Serviciu actualizat cu succes!')
+      enqueueSnackbar('Serviciul a fost actualizat!')
       onClose()
     } catch (error) {
       enqueueSnackbar(getErrorMessage((error as Error).message), {
@@ -200,6 +205,16 @@ const UpdateClientActivity: React.FC<Props> = ({
                 </MenuItem>
               ))}
             </RHFSelect>
+            {form.watch('unitCostType') === UnitCostTypeEnum.FIXED ? (
+              <RHFTextField
+                name="quantity"
+                label="Cantitate"
+                type="number"
+                InputLabelProps={{ shrink: true }}
+              />
+            ) : (
+              <div />
+            )}
             <RHFTextField
               multiline
               rows={5}

@@ -97,7 +97,7 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, activity, onClose }
         },
       })
       form.reset()
-      enqueueSnackbar('Serviciu actualizat cu succes!')
+      enqueueSnackbar('Serviciul a fost actualizat!')
       onClose()
     } catch (error) {
       enqueueSnackbar(getErrorMessage((error as Error).message), {

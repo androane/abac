@@ -70,11 +70,6 @@ const ActivityTableRow: React.FC<Props> = ({
     updateClientActivity({
       variables: {
         clientUuid,
-        clientActivityInput: {
-          uuid: row.clientActivityUuid,
-          month: date.getMonth() + 1,
-          year: date.getFullYear(),
-        },
         activityInput: {
           uuid: row.activityUuid,
           name: row.name,
@@ -83,6 +78,12 @@ const ActivityTableRow: React.FC<Props> = ({
           unitCost: row.unitCost,
           unitCostCurrency: row.unitCostCurrency,
           unitCostType: row.unitCostType,
+        },
+        clientActivityInput: {
+          uuid: row.clientActivityUuid,
+          month: date.getMonth() + 1,
+          year: date.getFullYear(),
+          quantity: row.quantity,
         },
       },
       update(cache, { data: cacheData }) {
@@ -179,6 +180,17 @@ const ActivityTableRow: React.FC<Props> = ({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
             primary={getUnitCostTypeLabel(row.unitCostType)}
+            secondary=""
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <ListItemText
+            primary={row.quantity}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

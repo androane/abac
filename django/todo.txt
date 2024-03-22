@@ -1,5 +1,4 @@
 Permissions data loader
 
-filtrare asociati
 numar bucat la pachete resurse umane
-daca nu are general information (deci nu paote avea asociati), poate adauga asociati?
+sa nu pot pune pret la activitati daca nu am permisiunea

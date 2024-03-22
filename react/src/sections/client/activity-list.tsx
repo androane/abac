@@ -59,6 +59,7 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
     { id: 'category', label: 'Domeniu' },
     { id: 'unitCost', label: 'Suma' },
     { id: 'unitCostType', label: 'Tip Cost' },
+    { id: 'quantity', label: 'Cantitate' },
   ]
 
   const { hasPermission } = useAuthContext()
@@ -275,6 +276,7 @@ const ActivityListView: React.FC<Props> = ({ clientUuid }) => {
             description: '',
             unitCost: cs.unitCost,
             unitCostCurrency: cs.unitCostCurrency,
+            quantity: cs.quantity,
             unitCostType: UnitCostTypeEnum.FIXED,
             isCustom: true,
             isExecuted: true,
@@ -293,10 +295,12 @@ const ActivityListView: React.FC<Props> = ({ clientUuid }) => {
                   ? {
                       ...overwrittenOrganizationAcitivty.activity,
                       clientActivityUuid: overwrittenOrganizationAcitivty.uuid,
+                      quantity: overwrittenOrganizationAcitivty.quantity,
                       isExecuted: overwrittenOrganizationAcitivty.isExecuted,
                     }
                   : {
                       ...organizationActivity,
+                      quantity: 1,
                       isExecuted: false,
                     }
                 return {
@@ -319,6 +323,7 @@ const ActivityListView: React.FC<Props> = ({ clientUuid }) => {
                   activityUuid: clientActivity.activity.uuid,
                   clientActivityUuid: clientActivity.uuid,
                   isExecuted: clientActivity.isExecuted,
+                  quantity: clientActivity.quantity,
                   isCustom: true,
                 }))
 
