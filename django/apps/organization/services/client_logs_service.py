@@ -17,20 +17,23 @@ def update_client_activity_logs(
     ClientActivityLog.objects.exclude(uuid__in=input_log_uuids).delete()
 
     for log_input in logs_input:
+        if not log_input.minutes_allocated and not log_input.description:
+            continue
+
         if log_input.uuid:
             ClientActivityLog.objects.filter(
                 uuid=log_input.uuid, client_activity=client_activity
             ).update(
                 minutes_allocated=log_input.minutes_allocated,
-                date=log_input.date,
                 description=log_input.description,
+                date=log_input.date,
             )
         else:
             ClientActivityLog.objects.create(
                 client_activity=client_activity,
                 minutes_allocated=log_input.minutes_allocated,
-                date=log_input.date,
                 description=log_input.description,
+                date=log_input.date,
             )
 
     return client_activity

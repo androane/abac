@@ -179,7 +179,6 @@ class ClientActivity(BaseModel):
 
 class ClientSolution(BaseModel):
     class Meta:
-        verbose_name_plural = "Client Activities"
         constraints = [
             models.UniqueConstraint(
                 fields=["month", "year", "client", "solution"],

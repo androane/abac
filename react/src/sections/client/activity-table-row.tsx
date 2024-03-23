@@ -9,16 +9,50 @@ import { ConfirmDialog } from 'components/custom-dialog'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
 import Label from 'components/label'
+import ResponseHandler from 'components/response-handler'
 import {
   ClientActivityFragmentDoc,
+  useOrganizationSolutionsQuery,
   useToggleClientActivityMutation,
   useUpdateClientActivityMutation,
 } from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import React from 'react'
 import { GenericActivityType } from 'sections/client/types'
-import { action } from 'theme/palette'
+import { action, primary } from 'theme/palette'
 import { getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
+
+const SolutionTooltip: React.FC<{ solutionUuid: string }> = ({ solutionUuid }) => {
+  const result = useOrganizationSolutionsQuery()
+
+  return (
+    <Tooltip
+      arrow
+      title={
+        <ResponseHandler {...result}>
+          {({ organization }) => {
+            const solution = organization.solutions.find(s => s.uuid === solutionUuid)!
+            return (
+              <Box sx={{ p: 1 }}>
+                <Typography variant="subtitle2">
+                  Acesta este un pachet si include mai multe servicii:
+                  <br />
+                </Typography>
+                {solution.activities.map(a => (
+                  <Typography variant="body2" key={a.uuid}>
+                    &nbsp;-&nbsp;{a.name}
+                  </Typography>
+                ))}
+              </Box>
+            )
+          }}
+        </ResponseHandler>
+      }
+    >
+      <Iconify width={24} icon="eva:info-outline" color={primary.main} />
+    </Tooltip>
+  )
+}
 
 type Props = {
   clientUuid: string
@@ -105,7 +139,7 @@ const ActivityTableRow: React.FC<Props> = ({
   }
 
   const isSolutionRow = Boolean(row.clientSolutionUuid)
-  const isCustomActivity = !isSolutionRow && row.isCustom
+  const isCustomActivityRow = !isSolutionRow && row.isCustom
 
   return (
     <>
@@ -150,7 +184,6 @@ const ActivityTableRow: React.FC<Props> = ({
                     isSolutionRow
                       ? {}
                       : {
-                          mr: 2,
                           cursor: 'pointer',
                           '&:hover': {
                             textDecoration: 'underline',
@@ -158,11 +191,19 @@ const ActivityTableRow: React.FC<Props> = ({
                         }
                   }
                 >
-                  {row.name}
+                  {row.name}&nbsp;&nbsp;&nbsp;
                 </Typography>
-
-                {isCustomActivity && (
-                  <Tooltip title="Această activitate a fost creată special pentru acest client și nu se află in lista de servicii standard oferite.">
+                {isSolutionRow && <SolutionTooltip solutionUuid={row.activityUuid!} />}
+                {isCustomActivityRow && (
+                  <Tooltip
+                    arrow
+                    title={
+                      <Typography sx={{ p: 1 }} variant="subtitle2">
+                        Această activitate a fost creată special pentru acest client și nu se află
+                        in lista de servicii standard oferite.
+                      </Typography>
+                    }
+                  >
                     <Label color="info" startIcon={<Iconify icon="solar:bill-outline" />}>
                       special
                     </Label>

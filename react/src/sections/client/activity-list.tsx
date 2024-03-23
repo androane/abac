@@ -61,7 +61,7 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
     { id: 'isExecuted', label: 'Efectuat?' },
     { id: 'name', label: 'Nume' },
     { id: 'category', label: 'Domeniu' },
-    { id: 'unitCost', label: 'Suma' },
+    { id: 'unitCost', label: 'Cost' },
     { id: 'unitCostType', label: 'Tip Cost' },
     { id: 'quantity', label: 'Cantitate' },
   ]
@@ -277,6 +277,7 @@ const ActivityListView: React.FC<Props> = ({ clientUuid }) => {
   return (
     <ResponseHandler {...clientActivitiesResult}>
       {({ client }) => {
+        // The main philosophy is that solution is an array of activities
         const solutionActivities = client.solutions.map(cs => {
           return {
             uuid: cs.uuid,
