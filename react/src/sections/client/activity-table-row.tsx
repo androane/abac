@@ -1,5 +1,5 @@
 import LoadingButton from '@mui/lab/LoadingButton'
-import { IconButton, Switch } from '@mui/material'
+import { Box, IconButton, Switch, Tooltip, Typography } from '@mui/material'
 import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import TableCell from '@mui/material/TableCell'
@@ -8,6 +8,7 @@ import { ConfirmDialog } from 'components/custom-dialog'
 
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
+import Label from 'components/label'
 import {
   ClientActivityFragmentDoc,
   useToggleClientActivityMutation,
@@ -103,14 +104,17 @@ const ActivityTableRow: React.FC<Props> = ({
     })
   }
 
+  const isSolutionRow = Boolean(row.clientSolutionUuid)
+  const isCustomActivity = !isSolutionRow && row.isCustom
+
   return (
     <>
-      <TableRow sx={{ backgroundColor: action.selected }}>
+      <TableRow sx={{ backgroundColor: isSolutionRow ? action.selected : '' }}>
         <TableCell style={{ width: 150 }}>
           <Switch
             checked={row.isExecuted}
             onChange={() => {
-              if (row.clientSolutionUuid) return
+              if (isSolutionRow) return
               if (row.clientActivityUuid) {
                 handleToggleClientActivity(row.clientActivityUuid)
               } else {
@@ -118,39 +122,56 @@ const ActivityTableRow: React.FC<Props> = ({
               }
             }}
             disabled={loadingToggle || loadingAdd}
-            color="primary"
+            color="success"
           />
-          {(row.clientActivityUuid || row.clientSolutionUuid) && row.isExecuted && (
+          {(row.clientActivityUuid || isSolutionRow) && row.isExecuted && (
             <IconButton size="small" onClick={onEditLogs} color="warning">
               <Iconify icon="solar:clock-circle-outline" width={24} />
             </IconButton>
           )}
         </TableCell>
         <TableCell
-          sx={{ whiteSpace: 'nowrap' }}
-          onClick={() => {
-            if (!row.clientSolutionUuid) {
-              onEditRow(row.activityUuid)
-            }
+          sx={{
+            whiteSpace: 'nowrap',
           }}
         >
           <ListItemText
-            primary={row.name}
-            secondary=""
-            primaryTypographyProps={{ typography: 'body2' }}
-            secondaryTypographyProps={{
-              component: 'span',
-              color: 'text.disabled',
+            onClick={() => {
+              if (!isSolutionRow) {
+                onEditRow(row.activityUuid)
+              }
             }}
-            sx={{
-              cursor: 'pointer',
-              '&:hover': {
-                textDecoration: 'underline',
-              },
-            }}
+            primary={
+              <Box display="flex" alignItems="center">
+                <Typography
+                  component="div"
+                  variant="body2"
+                  sx={
+                    isSolutionRow
+                      ? {}
+                      : {
+                          mr: 2,
+                          cursor: 'pointer',
+                          '&:hover': {
+                            textDecoration: 'underline',
+                          },
+                        }
+                  }
+                >
+                  {row.name}
+                </Typography>
+
+                {isCustomActivity && (
+                  <Tooltip title="Această activitate a fost creată special pentru acest client și nu se află in lista de servicii standard oferite.">
+                    <Label color="info" startIcon={<Iconify icon="solar:bill-outline" />}>
+                      special
+                    </Label>
+                  </Tooltip>
+                )}
+              </Box>
+            }
           />
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.isCustom ? 'Da' : 'Nu'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
             primary={getCategoryLabelFromCode(row.category.code)}

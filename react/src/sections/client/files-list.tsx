@@ -41,7 +41,7 @@ const FilesList: React.FC<Props> = ({ clientUuid }) => {
       {({ client: { files } }) => {
         return (
           <>
-            <AddButton count={files.length} label="Fisiere" onClick={upload.onTrue} />
+            <AddButton count={files.length} label="Documente" onClick={upload.onTrue} />
             {files.length ? (
               <Box
                 display="grid"
@@ -65,7 +65,7 @@ const FilesList: React.FC<Props> = ({ clientUuid }) => {
             ) : (
               <EmptyContent
                 filled
-                title="Nu exista documente"
+                title="Nu există documente"
                 sx={{
                   py: 10,
                 }}

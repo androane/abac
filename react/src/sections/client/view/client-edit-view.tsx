@@ -9,7 +9,7 @@ import { UserPermissionsEnum, useOrganizationClientsQuery } from 'generated/grap
 import { useCallback, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import { LANDING_PAGE, paths } from 'routes/paths'
-import { info } from 'theme/palette'
+import { primary } from 'theme/palette'
 import { useAuthContext } from 'auth/hooks'
 import FilesList from '../files-list'
 import UsersList from '../users-list'
@@ -25,7 +25,7 @@ enum TABS_VALUES {
   USERS = 'u',
 }
 
-const getIcon = (icon: string) => <Iconify icon={icon} width={24} color={info.main} />
+const getIcon = (icon: string) => <Iconify icon={icon} width={24} color={primary.main} />
 
 const TABS = [
   {
@@ -85,7 +85,7 @@ const ClientEditView = () => {
         {({ organization }) => {
           const client = organization.clients.find(_ => _.uuid === uuid)
           if (!client) {
-            return <Navigate to={paths.page404} replace />
+            return <Navigate to={paths.app.client.list} replace />
           }
           return (
             <>

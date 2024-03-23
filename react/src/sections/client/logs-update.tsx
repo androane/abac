@@ -4,10 +4,8 @@ import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
 import Dialog from '@mui/material/Dialog'
-import LoadingButton from '@mui/lab/LoadingButton'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import FormProvider from 'components/hook-form'
 import { format } from 'date-fns'
@@ -31,6 +29,7 @@ import Divider from '@mui/material/Divider'
 import Iconify from 'components/iconify'
 import { RHFTextField } from 'components/hook-form'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
+import DialogActions from 'components/dialog-actions'
 
 const DEFAULT_LOG = {
   uuid: undefined,
@@ -193,7 +192,7 @@ const UpdateLogs: React.FC<Props> = ({
         })
       }
       form.reset()
-      enqueueSnackbar('Logurile au fost actualizate!')
+      enqueueSnackbar('Timpii au fost actualizați')
       onClose()
     } catch (error) {
       enqueueSnackbar(getErrorMessage((error as Error).message), {
@@ -217,14 +216,7 @@ const UpdateLogs: React.FC<Props> = ({
         <DialogContent>
           <br />
           <LogUpdate date={date} />
-          <DialogActions>
-            <Button color="inherit" variant="outlined" onClick={onClose}>
-              {'<'} Înapoi
-            </Button>
-            <LoadingButton type="submit" variant="contained" loading={loading1 || loading2}>
-              Salvează
-            </LoadingButton>
-          </DialogActions>
+          <DialogActions onClose={onClose} loading={loading1 || loading2} />
         </DialogContent>
       </FormProvider>
     </Dialog>

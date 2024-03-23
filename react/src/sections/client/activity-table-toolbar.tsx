@@ -5,11 +5,8 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import FormControl from '@mui/material/FormControl'
-import OutlinedInput from '@mui/material/OutlinedInput'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
+import { SelectChangeEvent } from '@mui/material/Select'
 import Iconify from 'components/iconify'
-import MenuItem from '@mui/material/MenuItem'
-import Checkbox from '@mui/material/Checkbox'
 import InputLabel from '@mui/material/InputLabel'
 import { ClientActivityTableFilters } from 'sections/client/types'
 import { Button } from '@mui/material'
@@ -40,13 +37,6 @@ const ActivityTableToolbar: React.FC<Props> = ({
   const handleFilterCategory = useCallback(
     (event: SelectChangeEvent<string>) => {
       onFilters('category', event.target.value)
-    },
-    [onFilters],
-  )
-
-  const handleFilterIsCustom = useCallback(
-    (event: SelectChangeEvent<string>) => {
-      onFilters('isCustom', event.target.value)
     },
     [onFilters],
   )
@@ -86,37 +76,6 @@ const ActivityTableToolbar: React.FC<Props> = ({
         <CategorySelect onChange={handleFilterCategory} />
       </FormControl>
 
-      <FormControl
-        sx={{
-          flexShrink: 0,
-          width: { xs: 1, md: 200 },
-        }}
-      >
-        <InputLabel>Specifică clientului?</InputLabel>
-        <Select
-          value={filters.isCustom}
-          onChange={handleFilterIsCustom}
-          input={<OutlinedInput label="Specifică clientului?" />}
-          MenuProps={{
-            PaperProps: {
-              sx: { maxHeight: 240 },
-            },
-          }}
-        >
-          <MenuItem key="all" value="">
-            <Checkbox disableRipple size="small" checked={filters.isCustom === ''} />
-            Toate
-          </MenuItem>
-          <MenuItem value="yes">
-            <Checkbox disableRipple size="small" checked={filters.isCustom === 'yes'} />
-            Da
-          </MenuItem>
-          <MenuItem value="no">
-            <Checkbox disableRipple size="small" checked={filters.isCustom === 'no'} />
-            Nu
-          </MenuItem>
-        </Select>
-      </FormControl>
       <TextField
         value={filters.name}
         onChange={handleFilterName}

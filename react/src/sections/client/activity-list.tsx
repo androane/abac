@@ -60,7 +60,6 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
   let TABLE_HEAD = [
     { id: 'isExecuted', label: 'Efectuat?' },
     { id: 'name', label: 'Nume' },
-    { id: 'isCustom', label: 'Este specifică clientului?' },
     { id: 'category', label: 'Domeniu' },
     { id: 'unitCost', label: 'Suma' },
     { id: 'unitCostType', label: 'Tip Cost' },
@@ -390,12 +389,6 @@ function applyFilter({
 
   if (filters.category) {
     inputData = inputData.filter(activity => activity.category.code === filters.category)
-  }
-
-  if (filters.isCustom) {
-    inputData = inputData.filter(activity =>
-      filters.isCustom === 'yes' ? activity.isCustom : !activity.isCustom,
-    )
   }
 
   return inputData

@@ -1,7 +1,6 @@
 Permissions data loader
 
 sa nu pot pune pret la activitati daca nu am permisiunea
-sa persiste domeniu lselectat ca filtru
 programe folosite, date logare
 un tooltip sa se vada ce activitati sunt inclue in pachetul de baza
 squash migrations

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
 
-import Button from '@mui/material/Button'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -20,7 +19,7 @@ interface Props extends DialogProps {
 }
 
 const CreateFiles: React.FC<Props> = ({
-  title = 'Incarca Fisiere',
+  title = 'Încarcă Documente',
   clientUuid,
   open,
   onClose,
@@ -60,7 +59,7 @@ const CreateFiles: React.FC<Props> = ({
         })),
       },
     })
-    enqueueSnackbar('Fișierele au fost incarcate!')
+    enqueueSnackbar('Documentele au fost încărcate!')
 
     onClose()
   }
@@ -68,10 +67,6 @@ const CreateFiles: React.FC<Props> = ({
   const handleRemoveFile = (inputFile: File | string) => {
     const filtered = files.filter(file => file !== inputFile)
     setFiles(filtered)
-  }
-
-  const handleRemoveAllFiles = () => {
-    setFiles([])
   }
 
   return (
@@ -89,15 +84,10 @@ const CreateFiles: React.FC<Props> = ({
           variant="contained"
           startIcon={<Iconify icon="eva:cloud-upload-fill" />}
           onClick={handleUpload}
+          color="success"
         >
-          Incarca
+          Incarcă
         </LoadingButton>
-
-        {!!files.length && (
-          <Button variant="outlined" color="inherit" onClick={handleRemoveAllFiles}>
-            Șterge tot
-          </Button>
-        )}
       </DialogActions>
     </Dialog>
   )

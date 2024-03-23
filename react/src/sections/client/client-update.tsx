@@ -295,7 +295,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
 
             {canUpdate && (
               <Stack alignItems="flex-end" sx={{ mt: 3 }}>
-                <LoadingButton type="submit" variant="contained" loading={loading}>
+                <LoadingButton type="submit" variant="contained" loading={loading} color="success">
                   {client ? 'Salvează' : 'Adaugă Client'}
                 </LoadingButton>
               </Stack>

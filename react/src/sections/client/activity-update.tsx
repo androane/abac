@@ -1,14 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import Button from '@mui/material/Button'
 import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
 import Dialog from '@mui/material/Dialog'
-import LoadingButton from '@mui/lab/LoadingButton'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import Box from '@mui/material/Box'
-import DialogActions from '@mui/material/DialogActions'
 
 import FormProvider, { RHFSelect, RHFTextField } from 'components/hook-form'
 import { useSnackbar } from 'components/snackbar'
@@ -24,6 +21,7 @@ import { MenuItem } from '@mui/material'
 import { GenericActivityType } from 'sections/client/types'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 import { useLocalStorageContext } from 'components/local-storage'
+import DialogActions from 'components/dialog-actions'
 
 type Props = {
   activity: null | GenericActivityType
@@ -129,6 +127,8 @@ const UpdateClientActivity: React.FC<Props> = ({
     }
   })
 
+  const disabled = Boolean(activity)
+
   return (
     <Dialog
       fullWidth
@@ -156,13 +156,14 @@ const UpdateClientActivity: React.FC<Props> = ({
               name="name"
               label="Nume"
               disabled={activity ? !activity.isCustom : false}
-              InputLabelProps={{ shrink: true }}
+              variant={disabled ? 'filled' : 'outlined'}
             />
 
             <RHFSelect
               name="categoryCode"
               label="Domeniu"
-              disabled={Boolean(activity)}
+              disabled={disabled}
+              variant={disabled ? 'filled' : 'outlined'}
               InputLabelProps={{ shrink: true }}
             >
               <MenuItem value="" sx={{ color: 'text.secondary' }}>
@@ -186,7 +187,8 @@ const UpdateClientActivity: React.FC<Props> = ({
                   name="unitCostCurrency"
                   label="Moneda"
                   InputLabelProps={{ shrink: true }}
-                  disabled={activity ? !activity.isCustom : false}
+                  variant={disabled ? 'filled' : 'outlined'}
+                  disabled={disabled ? !activity?.isCustom : false}
                 >
                   {Object.keys(CurrencyEnum).map(currency => (
                     <MenuItem key={currency} value={currency}>
@@ -200,7 +202,8 @@ const UpdateClientActivity: React.FC<Props> = ({
               InputLabelProps={{ shrink: true }}
               name="unitCostType"
               label="Tip Cost"
-              disabled={activity ? !activity.isCustom : false}
+              variant={disabled ? 'filled' : 'outlined'}
+              disabled={disabled ? !activity?.isCustom : false}
             >
               {Object.keys(UnitCostTypeEnum).map(type => (
                 <MenuItem key={type} value={type}>
@@ -226,14 +229,11 @@ const UpdateClientActivity: React.FC<Props> = ({
               InputLabelProps={{ shrink: true }}
             />
           </Box>
-          <DialogActions>
-            <Button color="inherit" variant="outlined" onClick={onClose}>
-              {'<'} Înapoi
-            </Button>
-            <LoadingButton type="submit" variant="contained" loading={loading}>
-              {activity ? 'Salvează' : 'Adaugă Activitate'}
-            </LoadingButton>
-          </DialogActions>
+          <DialogActions
+            label={activity ? 'Salvează' : 'Adaugă Activitate'}
+            loading={loading}
+            onClose={onClose}
+          />
         </DialogContent>
       </FormProvider>
     </Dialog>

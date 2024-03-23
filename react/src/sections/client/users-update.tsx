@@ -1,14 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import Button from '@mui/material/Button'
 import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
 import Dialog from '@mui/material/Dialog'
-import LoadingButton from '@mui/lab/LoadingButton'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import Box from '@mui/material/Box'
-import DialogActions from '@mui/material/DialogActions'
 
 import FormProvider, { RHFSelect, RHFTextField } from 'components/hook-form'
 import { useSnackbar } from 'components/snackbar'
@@ -21,6 +18,7 @@ import { APIClientUser } from 'sections/client/types'
 import { ROLE_LABELS } from 'sections/client/constants'
 import getErrorMessage from 'utils/api-codes'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
+import DialogActions from 'components/dialog-actions'
 
 type Props = {
   clientUuid: string
@@ -121,7 +119,7 @@ const UpdateUser: React.FC<Props> = ({ clientUuid, user, onClose, canSeeInformat
       }}
     >
       <FormProvider methods={form} onSubmit={onSubmit}>
-        <DialogTitle>Persoana de Contact</DialogTitle>
+        <DialogTitle>Persoană de Contact</DialogTitle>
         <DialogContent>
           <br />
           <Box
@@ -150,7 +148,7 @@ const UpdateUser: React.FC<Props> = ({ clientUuid, user, onClose, canSeeInformat
                 {form.watch('role') === ClientUserRoleEnum.ASSOCIATE ? (
                   <RHFTextField
                     name="ownershipPercentage"
-                    label="Procent din firma"
+                    label="Procent din firmă"
                     type="number"
                   />
                 ) : (
@@ -171,17 +169,10 @@ const UpdateUser: React.FC<Props> = ({ clientUuid, user, onClose, canSeeInformat
             }}
           >
             <RHFTextField name="spvUsername" label="Utilizator SPV" />
-            <RHFTextField name="spvPassword" label="Parola SPV" />
+            <RHFTextField name="spvPassword" label="Parolă SPV" />
           </Box>
 
-          <DialogActions>
-            <Button color="inherit" variant="outlined" onClick={onClose}>
-              {'<'} Înapoi
-            </Button>
-            <LoadingButton type="submit" variant="contained" loading={loading}>
-              {user ? 'Salvează' : 'Adaugă Persoana'}
-            </LoadingButton>
-          </DialogActions>
+          <DialogActions label={user ? 'Salvează' : 'Adaugă'} onClose={onClose} loading={loading} />
         </DialogContent>
       </FormProvider>
     </Dialog>

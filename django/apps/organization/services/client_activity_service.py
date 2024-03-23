@@ -27,7 +27,9 @@ def update_client_activity(
             "unit_cost",
         )
         for attr in attrs:
-            setattr(activity, attr, getattr(activity_input, attr))
+            # When attr is not in the input, it means the user doesn't see it because of permissions and so we don't want to set it to null
+            if attr in activity_input:
+                setattr(activity, attr, getattr(activity_input, attr))
 
     if client_activity_input.uuid:
         client_activity = ClientActivity.objects.get(
