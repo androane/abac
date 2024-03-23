@@ -178,7 +178,7 @@ const DEFAULT_SOFTWARE = {
 }
 
 const UpdateClientSoftware: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) => {
-  const { control, setValue } = useFormContext()
+  const { control } = useFormContext()
 
   const { fields, append, remove } = useFieldArray({
     control,
