@@ -10,7 +10,8 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Grid from '@mui/material/Unstable_Grid2'
-import { Divider, MenuItem, Typography } from '@mui/material'
+import { Button, Divider, MenuItem, Typography } from '@mui/material'
+import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import { useRouter } from 'routes/hooks'
 import { paths } from 'routes/paths'
@@ -32,6 +33,237 @@ import { useAuthContext } from 'auth/hooks'
 import getErrorMessage from 'utils/api-codes'
 import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
+import Iconify from 'components/iconify'
+
+const UpdateClientSolutions: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) => {
+  const { hasPermission } = useAuthContext()
+
+  const canSeeCosts = hasPermission(UserPermissionsEnum.HAS_CLIENT_ACTIVITY_COSTS_ACCESS)
+  const canSeeInformation = hasPermission(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS)
+  const resultSolutions = useOrganizationSolutionsQuery()
+
+  return (
+    <>
+      <Typography variant="h5" sx={{ mb: 2 }}>
+        Pachete de servicii
+      </Typography>
+
+      <Box
+        sx={{ pt: 3 }}
+        rowGap={3}
+        columnGap={2}
+        display="grid"
+        gridTemplateColumns={{
+          xs: 'repeat(1, 1fr)',
+          sm: 'repeat(3, 1fr)',
+        }}
+      >
+        <ResponseHandler {...resultSolutions}>
+          {({ organization }) => {
+            return (
+              <>
+                {CATEGORY_CODES.map((categoryCode, index) => {
+                  return (
+                    <React.Fragment key={categoryCode}>
+                      <RHFSelect
+                        disabled={!canUpdate}
+                        name={`clientSolutions[${index}].solutionUuid`}
+                        label={`Pachet ${getCategoryLabelFromCode(categoryCode)}`}
+                      >
+                        <MenuItem value="" sx={{ color: 'text.secondary' }}>
+                          Alege
+                        </MenuItem>
+                        {organization.solutions
+                          .filter(s => s.category.code === categoryCode)
+                          .map(s => (
+                            <MenuItem key={s.uuid} value={s.uuid}>
+                              {s.name}
+                            </MenuItem>
+                          ))}
+                      </RHFSelect>
+                      {canSeeInformation && canSeeCosts ? (
+                        <>
+                          <RHFTextField
+                            disabled={!canUpdate}
+                            name={`clientSolutions[${index}].unitCost`}
+                            label="Cost"
+                            type="number"
+                          />
+                          <RHFSelect
+                            disabled={!canUpdate}
+                            name={`clientSolutions[${index}].unitCostCurrency`}
+                            label="Moneda"
+                          >
+                            {Object.keys(CurrencyEnum).map(currency => (
+                              <MenuItem key={currency} value={currency}>
+                                {currency}
+                              </MenuItem>
+                            ))}
+                          </RHFSelect>
+                        </>
+                      ) : (
+                        <>
+                          <div />
+                          <div />
+                        </>
+                      )}
+                    </React.Fragment>
+                  )
+                })}
+              </>
+            )
+          }}
+        </ResponseHandler>
+      </Box>
+      <Divider sx={{ borderStyle: 'dashed', mt: 6, mb: 6 }} />
+    </>
+  )
+}
+
+const UpdateClientGeneralInformation: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) => {
+  const result = useOrganizationUsersQuery()
+
+  return (
+    <>
+      <Box
+        rowGap={3}
+        columnGap={2}
+        display="grid"
+        gridTemplateColumns={{
+          xs: 'repeat(1, 1fr)',
+          sm: 'repeat(2, 1fr)',
+        }}
+      >
+        <RHFTextField disabled={!canUpdate} name="name" label="Nume firmă" />
+        <ResponseHandler {...result}>
+          {({ organization }) => {
+            return (
+              <RHFSelect disabled={!canUpdate} name="programManagerUuid" label="Responsabil">
+                <MenuItem value="" sx={{ color: 'text.secondary' }}>
+                  Alege
+                </MenuItem>
+                {organization.users.map(u => (
+                  <MenuItem key={u.uuid} value={u.uuid}>
+                    {u.name}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+            )
+          }}
+        </ResponseHandler>
+        <RHFTextField disabled={!canUpdate} name="cui" label="Cod Unic de Identificare (CUI)" />
+        <div />
+      </Box>
+
+      <Box sx={{ pt: 3 }}>
+        <RHFTextField
+          disabled={!canUpdate}
+          name="description"
+          label="Descriere (opțional)"
+          multiline
+          rows={5}
+        />
+      </Box>
+
+      <Divider sx={{ borderStyle: 'dashed', mt: 6, mb: 4 }} />
+    </>
+  )
+}
+
+const DEFAULT_SOFTWARE = {
+  uuid: undefined,
+  soft: null,
+  username: '',
+  password: '',
+}
+
+const UpdateClientSoftware: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) => {
+  const { control, setValue } = useFormContext()
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'softwares',
+  })
+
+  return (
+    <>
+      <Typography variant="h5" sx={{ mb: 2 }}>
+        Software și Conturi
+      </Typography>
+
+      <Box
+        sx={{ pt: 3 }}
+        rowGap={3}
+        columnGap={2}
+        display="grid"
+        gridTemplateColumns={{
+          xs: 'repeat(1, 1fr)',
+          sm: 'repeat(4, 1fr)',
+        }}
+      >
+        <RHFTextField disabled={!canUpdate} name="spvUsername" label="Utilizator SPV" />
+        <RHFTextField disabled={!canUpdate} name="spvPassword" label="Parolă SPV" />
+        <div />
+      </Box>
+
+      <Box sx={{ pt: 0 }}>
+        {fields.map((item, index) => {
+          return (
+            <Box
+              key={item.id}
+              sx={{ pt: 3 }}
+              rowGap={3}
+              columnGap={2}
+              display="grid"
+              alignItems="center"
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(4, 1fr)',
+              }}
+            >
+              <RHFSelect
+                disabled={!canUpdate}
+                name={`softwares[${index}].software`}
+                label="Software"
+              >
+                <MenuItem value="" sx={{ color: 'text.secondary' }}>
+                  Alege
+                </MenuItem>
+                {Object.keys(SoftwareEnum).map(s => (
+                  <MenuItem key={s} value={s}>
+                    {s}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+              <RHFTextField name={`softwares[${index}].username`} label="Utilizator" />
+              <RHFTextField name={`softwares[${index}].password`} label="Parola" />
+              <Button
+                size="small"
+                color="error"
+                startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+                onClick={() => remove(index)}
+              >
+                Șterge
+              </Button>
+            </Box>
+          )
+        })}
+
+        <Button
+          size="small"
+          color="primary"
+          startIcon={<Iconify icon="mingcute:add-line" />}
+          onClick={() => append(DEFAULT_SOFTWARE)}
+          sx={{ flexShrink: 0 }}
+        >
+          Adaugă
+        </Button>
+      </Box>
+
+      <Divider sx={{ borderStyle: 'dashed', mt: 6, mb: 6 }} />
+    </>
+  )
+}
 
 type Props = {
   client?: ClientClientQuery['client']
@@ -43,13 +275,8 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
   const { hasPermission } = useAuthContext()
 
   const canUpdate = hasPermission(UserPermissionsEnum.HAS_CLIENT_ADD_ACCESS)
-  const canSeeCosts = hasPermission(UserPermissionsEnum.HAS_CLIENT_ACTIVITY_COSTS_ACCESS)
-  const canSeeInformation = hasPermission(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS)
 
   const { user } = useAuthContext()
-
-  const resultUsers = useOrganizationUsersQuery()
-  const resultSolutions = useOrganizationSolutionsQuery()
 
   const [updateClient, { loading }] = useUpdateClientMutation()
 
@@ -168,144 +395,9 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
       <Grid container spacing={3}>
         <Grid xs={12} md={8}>
           <Card sx={{ p: 3 }}>
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
-              }}
-            >
-              <RHFTextField disabled={!canUpdate} name="name" label="Nume firmă" />
-              <ResponseHandler {...resultUsers}>
-                {({ organization }) => {
-                  return (
-                    <RHFSelect disabled={!canUpdate} name="programManagerUuid" label="Responsabil">
-                      <MenuItem value="" sx={{ color: 'text.secondary' }}>
-                        Alege
-                      </MenuItem>
-                      {organization.users.map(u => (
-                        <MenuItem key={u.uuid} value={u.uuid}>
-                          {u.name}
-                        </MenuItem>
-                      ))}
-                    </RHFSelect>
-                  )
-                }}
-              </ResponseHandler>
-              <RHFTextField
-                disabled={!canUpdate}
-                name="cui"
-                label="Cod Unic de Identificare (CUI)"
-              />
-              <div />
-            </Box>
-
-            <Box sx={{ pt: 3 }}>
-              <RHFTextField
-                disabled={!canUpdate}
-                name="description"
-                label="Descriere (opțional)"
-                multiline
-                rows={5}
-              />
-            </Box>
-
-            <Divider sx={{ borderStyle: 'dashed', mt: 6, mb: 4 }} />
-
-            <Typography variant="h5" sx={{ mb: 2 }}>
-              Pachete de servicii
-            </Typography>
-
-            <Box
-              sx={{ pt: 3 }}
-              rowGap={3}
-              columnGap={2}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(3, 1fr)',
-              }}
-            >
-              <ResponseHandler {...resultSolutions}>
-                {({ organization }) => {
-                  return (
-                    <>
-                      {CATEGORY_CODES.map((categoryCode, index) => {
-                        return (
-                          <React.Fragment key={categoryCode}>
-                            <RHFSelect
-                              disabled={!canUpdate}
-                              name={`clientSolutions[${index}].solutionUuid`}
-                              label={`Pachet ${getCategoryLabelFromCode(categoryCode)}`}
-                            >
-                              <MenuItem value="" sx={{ color: 'text.secondary' }}>
-                                Alege
-                              </MenuItem>
-                              {organization.solutions
-                                .filter(s => s.category.code === categoryCode)
-                                .map(s => (
-                                  <MenuItem key={s.uuid} value={s.uuid}>
-                                    {s.name}
-                                  </MenuItem>
-                                ))}
-                            </RHFSelect>
-                            {canSeeInformation && canSeeCosts ? (
-                              <>
-                                <RHFTextField
-                                  disabled={!canUpdate}
-                                  name={`clientSolutions[${index}].unitCost`}
-                                  label="Cost"
-                                  type="number"
-                                />
-                                <RHFSelect
-                                  disabled={!canUpdate}
-                                  name={`clientSolutions[${index}].unitCostCurrency`}
-                                  label="Moneda"
-                                >
-                                  {Object.keys(CurrencyEnum).map(currency => (
-                                    <MenuItem key={currency} value={currency}>
-                                      {currency}
-                                    </MenuItem>
-                                  ))}
-                                </RHFSelect>
-                              </>
-                            ) : (
-                              <>
-                                <div />
-                                <div />
-                              </>
-                            )}
-                          </React.Fragment>
-                        )
-                      })}
-                    </>
-                  )
-                }}
-              </ResponseHandler>
-            </Box>
-            <Divider sx={{ borderStyle: 'dashed', mt: 6, mb: 6 }} />
-
-            <Typography variant="h5" sx={{ mb: 2 }}>
-              Software și Conturi
-            </Typography>
-
-            <Box
-              sx={{ pt: 3 }}
-              rowGap={3}
-              columnGap={2}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
-              }}
-            >
-              <RHFTextField disabled={!canUpdate} name="spvUsername" label="Utilizator SPV" />
-              <RHFTextField disabled={!canUpdate} name="spvPassword" label="Parolă SPV" />
-            </Box>
-
-            <Divider sx={{ borderStyle: 'dashed', mt: 6, mb: 6 }} />
+            <UpdateClientGeneralInformation canUpdate={canUpdate} />
+            <UpdateClientSolutions canUpdate={canUpdate} />
+            <UpdateClientSoftware canUpdate={canUpdate} />
 
             {canUpdate && (
               <Stack alignItems="flex-end" sx={{ mt: 3 }}>

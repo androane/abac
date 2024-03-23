@@ -3,4 +3,3 @@ Permissions data loader
 programe folosite, date logare
 squash migrations
 permisiunile ma delogheaza
-un loader frumos

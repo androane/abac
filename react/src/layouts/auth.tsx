@@ -2,20 +2,30 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { alpha, useTheme } from '@mui/material/styles'
+import Lottie from 'react-lottie'
 
 import { useResponsive } from 'hooks/use-responsive'
 
 import { bgGradient } from 'theme/css'
 
 import Logo from 'components/logo'
+import loading from './accounting.json'
+
+const defaultOptions = {
+  loop: true,
+  autoplay: true,
+  animationData: loading,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice',
+  },
+}
 
 type Props = {
   title?: string
-  image?: string
   children: React.ReactNode
 }
 
-export default function AuthLayout({ children, image, title }: Props) {
+const AuthLayout: React.FC<Props> = ({ children, title }) => {
   const theme = useTheme()
 
   const mdUp = useResponsive('up', 'md')
@@ -57,7 +67,7 @@ export default function AuthLayout({ children, image, title }: Props) {
             theme.palette.background.default,
             theme.palette.mode === 'light' ? 0.88 : 0.94,
           ),
-          imgUrl: '/assets/background/overlay_2.jpg',
+          imgUrl: '/assets/background/overlay_3.jpg',
         }),
       }}
     >
@@ -66,17 +76,14 @@ export default function AuthLayout({ children, image, title }: Props) {
       </Typography>
 
       <Box
-        component="img"
-        alt="auth"
-        src={image || '/assets/illustrations/illustration_dashboard.png'}
         sx={{
-          maxWidth: {
-            xs: 480,
-            lg: 560,
-            xl: 720,
-          },
+          px: 5,
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
-      />
+      >
+        <Lottie options={defaultOptions} height={400} width={900} />
+      </Box>
     </Stack>
   )
 
@@ -96,3 +103,5 @@ export default function AuthLayout({ children, image, title }: Props) {
     </Stack>
   )
 }
+
+export default AuthLayout
