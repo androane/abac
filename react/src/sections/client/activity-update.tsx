@@ -164,7 +164,6 @@ const UpdateClientActivity: React.FC<Props> = ({
               label="Domeniu"
               disabled={disabled}
               variant={disabled ? 'filled' : 'outlined'}
-              InputLabelProps={{ shrink: true }}
             >
               <MenuItem value="" sx={{ color: 'text.secondary' }}>
                 Alege
@@ -177,16 +176,10 @@ const UpdateClientActivity: React.FC<Props> = ({
             </RHFSelect>
             {canSeeCosts && (
               <>
-                <RHFTextField
-                  name="unitCost"
-                  label="Cost"
-                  type="number"
-                  InputLabelProps={{ shrink: true }}
-                />
+                <RHFTextField name="unitCost" label="Cost" type="number" />
                 <RHFSelect
                   name="unitCostCurrency"
                   label="Moneda"
-                  InputLabelProps={{ shrink: true }}
                   variant={disabled ? 'filled' : 'outlined'}
                   disabled={disabled ? !activity?.isCustom : false}
                 >
@@ -199,7 +192,6 @@ const UpdateClientActivity: React.FC<Props> = ({
               </>
             )}
             <RHFSelect
-              InputLabelProps={{ shrink: true }}
               name="unitCostType"
               label="Tip Cost"
               variant={disabled ? 'filled' : 'outlined'}
@@ -212,22 +204,11 @@ const UpdateClientActivity: React.FC<Props> = ({
               ))}
             </RHFSelect>
             {form.watch('unitCostType') === UnitCostTypeEnum.FIXED ? (
-              <RHFTextField
-                name="quantity"
-                label="Cantitate"
-                type="number"
-                InputLabelProps={{ shrink: true }}
-              />
+              <RHFTextField name="quantity" label="Cantitate" type="number" />
             ) : (
               <div />
             )}
-            <RHFTextField
-              multiline
-              rows={5}
-              name="description"
-              label="Descriere"
-              InputLabelProps={{ shrink: true }}
-            />
+            <RHFTextField multiline rows={5} name="description" label="Descriere" />
           </Box>
           <DialogActions
             label={activity ? 'Salvează' : 'Adaugă Activitate'}

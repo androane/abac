@@ -55,6 +55,7 @@ export function RHFSelect({
           }}
           error={!!error}
           helperText={error ? error?.message : helperText}
+          InputLabelProps={{ shrink: true }}
           {...other}
         >
           {children}

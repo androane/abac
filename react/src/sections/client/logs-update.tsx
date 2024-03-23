@@ -3,13 +3,13 @@ import Button from '@mui/material/Button'
 import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
-import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import FormProvider from 'components/hook-form'
 import { format } from 'date-fns'
 import { useSnackbar } from 'components/snackbar'
+
 import {
   useUpdateClientActivityLogsMutation,
   useClientActivityLogsQuery,
@@ -30,6 +30,7 @@ import Iconify from 'components/iconify'
 import { RHFTextField } from 'components/hook-form'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 import DialogActions from 'components/dialog-actions'
+import { Dialog } from '@mui/material'
 
 const DEFAULT_LOG = {
   uuid: undefined,
@@ -61,13 +62,8 @@ const LogUpdate: React.FC<{ date: Date }> = ({ date }) => {
               type="number"
               name={`logs[${index}].minutesAllocated`}
               label="Minute Alocate"
-              InputLabelProps={{ shrink: true }}
             />
-            <RHFTextField
-              name={`logs[${index}].description`}
-              label="Descriere"
-              InputLabelProps={{ shrink: true }}
-            />
+            <RHFTextField name={`logs[${index}].description`} label="Descriere" />
             <Controller
               name={`logs[${index}].date`}
               control={control}
@@ -102,7 +98,6 @@ const LogUpdate: React.FC<{ date: Date }> = ({ date }) => {
       })}
 
       <Divider sx={{ my: 3, borderStyle: 'dashed' }} />
-
       <Button
         size="small"
         color="primary"
@@ -121,16 +116,16 @@ type Props = {
   activityName: string
   uuid: string
   logs: ClientActivityLogType[] | ClientSolutionLogType[]
-  onClose: () => void
   isSolution?: boolean
+  onClose: () => void
 }
 
 const UpdateLogs: React.FC<Props> = ({
   date,
   activityName,
   uuid,
-  logs: initialLogs,
   onClose,
+  logs: initialLogs,
   isSolution = false,
 }) => {
   const [updateClientActivityLogs, { loading: loading1 }] = useUpdateClientActivityLogsMutation()
@@ -202,24 +197,14 @@ const UpdateLogs: React.FC<Props> = ({
   })
 
   return (
-    <Dialog
-      fullWidth
-      open
-      maxWidth={false}
-      onClose={onClose}
-      PaperProps={{
-        sx: { maxWidth: 720 },
-      }}
-    >
-      <FormProvider methods={form} onSubmit={onSubmit}>
-        <DialogTitle>{activityName}</DialogTitle>
-        <DialogContent>
-          <br />
-          <LogUpdate date={date} />
-          <DialogActions onClose={onClose} loading={loading1 || loading2} />
-        </DialogContent>
-      </FormProvider>
-    </Dialog>
+    <FormProvider methods={form} onSubmit={onSubmit}>
+      <DialogTitle>{activityName}</DialogTitle>
+      <DialogContent>
+        <br />
+        <LogUpdate date={date} />
+        <DialogActions onClose={onClose} loading={loading1 || loading2} />
+      </DialogContent>
+    </FormProvider>
   )
 }
 
@@ -246,19 +231,29 @@ export const UpdateClientActivityLogs: React.FC<UpdateClientActivityLogsProps> =
   })
 
   return (
-    <ResponseHandler {...result}>
-      {({ client }) => {
-        return (
-          <UpdateLogs
-            date={date}
-            activityName={activityName}
-            uuid={clientActivityUuid}
-            logs={client.activity.logs}
-            onClose={onClose}
-          />
-        )
+    <Dialog
+      fullWidth
+      open
+      maxWidth={false}
+      onClose={onClose}
+      PaperProps={{
+        sx: { maxWidth: 720 },
       }}
-    </ResponseHandler>
+    >
+      <ResponseHandler {...result}>
+        {({ client }) => {
+          return (
+            <UpdateLogs
+              date={date}
+              activityName={activityName}
+              uuid={clientActivityUuid}
+              logs={client.activity.logs}
+              onClose={onClose}
+            />
+          )
+        }}
+      </ResponseHandler>
+    </Dialog>
   )
 }
 
@@ -285,19 +280,29 @@ export const UpdateClientSolutionLogs: React.FC<UpdateClientSolutionLogsProps> =
   })
 
   return (
-    <ResponseHandler {...result}>
-      {({ client }) => {
-        return (
-          <UpdateLogs
-            date={date}
-            activityName={activityName}
-            uuid={clientSolutionUuid}
-            logs={client.solution.logs}
-            onClose={onClose}
-            isSolution
-          />
-        )
+    <Dialog
+      fullWidth
+      open
+      maxWidth={false}
+      onClose={onClose}
+      PaperProps={{
+        sx: { maxWidth: 720 },
       }}
-    </ResponseHandler>
+    >
+      <ResponseHandler {...result}>
+        {({ client }) => {
+          return (
+            <UpdateLogs
+              date={date}
+              activityName={activityName}
+              uuid={clientSolutionUuid}
+              logs={client.solution.logs}
+              onClose={onClose}
+              isSolution
+            />
+          )
+        }}
+      </ResponseHandler>
+    </Dialog>
   )
 }

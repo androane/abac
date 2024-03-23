@@ -125,7 +125,9 @@ const UpdateSolution: React.FC<Props> = ({ organizationUuid, solution, onClose }
               <div />
             ) : (
               <RHFSelect name="categoryCode" label="Domeniu">
-                <MenuItem value="">Alege</MenuItem>
+                <MenuItem value="" sx={{ color: 'text.secondary' }}>
+                  Alege
+                </MenuItem>
                 {CATEGORY_CODES.map(catetgoryCode => (
                   <MenuItem key={catetgoryCode} value={catetgoryCode}>
                     {getCategoryLabelFromCode(catetgoryCode)}

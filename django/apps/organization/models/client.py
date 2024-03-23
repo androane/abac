@@ -3,7 +3,7 @@ from django.db import models
 from guardian.models import UserObjectPermissionBase
 
 from core.models import BaseModel
-from organization.constants import ClientUserRoleEnum, CurrencyEnum
+from organization.constants import ClientUserRoleEnum, CurrencyEnum, SoftwareEnum
 from organization.models.activity import Activity, ActivityLog, Solution
 from organization.models.organization import Organization
 
@@ -225,3 +225,15 @@ class ClientSolutionLog(ActivityLog):
 
 class ClientUserObjectPermission(UserObjectPermissionBase):
     content_object = models.ForeignKey(Client, on_delete=models.CASCADE)
+
+
+class ClientSoftware(BaseModel):
+    client = models.ForeignKey(
+        Client, on_delete=models.CASCADE, related_name="softwares"
+    )
+    software = models.CharField(max_length=32, choices=SoftwareEnum.choices)
+    username = models.CharField(max_length=64, blank=True, null=True)
+    password = models.CharField(max_length=64, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.client.name} - {self.software}"

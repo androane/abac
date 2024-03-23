@@ -10,11 +10,11 @@ const icon = (name: string) => (
 )
 
 const useNavData = () => {
-  const { hasPermission } = useAuthContext()
+  const { hasPermission, user } = useAuthContext()
 
   const data = [
     {
-      subheader: 'Gestiune',
+      subheader: user?.organization.name || '',
       items: [
         {
           title: 'Clienți',

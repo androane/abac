@@ -6,10 +6,19 @@ from graphene_django import DjangoObjectType
 from graphene_file_upload.scalars import Upload
 
 from api.permission_decorators import field_permission_required, permission_required
-from organization.graphene.types.enums import ClientUserRoleEnumType, CurrencyEnumType
+from organization.graphene.types.enums import (
+    ClientUserRoleEnumType,
+    CurrencyEnumType,
+    SoftwareEnumType,
+)
 from organization.graphene.types.invoice_types import InvoiceType
 from organization.models import Client, ClientActivity, ClientActivityLog, ClientSolution
-from organization.models.client import ClientFile, ClientSolutionLog, ClientUserProfile
+from organization.models.client import (
+    ClientFile,
+    ClientSoftware,
+    ClientSolutionLog,
+    ClientUserProfile,
+)
 from organization.services.client_invoice_service import get_client_invoice
 from organization.services.client_users_service import get_client_users
 from user.graphene.types import UserType
@@ -102,6 +111,19 @@ class ClientFileType(DjangoObjectType):
         return os.path.basename(self.file.name)
 
 
+class ClientSoftwareType(DjangoObjectType):
+    class Meta:
+        model = ClientSoftware
+        only_fields = (
+            "uuid",
+            "software",
+            "username",
+            "password",
+        )
+
+    software = SoftwareEnumType(required=True)
+
+
 class ClientType(DjangoObjectType):
     class Meta:
         model = Client
@@ -136,6 +158,7 @@ class ClientType(DjangoObjectType):
         month=graphene.Int(required=True),
         year=graphene.Int(required=True),
     )
+    softwares = graphene.List(graphene.NonNull(ClientSoftwareType), required=True)
 
     def resolve_files(self, info, **kwargs):
         return self.files.order_by("-created").all()
@@ -163,6 +186,9 @@ class ClientType(DjangoObjectType):
     @permission_required(UserPermissionsEnum.HAS_CLIENT_INVOICE_ACCESS.value)
     def resolve_invoice(self, info, **kwargs):
         return get_client_invoice(self, **kwargs)
+
+    def resolve_softwares(self, info, **kwargs):
+        return self.softwares.all()
 
 
 class ClientUserProfileType(DjangoObjectType):
@@ -212,6 +238,12 @@ class ClientSolutionInput(graphene.InputObjectType):
     quantity = graphene.Int()
 
 
+class ClientSoftwareInput(graphene.InputObjectType):
+    software = SoftwareEnumType(required=True)
+    password = graphene.String()
+    username = graphene.String()
+
+
 class ClientInput(graphene.InputObjectType):
     uuid = graphene.String()
     name = graphene.String(required=True)
@@ -221,6 +253,7 @@ class ClientInput(graphene.InputObjectType):
     spv_password = graphene.String()
     cui = graphene.String()
     client_solutions = graphene.List(ClientSolutionInput, required=True)
+    softwares = graphene.List(graphene.NonNull(ClientSoftwareInput))
 
 
 class ClientFileInput(graphene.InputObjectType):

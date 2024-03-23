@@ -109,9 +109,24 @@ export type ClientInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   programManagerUuid?: InputMaybe<Scalars['String']['input']>;
+  softwares?: InputMaybe<Array<ClientSoftwareInput>>;
   spvPassword?: InputMaybe<Scalars['String']['input']>;
   spvUsername?: InputMaybe<Scalars['String']['input']>;
   uuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ClientSoftwareInput = {
+  password?: InputMaybe<Scalars['String']['input']>;
+  software: SoftwareEnum;
+  username?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ClientSoftwareType = {
+  __typename?: 'ClientSoftwareType';
+  password?: Maybe<Scalars['String']['output']>;
+  software: SoftwareEnum;
+  username?: Maybe<Scalars['String']['output']>;
+  uuid: Scalars['String']['output'];
 };
 
 export type ClientSolutionInput = {
@@ -155,6 +170,7 @@ export type ClientType = {
   invoice: InvoiceType;
   name: Scalars['String']['output'];
   programManager?: Maybe<UserType>;
+  softwares: Array<ClientSoftwareType>;
   solution: ClientSolutionType;
   solutions: Array<ClientSolutionType>;
   /** SPV Password */
@@ -523,6 +539,12 @@ export type QueryClientArgs = {
   uuid: Scalars['String']['input'];
 };
 
+/** An enumeration. */
+export enum SoftwareEnum {
+  ONE_C = 'ONE_C',
+  SAGA = 'SAGA'
+}
+
 export type SolutionInput = {
   activityUuids: Array<Scalars['String']['input']>;
   categoryCode: Scalars['String']['input'];
@@ -645,7 +667,7 @@ export type ActivityFragment = { __typename?: 'ActivityType', uuid: string, name
 
 export type AuthUserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: string, permissions: Array<UserPermissionsEnum>, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string } };
 
-export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> };
+export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }>, softwares: Array<{ __typename?: 'ClientSoftwareType', uuid: string, software: SoftwareEnum, username?: string | null, password?: string | null }> };
 
 export type ClientActivityFragment = { __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, quantity: number };
 
@@ -653,7 +675,7 @@ export type ClientActivityLogFragment = { __typename?: 'ClientActivityLogType', 
 
 export type ClientCoreFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
 
-export type ClientSolutionFragment = { __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, quantity: number, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> } };
+export type ClientSolutionFragment = { __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, quantity: number, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } };
 
 export type ClientSolutionLogFragment = { __typename?: 'ClientSolutionLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null };
 
@@ -739,7 +761,7 @@ export type UpdateClientMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { __typename?: 'UpdateClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> } | null } | null };
+export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { __typename?: 'UpdateClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }>, softwares: Array<{ __typename?: 'ClientSoftwareType', uuid: string, software: SoftwareEnum, username?: string | null, password?: string | null }> } | null } | null };
 
 export type UpdateClientActivityMutationVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -846,7 +868,7 @@ export type ClientActivitiesQueryVariables = Exact<{
 }>;
 
 
-export type ClientActivitiesQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, activities: Array<{ __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, quantity: number, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }>, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, quantity: number, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> } }> } };
+export type ClientActivitiesQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, activities: Array<{ __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, quantity: number, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }>, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, quantity: number, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> } };
 
 export type ClientActivityLogsQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -861,7 +883,7 @@ export type ClientClientQueryVariables = Exact<{
 }>;
 
 
-export type ClientClientQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> } };
+export type ClientClientQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }>, softwares: Array<{ __typename?: 'ClientSoftwareType', uuid: string, software: SoftwareEnum, username?: string | null, password?: string | null }> } };
 
 export type ClientFilesQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -977,6 +999,12 @@ export const ClientFragmentDoc = gql`
     unitCost
     unitCostCurrency
   }
+  softwares {
+    uuid
+    software
+    username
+    password
+  }
 }
     `;
 export const ClientActivityFragmentDoc = gql`
@@ -1017,10 +1045,6 @@ export const ClientSolutionFragmentDoc = gql`
     category {
       uuid
       code
-      name
-    }
-    activities {
-      uuid
       name
     }
   }

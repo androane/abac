@@ -19,6 +19,7 @@ import { ROLE_LABELS } from 'sections/client/constants'
 import getErrorMessage from 'utils/api-codes'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 import DialogActions from 'components/dialog-actions'
+import { MenuItem } from '@mui/material'
 
 type Props = {
   clientUuid: string
@@ -138,11 +139,11 @@ const UpdateUser: React.FC<Props> = ({ clientUuid, user, onClose, canSeeInformat
             {canSeeInformation && (
               <>
                 <RHFSelect native name="role" label="Rol" InputLabelProps={{ shrink: true }}>
-                  <option value="" />
+                  <MenuItem value="" />
                   {Object.keys(ClientUserRoleEnum).map(role => (
-                    <option key={role} value={role}>
+                    <MenuItem key={role} value={role}>
                       {ROLE_LABELS[role as ClientUserRoleEnum]}
-                    </option>
+                    </MenuItem>
                   ))}
                 </RHFSelect>
                 {form.watch('role') === ClientUserRoleEnum.ASSOCIATE ? (

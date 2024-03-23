@@ -1,5 +1,15 @@
 import Box, { BoxProps } from '@mui/material/Box'
-import LinearProgress from '@mui/material/LinearProgress'
+import Lottie from 'react-lottie'
+import loading from './dots.json'
+
+const defaultOptions = {
+  loop: true,
+  autoplay: true,
+  animationData: loading,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice',
+  },
+}
 
 const LoadingScreen: React.FC<BoxProps> = ({ sx, ...other }) => {
   return (
@@ -16,7 +26,7 @@ const LoadingScreen: React.FC<BoxProps> = ({ sx, ...other }) => {
       }}
       {...other}
     >
-      <LinearProgress color="inherit" sx={{ width: 1, maxWidth: 360 }} />
+      <Lottie options={defaultOptions} height={400} width={400} />
     </Box>
   )
 }

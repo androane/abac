@@ -1,6 +1,6 @@
 Permissions data loader
 
-sa nu pot pune pret la activitati daca nu am permisiunea
 programe folosite, date logare
-un tooltip sa se vada ce activitati sunt inclue in pachetul de baza
 squash migrations
+permisiunile ma delogheaza
+un loader frumos

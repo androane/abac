@@ -25,3 +25,8 @@ class ClientUserRoleEnum(BaseEnum):
 class UnitCostTypeEnum(BaseEnum):
     FIXED = enum.auto()
     HOURLY = enum.auto()
+
+
+class SoftwareEnum(BaseEnum):
+    ONE_C = enum.auto()
+    SAGA = enum.auto()

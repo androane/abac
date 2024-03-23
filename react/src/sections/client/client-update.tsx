@@ -10,7 +10,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Grid from '@mui/material/Unstable_Grid2'
-import { Divider, MenuItem } from '@mui/material'
+import { Divider, MenuItem, Typography } from '@mui/material'
 
 import { useRouter } from 'routes/hooks'
 import { paths } from 'routes/paths'
@@ -26,6 +26,7 @@ import {
   useOrganizationUsersQuery,
   UserPermissionsEnum,
   ClientFragmentDoc,
+  SoftwareEnum,
 } from 'generated/graphql'
 import { useAuthContext } from 'auth/hooks'
 import getErrorMessage from 'utils/api-codes'
@@ -74,6 +75,13 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
           unitCostCurrency: clientSolution?.unitCostCurrency || CurrencyEnum.RON,
         }
       }),
+      softwares:
+        client?.softwares.map(s => ({
+          uuid: s.uuid,
+          software: s.software,
+          username: s.username,
+          password: s.password,
+        })) || [],
     }),
     [client, user],
   )
@@ -98,6 +106,14 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
             }),
           )
           .required(REQUIRED_FIELD_ERROR),
+        softwares: Yup.array().of(
+          Yup.object().shape({
+            uuid: Yup.string(),
+            software: Yup.mixed<SoftwareEnum>().oneOf(Object.values(SoftwareEnum)).required(),
+            username: Yup.string().nullable(),
+            password: Yup.string().nullable(),
+          }),
+        ),
       }),
     ),
     defaultValues,
@@ -116,6 +132,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
             spvPassword: data.spvPassword,
             cui: data.cui,
             clientSolutions: data.clientSolutions,
+            softwares: data.softwares,
           },
         },
         update(cache, { data: cacheData }) {
@@ -160,17 +177,14 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField
-                disabled={!canUpdate}
-                name="name"
-                label="Nume firmă"
-                InputLabelProps={{ shrink: true }}
-              />
+              <RHFTextField disabled={!canUpdate} name="name" label="Nume firmă" />
               <ResponseHandler {...resultUsers}>
                 {({ organization }) => {
                   return (
                     <RHFSelect disabled={!canUpdate} name="programManagerUuid" label="Responsabil">
-                      <MenuItem value="">Alege</MenuItem>
+                      <MenuItem value="" sx={{ color: 'text.secondary' }}>
+                        Alege
+                      </MenuItem>
                       {organization.users.map(u => (
                         <MenuItem key={u.uuid} value={u.uuid}>
                           {u.name}
@@ -183,13 +197,26 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
               <RHFTextField
                 disabled={!canUpdate}
                 name="cui"
-                label="CUI"
-                InputLabelProps={{ shrink: true }}
+                label="Cod Unic de Identificare (CUI)"
               />
               <div />
             </Box>
 
+            <Box sx={{ pt: 3 }}>
+              <RHFTextField
+                disabled={!canUpdate}
+                name="description"
+                label="Descriere (opțional)"
+                multiline
+                rows={5}
+              />
+            </Box>
+
             <Divider sx={{ borderStyle: 'dashed', mt: 6, mb: 4 }} />
+
+            <Typography variant="h5" sx={{ mb: 2 }}>
+              Pachete de servicii
+            </Typography>
 
             <Box
               sx={{ pt: 3 }}
@@ -210,11 +237,12 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
                           <React.Fragment key={categoryCode}>
                             <RHFSelect
                               disabled={!canUpdate}
-                              InputLabelProps={{ shrink: true }}
                               name={`clientSolutions[${index}].solutionUuid`}
                               label={`Pachet ${getCategoryLabelFromCode(categoryCode)}`}
                             >
-                              <MenuItem value="">Alege</MenuItem>
+                              <MenuItem value="" sx={{ color: 'text.secondary' }}>
+                                Alege
+                              </MenuItem>
                               {organization.solutions
                                 .filter(s => s.category.code === categoryCode)
                                 .map(s => (
@@ -230,13 +258,11 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
                                   name={`clientSolutions[${index}].unitCost`}
                                   label="Cost"
                                   type="number"
-                                  InputLabelProps={{ shrink: true }}
                                 />
                                 <RHFSelect
                                   disabled={!canUpdate}
                                   name={`clientSolutions[${index}].unitCostCurrency`}
                                   label="Moneda"
-                                  InputLabelProps={{ shrink: true }}
                                 >
                                   {Object.keys(CurrencyEnum).map(currency => (
                                     <MenuItem key={currency} value={currency}>
@@ -260,7 +286,13 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
               </ResponseHandler>
             </Box>
             <Divider sx={{ borderStyle: 'dashed', mt: 6, mb: 6 }} />
+
+            <Typography variant="h5" sx={{ mb: 2 }}>
+              Software și Conturi
+            </Typography>
+
             <Box
+              sx={{ pt: 3 }}
               rowGap={3}
               columnGap={2}
               display="grid"
@@ -269,29 +301,11 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField
-                disabled={!canUpdate}
-                name="spvUsername"
-                label="Utilizator SPV"
-                InputLabelProps={{ shrink: true }}
-              />
-              <RHFTextField
-                disabled={!canUpdate}
-                name="spvPassword"
-                label="Parolă SPV"
-                InputLabelProps={{ shrink: true }}
-              />
+              <RHFTextField disabled={!canUpdate} name="spvUsername" label="Utilizator SPV" />
+              <RHFTextField disabled={!canUpdate} name="spvPassword" label="Parolă SPV" />
             </Box>
-            <Box sx={{ pt: 3 }}>
-              <RHFTextField
-                disabled={!canUpdate}
-                name="description"
-                label="Descriere"
-                multiline
-                rows={5}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Box>
+
+            <Divider sx={{ borderStyle: 'dashed', mt: 6, mb: 6 }} />
 
             {canUpdate && (
               <Stack alignItems="flex-end" sx={{ mt: 3 }}>
