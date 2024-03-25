@@ -47,6 +47,9 @@ class SolutionType(DjangoObjectType):
             "activities",
         )
 
+    def resolve_activities(self, info, **kwargs):
+        return info.context.activities_from_solution.load(self.id)
+
 
 # INPUTS
 

@@ -239,6 +239,7 @@ class ClientSolutionInput(graphene.InputObjectType):
 
 
 class ClientSoftwareInput(graphene.InputObjectType):
+    uuid = graphene.String()
     software = SoftwareEnumType(required=True)
     password = graphene.String()
     username = graphene.String()

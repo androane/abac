@@ -119,6 +119,7 @@ export type ClientSoftwareInput = {
   password?: InputMaybe<Scalars['String']['input']>;
   software: SoftwareEnum;
   username?: InputMaybe<Scalars['String']['input']>;
+  uuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ClientSoftwareType = {

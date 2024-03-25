@@ -30,7 +30,7 @@ const TABS = [
   },
   {
     value: TABS_VALUES.CLIENTS,
-    label: 'Permisiuni Clienți',
+    label: 'Acces Clienți',
   },
 ]
 
@@ -130,7 +130,7 @@ const ClientPermissionsTab: React.FC<ClientPermissionsTabProps> = ({
               checked={user.permissions.includes(UserPermissionsEnum.HAS_ALL_CLIENTS_ACCESS)}
               onChange={() => onTogglePermission(UserPermissionsEnum.HAS_ALL_CLIENTS_ACCESS)}
               disabled={loading}
-              color="primary"
+              color="success"
             />
           }
         />
@@ -142,7 +142,7 @@ const ClientPermissionsTab: React.FC<ClientPermissionsTabProps> = ({
               checked={user.permissions.includes(UserPermissionsEnum.HAS_OWN_CLIENTS_ACCESS)}
               onChange={() => onTogglePermission(UserPermissionsEnum.HAS_OWN_CLIENTS_ACCESS)}
               disabled={loading}
-              color="primary"
+              color="success"
             />
           }
         />
@@ -229,7 +229,7 @@ const GeneralPermissionsTab: React.FC<GeneralPermissionsTabProps> = ({
           checked={user.permissions.includes(perm)}
           onChange={() => onTogglePermission(perm)}
           disabled={loading}
-          color="primary"
+          color="success"
         />
       }
     />
@@ -296,7 +296,7 @@ const UpdateUserPermissions: React.FC<Props> = ({ user, onClose }) => {
         <br />
         <Tabs
           variant="fullWidth"
-          textColor="secondary"
+          textColor="primary"
           indicatorColor="primary"
           value={currentTab}
           onChange={handleChangeTab}
