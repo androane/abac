@@ -354,7 +354,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
     const softwares = data.softwares?.filter(s => Boolean(s.software)) as ClientInput['softwares']
 
     try {
-      const response = await updateClient({
+      await updateClient({
         variables: {
           clientInput: {
             uuid: client?.uuid,
