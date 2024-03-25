@@ -24,7 +24,6 @@ import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
 
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import Divider from '@mui/material/Divider'
 
 import Iconify from 'components/iconify'
 import { RHFTextField } from 'components/hook-form'
@@ -97,9 +96,7 @@ const LogUpdate: React.FC<{ date: Date }> = ({ date }) => {
         )
       })}
 
-      <Divider sx={{ my: 3, borderStyle: 'dashed' }} />
       <Button
-        size="small"
         color="primary"
         startIcon={<Iconify icon="mingcute:add-line" />}
         onClick={() => append(DEFAULT_LOG)}

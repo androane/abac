@@ -1,14 +1,23 @@
 import { m } from 'framer-motion'
+import Lottie from 'react-lottie'
 
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 
 import { RouterLink } from 'routes/components'
 
-import { PageNotFoundIllustration } from 'assets/illustrations'
-
 import { MotionContainer, varBounce } from 'components/animate'
 import { LANDING_PAGE } from 'routes/paths'
+import notfound from './notfound.json'
+
+const defaultOptions = {
+  loop: true,
+  autoplay: true,
+  animationData: notfound,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice',
+  },
+}
 
 const NotFoundView = () => {
   return (
@@ -26,15 +35,16 @@ const NotFoundView = () => {
       </m.div>
 
       <m.div variants={varBounce().in}>
-        <PageNotFoundIllustration
-          sx={{
-            height: 260,
-            my: { xs: 5, sm: 10 },
-          }}
-        />
+        <Lottie options={defaultOptions} height={400} width={400} />
       </m.div>
 
-      <Button component={RouterLink} href={LANDING_PAGE} size="large" variant="contained">
+      <Button
+        sx={{ mt: 4 }}
+        component={RouterLink}
+        href={LANDING_PAGE}
+        size="large"
+        variant="contained"
+      >
         Pagina Principală
       </Button>
     </MotionContainer>

@@ -1,6 +1,6 @@
 import Box, { BoxProps } from '@mui/material/Box'
 import Lottie from 'react-lottie'
-import loading from './dots.json'
+import loading from './loading.json'
 
 const defaultOptions = {
   loop: true,
@@ -26,7 +26,7 @@ const LoadingScreen: React.FC<BoxProps> = ({ sx, ...other }) => {
       }}
       {...other}
     >
-      <Lottie options={defaultOptions} height={400} width={400} />
+      <Lottie options={defaultOptions} height={200} width={200} />
     </Box>
   )
 }

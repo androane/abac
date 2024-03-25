@@ -10,6 +10,7 @@ from collections import defaultdict
 from graphql_sync_dataloaders import SyncDataLoader
 
 from organization.models import Activity, ClientActivityLog
+from organization.models.activity import Solution
 from organization.models.client import ClientSolutionLog
 
 
@@ -52,6 +53,31 @@ def children_loader_builder(model, field, select_related_fields=None):
     return _builder
 
 
+def many_to_many_loader_builder(
+    through_model, from_model, to_model, select_related_fields=None
+):
+    """
+    Resolves M2M model relationships. Pass in the through model, and the direction of the relationship to resolve.
+
+    Example: Resolve all departments for a service.
+    """
+
+    def _builder():
+        def batch_load_fn(keys):
+            d = defaultdict(list)
+            filters = {from_model + "__in": keys}
+            query = through_model.objects.filter(**filters).select_related(to_model)
+            if select_related_fields:
+                query = query.select_related(*select_related_fields)
+            for obj in query.iterator():
+                d[getattr(obj, from_model + "_id")].append(getattr(obj, to_model))
+            return [d.get(key, []) for key in keys]
+
+        return SyncDataLoader(batch_load_fn)
+
+    return _builder
+
+
 LOADERS = {
     # Children Key Loaders
     "logs_from_client_activity": children_loader_builder(
@@ -62,4 +88,11 @@ LOADERS = {
     ),
     # Foreign Key Loaders
     "activity_from_client_activity": foreign_key_loader_builder(Activity),
+    # Many to Many Loaders
+    # IMPORTANT: the order of the last 2 parameters is very important (i.e. from_model and to_model)
+    "activities_from_solution": many_to_many_loader_builder(
+        Solution.activities.through,
+        "solution",
+        "activity",
+    ),
 }

@@ -28,6 +28,7 @@ import {
   UserPermissionsEnum,
   ClientFragmentDoc,
   SoftwareEnum,
+  ClientInput,
 } from 'generated/graphql'
 import { useAuthContext } from 'auth/hooks'
 import getErrorMessage from 'utils/api-codes'
@@ -170,9 +171,14 @@ const UpdateClientGeneralInformation: React.FC<{ canUpdate: boolean }> = ({ canU
   )
 }
 
+const SoftwareEnumToLabel = {
+  [SoftwareEnum.ONE_C]: '1C',
+  [SoftwareEnum.SAGA]: 'SAGA',
+}
+
 const DEFAULT_SOFTWARE = {
   uuid: undefined,
-  soft: null,
+  software: undefined,
   username: '',
   password: '',
 }
@@ -231,7 +237,7 @@ const UpdateClientSoftware: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) =
                 </MenuItem>
                 {Object.keys(SoftwareEnum).map(s => (
                   <MenuItem key={s} value={s}>
-                    {s}
+                    {SoftwareEnumToLabel[s as SoftwareEnum]}
                   </MenuItem>
                 ))}
               </RHFSelect>
@@ -250,11 +256,10 @@ const UpdateClientSoftware: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) =
         })}
 
         <Button
-          size="small"
           color="primary"
           startIcon={<Iconify icon="mingcute:add-line" />}
           onClick={() => append(DEFAULT_SOFTWARE)}
-          sx={{ flexShrink: 0 }}
+          sx={{ flexShrink: 0, mt: 2 }}
         >
           Adaugă
         </Button>
@@ -282,8 +287,14 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
 
   const { enqueueSnackbar } = useSnackbar()
 
-  const defaultValues = useMemo(
-    () => ({
+  const defaultValues = useMemo(() => {
+    const softwares = client?.softwares.map(s => ({
+      uuid: s.uuid,
+      software: s.software,
+      username: s.username,
+      password: s.password,
+    }))
+    return {
       name: client?.name || '',
       description: client?.description || '',
       imageUrl: null,
@@ -302,16 +313,9 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
           unitCostCurrency: clientSolution?.unitCostCurrency || CurrencyEnum.RON,
         }
       }),
-      softwares:
-        client?.softwares.map(s => ({
-          uuid: s.uuid,
-          software: s.software,
-          username: s.username,
-          password: s.password,
-        })) || [],
-    }),
-    [client, user],
-  )
+      softwares: softwares?.length ? softwares : [DEFAULT_SOFTWARE],
+    }
+  }, [client, user])
 
   const form = useForm({
     resolver: yupResolver(
@@ -336,7 +340,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
         softwares: Yup.array().of(
           Yup.object().shape({
             uuid: Yup.string(),
-            software: Yup.mixed<SoftwareEnum>().oneOf(Object.values(SoftwareEnum)).required(),
+            software: Yup.mixed<SoftwareEnum>().oneOf(Object.values(SoftwareEnum)),
             username: Yup.string().nullable(),
             password: Yup.string().nullable(),
           }),
@@ -347,8 +351,10 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
   })
 
   const onSubmit = form.handleSubmit(async data => {
+    const softwares = data.softwares?.filter(s => Boolean(s.software)) as ClientInput['softwares']
+
     try {
-      await updateClient({
+      const response = await updateClient({
         variables: {
           clientInput: {
             uuid: client?.uuid,
@@ -359,7 +365,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
             spvPassword: data.spvPassword,
             cui: data.cui,
             clientSolutions: data.clientSolutions,
-            softwares: data.softwares,
+            softwares,
           },
         },
         update(cache, { data: cacheData }) {
@@ -381,8 +387,13 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
         },
       })
       form.reset()
-      enqueueSnackbar(client ? 'Client actualizat!' : 'Clientul a fost creat!')
+      enqueueSnackbar(client ? 'Clientul a fost actualizat!' : 'Clientul a fost creat!')
       router.push(paths.app.client.list)
+      // if (!client) {
+      //   router.push(paths.app.client.list)
+      // } else if (response.data?.updateClient?.client?.uuid) {
+      //   router.push(paths.app.client.edit(response.data.updateClient.client.uuid))
+      // }
     } catch (error) {
       enqueueSnackbar(getErrorMessage((error as Error).message), {
         variant: 'error',

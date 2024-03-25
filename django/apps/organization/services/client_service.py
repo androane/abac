@@ -6,7 +6,7 @@ from django.db.models import Q
 
 from organization.models import Client, ClientSolution, Organization
 from organization.models.activity import Solution
-from organization.models.client import ClientUserObjectPermission
+from organization.models.client import ClientSoftware, ClientUserObjectPermission
 from user.models import User
 from user.permissions import UserPermissionsEnum
 
@@ -69,6 +69,28 @@ def _set_client_solutions(client: Client, client_input: "ClientInput") -> None:
             )
 
 
+def _set_client_softwares(client: Client, client_input: "ClientInput") -> None:
+    input_software_uuids = set([_.uuid for _ in client_input.softwares])
+    client.softwares.exclude(uuid__in=input_software_uuids).delete()
+
+    for software_input in client_input.softwares:
+        if software_input.uuid:
+            ClientSoftware.objects.filter(
+                uuid=software_input.uuid,
+            ).update(
+                software=software_input.software,
+                username=software_input.username,
+                password=software_input.password,
+            )
+        else:
+            ClientSoftware.objects.create(
+                client=client,
+                software=software_input.software,
+                username=software_input.username,
+                password=software_input.password,
+            )
+
+
 def update_or_create_client(org: Organization, client_input: "ClientInput") -> Client:
     program_manager = None
     if client_input.program_manager_uuid:
@@ -97,6 +119,7 @@ def update_or_create_client(org: Organization, client_input: "ClientInput") -> C
     client.save()
 
     _set_client_solutions(client, client_input)
+    _set_client_softwares(client, client_input)
 
     return client
 
