@@ -109,7 +109,7 @@ const FileDetails: React.FC<Props> = ({ onDeleteFile, clientUuid, file, ...other
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Șterge"
-        content="Ești sigur că vrei să ștergi acest fisier?"
+        content="Ești sigur că vrei să ștergi acest document?"
         action={
           <Button variant="contained" color="error" onClick={onDeleteFile}>
             Șterge

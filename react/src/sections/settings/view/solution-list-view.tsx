@@ -17,7 +17,6 @@ import {
   TableEmptyRows,
   TableHeadCustom,
   TableNoData,
-  TablePaginationCustom,
   emptyRows,
   getComparator,
   useTable,
@@ -195,16 +194,6 @@ const SolutionList: React.FC<Props> = ({ organizationUuid, solutions }) => {
             </Table>
           </Scrollbar>
         </TableContainer>
-
-        <TablePaginationCustom
-          count={dataFiltered.length}
-          page={table.page}
-          rowsPerPage={table.rowsPerPage}
-          onPageChange={table.onChangePage}
-          onRowsPerPageChange={table.onChangeRowsPerPage}
-          dense={table.dense}
-          onChangeDense={table.onChangeDense}
-        />
       </Card>
     </>
   )

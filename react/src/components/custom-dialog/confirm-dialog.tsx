@@ -3,17 +3,18 @@ import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
+import Iconify from 'components/iconify'
 
 import { ConfirmDialogProps } from './types'
 
-export default function ConfirmDialog({
+const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   title,
   content,
   action,
   open,
   onClose,
   ...other
-}: ConfirmDialogProps) {
+}) => {
   return (
     <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose} {...other}>
       <DialogTitle sx={{ pb: 2 }}>{title}</DialogTitle>
@@ -21,12 +22,17 @@ export default function ConfirmDialog({
       {content && <DialogContent sx={{ typography: 'body2' }}> {content} </DialogContent>}
 
       <DialogActions>
-        {action}
-
-        <Button variant="outlined" color="inherit" onClick={onClose}>
+        <Button
+          startIcon={<Iconify icon="ic:outline-arrow-back" />}
+          variant="outlined"
+          onClick={onClose}
+        >
           Înapoi
         </Button>
+        {action}
       </DialogActions>
     </Dialog>
   )
 }
+
+export default ConfirmDialog

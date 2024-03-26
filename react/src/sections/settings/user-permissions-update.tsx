@@ -17,6 +17,7 @@ import getErrorMessage from 'utils/api-codes'
 import ResponseHandler from 'components/response-handler'
 import { Box, Checkbox, Divider, FormControlLabel, Switch, Tab, Tabs } from '@mui/material'
 import React, { useCallback, useState } from 'react'
+import Iconify from 'components/iconify'
 
 enum TABS_VALUES {
   GENERAL = 'g',
@@ -324,8 +325,12 @@ const UpdateUserPermissions: React.FC<Props> = ({ user, onClose }) => {
           />
         )}
         <DialogActions>
-          <Button color="inherit" variant="outlined" onClick={onClose}>
-            {'<'} Înapoi
+          <Button
+            startIcon={<Iconify icon="ic:outline-arrow-back" />}
+            variant="outlined"
+            onClick={onClose}
+          >
+            Înapoi
           </Button>
         </DialogActions>
       </DialogContent>

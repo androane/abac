@@ -1,4 +1,2 @@
-Permissions data loader
-
 squash migrations
 permisiunile ma delogheaza

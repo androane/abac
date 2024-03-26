@@ -354,7 +354,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
     const softwares = data.softwares?.filter(s => Boolean(s.software)) as ClientInput['softwares']
 
     try {
-      await updateClient({
+      const response = await updateClient({
         variables: {
           clientInput: {
             uuid: client?.uuid,
@@ -386,14 +386,13 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
           })
         },
       })
-      form.reset()
       enqueueSnackbar(client ? 'Clientul a fost actualizat!' : 'Clientul a fost creat!')
-      router.push(paths.app.client.list)
-      // if (!client) {
-      //   router.push(paths.app.client.list)
-      // } else if (response.data?.updateClient?.client?.uuid) {
-      //   router.push(paths.app.client.edit(response.data.updateClient.client.uuid))
-      // }
+      // router.push(paths.app.client.list)
+      if (!client) {
+        router.push(paths.app.client.list)
+      } else if (response.data?.updateClient?.client?.uuid) {
+        router.push(paths.app.client.edit(response.data.updateClient.client.uuid))
+      }
     } catch (error) {
       enqueueSnackbar(getErrorMessage((error as Error).message), {
         variant: 'error',

@@ -86,7 +86,7 @@ const CreateFiles: React.FC<Props> = ({
           onClick={handleUpload}
           color="success"
         >
-          Incarcă
+          Încarcă
         </LoadingButton>
       </DialogActions>
     </Dialog>

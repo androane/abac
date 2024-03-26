@@ -1,14 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import Button from '@mui/material/Button'
 import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
 import Dialog from '@mui/material/Dialog'
-import LoadingButton from '@mui/lab/LoadingButton'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import Box from '@mui/material/Box'
-import DialogActions from '@mui/material/DialogActions'
 
 import FormProvider, { RHFMultiSelect, RHFSelect, RHFTextField } from 'components/hook-form'
 import { useSnackbar } from 'components/snackbar'
@@ -23,6 +20,7 @@ import ResponseHandler from 'components/response-handler'
 import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
 import { MenuItem } from '@mui/material'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
+import DialogActions from 'components/dialog-actions'
 
 type Props = {
   organizationUuid: string
@@ -153,14 +151,11 @@ const UpdateSolution: React.FC<Props> = ({ organizationUuid, solution, onClose }
               }}
             </ResponseHandler>
           </Box>
-          <DialogActions>
-            <Button color="inherit" variant="outlined" onClick={onClose}>
-              {'<'} Înapoi
-            </Button>
-            <LoadingButton type="submit" variant="contained" loading={loading}>
-              {solution ? 'Salvează' : 'Adaugă Pachet'}
-            </LoadingButton>
-          </DialogActions>
+          <DialogActions
+            label={solution ? 'Salvează' : 'Adaugă Pachet'}
+            loading={loading}
+            onClose={onClose}
+          />
         </DialogContent>
       </FormProvider>
     </Dialog>
