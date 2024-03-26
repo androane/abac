@@ -28,7 +28,7 @@ ALLOWED_HOSTS = env.list(
     "APP_DOMAIN",
     cast=str,
     default=["localhost"],
-)
+) + ["dev-5nfx2.ondigitalocean.app"]
 
 ADMINS = (("Andi", "mihai.zamfir90@proton.me"),)
 
