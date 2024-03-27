@@ -29,7 +29,6 @@ import {
   useOrganizationClientsQuery,
   useDeleteClientMutation,
 } from 'generated/graphql'
-import { useRouter } from 'routes/hooks'
 import ClientTableFiltersResult from '../client-table-filters-result'
 import ClientTableRow from '../client-table-row'
 import ClientTableToolbar from '../client-table-toolbar'
@@ -59,8 +58,6 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
   }, [clients])
 
   const denseHeight = table.dense ? 56 : 56 + 20
-
-  const router = useRouter()
 
   const defaultFilters = useMemo(
     () => ({

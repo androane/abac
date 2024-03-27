@@ -33,6 +33,8 @@ const ClientTableRow: React.FC<Props> = ({ loading, row, onDeleteRow }) => {
 
   const { hasPermission } = useAuthContext()
 
+  const onGoToClient = () => router.push(paths.app.client.edit(row.uuid))
+
   return (
     <>
       <TableRow hover>
@@ -41,7 +43,7 @@ const ClientTableRow: React.FC<Props> = ({ loading, row, onDeleteRow }) => {
             {row.name.charAt(0).toUpperCase()}
           </Avatar>
           <Box
-            onClick={() => router.push(paths.app.client.edit(row.uuid))}
+            onClick={onGoToClient}
             sx={{
               cursor: 'pointer',
               '&:hover': {
@@ -90,7 +92,7 @@ const ClientTableRow: React.FC<Props> = ({ loading, row, onDeleteRow }) => {
         )}
         <MenuItem
           onClick={() => {
-            onEditRow()
+            onGoToClient()
             popover.onClose()
           }}
         >
