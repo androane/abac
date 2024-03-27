@@ -30,3 +30,7 @@ class UnitCostTypeEnum(BaseEnum):
 class SoftwareEnum(BaseEnum):
     ONE_C = enum.auto()
     SAGA = enum.auto()
+    NEXUS = enum.auto()
+    TEAMAPP = enum.auto()
+    NEXTUP = enum.auto()
+    WIND = enum.auto()

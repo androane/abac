@@ -1,0 +1,8 @@
+fragment ClientGroup on ClientGroupType {
+  uuid
+  name
+  clients {
+    uuid
+    name
+  }
+}

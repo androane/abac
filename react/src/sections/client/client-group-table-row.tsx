@@ -11,19 +11,19 @@ import { useBoolean } from 'hooks/use-boolean'
 import { ConfirmDialog } from 'components/custom-dialog'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
-import { APIClient } from 'sections/client/types'
+import { APIClientGroup } from 'sections/client/types'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { useAuthContext } from 'auth/hooks'
 import { UserPermissionsEnum } from 'generated/graphql'
 
 type Props = {
   loading: boolean
-  row: APIClient
+  row: APIClientGroup
   onEditRow: VoidFunction
   onDeleteRow: VoidFunction
 }
 
-const ClientTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRow }) => {
+const ClientGroupTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRow }) => {
   const confirm = useBoolean()
 
   const popover = usePopover()
@@ -51,7 +51,7 @@ const ClientTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRow 
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={row.programManager?.name}
+            primary={row.clients.map(c => c.name).join(', ')}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -99,8 +99,8 @@ const ClientTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRow 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Șterge Client"
-        content="Ești sigur că vrei să ștergi acest client?"
+        title="Șterge Grup"
+        content="Ești sigur că vrei să ștergi acest group?"
         action={
           <LoadingButton loading={loading} variant="contained" color="error" onClick={onDeleteRow}>
             Șterge
@@ -111,4 +111,4 @@ const ClientTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRow 
   )
 }
 
-export default ClientTableRow
+export default ClientGroupTableRow

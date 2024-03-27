@@ -22,6 +22,10 @@ from organization.graphene.mutations import (
     UpdateOrganizationSolution,
     UpdateUserClientPermissions,
 )
+from organization.graphene.mutations.client_mutations import (
+    DeleteClientGroup,
+    UpdateClientGroup,
+)
 from organization.graphene.types import ClientType, OrganizationType
 from organization.services.client_service import get_client
 from user.decorators import logged_in_user_required
@@ -82,6 +86,12 @@ class Mutation(graphene.ObjectType):
     # Client
     update_client = UpdateClient.Field(description="Update or Create a New Client")
     delete_client = DeleteClient.Field(description="Delete a Client")
+
+    # Client Group
+    update_client_group = UpdateClientGroup.Field(
+        description="Update or Create a New Client Group"
+    )
+    delete_client_group = DeleteClientGroup.Field(description="Delete a Client Group")
 
     # Client Invoice
     update_client_invoice_status = UpdateClientInvoiceStatus.Field(

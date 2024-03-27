@@ -1,5 +1,3 @@
-#import "./fragments/InvoiceItem.graphql"
-
 mutation UpdateClientInvoiceStatus($invoiceUuid: String!, $status: InvoiceStatusEnum!) {
   updateClientInvoiceStatus(invoiceUuid: $invoiceUuid, status: $status) {
     error {

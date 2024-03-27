@@ -1,0 +1,7 @@
+mutation DeleteClientGroup($uuid: String!) {
+  deleteClientGroup(uuid: $uuid) {
+    error {
+      ...Error
+    }
+  }
+}

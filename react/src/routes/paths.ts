@@ -15,6 +15,7 @@ export const paths = {
       list: `/${ROOTS.CLIENT}/list`,
       new: `/${ROOTS.CLIENT}/new`,
       edit: (id: string) => `/${ROOTS.CLIENT}/${id}/edit`,
+      groups: `/${ROOTS.CLIENT}/groups`,
     },
     settings: {
       root: `/${ROOTS.SETTINGS}`,

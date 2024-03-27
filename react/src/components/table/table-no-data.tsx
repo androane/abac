@@ -16,7 +16,7 @@ export default function F({ notFound, sx }: Props) {
         <TableCell colSpan={12}>
           <EmptyContent
             filled
-            title="Nu exista date"
+            title="Nu există date"
             sx={{
               py: 10,
               ...sx,

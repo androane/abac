@@ -103,6 +103,19 @@ export type ClientFileType = {
   uuid: Scalars['String']['output'];
 };
 
+export type ClientGroupInput = {
+  clientUuids: Array<InputMaybe<Scalars['String']['input']>>;
+  name: Scalars['String']['input'];
+  uuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ClientGroupType = {
+  __typename?: 'ClientGroupType';
+  clients: Array<ClientType>;
+  name: Scalars['String']['output'];
+  uuid: Scalars['String']['output'];
+};
+
 export type ClientInput = {
   clientSolutions: Array<InputMaybe<ClientSolutionInput>>;
   cui?: InputMaybe<Scalars['String']['input']>;
@@ -271,6 +284,11 @@ export type DeleteClientFile = {
   error?: Maybe<ErrorType>;
 };
 
+export type DeleteClientGroup = {
+  __typename?: 'DeleteClientGroup';
+  error?: Maybe<ErrorType>;
+};
+
 export type DeleteClientUser = {
   __typename?: 'DeleteClientUser';
   error?: Maybe<ErrorType>;
@@ -353,6 +371,8 @@ export type Mutation = {
   deleteClientActivity?: Maybe<DeleteClientActivity>;
   /** Delete a Client File */
   deleteClientFile?: Maybe<DeleteClientFile>;
+  /** Delete a Client Group */
+  deleteClientGroup?: Maybe<DeleteClientGroup>;
   /** Delete a Client User */
   deleteClientUser?: Maybe<DeleteClientUser>;
   /** Delete an Organization Activity */
@@ -375,6 +395,8 @@ export type Mutation = {
   updateClientActivity?: Maybe<UpdateClientActivity>;
   /** Update Client Activity Logs */
   updateClientActivityLogs?: Maybe<UpdateClientActivityLogs>;
+  /** Update or Create a New Client Group */
+  updateClientGroup?: Maybe<UpdateClientGroup>;
   /** Update Client Invoice Status */
   updateClientInvoiceStatus?: Maybe<UpdateClientInvoiceStatus>;
   /** Update Client Solution Logs */
@@ -414,6 +436,11 @@ export type MutationDeleteClientActivityArgs = {
 
 export type MutationDeleteClientFileArgs = {
   fileUuid: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteClientGroupArgs = {
+  uuid: Scalars['String']['input'];
 };
 
 
@@ -474,6 +501,11 @@ export type MutationUpdateClientActivityLogsArgs = {
 };
 
 
+export type MutationUpdateClientGroupArgs = {
+  clientGroupInput: ClientGroupInput;
+};
+
+
 export type MutationUpdateClientInvoiceStatusArgs = {
   invoiceUuid: Scalars['String']['input'];
   status: InvoiceStatusEnum;
@@ -510,6 +542,7 @@ export type MutationUpdateUserClientPermissionsArgs = {
 export type OrganizationType = {
   __typename?: 'OrganizationType';
   activities: Array<ActivityType>;
+  clientGroups: Array<ClientGroupType>;
   clients: Array<ClientType>;
   logoUrl: Scalars['String']['output'];
   name: Scalars['String']['output'];
@@ -542,8 +575,12 @@ export type QueryClientArgs = {
 
 /** An enumeration. */
 export enum SoftwareEnum {
+  NEXTUP = 'NEXTUP',
+  NEXUS = 'NEXUS',
   ONE_C = 'ONE_C',
-  SAGA = 'SAGA'
+  SAGA = 'SAGA',
+  TEAMAPP = 'TEAMAPP',
+  WIND = 'WIND'
 }
 
 export type SolutionInput = {
@@ -599,6 +636,12 @@ export type UpdateClientActivity = {
 export type UpdateClientActivityLogs = {
   __typename?: 'UpdateClientActivityLogs';
   clientActivity?: Maybe<ClientActivityType>;
+  error?: Maybe<ErrorType>;
+};
+
+export type UpdateClientGroup = {
+  __typename?: 'UpdateClientGroup';
+  clientGroup?: Maybe<ClientGroupType>;
   error?: Maybe<ErrorType>;
 };
 
@@ -682,6 +725,8 @@ export type ClientActivityLogFragment = { __typename?: 'ClientActivityLogType', 
 
 export type ClientCoreFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
 
+export type ClientGroupFragment = { __typename?: 'ClientGroupType', uuid: string, name: string, clients: Array<{ __typename?: 'ClientType', uuid: string, name: string }> };
+
 export type ClientSolutionFragment = { __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, quantity: number, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } };
 
 export type ClientSolutionLogFragment = { __typename?: 'ClientSolutionLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null };
@@ -748,6 +793,13 @@ export type DeleteClientFileMutationVariables = Exact<{
 
 export type DeleteClientFileMutation = { __typename?: 'Mutation', deleteClientFile?: { __typename?: 'DeleteClientFile', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
 
+export type DeleteClientGroupMutationVariables = Exact<{
+  uuid: Scalars['String']['input'];
+}>;
+
+
+export type DeleteClientGroupMutation = { __typename?: 'Mutation', deleteClientGroup?: { __typename?: 'DeleteClientGroup', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
+
 export type DeleteClientUserMutationVariables = Exact<{
   userUuid: Scalars['String']['input'];
 }>;
@@ -786,6 +838,13 @@ export type UpdateClientActivityLogsMutationVariables = Exact<{
 
 
 export type UpdateClientActivityLogsMutation = { __typename?: 'Mutation', updateClientActivityLogs?: { __typename?: 'UpdateClientActivityLogs', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientActivity?: { __typename?: 'ClientActivityType', uuid: string, logs: Array<{ __typename?: 'ClientActivityLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null }> } | null } | null };
+
+export type UpdateClientGroupMutationVariables = Exact<{
+  clientGroupInput: ClientGroupInput;
+}>;
+
+
+export type UpdateClientGroupMutation = { __typename?: 'Mutation', updateClientGroup?: { __typename?: 'UpdateClientGroup', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientGroup?: { __typename?: 'ClientGroupType', uuid: string, name: string, clients: Array<{ __typename?: 'ClientType', uuid: string, name: string }> } | null } | null };
 
 export type UpdateClientInvoiceStatusMutationVariables = Exact<{
   invoiceUuid: Scalars['String']['input'];
@@ -898,6 +957,11 @@ export type ClientFilesQueryVariables = Exact<{
 
 
 export type ClientFilesQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, files: Array<{ __typename?: 'ClientFileType', uuid: string, name: string, updated: DateTimeString, url: string, size: number }> } };
+
+export type ClientGroupsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ClientGroupsQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, clientGroups: Array<{ __typename?: 'ClientGroupType', uuid: string, name: string, clients: Array<{ __typename?: 'ClientType', uuid: string, name: string }> }> } };
 
 export type ClientInvoiceQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -1041,6 +1105,16 @@ export const ClientCoreFragmentDoc = gql`
   cui
   spvUsername
   spvPassword
+}
+    `;
+export const ClientGroupFragmentDoc = gql`
+    fragment ClientGroup on ClientGroupType {
+  uuid
+  name
+  clients {
+    uuid
+    name
+  }
 }
     `;
 export const ClientSolutionFragmentDoc = gql`
@@ -1396,6 +1470,41 @@ export function useDeleteClientFileMutation(baseOptions?: Apollo.MutationHookOpt
 export type DeleteClientFileMutationHookResult = ReturnType<typeof useDeleteClientFileMutation>;
 export type DeleteClientFileMutationResult = Apollo.MutationResult<DeleteClientFileMutation>;
 export type DeleteClientFileMutationOptions = Apollo.BaseMutationOptions<DeleteClientFileMutation, DeleteClientFileMutationVariables>;
+export const DeleteClientGroupDocument = gql`
+    mutation DeleteClientGroup($uuid: String!) {
+  deleteClientGroup(uuid: $uuid) {
+    error {
+      ...Error
+    }
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type DeleteClientGroupMutationFn = Apollo.MutationFunction<DeleteClientGroupMutation, DeleteClientGroupMutationVariables>;
+
+/**
+ * __useDeleteClientGroupMutation__
+ *
+ * To run a mutation, you first call `useDeleteClientGroupMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteClientGroupMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteClientGroupMutation, { data, loading, error }] = useDeleteClientGroupMutation({
+ *   variables: {
+ *      uuid: // value for 'uuid'
+ *   },
+ * });
+ */
+export function useDeleteClientGroupMutation(baseOptions?: Apollo.MutationHookOptions<DeleteClientGroupMutation, DeleteClientGroupMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteClientGroupMutation, DeleteClientGroupMutationVariables>(DeleteClientGroupDocument, options);
+      }
+export type DeleteClientGroupMutationHookResult = ReturnType<typeof useDeleteClientGroupMutation>;
+export type DeleteClientGroupMutationResult = Apollo.MutationResult<DeleteClientGroupMutation>;
+export type DeleteClientGroupMutationOptions = Apollo.BaseMutationOptions<DeleteClientGroupMutation, DeleteClientGroupMutationVariables>;
 export const DeleteClientUserDocument = gql`
     mutation DeleteClientUser($userUuid: String!) {
   deleteClientUser(userUuid: $userUuid) {
@@ -1604,6 +1713,45 @@ export function useUpdateClientActivityLogsMutation(baseOptions?: Apollo.Mutatio
 export type UpdateClientActivityLogsMutationHookResult = ReturnType<typeof useUpdateClientActivityLogsMutation>;
 export type UpdateClientActivityLogsMutationResult = Apollo.MutationResult<UpdateClientActivityLogsMutation>;
 export type UpdateClientActivityLogsMutationOptions = Apollo.BaseMutationOptions<UpdateClientActivityLogsMutation, UpdateClientActivityLogsMutationVariables>;
+export const UpdateClientGroupDocument = gql`
+    mutation UpdateClientGroup($clientGroupInput: ClientGroupInput!) {
+  updateClientGroup(clientGroupInput: $clientGroupInput) {
+    error {
+      ...Error
+    }
+    clientGroup {
+      ...ClientGroup
+    }
+  }
+}
+    ${ErrorFragmentDoc}
+${ClientGroupFragmentDoc}`;
+export type UpdateClientGroupMutationFn = Apollo.MutationFunction<UpdateClientGroupMutation, UpdateClientGroupMutationVariables>;
+
+/**
+ * __useUpdateClientGroupMutation__
+ *
+ * To run a mutation, you first call `useUpdateClientGroupMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateClientGroupMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateClientGroupMutation, { data, loading, error }] = useUpdateClientGroupMutation({
+ *   variables: {
+ *      clientGroupInput: // value for 'clientGroupInput'
+ *   },
+ * });
+ */
+export function useUpdateClientGroupMutation(baseOptions?: Apollo.MutationHookOptions<UpdateClientGroupMutation, UpdateClientGroupMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateClientGroupMutation, UpdateClientGroupMutationVariables>(UpdateClientGroupDocument, options);
+      }
+export type UpdateClientGroupMutationHookResult = ReturnType<typeof useUpdateClientGroupMutation>;
+export type UpdateClientGroupMutationResult = Apollo.MutationResult<UpdateClientGroupMutation>;
+export type UpdateClientGroupMutationOptions = Apollo.BaseMutationOptions<UpdateClientGroupMutation, UpdateClientGroupMutationVariables>;
 export const UpdateClientInvoiceStatusDocument = gql`
     mutation UpdateClientInvoiceStatus($invoiceUuid: String!, $status: InvoiceStatusEnum!) {
   updateClientInvoiceStatus(invoiceUuid: $invoiceUuid, status: $status) {
@@ -2219,6 +2367,48 @@ export type ClientFilesQueryHookResult = ReturnType<typeof useClientFilesQuery>;
 export type ClientFilesLazyQueryHookResult = ReturnType<typeof useClientFilesLazyQuery>;
 export type ClientFilesSuspenseQueryHookResult = ReturnType<typeof useClientFilesSuspenseQuery>;
 export type ClientFilesQueryResult = Apollo.QueryResult<ClientFilesQuery, ClientFilesQueryVariables>;
+export const ClientGroupsDocument = gql`
+    query ClientGroups {
+  organization {
+    uuid
+    clientGroups {
+      ...ClientGroup
+    }
+  }
+}
+    ${ClientGroupFragmentDoc}`;
+
+/**
+ * __useClientGroupsQuery__
+ *
+ * To run a query within a React component, call `useClientGroupsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useClientGroupsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useClientGroupsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useClientGroupsQuery(baseOptions?: Apollo.QueryHookOptions<ClientGroupsQuery, ClientGroupsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ClientGroupsQuery, ClientGroupsQueryVariables>(ClientGroupsDocument, options);
+      }
+export function useClientGroupsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ClientGroupsQuery, ClientGroupsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ClientGroupsQuery, ClientGroupsQueryVariables>(ClientGroupsDocument, options);
+        }
+export function useClientGroupsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ClientGroupsQuery, ClientGroupsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ClientGroupsQuery, ClientGroupsQueryVariables>(ClientGroupsDocument, options);
+        }
+export type ClientGroupsQueryHookResult = ReturnType<typeof useClientGroupsQuery>;
+export type ClientGroupsLazyQueryHookResult = ReturnType<typeof useClientGroupsLazyQuery>;
+export type ClientGroupsSuspenseQueryHookResult = ReturnType<typeof useClientGroupsSuspenseQuery>;
+export type ClientGroupsQueryResult = Apollo.QueryResult<ClientGroupsQuery, ClientGroupsQueryVariables>;
 export const ClientInvoiceDocument = gql`
     query ClientInvoice($clientUuid: String!, $year: Int!, $month: Int!) {
   client(uuid: $clientUuid) {

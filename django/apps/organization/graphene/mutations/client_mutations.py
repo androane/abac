@@ -5,7 +5,6 @@ from api.graphene.mutations import BaseMutation
 from api.permission_decorators import permission_required
 from organization.graphene.types import (
     ActivityInput,
-    ActivityType,
     ClientActivityInput,
     ClientActivityType,
     ClientFileInput,
@@ -16,9 +15,8 @@ from organization.graphene.types import (
     InvoiceStatusEnumType,
     InvoiceType,
     LogInput,
-    SolutionInput,
-    SolutionType,
 )
+from organization.graphene.types.client_types import ClientGroupInput, ClientGroupType
 from organization.services.client_activity_service import (
     delete_client_activity,
     toggle_client_activity,
@@ -27,6 +25,10 @@ from organization.services.client_activity_service import (
 from organization.services.client_files_service import (
     create_client_files,
     delete_client_file,
+)
+from organization.services.client_group_service import (
+    delete_client_group,
+    update_client_group,
 )
 from organization.services.client_invoice_service import update_client_invoice_status
 from organization.services.client_logs_service import (
@@ -38,21 +40,8 @@ from organization.services.client_users_service import (
     delete_client_user,
     update_client_user,
 )
-from organization.services.organization_activity_service import (
-    delete_activity,
-    update_activity,
-)
-from organization.services.organization_solution_service import (
-    delete_solution,
-    update_solution,
-)
-from organization.services.organization_user_permissions import (
-    toggle_user_client_permission,
-    toggle_user_permission,
-    update_user_client_permissions,
-)
 from user.decorators import logged_in_user_required
-from user.graphene.types import UserPermissionsEnumType, UserType
+from user.graphene.types import UserType
 from user.models import User
 from user.permissions import UserPermissionsEnum
 
@@ -224,100 +213,25 @@ class DeleteClientUser(BaseMutation):
         return {}
 
 
-class ToggleUserPermission(BaseMutation):
+class UpdateClientGroup(BaseMutation):
     class Arguments:
-        user_uuid = graphene.String(required=True)
-        permission = UserPermissionsEnumType(required=True)
+        client_group_input = graphene.NonNull(ClientGroupInput)
 
-    user = graphene.NonNull(UserType)
+    client_group = graphene.Field(ClientGroupType)
 
     @logged_in_user_required
-    @permission_required(UserPermissionsEnum.HAS_ORGANIZATION_ADMIN.value)
     def mutate(self, user: User, **kwargs):
-        target_user = toggle_user_permission(user.organization, **kwargs)
+        client_group = update_client_group(user.organization, **kwargs)
 
-        return {"user": target_user}
-
-
-class UpdateUserClientPermissions(BaseMutation):
-    class Arguments:
-        user_uuid = graphene.String(required=True)
-        client_uuids = graphene.List(graphene.NonNull(graphene.String), required=True)
-
-    @logged_in_user_required
-    @permission_required(UserPermissionsEnum.HAS_ORGANIZATION_ADMIN.value)
-    def mutate(self, user: User, **kwargs):
-        update_user_client_permissions(user.organization, **kwargs)
-
-        return {}
+        return {"client_group": client_group}
 
 
-class ToggleUserClientPermission(BaseMutation):
-    class Arguments:
-        user_uuid = graphene.String(required=True)
-        client_uuid = graphene.NonNull(graphene.String)
-
-    user = graphene.NonNull(UserType)
-
-    @logged_in_user_required
-    @permission_required(UserPermissionsEnum.HAS_ORGANIZATION_ADMIN.value)
-    def mutate(self, user: User, **kwargs):
-        target_user = toggle_user_client_permission(user.organization, **kwargs)
-
-        return {"user": target_user}
-
-
-class UpdateOrganizationActivity(BaseMutation):
-    class Arguments:
-        activity_input = graphene.NonNull(ActivityInput)
-
-    activity = graphene.Field(ActivityType)
-
-    @logged_in_user_required
-    @permission_required(UserPermissionsEnum.HAS_SETTINGS_ACCESS.value)
-    def mutate(self, user: User, **kwargs):
-        activity = update_activity(user.organization, **kwargs)
-
-        return {
-            "activity": activity,
-        }
-
-
-class DeleteOrganizationActivity(BaseMutation):
+class DeleteClientGroup(BaseMutation):
     class Arguments:
         uuid = graphene.String(required=True)
 
     @logged_in_user_required
-    @permission_required(UserPermissionsEnum.HAS_SETTINGS_ACCESS.value)
     def mutate(self, user: User, **kwargs):
-        delete_activity(user.organization, **kwargs)
-
-        return {}
-
-
-class UpdateOrganizationSolution(BaseMutation):
-    class Arguments:
-        solution_input = graphene.NonNull(SolutionInput)
-
-    solution = graphene.Field(SolutionType)
-
-    @logged_in_user_required
-    @permission_required(UserPermissionsEnum.HAS_SETTINGS_ACCESS.value)
-    def mutate(self, user: User, **kwargs):
-        solution = update_solution(user.organization, **kwargs)
-
-        return {
-            "solution": solution,
-        }
-
-
-class DeleteOrganizationSolution(BaseMutation):
-    class Arguments:
-        uuid = graphene.String(required=True)
-
-    @logged_in_user_required
-    @permission_required(UserPermissionsEnum.HAS_SETTINGS_ACCESS.value)
-    def mutate(self, user: User, **kwargs):
-        delete_solution(user.organization, **kwargs)
+        delete_client_group(user.organization, **kwargs)
 
         return {}

@@ -1,0 +1,8 @@
+query ClientGroups {
+  organization {
+    uuid
+    clientGroups {
+      ...ClientGroup
+    }
+  }
+}

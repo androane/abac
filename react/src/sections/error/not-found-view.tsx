@@ -24,7 +24,7 @@ const NotFoundView = () => {
     <MotionContainer>
       <m.div variants={varBounce().in}>
         <Typography variant="h3" sx={{ mb: 2 }}>
-          Ne pare rau, Pagina Nu Exista!
+          Ne pare rău, Pagina Nu Există!
         </Typography>
       </m.div>
 

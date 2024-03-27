@@ -3,7 +3,7 @@ import graphene
 from graphene_django import DjangoObjectType
 
 from organization.graphene.types.activity_types import ActivityType, SolutionType
-from organization.graphene.types.client_types import ClientType
+from organization.graphene.types.client_types import ClientGroupType, ClientType
 from organization.models.organization import ActivityCategory, Organization
 from organization.services.client_service import get_clients
 from organization.services.organization_user_service import (
@@ -37,6 +37,7 @@ class OrganizationType(DjangoObjectType):
     clients = graphene.NonNull(graphene.List(graphene.NonNull(ClientType)))
     users = graphene.NonNull(graphene.List(graphene.NonNull(UserType)))
     user = graphene.NonNull(UserType, uuid=graphene.String(required=True))
+    client_groups = graphene.List(graphene.NonNull(ClientGroupType), required=True)
 
     def resolve_clients(self, info, **kwargs):
         return get_clients(info.context.user).order_by("name")
@@ -54,6 +55,9 @@ class OrganizationType(DjangoObjectType):
     def resolve_solutions(self, info, **kwargs):
         return self.solutions.all()
 
-    # No permission required for activities
+    # No permissions required for activities
     def resolve_activities(self, info, **kwargs):
         return self.activities.filter(client__isnull=True).all()
+
+    def resolve_client_groups(self, info, **kwargs):
+        return self.client_groups.all()

@@ -20,6 +20,16 @@ def client_file_path(instance, filename):
     )
 
 
+class ClientGroup(BaseModel):
+    organization = models.ForeignKey(
+        Organization, on_delete=models.CASCADE, related_name="client_groups"
+    )
+    name = models.CharField(max_length=128)
+
+    def __str__(self):
+        return f"{self.client.name} - {self.name}"
+
+
 class Client(BaseModel):
     """
     Client is a client of the organization.
@@ -36,6 +46,14 @@ class Client(BaseModel):
 
     organization = models.ForeignKey(
         Organization, on_delete=models.CASCADE, related_name="clients"
+    )
+    group = models.ForeignKey(
+        ClientGroup,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="clients",
+        help_text="Multiple Clients can be a part of the same group of clients",
     )
 
     name = models.CharField(max_length=128)

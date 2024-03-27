@@ -4,6 +4,7 @@ import {
   ClientInvoiceQuery,
   OrganizationClientsQuery,
   ClientUsersQuery,
+  ClientGroupsQuery,
 } from 'generated/graphql'
 
 export type ClientTableFilters = {
@@ -31,6 +32,7 @@ export type GenericActivityType = ActivityType & {
 }
 
 export type APIClient = OrganizationClientsQuery['organization']['clients'][0]
+export type APIClientGroup = ClientGroupsQuery['organization']['clientGroups'][0]
 export type APIClientUser = ClientUsersQuery['client']['users'][0]
 export type APIClientInvoice = ClientInvoiceQuery['client']['invoice']
 export type APIClientFile = ClientFilesQuery['client']['files'][0]

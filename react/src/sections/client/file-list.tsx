@@ -3,9 +3,9 @@ import Box from '@mui/material/Box'
 import { useClientFilesQuery, useDeleteClientFileMutation } from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import EmptyContent from 'components/empty-content'
-import CreateFiles from 'sections/client/files-create'
+import CreateFiles from 'sections/client/file-create'
 import AddButton from 'components/add-button'
-import FileDetails from 'sections/client/files-details'
+import FileDetails from 'sections/client/file-details'
 import { enqueueSnackbar } from 'notistack'
 
 type Props = {

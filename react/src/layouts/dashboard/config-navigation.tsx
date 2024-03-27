@@ -27,6 +27,10 @@ const useNavData = () => {
               requiredPermission: UserPermissionsEnum.HAS_CLIENT_ADD_ACCESS,
               path: paths.app.client.new,
             },
+            {
+              title: 'Grupuri',
+              path: paths.app.client.groups,
+            },
           ],
         },
         {

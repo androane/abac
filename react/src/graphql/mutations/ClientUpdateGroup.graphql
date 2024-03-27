@@ -1,0 +1,10 @@
+mutation UpdateClientGroup($clientGroupInput: ClientGroupInput!) {
+  updateClientGroup(clientGroupInput: $clientGroupInput) {
+    error {
+      ...Error
+    }
+    clientGroup {
+      ...ClientGroup
+    }
+  }
+}

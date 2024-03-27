@@ -15,6 +15,7 @@ from organization.graphene.types.invoice_types import InvoiceType
 from organization.models import Client, ClientActivity, ClientActivityLog, ClientSolution
 from organization.models.client import (
     ClientFile,
+    ClientGroup,
     ClientSoftware,
     ClientSolutionLog,
     ClientUserProfile,
@@ -222,6 +223,21 @@ class ClientUserProfileType(DjangoObjectType):
         return self.ownership_percentage
 
 
+class ClientGroupType(DjangoObjectType):
+    class Meta:
+        model = ClientGroup
+        only_fields = (
+            "uuid",
+            "name",
+            "clients",
+        )
+
+    clients = graphene.NonNull(graphene.List(graphene.NonNull(ClientType)))
+
+    def resolve_clients(self, info, **kwargs):
+        return self.clients.all()
+
+
 # INPUTS
 class ClientActivityInput(graphene.InputObjectType):
     uuid = graphene.String()
@@ -271,3 +287,9 @@ class ClientUserInput(graphene.InputObjectType):
     spv_username = graphene.String()
     spv_password = graphene.String()
     phone_number = graphene.String()
+
+
+class ClientGroupInput(graphene.InputObjectType):
+    uuid = graphene.String()
+    name = graphene.String(required=True)
+    client_uuids = graphene.List(graphene.String, required=True)

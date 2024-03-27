@@ -11,6 +11,7 @@ import { UserRoleEnum } from 'generated/graphql'
 const ClientListView = lazy(() => import('sections/client/view/client-list-view'))
 const ClientCreateView = lazy(() => import('sections/client/view/client-create-view'))
 const ClientEditView = lazy(() => import('sections/client/view/client-edit-view'))
+const ClientGroupListView = lazy(() => import('sections/client/view/client-group-list-view'))
 const SettingsActivityView = lazy(() => import('sections/settings/view/activity-list-view'))
 const SettingsSolutionView = lazy(() => import('sections/settings/view/solution-list-view'))
 const SettingsUsersView = lazy(() => import('sections/settings/view/user-list-view'))
@@ -25,6 +26,7 @@ const clients = {
       element: <ClientCreateView />,
     },
     { path: ':uuid/edit', element: <ClientEditView /> },
+    { path: 'groups', element: <ClientGroupListView /> },
   ],
 }
 

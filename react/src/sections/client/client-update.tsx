@@ -174,6 +174,10 @@ const UpdateClientGeneralInformation: React.FC<{ canUpdate: boolean }> = ({ canU
 const SoftwareEnumToLabel = {
   [SoftwareEnum.ONE_C]: '1C',
   [SoftwareEnum.SAGA]: 'SAGA',
+  [SoftwareEnum.TEAMAPP]: 'Team App',
+  [SoftwareEnum.NEXTUP]: 'NextUp',
+  [SoftwareEnum.WIND]: 'Wind',
+  [SoftwareEnum.NEXUS]: 'Nexus',
 }
 
 const DEFAULT_SOFTWARE = {
