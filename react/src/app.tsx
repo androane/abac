@@ -13,7 +13,7 @@ import { DEFAULT_APP_STORAGE, LocalStorageProvider } from 'components/local-stor
 import SnackbarProvider from 'components/snackbar/snackbar-provider'
 import Router from 'routes/sections'
 
-export default function App() {
+const App = () => {
   useScrollToTop()
 
   return (
@@ -46,3 +46,5 @@ export default function App() {
     </AuthProvider>
   )
 }
+
+export default App

@@ -6,6 +6,7 @@ import DashboardLayout from 'layouts/dashboard'
 
 import { LoadingScreen } from 'components/loading-screen'
 import { ROOTS } from 'routes/paths'
+import { UserRoleEnum } from 'generated/graphql'
 
 const ClientListView = lazy(() => import('sections/client/view/client-list-view'))
 const ClientCreateView = lazy(() => import('sections/client/view/client-create-view'))
@@ -49,7 +50,7 @@ export const appRoutes = [
   {
     path: '',
     element: (
-      <AuthGuard>
+      <AuthGuard role={UserRoleEnum.PM}>
         <DashboardLayout>
           <Suspense fallback={<LoadingScreen />}>
             <Outlet />
