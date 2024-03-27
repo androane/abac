@@ -12,7 +12,7 @@ const auth = {
     <GuestGuard>
       <AuthLayout>
         <Helmet>
-          <title>ABAC Soft</title>
+          <title>ABAC Software</title>
         </Helmet>
         <LoginView />
       </AuthLayout>

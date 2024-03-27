@@ -5,3 +5,9 @@ permisiuni grup de clienti?
 ce utilziatori intorc pt grup
 documente per luna
 invalidate cache la update group
+
+
+
+rol persoane dropdown nu se deschide
+permisiune preturi tot nu le vad
+nume grup firme in listare
