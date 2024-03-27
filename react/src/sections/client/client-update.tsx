@@ -10,7 +10,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Grid from '@mui/material/Unstable_Grid2'
-import { Button, Divider, MenuItem, Typography } from '@mui/material'
+import { Button, Divider, List, ListItemText, MenuItem, Typography } from '@mui/material'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import { useRouter } from 'routes/hooks'
@@ -35,6 +35,46 @@ import getErrorMessage from 'utils/api-codes'
 import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 import Iconify from 'components/iconify'
+
+type ClientInfoProps = {
+  client: ClientClientQuery['client']
+}
+
+const ClientInfo: React.FC<ClientInfoProps> = ({ client }) => {
+  const router = useRouter()
+
+  return (
+    <div>
+      {client.group && (
+        <div>
+          <Typography variant="subtitle2">
+            Acest client face parte dintr-un grup de firme:
+          </Typography>
+          <List>
+            {client.group.clients.map(c => (
+              <Box
+                onClick={() => router.push(paths.app.client.edit(c.uuid))}
+                sx={{
+                  ml: 2,
+                  mt: 1,
+                  cursor: 'pointer',
+                  '&:hover': {
+                    textDecoration: 'underline',
+                  },
+                }}
+              >
+                <ListItemText primaryTypographyProps={{ typography: 'body2' }}>
+                  &rarr;&nbsp;&nbsp;{c.name}
+                </ListItemText>
+              </Box>
+            ))}
+          </List>
+          <Divider sx={{ borderStyle: 'dashed', mt: 2, mb: 6 }} />
+        </div>
+      )}
+    </div>
+  )
+}
 
 const UpdateClientSolutions: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) => {
   const { hasPermission } = useAuthContext()
@@ -409,6 +449,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
       <Grid container spacing={3}>
         <Grid xs={12} md={8}>
           <Card sx={{ p: 3 }}>
+            {client && <ClientInfo client={client} />}
             <UpdateClientGeneralInformation canUpdate={canUpdate} />
             <UpdateClientSolutions canUpdate={canUpdate} />
             <UpdateClientSoftware canUpdate={canUpdate} />

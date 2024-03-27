@@ -15,18 +15,21 @@ import { APIClient } from 'sections/client/types'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { useAuthContext } from 'auth/hooks'
 import { UserPermissionsEnum } from 'generated/graphql'
+import { paths } from 'routes/paths'
+import { useRouter } from 'routes/hooks'
 
 type Props = {
   loading: boolean
   row: APIClient
-  onEditRow: VoidFunction
   onDeleteRow: VoidFunction
 }
 
-const ClientTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRow }) => {
+const ClientTableRow: React.FC<Props> = ({ loading, row, onDeleteRow }) => {
   const confirm = useBoolean()
 
   const popover = usePopover()
+
+  const router = useRouter()
 
   const { hasPermission } = useAuthContext()
 
@@ -38,7 +41,7 @@ const ClientTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDeleteRow 
             {row.name.charAt(0).toUpperCase()}
           </Avatar>
           <Box
-            onClick={onEditRow}
+            onClick={() => router.push(paths.app.client.edit(row.uuid))}
             sx={{
               cursor: 'pointer',
               '&:hover': {

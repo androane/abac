@@ -1,5 +1,13 @@
 query ClientClient($uuid: String!) {
   client(uuid: $uuid) {
     ...Client
+    group {
+      uuid
+      name
+      clients {
+        uuid
+        name
+      }
+    }
   }
 }

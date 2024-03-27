@@ -181,6 +181,8 @@ export type ClientType = {
   cui?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   files: Array<ClientFileType>;
+  /** Multiple Clients can be a part of the same group of clients */
+  group?: Maybe<ClientGroupType>;
   invoice: InvoiceType;
   name: Scalars['String']['output'];
   programManager?: Maybe<UserType>;
@@ -949,7 +951,7 @@ export type ClientClientQueryVariables = Exact<{
 }>;
 
 
-export type ClientClientQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }>, softwares: Array<{ __typename?: 'ClientSoftwareType', uuid: string, software: SoftwareEnum, username?: string | null, password?: string | null }> } };
+export type ClientClientQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, group?: { __typename?: 'ClientGroupType', uuid: string, name: string, clients: Array<{ __typename?: 'ClientType', uuid: string, name: string }> } | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }>, softwares: Array<{ __typename?: 'ClientSoftwareType', uuid: string, software: SoftwareEnum, username?: string | null, password?: string | null }> } };
 
 export type ClientFilesQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -2288,6 +2290,14 @@ export const ClientClientDocument = gql`
     query ClientClient($uuid: String!) {
   client(uuid: $uuid) {
     ...Client
+    group {
+      uuid
+      name
+      clients {
+        uuid
+        name
+      }
+    }
   }
 }
     ${ClientFragmentDoc}`;

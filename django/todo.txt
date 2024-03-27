@@ -4,3 +4,4 @@ permisiunile ma delogheaza
 permisiuni grup de clienti?
 ce utilziatori intorc pt grup
 documente per luna
+invalidate cache la update group

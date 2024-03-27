@@ -136,6 +136,7 @@ class ClientType(DjangoObjectType):
             "spv_username",
             "spv_password",
             "cui",
+            "group",
         )
 
     files = graphene.List(graphene.NonNull(ClientFileType), required=True)

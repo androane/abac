@@ -116,13 +116,6 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
     table.onUpdatePageDeleteRow(dataInPage.length)
   }
 
-  const handleEditRow = useCallback(
-    (uuid: string) => {
-      router.push(paths.app.client.edit(uuid))
-    },
-    [router],
-  )
-
   return (
     <Card>
       <ResponseHandler {...result}>
@@ -176,7 +169,6 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
                     key={row.uuid}
                     row={row}
                     onDeleteRow={() => handleDeleteRow(row.uuid)}
-                    onEditRow={() => handleEditRow(row.uuid)}
                   />
                 ))}
 
