@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from functools import lru_cache
 from typing import TYPE_CHECKING
 
 from core.constants import BaseEnum
@@ -33,7 +34,8 @@ USER_PERMISSIONS = {
 }
 
 
-def validate_has_permission(user: "User", permission: UserPermissionsEnum, func=None):
+@lru_cache
+def validate_has_permission(user: "User", permission: UserPermissionsEnum):
     permissions = {permission, UserPermissionsEnum.HAS_ORGANIZATION_ADMIN.value}
     if not set(user.user_permissions.values_list("codename", flat=True)).intersection(
         permissions

@@ -35,6 +35,7 @@ class JWTAuthenticationMiddleware:
                 )
             except User.DoesNotExist:
                 return HttpResponseUnauthorized()
+
             setattr(
                 user,
                 "is_impersonator",

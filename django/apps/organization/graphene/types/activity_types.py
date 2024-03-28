@@ -25,6 +25,9 @@ class ActivityType(DjangoObjectType):
     unit_cost_currency = CurrencyEnumType(required=True)
     unit_cost_type = UnitCostTypeEnumType(required=True)
 
+    def resolve_category(self, info):
+        return info.context.category_loader.load(self.category_id)
+
     @field_permission_required(
         UserPermissionsEnum.HAS_CLIENT_ACTIVITY_COSTS_ACCESS.value
     )
