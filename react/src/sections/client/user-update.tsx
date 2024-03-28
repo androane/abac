@@ -138,7 +138,7 @@ const UpdateUser: React.FC<Props> = ({ clientUuid, user, onClose, canSeeInformat
             <RHFTextField name="phoneNumber" label="Telefon" />
             {canSeeInformation && (
               <>
-                <RHFSelect native name="role" label="Rol" InputLabelProps={{ shrink: true }}>
+                <RHFSelect name="role" label="Rol" InputLabelProps={{ shrink: true }}>
                   <MenuItem value="" />
                   {Object.keys(ClientUserRoleEnum).map(role => (
                     <MenuItem key={role} value={role}>

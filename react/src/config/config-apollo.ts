@@ -15,69 +15,6 @@ enum GraphQLErrorsEnum {
   FORBIDDEN = 'FORBIDDEN',
 }
 
-const errorLink = onError(result => {
-  withScope(scope => {
-    const { networkError, graphQLErrors, operation } = result
-    scope.setTransactionName(operation.operationName)
-    scope.setContext('Apollo GraphQL Operation', {
-      operationName: operation.operationName,
-      variables: operation.variables,
-      extensions: operation.extensions,
-    })
-
-    if (graphQLErrors) {
-      graphQLErrors.forEach(error => {
-        const errorCode = error?.extensions?.errorCode
-        console.log('errorCode')
-        console.log(errorCode)
-        if (errorCode !== GraphQLErrorsEnum.UNAUTHORIZED_ACCESS) {
-          captureMessage(error.message, {
-            level: 'error',
-            fingerprint: ['{{ default }}', '{{ transaction }}', 'ApolloGraphQLError'],
-            contexts: {
-              'Apollo GraphQL Error': {
-                locations: error.locations,
-                path: error.path,
-                message: error.message,
-                extensions: error.extensions,
-              },
-            },
-          })
-        }
-
-        if (
-          [GraphQLErrorsEnum.UNAUTHORIZED_ACCESS, GraphQLErrorsEnum.FORBIDDEN].includes(errorCode)
-        ) {
-          clearAuthData()
-        }
-      })
-    }
-
-    if (networkError) {
-      captureMessage(networkError.message, {
-        level: 'error',
-        fingerprint: ['{{ default }}', '{{ transaction }}', 'ApolloNetworkError'],
-        contexts: {
-          'Apollo Network Error': {
-            error: networkError,
-            message: networkError.message,
-            extensions: (networkError as any).extensions,
-          },
-        },
-      })
-
-      // Solution from https://github.com/apollographql/apollo-feature-requests/issues/153
-      // to parse unhandled errors from the server that return strings instead of JSON.
-      try {
-        JSON.parse((networkError as { bodyText: string }).bodyText)
-      } catch (e) {
-        // If not replace parsing error message with real one
-        networkError.message = GENERIC_ERROR_MESSAGE
-      }
-    }
-  })
-})
-
 // const httpLink = createHttpLink({ uri: GRAPHQL_ENDPOINT })
 const httpLink = createUploadLink({ uri: GRAPHQL_ENDPOINT })
 
@@ -114,12 +51,76 @@ const cache = new InMemoryCache({
 
 // await before instantiating ApolloClient, else queries might run before the cache is persisted
 const initClient = async () => {
-  return new ApolloClient({
+  const errorLink = onError(result => {
+    withScope(scope => {
+      const { networkError, graphQLErrors, operation } = result
+      scope.setTransactionName(operation.operationName)
+      scope.setContext('Apollo GraphQL Operation', {
+        operationName: operation.operationName,
+        variables: operation.variables,
+        extensions: operation.extensions,
+      })
+
+      if (graphQLErrors) {
+        graphQLErrors.forEach(error => {
+          const errorCode = error?.extensions?.errorCode
+          if (errorCode !== GraphQLErrorsEnum.UNAUTHORIZED_ACCESS) {
+            captureMessage(error.message, {
+              level: 'error',
+              fingerprint: ['{{ default }}', '{{ transaction }}', 'ApolloGraphQLError'],
+              contexts: {
+                'Apollo GraphQL Error': {
+                  locations: error.locations,
+                  path: error.path,
+                  message: error.message,
+                  extensions: error.extensions,
+                },
+              },
+            })
+          }
+
+          if (
+            [GraphQLErrorsEnum.UNAUTHORIZED_ACCESS, GraphQLErrorsEnum.FORBIDDEN].includes(errorCode)
+          ) {
+            client.resetStore()
+            clearAuthData()
+            window.location.reload()
+          }
+        })
+      }
+
+      if (networkError) {
+        captureMessage(networkError.message, {
+          level: 'error',
+          fingerprint: ['{{ default }}', '{{ transaction }}', 'ApolloNetworkError'],
+          contexts: {
+            'Apollo Network Error': {
+              error: networkError,
+              message: networkError.message,
+              extensions: (networkError as any).extensions,
+            },
+          },
+        })
+
+        // Solution from https://github.com/apollographql/apollo-feature-requests/issues/153
+        // to parse unhandled errors from the server that return strings instead of JSON.
+        try {
+          JSON.parse((networkError as { bodyText: string }).bodyText)
+        } catch (e) {
+          // If not replace parsing error message with real one
+          networkError.message = GENERIC_ERROR_MESSAGE
+        }
+      }
+    })
+  })
+
+  const client = new ApolloClient({
     link: from([errorLink, logoutAfterware, authLink, new DebounceLink(100), httpLink]),
     cache,
     resolvers: {},
     connectToDevTools: true,
   })
+  return client
 }
 
 export default initClient

@@ -725,8 +725,6 @@ export type ClientActivityFragment = { __typename?: 'ClientActivityType', uuid: 
 
 export type ClientActivityLogFragment = { __typename?: 'ClientActivityLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null };
 
-export type ClientCoreFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
-
 export type ClientGroupFragment = { __typename?: 'ClientGroupType', uuid: string, name: string, clients: Array<{ __typename?: 'ClientType', uuid: string, name: string }> };
 
 export type ClientSolutionFragment = { __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, quantity: number, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } };
@@ -740,6 +738,8 @@ export type CoreUserFragment = { __typename?: 'UserType', uuid: string, name: st
 export type ErrorFragment = { __typename?: 'ErrorType', field?: string | null, message: string };
 
 export type FileFragment = { __typename?: 'ClientFileType', uuid: string, name: string, updated: DateTimeString, url: string, size: number };
+
+export type OrganizationClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
 
 export type SolutionFragment = { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> };
 
@@ -1095,20 +1095,6 @@ export const ClientActivityLogFragmentDoc = gql`
   description
 }
     `;
-export const ClientCoreFragmentDoc = gql`
-    fragment ClientCore on ClientType {
-  uuid
-  name
-  description
-  programManager {
-    uuid
-    name
-  }
-  cui
-  spvUsername
-  spvPassword
-}
-    `;
 export const ClientGroupFragmentDoc = gql`
     fragment ClientGroup on ClientGroupType {
   uuid
@@ -1181,6 +1167,20 @@ export const FileFragmentDoc = gql`
   updated
   url
   size
+}
+    `;
+export const OrganizationClientFragmentDoc = gql`
+    fragment OrganizationClient on ClientType {
+  uuid
+  name
+  description
+  programManager {
+    uuid
+    name
+  }
+  cui
+  spvUsername
+  spvPassword
 }
     `;
 export const SolutionFragmentDoc = gql`
@@ -2608,11 +2608,11 @@ export const OrganizationClientsDocument = gql`
   organization {
     uuid
     clients {
-      ...ClientCore
+      ...OrganizationClient
     }
   }
 }
-    ${ClientCoreFragmentDoc}`;
+    ${OrganizationClientFragmentDoc}`;
 
 /**
  * __useOrganizationClientsQuery__

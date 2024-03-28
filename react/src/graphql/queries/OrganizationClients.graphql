@@ -2,7 +2,7 @@ query OrganizationClients {
   organization {
     uuid
     clients {
-      ...ClientCore
+      ...OrganizationClient
     }
   }
 }

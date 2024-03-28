@@ -12,6 +12,8 @@ from graphql_sync_dataloaders import SyncDataLoader
 from organization.models import Activity, ClientActivityLog
 from organization.models.activity import Solution
 from organization.models.client import ClientSolutionLog
+from organization.models.organization import ActivityCategory
+from user.models import User
 
 
 def foreign_key_loader_builder(model):
@@ -87,7 +89,10 @@ LOADERS = {
         ClientSolutionLog, "client_solution"
     ),
     # Foreign Key Loaders
-    "activity_from_client_activity": foreign_key_loader_builder(Activity),
+    "category_loader": foreign_key_loader_builder(ActivityCategory),
+    "activity_loader": foreign_key_loader_builder(Activity),
+    "solution_loader": foreign_key_loader_builder(Solution),
+    "program_manager_loader": foreign_key_loader_builder(User),
     # Many to Many Loaders
     # IMPORTANT: the order of the last 2 parameters is very important (i.e. from_model and to_model)
     "activities_from_solution": many_to_many_loader_builder(

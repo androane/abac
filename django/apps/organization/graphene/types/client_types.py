@@ -52,7 +52,7 @@ class ClientActivityType(DjangoObjectType):
     logs = graphene.List(graphene.NonNull(ClientActivityLogType), required=True)
 
     def resolve_activity(self, info, **kwargs):
-        return info.context.activity_from_client_activity.load(self.activity_id)
+        return info.context.activity_loader.load(self.activity_id)
 
     def resolve_logs(self, info, **kwargs):
         return info.context.logs_from_client_activity.load(self.id)
@@ -83,6 +83,9 @@ class ClientSolutionType(DjangoObjectType):
     unit_cost = graphene.Int()
     unit_cost_currency = CurrencyEnumType(required=True)
     logs = graphene.List(graphene.NonNull(ClientSolutionLogType), required=True)
+
+    def resolve_solution(self, info, **kwargs):
+        return info.context.solution_loader.load(self.solution_id)
 
     def resolve_logs(self, info, **kwargs):
         return info.context.logs_from_client_solution.load(self.id)
@@ -164,6 +167,9 @@ class ClientType(DjangoObjectType):
 
     def resolve_files(self, info, **kwargs):
         return self.files.order_by("-created").all()
+
+    def resolve_program_manager(self, info, **kwargs):
+        return info.context.program_manager_loader.load(self.program_manager_id)
 
     def resolve_users(self, info, **kwargs):
         return get_client_users(info.context.user, self)

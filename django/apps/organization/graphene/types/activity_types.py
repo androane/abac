@@ -47,6 +47,9 @@ class SolutionType(DjangoObjectType):
             "activities",
         )
 
+    def resolve_category(self, info, **kwargs):
+        return info.context.category_loader.load(self.category_id)
+
     def resolve_activities(self, info, **kwargs):
         return info.context.activities_from_solution.load(self.id)
 

@@ -48,7 +48,7 @@ const ClientInfo: React.FC<ClientInfoProps> = ({ client }) => {
       {client.group && (
         <div>
           <Typography variant="subtitle2">
-            Acest client face parte dintr-un grup de firme:
+            Acest client face parte din grupul de firme <strong>{client.group.name}</strong>:
           </Typography>
           <List>
             {client.group.clients.map(c => (

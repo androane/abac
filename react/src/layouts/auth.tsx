@@ -77,7 +77,7 @@ const AuthLayout: React.FC<Props> = ({ children, title }) => {
 
       <Box
         sx={{
-          px: 5,
+          px: 2,
           alignItems: 'center',
           justifyContent: 'center',
         }}
