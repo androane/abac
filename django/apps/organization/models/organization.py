@@ -40,22 +40,22 @@ class Organization(BaseModel):
         return self.name
 
 
-class ActivityCategory(BaseModel):
+class OrganizationBusinessCategory(BaseModel):
     """e.g. Accounting, Human Resources etc."""
 
     class Meta:
-        verbose_name_plural = "Categories"
+        verbose_name_plural = "Organization Business Categories"
 
         constraints = [
             models.UniqueConstraint(
                 fields=["name"],
                 condition=models.Q(deleted__isnull=True),
-                name="organization_activity_category_name_unique",
+                name="organization_organization_business_category_name_unique",
             ),
             models.UniqueConstraint(
                 fields=["code"],
                 condition=models.Q(deleted__isnull=True),
-                name="organization_activity_category_code_unique",
+                name="organization_organization_business_category_code_unique",
             ),
         ]
 

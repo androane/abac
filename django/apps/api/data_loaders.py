@@ -12,7 +12,7 @@ from graphql_sync_dataloaders import SyncDataLoader
 from organization.models import Activity, ClientActivityLog
 from organization.models.activity import Solution
 from organization.models.client import ClientSolutionLog
-from organization.models.organization import ActivityCategory
+from organization.models.organization import OrganizationBusinessCategory
 from user.models import User
 
 
@@ -89,7 +89,7 @@ LOADERS = {
         ClientSolutionLog, "client_solution"
     ),
     # Foreign Key Loaders
-    "category_loader": foreign_key_loader_builder(ActivityCategory),
+    "category_loader": foreign_key_loader_builder(OrganizationBusinessCategory),
     "activity_loader": foreign_key_loader_builder(Activity),
     "solution_loader": foreign_key_loader_builder(Solution),
     "program_manager_loader": foreign_key_loader_builder(User),

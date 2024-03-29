@@ -5,7 +5,12 @@ from django.db.models import F
 
 from core.models import generate_uuid
 from organization.graphene.types import ActivityInput, ClientActivityInput
-from organization.models import Activity, ActivityCategory, ClientActivity, Organization
+from organization.models import (
+    Activity,
+    ClientActivity,
+    Organization,
+    OrganizationBusinessCategory,
+)
 from organization.models.client import Client, ClientSolution
 
 
@@ -16,7 +21,9 @@ def update_client_activity(
     client_activity_input: ClientActivityInput,
 ) -> ClientActivity:
     client = org.clients.get(uuid=client_uuid)
-    category = ActivityCategory.objects.get(code=activity_input.category_code)
+    category = OrganizationBusinessCategory.objects.get(
+        code=activity_input.category_code
+    )
 
     def set_activity_attrs(activity: Activity):
         attrs = (

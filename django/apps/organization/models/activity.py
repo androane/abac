@@ -3,7 +3,7 @@ from django.db import models
 
 from core.models import BaseModel
 from organization.constants import CurrencyEnum, UnitCostTypeEnum
-from organization.models.organization import ActivityCategory, Organization
+from organization.models.organization import Organization, OrganizationBusinessCategory
 
 
 class Activity(BaseModel):
@@ -29,7 +29,7 @@ class Activity(BaseModel):
         choices=UnitCostTypeEnum.choices,
         help_text="The cost type of the activity can be fixed, per hour etc",
     )
-    category = models.ForeignKey(ActivityCategory, on_delete=models.CASCADE)
+    category = models.ForeignKey(OrganizationBusinessCategory, on_delete=models.CASCADE)
     organization = models.ForeignKey(
         Organization, on_delete=models.CASCADE, related_name="activities"
     )
@@ -51,7 +51,7 @@ class Activity(BaseModel):
 class Solution(BaseModel):
     name = models.CharField(max_length=64)
 
-    category = models.ForeignKey(ActivityCategory, on_delete=models.CASCADE)
+    category = models.ForeignKey(OrganizationBusinessCategory, on_delete=models.CASCADE)
     activities = models.ManyToManyField(Activity, related_name="solutions")
     organization = models.ForeignKey(
         Organization, on_delete=models.CASCADE, related_name="solutions"

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from organization.graphene.types import ActivityInput
-from organization.models import Activity, ActivityCategory, Organization
+from organization.models import Activity, Organization, OrganizationBusinessCategory
 
 
 def update_activity(
@@ -11,7 +11,9 @@ def update_activity(
             client__isnull=True, uuid=activity_input.uuid
         )
     else:
-        category = ActivityCategory.objects.get(code=activity_input.category_code)
+        category = OrganizationBusinessCategory.objects.get(
+            code=activity_input.category_code
+        )
         activity = Activity(
             organization=organization,
             category=category,

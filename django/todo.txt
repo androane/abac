@@ -1,6 +1,8 @@
 squash migrations
 
-permisiuni grup de clienti?
-ce utilziatori intorc pt grup
+ce utilizatori intorc pt grup (bifa pt user al grupului)
 documente per luna
-invalidate cache la update group
+rapoarte
+get subdomain name in jwt middleware
+category enum pentru useri - Vio are access doar la HR. acest enum poate fi reflectat in FE. Nu e nevoie sa fie in DB
+animatie la snackbar cand a fost ok

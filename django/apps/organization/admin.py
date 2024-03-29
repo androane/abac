@@ -4,13 +4,13 @@ from simple_history.admin import SimpleHistoryAdmin
 
 from organization.models import (
     Activity,
-    ActivityCategory,
     Client,
     ClientFile,
     Invoice,
     Organization,
     Solution,
 )
+from organization.models.organization import OrganizationBusinessCategory
 
 
 @admin.register(Organization)
@@ -67,8 +67,8 @@ class ActivityAdmin(SimpleHistoryAdmin):
     list_filter = ("organization__name",)
 
 
-@admin.register(ActivityCategory)
-class ActivityCategoryAdmin(SimpleHistoryAdmin):
+@admin.register(OrganizationBusinessCategory)
+class OrganizationBusinessCategoryAdmin(SimpleHistoryAdmin):
     list_display = ("name",)
 
 

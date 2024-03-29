@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from organization.graphene.types import SolutionInput
-from organization.models import ActivityCategory, Organization, Solution
+from organization.models import Organization, OrganizationBusinessCategory, Solution
 
 
 def update_solution(
@@ -9,7 +9,9 @@ def update_solution(
     if solution_input.uuid:
         solution = organization.solutions.get(uuid=solution_input.uuid)
     else:
-        category = ActivityCategory.objects.get(code=solution_input.category_code)
+        category = OrganizationBusinessCategory.objects.get(
+            code=solution_input.category_code
+        )
         solution = Solution(organization=organization, category=category)
 
     attrs = ("name",)

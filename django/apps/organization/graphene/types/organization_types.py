@@ -4,7 +4,7 @@ from graphene_django import DjangoObjectType
 
 from organization.graphene.types.activity_types import ActivityType, SolutionType
 from organization.graphene.types.client_types import ClientGroupType, ClientType
-from organization.models.organization import ActivityCategory, Organization
+from organization.models.organization import Organization, OrganizationBusinessCategory
 from organization.services.client_service import get_clients
 from organization.services.organization_user_service import (
     get_organization_users,
@@ -15,7 +15,7 @@ from user.graphene.types import UserType
 
 class CategoryType(DjangoObjectType):
     class Meta:
-        model = ActivityCategory
+        model = OrganizationBusinessCategory
         only_fields = (
             "uuid",
             "name",
