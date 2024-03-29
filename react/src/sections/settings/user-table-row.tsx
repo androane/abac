@@ -11,10 +11,10 @@ import { useBoolean } from 'hooks/use-boolean'
 import { ConfirmDialog } from 'components/custom-dialog'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
-import { CoreUserFragment } from 'generated/graphql'
+import { OrganizationUserFragment } from 'generated/graphql'
 
 type Props = {
-  row: CoreUserFragment
+  row: OrganizationUserFragment
   onEditRow: VoidFunction
   onEditPermissions: VoidFunction
   onDeleteRow: VoidFunction
