@@ -1,7 +1,9 @@
 import { closeSnackbar, SnackbarProvider as NotistackProvider } from 'notistack'
 import { useRef } from 'react'
-
+import Lottie from 'lottie-react'
 import IconButton from '@mui/material/IconButton'
+import success from './success.json'
+import error from './error.json'
 
 import Iconify from '../iconify'
 import { StyledIcon, StyledNotistack } from './styles'
@@ -10,7 +12,7 @@ type Props = {
   children: React.ReactNode
 }
 
-export default function SnackbarProvider({ children }: Props) {
+const SnackbarProvider: React.FC<Props> = ({ children }) => {
   const notistackRef = useRef<any>(null)
 
   return (
@@ -28,9 +30,7 @@ export default function SnackbarProvider({ children }: Props) {
           </StyledIcon>
         ),
         success: (
-          <StyledIcon color="success">
-            <Iconify icon="eva:checkmark-circle-2-fill" width={24} />
-          </StyledIcon>
+          <Lottie animationData={success} loop={false} autoplay style={{ width: 50, height: 50 }} />
         ),
         warning: (
           <StyledIcon color="warning">
@@ -38,9 +38,7 @@ export default function SnackbarProvider({ children }: Props) {
           </StyledIcon>
         ),
         error: (
-          <StyledIcon color="error">
-            <Iconify icon="solar:danger-bold" width={24} />
-          </StyledIcon>
+          <Lottie animationData={error} loop={false} autoplay style={{ width: 50, height: 50 }} />
         ),
       }}
       Components={{
@@ -61,3 +59,5 @@ export default function SnackbarProvider({ children }: Props) {
     </NotistackProvider>
   )
 }
+
+export default SnackbarProvider
