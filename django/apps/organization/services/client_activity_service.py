@@ -12,6 +12,8 @@ from organization.models import (
     OrganizationBusinessCategory,
 )
 from organization.models.client import Client, ClientSolution
+from organization.models.organization import CategoryUserObjectPermission
+from user.models import User
 
 
 def update_client_activity(
@@ -85,11 +87,16 @@ def toggle_client_activity(
 
 
 def get_client_activities(
-    client: Client, month: int, year: int
+    user: User, client: Client, month: int, year: int
 ) -> Iterable[ClientActivity]:
+    category_ids = CategoryUserObjectPermission.objects.filter(
+        user=user,
+    ).values_list("content_object__id", flat=True)
+
     return client.client_activities.filter(
         month=month,
         year=year,
+        activity__category__in=category_ids,
     )
 
 

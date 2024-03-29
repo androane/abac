@@ -1,9 +1,24 @@
 # -*- coding: utf-8 -*-
+from typing import Iterable
+
 from organization.graphene.types import ActivityInput
 from organization.models import Activity, Organization, OrganizationBusinessCategory
+from organization.models.organization import CategoryUserObjectPermission
+from user.models import User
 
 
-def update_activity(
+def get_organization_activities(user: User) -> Iterable[Activity]:
+    category_ids = CategoryUserObjectPermission.objects.filter(
+        user=user,
+    ).values_list("content_object__id", flat=True)
+
+    return user.organization.activities.filter(
+        client__isnull=True,
+        category__in=category_ids,
+    )
+
+
+def update_organization_activity(
     organization: Organization, activity_input: ActivityInput
 ) -> Activity:
     if activity_input.uuid:

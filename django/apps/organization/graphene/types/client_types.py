@@ -177,7 +177,7 @@ class ClientType(DjangoObjectType):
     def resolve_activities(self, info, **kwargs):
         from organization.services.client_activity_service import get_client_activities
 
-        return get_client_activities(self, **kwargs)
+        return get_client_activities(info.context.user, self, **kwargs)
 
     def resolve_activity(self, info, **kwargs):
         return self.client_activities.get(uuid=kwargs.get("uuid"))

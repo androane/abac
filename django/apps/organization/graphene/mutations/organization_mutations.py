@@ -11,7 +11,7 @@ from organization.graphene.types import (
 )
 from organization.services.organization_activity_service import (
     delete_activity,
-    update_activity,
+    update_organization_activity,
 )
 from organization.services.organization_solution_service import (
     delete_solution,
@@ -31,7 +31,7 @@ class UpdateOrganizationActivity(BaseMutation):
     @logged_in_user_required
     @permission_required(UserPermissionsEnum.HAS_SETTINGS_ACCESS.value)
     def mutate(self, user: User, **kwargs):
-        activity = update_activity(user.organization, **kwargs)
+        activity = update_organization_activity(user.organization, **kwargs)
 
         return {
             "activity": activity,

@@ -6,6 +6,13 @@ from organization.graphene.types.activity_types import ActivityType, SolutionTyp
 from organization.graphene.types.client_types import ClientGroupType, ClientType
 from organization.models.organization import Organization, OrganizationBusinessCategory
 from organization.services.client_service import get_clients
+from organization.services.organization_activity_service import (
+    get_organization_activities,
+)
+from organization.services.organization_categories_service import (
+    get_organization_categories,
+)
+from organization.services.organization_solution_service import get_organization_solutions
 from organization.services.organization_user_service import (
     get_organization_users,
     get_organzation_user,
@@ -54,14 +61,13 @@ class OrganizationType(DjangoObjectType):
         return get_organzation_user(self, **kwargs)
 
     def resolve_solutions(self, info, **kwargs):
-        return self.solutions.all()
+        return get_organization_solutions(info.context.user)
 
-    # No permissions required for activities
     def resolve_activities(self, info, **kwargs):
-        return self.activities.filter(client__isnull=True).all()
+        return get_organization_activities(info.context.user)
 
     def resolve_client_groups(self, info, **kwargs):
         return self.client_groups.all()
 
     def resolve_categories(self, info, **kwargs):
-        return self.categories.all()
+        return get_organization_categories(info.context.user)
