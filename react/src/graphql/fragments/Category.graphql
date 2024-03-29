@@ -1,0 +1,5 @@
+fragment Category on CategoryType {
+  uuid
+  name
+  code
+}

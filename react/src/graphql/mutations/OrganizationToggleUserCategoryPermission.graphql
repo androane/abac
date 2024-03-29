@@ -1,0 +1,14 @@
+mutation OrganizationToggleUserCategoryPermission($userUuid: String!, $categoryUuid: String!) {
+  toggleUserCategoryPermission(userUuid: $userUuid, categoryUuid: $categoryUuid) {
+    error {
+      ...Error
+    }
+    user {
+      uuid
+      categoriesWithAccess {
+        uuid
+        name
+      }
+    }
+  }
+}

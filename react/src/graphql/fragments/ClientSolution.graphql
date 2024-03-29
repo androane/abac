@@ -4,9 +4,7 @@ fragment ClientSolution on ClientSolutionType {
     uuid
     name
     category {
-      uuid
-      code
-      name
+      ...Category
     }
   }
   unitCost

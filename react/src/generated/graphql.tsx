@@ -387,8 +387,10 @@ export type Mutation = {
   logout?: Maybe<LogoutUser>;
   /** Toggle Client Activity Executed Status */
   toggleClientActivity?: Maybe<ToggleClientActivity>;
-  /** Toggle User Client Permissions */
-  toggleUserClientPermissions?: Maybe<ToggleUserClientPermission>;
+  /** Toggle User Category Permission */
+  toggleUserCategoryPermission?: Maybe<ToggleUserCategoryPermission>;
+  /** Toggle User Client Permission */
+  toggleUserClientPermission?: Maybe<ToggleUserClientPermission>;
   /** Toggle a permission for a given User */
   toggleUserPermission?: Maybe<ToggleUserPermission>;
   /** Update or Create a New Client */
@@ -409,8 +411,6 @@ export type Mutation = {
   updateOrganizationActivity?: Maybe<UpdateOrganizationActivity>;
   /** Update or Create a New Solution */
   updateOrganizationSolution?: Maybe<UpdateOrganizationSolution>;
-  /** Update User access to a give Clients */
-  updateUserClientPermissions?: Maybe<UpdateUserClientPermissions>;
 };
 
 
@@ -473,7 +473,13 @@ export type MutationToggleClientActivityArgs = {
 };
 
 
-export type MutationToggleUserClientPermissionsArgs = {
+export type MutationToggleUserCategoryPermissionArgs = {
+  categoryUuid: Scalars['String']['input'];
+  userUuid: Scalars['String']['input'];
+};
+
+
+export type MutationToggleUserClientPermissionArgs = {
   clientUuid: Scalars['String']['input'];
   userUuid: Scalars['String']['input'];
 };
@@ -533,12 +539,6 @@ export type MutationUpdateOrganizationActivityArgs = {
 
 export type MutationUpdateOrganizationSolutionArgs = {
   solutionInput: SolutionInput;
-};
-
-
-export type MutationUpdateUserClientPermissionsArgs = {
-  clientUuids: Array<Scalars['String']['input']>;
-  userUuid: Scalars['String']['input'];
 };
 
 export type OrganizationType = {
@@ -604,6 +604,12 @@ export type SolutionType = {
 export type ToggleClientActivity = {
   __typename?: 'ToggleClientActivity';
   error?: Maybe<ErrorType>;
+};
+
+export type ToggleUserCategoryPermission = {
+  __typename?: 'ToggleUserCategoryPermission';
+  error?: Maybe<ErrorType>;
+  user: UserType;
 };
 
 export type ToggleUserClientPermission = {
@@ -678,13 +684,9 @@ export type UpdateOrganizationSolution = {
   solution?: Maybe<SolutionType>;
 };
 
-export type UpdateUserClientPermissions = {
-  __typename?: 'UpdateUserClientPermissions';
-  error?: Maybe<ErrorType>;
-};
-
 /** An enumeration. */
 export enum UserPermissionsEnum {
+  HAS_ALL_CATEGORIES_ACCESS = 'HAS_ALL_CATEGORIES_ACCESS',
   HAS_ALL_CLIENTS_ACCESS = 'HAS_ALL_CLIENTS_ACCESS',
   HAS_CLIENT_ACTIVITY_COSTS_ACCESS = 'HAS_CLIENT_ACTIVITY_COSTS_ACCESS',
   HAS_CLIENT_ADD_ACCESS = 'HAS_CLIENT_ADD_ACCESS',
@@ -703,6 +705,7 @@ export enum UserRoleEnum {
 
 export type UserType = {
   __typename?: 'UserType';
+  categoriesWithAccess: Array<CategoryType>;
   clientProfile: ClientUserProfileType;
   clientsWithAccess: Array<ClientType>;
   email: Scalars['String']['output'];
@@ -716,11 +719,13 @@ export type UserType = {
   uuid: Scalars['String']['output'];
 };
 
-export type ActivityFragment = { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } };
+export type ActivityFragment = { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, name: string, code: string } };
 
-export type AuthUserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: UserRoleEnum, permissions: Array<UserPermissionsEnum>, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string, categories: Array<{ __typename?: 'CategoryType', uuid: string, code: string, name: string }> } };
+export type AuthUserFragment = { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: UserRoleEnum, permissions: Array<UserPermissionsEnum>, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string, categories: Array<{ __typename?: 'CategoryType', uuid: string, name: string, code: string }> } };
 
-export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }>, softwares: Array<{ __typename?: 'ClientSoftwareType', uuid: string, software: SoftwareEnum, username?: string | null, password?: string | null }> };
+export type CategoryFragment = { __typename?: 'CategoryType', uuid: string, name: string, code: string };
+
+export type ClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, name: string, code: string } } }>, softwares: Array<{ __typename?: 'ClientSoftwareType', uuid: string, software: SoftwareEnum, username?: string | null, password?: string | null }> };
 
 export type ClientActivityFragment = { __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, quantity: number };
 
@@ -728,13 +733,11 @@ export type ClientActivityLogFragment = { __typename?: 'ClientActivityLogType', 
 
 export type ClientGroupFragment = { __typename?: 'ClientGroupType', uuid: string, name: string, clients: Array<{ __typename?: 'ClientType', uuid: string, name: string }> };
 
-export type ClientSolutionFragment = { __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, quantity: number, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } };
+export type ClientSolutionFragment = { __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, quantity: number, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, name: string, code: string } } };
 
 export type ClientSolutionLogFragment = { __typename?: 'ClientSolutionLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null };
 
 export type ClientUserFragment = { __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string } };
-
-export type CoreUserFragment = { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: UserRoleEnum };
 
 export type ErrorFragment = { __typename?: 'ErrorType', field?: string | null, message: string };
 
@@ -742,9 +745,11 @@ export type FileFragment = { __typename?: 'ClientFileType', uuid: string, name: 
 
 export type OrganizationClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
 
-export type SolutionFragment = { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> };
+export type OrganizationUserFragment = { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: UserRoleEnum };
 
-export type UserFragment = { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: UserRoleEnum, permissions: Array<UserPermissionsEnum>, clientsWithAccess: Array<{ __typename?: 'ClientType', uuid: string, name: string }> };
+export type SolutionFragment = { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, name: string, code: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> };
+
+export type UserFragment = { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: UserRoleEnum, permissions: Array<UserPermissionsEnum>, clientsWithAccess: Array<{ __typename?: 'ClientType', uuid: string, name: string }>, categoriesWithAccess: Array<{ __typename?: 'CategoryType', uuid: string, name: string }> };
 
 export type ChangePasswordMutationVariables = Exact<{
   currentPassword: Scalars['String']['input'];
@@ -760,7 +765,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginUser', token?: string | null, error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: UserRoleEnum, permissions: Array<UserPermissionsEnum>, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string, categories: Array<{ __typename?: 'CategoryType', uuid: string, code: string, name: string }> } } | null } | null };
+export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginUser', token?: string | null, error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: UserRoleEnum, permissions: Array<UserPermissionsEnum>, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string, categories: Array<{ __typename?: 'CategoryType', uuid: string, name: string, code: string }> } } | null } | null };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -823,7 +828,7 @@ export type UpdateClientMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { __typename?: 'UpdateClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }>, softwares: Array<{ __typename?: 'ClientSoftwareType', uuid: string, software: SoftwareEnum, username?: string | null, password?: string | null }> } | null } | null };
+export type UpdateClientMutation = { __typename?: 'Mutation', updateClient?: { __typename?: 'UpdateClient', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, name: string, code: string } } }>, softwares: Array<{ __typename?: 'ClientSoftwareType', uuid: string, software: SoftwareEnum, username?: string | null, password?: string | null }> } | null } | null };
 
 export type UpdateClientActivityMutationVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -832,7 +837,7 @@ export type UpdateClientActivityMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClientActivityMutation = { __typename?: 'Mutation', updateClientActivity?: { __typename?: 'UpdateClientActivity', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientActivity?: { __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, quantity: number, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } } | null } | null };
+export type UpdateClientActivityMutation = { __typename?: 'Mutation', updateClientActivity?: { __typename?: 'UpdateClientActivity', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientActivity?: { __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, quantity: number, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, name: string, code: string } } } | null } | null };
 
 export type UpdateClientActivityLogsMutationVariables = Exact<{
   clientActivityUuid: Scalars['String']['input'];
@@ -887,13 +892,21 @@ export type DeleteOrganizationSolutionMutationVariables = Exact<{
 
 export type DeleteOrganizationSolutionMutation = { __typename?: 'Mutation', deleteOrganizationSolution?: { __typename?: 'DeleteOrganizationSolution', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
 
-export type OrganizationToggleUserClientPermissionsMutationVariables = Exact<{
+export type OrganizationToggleUserCategoryPermissionMutationVariables = Exact<{
+  userUuid: Scalars['String']['input'];
+  categoryUuid: Scalars['String']['input'];
+}>;
+
+
+export type OrganizationToggleUserCategoryPermissionMutation = { __typename?: 'Mutation', toggleUserCategoryPermission?: { __typename?: 'ToggleUserCategoryPermission', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user: { __typename?: 'UserType', uuid: string, categoriesWithAccess: Array<{ __typename?: 'CategoryType', uuid: string, name: string }> } } | null };
+
+export type OrganizationToggleUserClientPermissionMutationVariables = Exact<{
   userUuid: Scalars['String']['input'];
   clientUuid: Scalars['String']['input'];
 }>;
 
 
-export type OrganizationToggleUserClientPermissionsMutation = { __typename?: 'Mutation', toggleUserClientPermissions?: { __typename?: 'ToggleUserClientPermission', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user: { __typename?: 'UserType', uuid: string, clientsWithAccess: Array<{ __typename?: 'ClientType', uuid: string, name: string }> } } | null };
+export type OrganizationToggleUserClientPermissionMutation = { __typename?: 'Mutation', toggleUserClientPermission?: { __typename?: 'ToggleUserClientPermission', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user: { __typename?: 'UserType', uuid: string, clientsWithAccess: Array<{ __typename?: 'ClientType', uuid: string, name: string }> } } | null };
 
 export type OrganizationToggleUserPermissionMutationVariables = Exact<{
   userUuid: Scalars['String']['input'];
@@ -908,27 +921,19 @@ export type UpdateOrganizationActivityMutationVariables = Exact<{
 }>;
 
 
-export type UpdateOrganizationActivityMutation = { __typename?: 'Mutation', updateOrganizationActivity?: { __typename?: 'UpdateOrganizationActivity', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, activity?: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } | null } | null };
+export type UpdateOrganizationActivityMutation = { __typename?: 'Mutation', updateOrganizationActivity?: { __typename?: 'UpdateOrganizationActivity', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, activity?: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, name: string, code: string } } | null } | null };
 
 export type UpdateOrganizationSolutionMutationVariables = Exact<{
   solutionInput: SolutionInput;
 }>;
 
 
-export type UpdateOrganizationSolutionMutation = { __typename?: 'Mutation', updateOrganizationSolution?: { __typename?: 'UpdateOrganizationSolution', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, solution?: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> } | null } | null };
-
-export type OrganizationUpdateUserClientPermissionsMutationVariables = Exact<{
-  userUuid: Scalars['String']['input'];
-  clientUuids: Array<Scalars['String']['input']> | Scalars['String']['input'];
-}>;
-
-
-export type OrganizationUpdateUserClientPermissionsMutation = { __typename?: 'Mutation', updateUserClientPermissions?: { __typename?: 'UpdateUserClientPermissions', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null } | null };
+export type UpdateOrganizationSolutionMutation = { __typename?: 'Mutation', updateOrganizationSolution?: { __typename?: 'UpdateOrganizationSolution', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, solution?: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, name: string, code: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> } | null } | null };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: UserRoleEnum, permissions: Array<UserPermissionsEnum>, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string, categories: Array<{ __typename?: 'CategoryType', uuid: string, code: string, name: string }> } } };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'UserType', uuid: string, email: string, name: string, photoUrl: string, role: UserRoleEnum, permissions: Array<UserPermissionsEnum>, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string, categories: Array<{ __typename?: 'CategoryType', uuid: string, name: string, code: string }> } } };
 
 export type ClientActivitiesQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -937,7 +942,7 @@ export type ClientActivitiesQueryVariables = Exact<{
 }>;
 
 
-export type ClientActivitiesQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, activities: Array<{ __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, quantity: number, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }>, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, quantity: number, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }> } };
+export type ClientActivitiesQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, activities: Array<{ __typename?: 'ClientActivityType', uuid: string, isExecuted: boolean, quantity: number, activity: { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, name: string, code: string } } }>, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, quantity: number, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, name: string, code: string } } }> } };
 
 export type ClientActivityLogsQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -952,7 +957,7 @@ export type ClientClientQueryVariables = Exact<{
 }>;
 
 
-export type ClientClientQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, group?: { __typename?: 'ClientGroupType', uuid: string, name: string, clients: Array<{ __typename?: 'ClientType', uuid: string, name: string }> } | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } } }>, softwares: Array<{ __typename?: 'ClientSoftwareType', uuid: string, software: SoftwareEnum, username?: string | null, password?: string | null }> } };
+export type ClientClientQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, group?: { __typename?: 'ClientGroupType', uuid: string, name: string, clients: Array<{ __typename?: 'ClientType', uuid: string, name: string }> } | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null, solutions: Array<{ __typename?: 'ClientSolutionType', uuid: string, unitCost?: number | null, unitCostCurrency: CurrencyEnum, solution: { __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, name: string, code: string } } }>, softwares: Array<{ __typename?: 'ClientSoftwareType', uuid: string, software: SoftwareEnum, username?: string | null, password?: string | null }> } };
 
 export type ClientFilesQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -993,7 +998,12 @@ export type ClientUsersQuery = { __typename?: 'Query', client: { __typename?: 'C
 export type OrganizationActivitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type OrganizationActivitiesQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string } }> } };
+export type OrganizationActivitiesQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, name: string, code: string } }> } };
+
+export type OrganizationCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type OrganizationCategoriesQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, categories: Array<{ __typename?: 'CategoryType', uuid: string, name: string, code: string }> } };
 
 export type OrganizationClientsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1003,20 +1013,27 @@ export type OrganizationClientsQuery = { __typename?: 'Query', organization: { _
 export type OrganizationSolutionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type OrganizationSolutionsQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, solutions: Array<{ __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, code: string, name: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> }> } };
+export type OrganizationSolutionsQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, solutions: Array<{ __typename?: 'SolutionType', uuid: string, name: string, category: { __typename?: 'CategoryType', uuid: string, name: string, code: string }, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }> }> } };
 
 export type OrganizationUserQueryVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
 
 
-export type OrganizationUserQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, user: { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: UserRoleEnum, permissions: Array<UserPermissionsEnum>, clientsWithAccess: Array<{ __typename?: 'ClientType', uuid: string, name: string }> } } };
+export type OrganizationUserQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, user: { __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: UserRoleEnum, permissions: Array<UserPermissionsEnum>, clientsWithAccess: Array<{ __typename?: 'ClientType', uuid: string, name: string }>, categoriesWithAccess: Array<{ __typename?: 'CategoryType', uuid: string, name: string }> } } };
 
 export type OrganizationUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type OrganizationUsersQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, users: Array<{ __typename?: 'UserType', uuid: string, name: string, email: string, photoUrl: string, role: UserRoleEnum }> } };
 
+export const CategoryFragmentDoc = gql`
+    fragment Category on CategoryType {
+  uuid
+  name
+  code
+}
+    `;
 export const ActivityFragmentDoc = gql`
     fragment Activity on ActivityType {
   uuid
@@ -1026,12 +1043,10 @@ export const ActivityFragmentDoc = gql`
   unitCostCurrency
   unitCostType
   category {
-    uuid
-    code
-    name
+    ...Category
   }
 }
-    `;
+    ${CategoryFragmentDoc}`;
 export const AuthUserFragmentDoc = gql`
     fragment AuthUser on UserType {
   uuid
@@ -1044,14 +1059,12 @@ export const AuthUserFragmentDoc = gql`
     name
     logoUrl
     categories {
-      uuid
-      code
-      name
+      ...Category
     }
   }
   permissions
 }
-    `;
+    ${CategoryFragmentDoc}`;
 export const ClientFragmentDoc = gql`
     fragment Client on ClientType {
   uuid
@@ -1070,9 +1083,7 @@ export const ClientFragmentDoc = gql`
       uuid
       name
       category {
-        uuid
-        code
-        name
+        ...Category
       }
     }
     unitCost
@@ -1085,7 +1096,7 @@ export const ClientFragmentDoc = gql`
     password
   }
 }
-    `;
+    ${CategoryFragmentDoc}`;
 export const ClientActivityFragmentDoc = gql`
     fragment ClientActivity on ClientActivityType {
   uuid
@@ -1118,16 +1129,14 @@ export const ClientSolutionFragmentDoc = gql`
     uuid
     name
     category {
-      uuid
-      code
-      name
+      ...Category
     }
   }
   unitCost
   unitCostCurrency
   quantity
 }
-    `;
+    ${CategoryFragmentDoc}`;
 export const ClientSolutionLogFragmentDoc = gql`
     fragment ClientSolutionLog on ClientSolutionLogType {
   uuid
@@ -1149,15 +1158,6 @@ export const ClientUserFragmentDoc = gql`
     spvPassword
     phoneNumber
   }
-}
-    `;
-export const CoreUserFragmentDoc = gql`
-    fragment CoreUser on UserType {
-  uuid
-  name
-  email
-  photoUrl
-  role
 }
     `;
 export const ErrorFragmentDoc = gql`
@@ -1189,21 +1189,28 @@ export const OrganizationClientFragmentDoc = gql`
   spvPassword
 }
     `;
+export const OrganizationUserFragmentDoc = gql`
+    fragment OrganizationUser on UserType {
+  uuid
+  name
+  email
+  photoUrl
+  role
+}
+    `;
 export const SolutionFragmentDoc = gql`
     fragment Solution on SolutionType {
   uuid
   name
   category {
-    uuid
-    code
-    name
+    ...Category
   }
   activities {
     uuid
     name
   }
 }
-    `;
+    ${CategoryFragmentDoc}`;
 export const UserFragmentDoc = gql`
     fragment User on UserType {
   uuid
@@ -1213,6 +1220,10 @@ export const UserFragmentDoc = gql`
   role
   permissions
   clientsWithAccess {
+    uuid
+    name
+  }
+  categoriesWithAccess {
     uuid
     name
   }
@@ -1956,9 +1967,52 @@ export function useDeleteOrganizationSolutionMutation(baseOptions?: Apollo.Mutat
 export type DeleteOrganizationSolutionMutationHookResult = ReturnType<typeof useDeleteOrganizationSolutionMutation>;
 export type DeleteOrganizationSolutionMutationResult = Apollo.MutationResult<DeleteOrganizationSolutionMutation>;
 export type DeleteOrganizationSolutionMutationOptions = Apollo.BaseMutationOptions<DeleteOrganizationSolutionMutation, DeleteOrganizationSolutionMutationVariables>;
-export const OrganizationToggleUserClientPermissionsDocument = gql`
-    mutation OrganizationToggleUserClientPermissions($userUuid: String!, $clientUuid: String!) {
-  toggleUserClientPermissions(userUuid: $userUuid, clientUuid: $clientUuid) {
+export const OrganizationToggleUserCategoryPermissionDocument = gql`
+    mutation OrganizationToggleUserCategoryPermission($userUuid: String!, $categoryUuid: String!) {
+  toggleUserCategoryPermission(userUuid: $userUuid, categoryUuid: $categoryUuid) {
+    error {
+      ...Error
+    }
+    user {
+      uuid
+      categoriesWithAccess {
+        uuid
+        name
+      }
+    }
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type OrganizationToggleUserCategoryPermissionMutationFn = Apollo.MutationFunction<OrganizationToggleUserCategoryPermissionMutation, OrganizationToggleUserCategoryPermissionMutationVariables>;
+
+/**
+ * __useOrganizationToggleUserCategoryPermissionMutation__
+ *
+ * To run a mutation, you first call `useOrganizationToggleUserCategoryPermissionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useOrganizationToggleUserCategoryPermissionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [organizationToggleUserCategoryPermissionMutation, { data, loading, error }] = useOrganizationToggleUserCategoryPermissionMutation({
+ *   variables: {
+ *      userUuid: // value for 'userUuid'
+ *      categoryUuid: // value for 'categoryUuid'
+ *   },
+ * });
+ */
+export function useOrganizationToggleUserCategoryPermissionMutation(baseOptions?: Apollo.MutationHookOptions<OrganizationToggleUserCategoryPermissionMutation, OrganizationToggleUserCategoryPermissionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<OrganizationToggleUserCategoryPermissionMutation, OrganizationToggleUserCategoryPermissionMutationVariables>(OrganizationToggleUserCategoryPermissionDocument, options);
+      }
+export type OrganizationToggleUserCategoryPermissionMutationHookResult = ReturnType<typeof useOrganizationToggleUserCategoryPermissionMutation>;
+export type OrganizationToggleUserCategoryPermissionMutationResult = Apollo.MutationResult<OrganizationToggleUserCategoryPermissionMutation>;
+export type OrganizationToggleUserCategoryPermissionMutationOptions = Apollo.BaseMutationOptions<OrganizationToggleUserCategoryPermissionMutation, OrganizationToggleUserCategoryPermissionMutationVariables>;
+export const OrganizationToggleUserClientPermissionDocument = gql`
+    mutation OrganizationToggleUserClientPermission($userUuid: String!, $clientUuid: String!) {
+  toggleUserClientPermission(userUuid: $userUuid, clientUuid: $clientUuid) {
     error {
       ...Error
     }
@@ -1972,33 +2026,33 @@ export const OrganizationToggleUserClientPermissionsDocument = gql`
   }
 }
     ${ErrorFragmentDoc}`;
-export type OrganizationToggleUserClientPermissionsMutationFn = Apollo.MutationFunction<OrganizationToggleUserClientPermissionsMutation, OrganizationToggleUserClientPermissionsMutationVariables>;
+export type OrganizationToggleUserClientPermissionMutationFn = Apollo.MutationFunction<OrganizationToggleUserClientPermissionMutation, OrganizationToggleUserClientPermissionMutationVariables>;
 
 /**
- * __useOrganizationToggleUserClientPermissionsMutation__
+ * __useOrganizationToggleUserClientPermissionMutation__
  *
- * To run a mutation, you first call `useOrganizationToggleUserClientPermissionsMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useOrganizationToggleUserClientPermissionsMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useOrganizationToggleUserClientPermissionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useOrganizationToggleUserClientPermissionMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [organizationToggleUserClientPermissionsMutation, { data, loading, error }] = useOrganizationToggleUserClientPermissionsMutation({
+ * const [organizationToggleUserClientPermissionMutation, { data, loading, error }] = useOrganizationToggleUserClientPermissionMutation({
  *   variables: {
  *      userUuid: // value for 'userUuid'
  *      clientUuid: // value for 'clientUuid'
  *   },
  * });
  */
-export function useOrganizationToggleUserClientPermissionsMutation(baseOptions?: Apollo.MutationHookOptions<OrganizationToggleUserClientPermissionsMutation, OrganizationToggleUserClientPermissionsMutationVariables>) {
+export function useOrganizationToggleUserClientPermissionMutation(baseOptions?: Apollo.MutationHookOptions<OrganizationToggleUserClientPermissionMutation, OrganizationToggleUserClientPermissionMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<OrganizationToggleUserClientPermissionsMutation, OrganizationToggleUserClientPermissionsMutationVariables>(OrganizationToggleUserClientPermissionsDocument, options);
+        return Apollo.useMutation<OrganizationToggleUserClientPermissionMutation, OrganizationToggleUserClientPermissionMutationVariables>(OrganizationToggleUserClientPermissionDocument, options);
       }
-export type OrganizationToggleUserClientPermissionsMutationHookResult = ReturnType<typeof useOrganizationToggleUserClientPermissionsMutation>;
-export type OrganizationToggleUserClientPermissionsMutationResult = Apollo.MutationResult<OrganizationToggleUserClientPermissionsMutation>;
-export type OrganizationToggleUserClientPermissionsMutationOptions = Apollo.BaseMutationOptions<OrganizationToggleUserClientPermissionsMutation, OrganizationToggleUserClientPermissionsMutationVariables>;
+export type OrganizationToggleUserClientPermissionMutationHookResult = ReturnType<typeof useOrganizationToggleUserClientPermissionMutation>;
+export type OrganizationToggleUserClientPermissionMutationResult = Apollo.MutationResult<OrganizationToggleUserClientPermissionMutation>;
+export type OrganizationToggleUserClientPermissionMutationOptions = Apollo.BaseMutationOptions<OrganizationToggleUserClientPermissionMutation, OrganizationToggleUserClientPermissionMutationVariables>;
 export const OrganizationToggleUserPermissionDocument = gql`
     mutation OrganizationToggleUserPermission($userUuid: String!, $permission: UserPermissionsEnum!) {
   toggleUserPermission(userUuid: $userUuid, permission: $permission) {
@@ -2117,42 +2171,6 @@ export function useUpdateOrganizationSolutionMutation(baseOptions?: Apollo.Mutat
 export type UpdateOrganizationSolutionMutationHookResult = ReturnType<typeof useUpdateOrganizationSolutionMutation>;
 export type UpdateOrganizationSolutionMutationResult = Apollo.MutationResult<UpdateOrganizationSolutionMutation>;
 export type UpdateOrganizationSolutionMutationOptions = Apollo.BaseMutationOptions<UpdateOrganizationSolutionMutation, UpdateOrganizationSolutionMutationVariables>;
-export const OrganizationUpdateUserClientPermissionsDocument = gql`
-    mutation OrganizationUpdateUserClientPermissions($userUuid: String!, $clientUuids: [String!]!) {
-  updateUserClientPermissions(userUuid: $userUuid, clientUuids: $clientUuids) {
-    error {
-      ...Error
-    }
-  }
-}
-    ${ErrorFragmentDoc}`;
-export type OrganizationUpdateUserClientPermissionsMutationFn = Apollo.MutationFunction<OrganizationUpdateUserClientPermissionsMutation, OrganizationUpdateUserClientPermissionsMutationVariables>;
-
-/**
- * __useOrganizationUpdateUserClientPermissionsMutation__
- *
- * To run a mutation, you first call `useOrganizationUpdateUserClientPermissionsMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useOrganizationUpdateUserClientPermissionsMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [organizationUpdateUserClientPermissionsMutation, { data, loading, error }] = useOrganizationUpdateUserClientPermissionsMutation({
- *   variables: {
- *      userUuid: // value for 'userUuid'
- *      clientUuids: // value for 'clientUuids'
- *   },
- * });
- */
-export function useOrganizationUpdateUserClientPermissionsMutation(baseOptions?: Apollo.MutationHookOptions<OrganizationUpdateUserClientPermissionsMutation, OrganizationUpdateUserClientPermissionsMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<OrganizationUpdateUserClientPermissionsMutation, OrganizationUpdateUserClientPermissionsMutationVariables>(OrganizationUpdateUserClientPermissionsDocument, options);
-      }
-export type OrganizationUpdateUserClientPermissionsMutationHookResult = ReturnType<typeof useOrganizationUpdateUserClientPermissionsMutation>;
-export type OrganizationUpdateUserClientPermissionsMutationResult = Apollo.MutationResult<OrganizationUpdateUserClientPermissionsMutation>;
-export type OrganizationUpdateUserClientPermissionsMutationOptions = Apollo.BaseMutationOptions<OrganizationUpdateUserClientPermissionsMutation, OrganizationUpdateUserClientPermissionsMutationVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {
@@ -2609,6 +2627,48 @@ export type OrganizationActivitiesQueryHookResult = ReturnType<typeof useOrganiz
 export type OrganizationActivitiesLazyQueryHookResult = ReturnType<typeof useOrganizationActivitiesLazyQuery>;
 export type OrganizationActivitiesSuspenseQueryHookResult = ReturnType<typeof useOrganizationActivitiesSuspenseQuery>;
 export type OrganizationActivitiesQueryResult = Apollo.QueryResult<OrganizationActivitiesQuery, OrganizationActivitiesQueryVariables>;
+export const OrganizationCategoriesDocument = gql`
+    query OrganizationCategories {
+  organization {
+    uuid
+    categories {
+      ...Category
+    }
+  }
+}
+    ${CategoryFragmentDoc}`;
+
+/**
+ * __useOrganizationCategoriesQuery__
+ *
+ * To run a query within a React component, call `useOrganizationCategoriesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOrganizationCategoriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOrganizationCategoriesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useOrganizationCategoriesQuery(baseOptions?: Apollo.QueryHookOptions<OrganizationCategoriesQuery, OrganizationCategoriesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<OrganizationCategoriesQuery, OrganizationCategoriesQueryVariables>(OrganizationCategoriesDocument, options);
+      }
+export function useOrganizationCategoriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<OrganizationCategoriesQuery, OrganizationCategoriesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<OrganizationCategoriesQuery, OrganizationCategoriesQueryVariables>(OrganizationCategoriesDocument, options);
+        }
+export function useOrganizationCategoriesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<OrganizationCategoriesQuery, OrganizationCategoriesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<OrganizationCategoriesQuery, OrganizationCategoriesQueryVariables>(OrganizationCategoriesDocument, options);
+        }
+export type OrganizationCategoriesQueryHookResult = ReturnType<typeof useOrganizationCategoriesQuery>;
+export type OrganizationCategoriesLazyQueryHookResult = ReturnType<typeof useOrganizationCategoriesLazyQuery>;
+export type OrganizationCategoriesSuspenseQueryHookResult = ReturnType<typeof useOrganizationCategoriesSuspenseQuery>;
+export type OrganizationCategoriesQueryResult = Apollo.QueryResult<OrganizationCategoriesQuery, OrganizationCategoriesQueryVariables>;
 export const OrganizationClientsDocument = gql`
     query OrganizationClients {
   organization {
@@ -2741,11 +2801,11 @@ export const OrganizationUsersDocument = gql`
   organization {
     uuid
     users {
-      ...CoreUser
+      ...OrganizationUser
     }
   }
 }
-    ${CoreUserFragmentDoc}`;
+    ${OrganizationUserFragmentDoc}`;
 
 /**
  * __useOrganizationUsersQuery__

@@ -2,9 +2,7 @@ fragment Solution on SolutionType {
   uuid
   name
   category {
-    uuid
-    code
-    name
+    ...Category
   }
   activities {
     uuid

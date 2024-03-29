@@ -8,7 +8,7 @@ from guardian.mixins import GuardianUserMixin
 
 from core.models import BaseModel
 from user.managers import UserManager
-from user.permissions import USER_PERMISSIONS
+from user.permissions import USER_MODEL_PERMISSIONS
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +58,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         ]
         permissions = tuple(
             (perm_codename, perm_name)
-            for perm_codename, perm_name in USER_PERMISSIONS.items()
+            for perm_codename, perm_name in USER_MODEL_PERMISSIONS.items()
         )
 
     def __str__(self):

@@ -1,0 +1,8 @@
+query OrganizationCategories {
+  organization {
+    uuid
+    categories {
+      ...Category
+    }
+  }
+}

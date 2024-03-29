@@ -15,9 +15,7 @@ fragment Client on ClientType {
       uuid
       name
       category {
-        uuid
-        code
-        name
+        ...Category
       }
     }
     unitCost

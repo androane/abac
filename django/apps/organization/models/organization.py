@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from guardian.models import UserObjectPermissionBase
 
 from core.models import BaseModel
 from core.utils import replace_filename
@@ -17,6 +18,8 @@ def organization_logo_path(instance, filename):
 
 class OrganizationBusinessCategory(BaseModel):
     """e.g. Accounting, Human Resources etc."""
+
+    VIEW_PERMISSION_CODENAME = "view_organizationbusinesscategory"
 
     class Meta:
         verbose_name_plural = "Organization Business Categories"
@@ -77,3 +80,9 @@ class Organization(BaseModel):
 
     def __repr__(self):
         return self.name
+
+
+class CategoryUserObjectPermission(UserObjectPermissionBase):
+    content_object = models.ForeignKey(
+        OrganizationBusinessCategory, on_delete=models.CASCADE
+    )

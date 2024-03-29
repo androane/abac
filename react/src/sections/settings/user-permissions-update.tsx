@@ -11,7 +11,9 @@ import {
   OrganizationUserQuery,
   UserPermissionsEnum,
   useOrganizationClientsQuery,
-  useOrganizationToggleUserClientPermissionsMutation,
+  useOrganizationToggleUserClientPermissionMutation,
+  useOrganizationToggleUserCategoryPermissionMutation,
+  useOrganizationCategoriesQuery,
 } from 'generated/graphql'
 import getErrorMessage from 'utils/api-codes'
 import ResponseHandler from 'components/response-handler'
@@ -21,13 +23,18 @@ import Iconify from 'components/iconify'
 
 enum TABS_VALUES {
   GENERAL = 'g',
-  CLIENTS = 'c',
+  CATEGORIES = 'ca',
+  CLIENTS = 'cl',
 }
 
 const TABS = [
   {
     value: TABS_VALUES.GENERAL,
     label: 'Permisiuni Generale',
+  },
+  {
+    value: TABS_VALUES.CATEGORIES,
+    label: 'Access Domeniu de Afaceri',
   },
   {
     value: TABS_VALUES.CLIENTS,
@@ -74,7 +81,7 @@ const ClientPermissionsTab: React.FC<ClientPermissionsTabProps> = ({
   const result = useOrganizationClientsQuery()
 
   const [toggleClientPermission, { loading: loadingClientPerm }] =
-    useOrganizationToggleUserClientPermissionsMutation()
+    useOrganizationToggleUserClientPermissionMutation()
 
   const onToggleClientPermission = async (clientUuid: string) => {
     try {
@@ -85,7 +92,7 @@ const ClientPermissionsTab: React.FC<ClientPermissionsTabProps> = ({
         },
         optimisticResponse: {
           __typename: 'Mutation',
-          toggleUserClientPermissions: {
+          toggleUserClientPermission: {
             __typename: 'ToggleUserClientPermission',
             error: null,
             user: {
@@ -209,6 +216,132 @@ const ClientPermissionsTab: React.FC<ClientPermissionsTabProps> = ({
   )
 }
 
+type CategoryPermissionsTabProps = {
+  onTogglePermission(permission: UserPermissionsEnum): void
+  user: OrganizationUserQuery['organization']['user']
+  loading: boolean
+}
+
+const CategoryPermissionsTab: React.FC<CategoryPermissionsTabProps> = ({
+  user,
+  onTogglePermission,
+  loading,
+}) => {
+  const { enqueueSnackbar } = useSnackbar()
+
+  const result = useOrganizationCategoriesQuery()
+
+  const [toggleCategoryPermission, { loading: loadingCategoryPerm }] =
+    useOrganizationToggleUserCategoryPermissionMutation()
+
+  const onToggleCategoryPermission = async (categoryUuid: string) => {
+    try {
+      await toggleCategoryPermission({
+        variables: {
+          userUuid: user.uuid,
+          categoryUuid,
+        },
+        optimisticResponse: {
+          __typename: 'Mutation',
+          toggleUserCategoryPermission: {
+            __typename: 'ToggleUserCategoryPermission',
+            error: null,
+            user: {
+              ...user,
+              categoriesWithAccess: user.categoriesWithAccess.find(c => c.uuid === categoryUuid)
+                ? user.categoriesWithAccess.filter(c => c.uuid !== categoryUuid)
+                : [
+                    ...user.categoriesWithAccess,
+                    {
+                      uuid: categoryUuid,
+                      name: '',
+                      __typename: 'CategoryType',
+                    },
+                  ],
+              __typename: 'UserType',
+            },
+          },
+        },
+      })
+    } catch (error) {
+      enqueueSnackbar(getErrorMessage((error as Error).message), {
+        variant: 'error',
+      })
+    }
+  }
+
+  return (
+    <>
+      <Box
+        rowGap={3}
+        columnGap={2}
+        display="grid"
+        gridTemplateColumns={{
+          xs: 'repeat(1, 1fr)',
+          sm: 'repeat(2, 1fr)',
+        }}
+      >
+        <FormControlLabel
+          sx={{ mb: 2 }}
+          label="Are access la toate domeniile din firmă?"
+          control={
+            <Switch
+              checked={user.permissions.includes(UserPermissionsEnum.HAS_ALL_CATEGORIES_ACCESS)}
+              onChange={() => onTogglePermission(UserPermissionsEnum.HAS_ALL_CATEGORIES_ACCESS)}
+              disabled={loading}
+              color="success"
+            />
+          }
+        />
+      </Box>
+      <Divider sx={{ borderStyle: 'dashed', mt: 3, mb: 3 }} />
+      <Box
+        rowGap={3}
+        columnGap={2}
+        display="grid"
+        gridTemplateColumns={{
+          xs: 'repeat(1, 1fr)',
+          sm: 'repeat(3, 1fr)',
+        }}
+      >
+        <ResponseHandler {...result}>
+          {({ organization }) => {
+            return (
+              <>
+                {organization.categories.map(category => {
+                  const hasAllCategoriesPermission = user.permissions.includes(
+                    UserPermissionsEnum.HAS_ALL_CATEGORIES_ACCESS,
+                  )
+
+                  const hasCategoryPermission = Boolean(
+                    user.categoriesWithAccess.find(c => c.uuid === category.uuid),
+                  )
+
+                  return (
+                    <FormControlLabel
+                      key={category.uuid}
+                      label={category.name}
+                      control={
+                        <Checkbox
+                          size="medium"
+                          checked={hasCategoryPermission || hasAllCategoriesPermission}
+                          onChange={() => onToggleCategoryPermission(category.uuid)}
+                          disabled={loadingCategoryPerm || loading || hasAllCategoriesPermission}
+                          color="primary"
+                        />
+                      }
+                    />
+                  )
+                })}
+              </>
+            )
+          }}
+        </ResponseHandler>
+      </Box>
+    </>
+  )
+}
+
 type GeneralPermissionsTabProps = {
   user: OrganizationUserQuery['organization']['user']
   onTogglePermission(permission: UserPermissionsEnum): void
@@ -289,7 +422,7 @@ const UpdateUserPermissions: React.FC<Props> = ({ user, onClose }) => {
       maxWidth={false}
       onClose={onClose}
       PaperProps={{
-        sx: { maxWidth: 720 },
+        sx: { maxWidth: 720, minHeight: 600 },
       }}
     >
       <DialogTitle>Permisiuni {user.name}</DialogTitle>
@@ -312,6 +445,13 @@ const UpdateUserPermissions: React.FC<Props> = ({ user, onClose }) => {
 
         {currentTab === TABS_VALUES.GENERAL && (
           <GeneralPermissionsTab
+            user={user}
+            onTogglePermission={onTogglePermission}
+            loading={loading}
+          />
+        )}
+        {currentTab === TABS_VALUES.CATEGORIES && (
+          <CategoryPermissionsTab
             user={user}
             onTogglePermission={onTogglePermission}
             loading={loading}

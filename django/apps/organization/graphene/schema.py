@@ -20,12 +20,12 @@ from organization.graphene.mutations import (
     UpdateClientUser,
     UpdateOrganizationActivity,
     UpdateOrganizationSolution,
-    UpdateUserClientPermissions,
 )
 from organization.graphene.mutations.client_mutations import (
     DeleteClientGroup,
     UpdateClientGroup,
 )
+from organization.graphene.mutations.user_mutations import ToggleUserCategoryPermission
 from organization.graphene.types import ClientType, OrganizationType
 from organization.services.client_service import get_client
 from user.decorators import logged_in_user_required
@@ -60,11 +60,11 @@ class Mutation(graphene.ObjectType):
     toggle_user_permission = ToggleUserPermission.Field(
         description="Toggle a permission for a given User"
     )
-    update_user_client_permissions = UpdateUserClientPermissions.Field(
-        description="Update User access to a give Clients"
+    toggle_user_client_permission = ToggleUserClientPermission.Field(
+        description="Toggle User Client Permission"
     )
-    toggle_user_client_permissions = ToggleUserClientPermission.Field(
-        description="Toggle User Client Permissions"
+    toggle_user_category_permission = ToggleUserCategoryPermission.Field(
+        description="Toggle User Category Permission"
     )
 
     # Organization Activity

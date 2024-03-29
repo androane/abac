@@ -35,6 +35,8 @@ class Client(BaseModel):
     Client is a client of the organization.
     """
 
+    VIEW_PERMISSION_CODENAME = "view_client"
+
     class Meta:
         constraints = [
             models.UniqueConstraint(

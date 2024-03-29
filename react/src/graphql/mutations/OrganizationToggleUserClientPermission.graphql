@@ -1,5 +1,5 @@
-mutation OrganizationToggleUserClientPermissions($userUuid: String!, $clientUuid: String!) {
-  toggleUserClientPermissions(userUuid: $userUuid, clientUuid: $clientUuid) {
+mutation OrganizationToggleUserClientPermission($userUuid: String!, $clientUuid: String!) {
+  toggleUserClientPermission(userUuid: $userUuid, clientUuid: $clientUuid) {
     error {
       ...Error
     }

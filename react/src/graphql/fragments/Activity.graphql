@@ -6,8 +6,6 @@ fragment Activity on ActivityType {
   unitCostCurrency
   unitCostType
   category {
-    uuid
-    code
-    name
+    ...Category
   }
 }

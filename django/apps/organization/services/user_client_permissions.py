@@ -7,7 +7,6 @@ from guardian.shortcuts import assign_perm, remove_perm
 from organization.models.client import Client, ClientUserObjectPermission
 from organization.models.organization import Organization
 from user.models import User
-from user.permissions import UserPermissionsEnum
 
 
 def update_user_client_permissions(
@@ -52,7 +51,7 @@ def toggle_user_client_permission(
 
     client = org.clients.get(uuid=client_uuid)
 
-    perm = "view_client"
+    perm = Client.VIEW_PERMISSION_CODENAME
 
     if user.has_perm(perm, client):
         remove_perm(perm, user, client)
@@ -62,36 +61,9 @@ def toggle_user_client_permission(
     return user
 
 
-def get_client_user_permissions(user: User) -> Iterable[Client]:
-    permission = Permission.objects.get(codename="view_client")
+def get_user_client_permissions(user: User) -> Iterable[Client]:
+    permission = Permission.objects.get(codename=Client.VIEW_PERMISSION_CODENAME)
     client_ids = ClientUserObjectPermission.objects.filter(
         user=user, permission=permission
     ).values_list("content_object_id", flat=True)
     return Client.objects.filter(id__in=client_ids)
-
-
-def toggle_user_permission(
-    org: Organization, user_uuid: str, permission: UserPermissionsEnum
-) -> None:
-    user = org.users.get(uuid=user_uuid)
-    perm = Permission.objects.get(codename=permission)
-    if user.user_permissions.filter(codename=permission).exists():
-        user.user_permissions.remove(perm)
-    else:
-        user.user_permissions.add(perm)
-
-        # The following 2 permissions are mutually exclusive
-        # If one is added, we need to remove the other one
-        if perm.codename == UserPermissionsEnum.HAS_ALL_CLIENTS_ACCESS.value:
-            user.user_permissions.remove(
-                Permission.objects.get(
-                    codename=UserPermissionsEnum.HAS_OWN_CLIENTS_ACCESS.value
-                )
-            )
-        elif perm.codename == UserPermissionsEnum.HAS_OWN_CLIENTS_ACCESS.value:
-            user.user_permissions.remove(
-                Permission.objects.get(
-                    codename=UserPermissionsEnum.HAS_ALL_CLIENTS_ACCESS.value
-                )
-            )
-    return user

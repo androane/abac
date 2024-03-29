@@ -3,11 +3,14 @@ import graphene
 
 from api.graphene.mutations import BaseMutation
 from api.permission_decorators import permission_required
-from organization.services.organization_user_permissions import (
+from organization.services.user_category_permissions import (
+    toggle_user_category_permission,
+)
+from organization.services.user_client_permissions import (
     toggle_user_client_permission,
-    toggle_user_permission,
     update_user_client_permissions,
 )
+from organization.services.user_generic_permissions import toggle_user_permission
 from user.decorators import logged_in_user_required
 from user.graphene.types import UserPermissionsEnumType, UserType
 from user.models import User
@@ -29,6 +32,7 @@ class ToggleUserPermission(BaseMutation):
         return {"user": target_user}
 
 
+# NOT USED, THE TOGGLE IS USED INSTEAD
 class UpdateUserClientPermissions(BaseMutation):
     class Arguments:
         user_uuid = graphene.String(required=True)
@@ -53,5 +57,20 @@ class ToggleUserClientPermission(BaseMutation):
     @permission_required(UserPermissionsEnum.HAS_ORGANIZATION_ADMIN.value)
     def mutate(self, user: User, **kwargs):
         target_user = toggle_user_client_permission(user.organization, **kwargs)
+
+        return {"user": target_user}
+
+
+class ToggleUserCategoryPermission(BaseMutation):
+    class Arguments:
+        user_uuid = graphene.String(required=True)
+        category_uuid = graphene.NonNull(graphene.String)
+
+    user = graphene.NonNull(UserType)
+
+    @logged_in_user_required
+    @permission_required(UserPermissionsEnum.HAS_ORGANIZATION_ADMIN.value)
+    def mutate(self, user: User, **kwargs):
+        target_user = toggle_user_category_permission(user.organization, **kwargs)
 
         return {"user": target_user}
