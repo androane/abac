@@ -49,7 +49,7 @@ def _set_client_solutions(
     client.client_solutions.exclude(uuid__in=input_client_solution_uuids).filter(
         month__isnull=True,
         year__isnull=True,
-        category_id__in=category_ids,
+        solution__category_id__in=category_ids,
     ).delete()
 
     for client_solution_input in client_input.client_solutions:
