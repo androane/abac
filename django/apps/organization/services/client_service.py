@@ -49,7 +49,7 @@ def _set_client_solutions(client: Client, client_input: "ClientInput") -> None:
         # These are optional fields in the frontend for now
         if (
             not client_solution_input.solution_uuid
-            or not client_solution_input.unit_cost
+            and not client_solution_input.unit_cost
         ):
             continue
         solution = Solution.objects.get(uuid=client_solution_input.solution_uuid)

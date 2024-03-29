@@ -324,16 +324,16 @@ const UpdateUserPermissions: React.FC<Props> = ({ user, onClose }) => {
             loading={loading}
           />
         )}
-        <DialogActions>
-          <Button
-            startIcon={<Iconify icon="ic:outline-arrow-back" />}
-            variant="outlined"
-            onClick={onClose}
-          >
-            Înapoi
-          </Button>
-        </DialogActions>
       </DialogContent>
+      <DialogActions>
+        <Button
+          startIcon={<Iconify icon="ic:outline-arrow-back" />}
+          variant="outlined"
+          onClick={onClose}
+        >
+          Înapoi
+        </Button>
+      </DialogActions>
     </Dialog>
   )
 }
