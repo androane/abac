@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from typing import Iterable
 
-from guardian.shortcuts import assign_perm, remove_perm
+from django.contrib.auth.models import Permission
 
 from organization.models.organization import (
     CategoryUserObjectPermission,
@@ -18,12 +18,19 @@ def toggle_user_category_permission(
 
     category = org.categories.get(uuid=category_uuid)
 
-    perm = OrganizationBusinessCategory.VIEW_PERMISSION_CODENAME
+    codename = OrganizationBusinessCategory.VIEW_PERMISSION_CODENAME
 
-    if user.has_perm(perm, category):
-        remove_perm(perm, user, category)
+    try:
+        perm = CategoryUserObjectPermission.objects.get(
+            user=user, content_object=category, permission__codename=codename
+        )
+    except CategoryUserObjectPermission.DoesNotExist:
+        permission = Permission.objects.get(codename=codename)
+        CategoryUserObjectPermission.objects.create(
+            user=user, content_object=category, permission=permission
+        )
     else:
-        assign_perm(perm, user, category)
+        perm.delete()
 
     return user
 

@@ -1,4 +1,4 @@
-fragment OrganizationClient on ClientType {
+fragment BaseClient on ClientType {
   uuid
   name
   description

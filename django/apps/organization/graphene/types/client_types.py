@@ -185,7 +185,7 @@ class ClientType(DjangoObjectType):
     def resolve_solutions(self, info, **kwargs):
         from organization.services.client_activity_service import get_client_solutions
 
-        return get_client_solutions(self, **kwargs)
+        return get_client_solutions(info.context.user, self, **kwargs)
 
     @permission_required(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS.value)
     def resolve_solution(self, info, **kwargs):

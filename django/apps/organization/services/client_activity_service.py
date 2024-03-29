@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from typing import Iterable, Optional
 
-from django.db.models import F
+from django.db.models import F, Q
 
 from core.models import generate_uuid
 from organization.graphene.types import ActivityInput, ClientActivityInput
@@ -99,28 +99,38 @@ def get_client_activities(
 
 
 def get_client_solutions(
-    client: Client, month: Optional[int] = None, year: Optional[int] = None
+    user: User, client: Client, month: Optional[int] = None, year: Optional[int] = None
 ) -> list[ClientSolution]:
-    global_client_solutions: Iterable[ClientSolution] = client.client_solutions.filter(
-        month__isnull=True, year__isnull=True
+    assert year and month or not year and not month
+
+    category_ids = CategoryUserObjectPermission.objects.get_category_ids_for_user(user)
+
+    all_client_solutions = client.client_solutions.filter(
+        (Q(month=None) | Q(month=month))
+        & (Q(year=None) | Q(year=year))
+        & Q(solution__category_id__in=category_ids),
     ).all()
+
+    # global_client_solutions are the solutions that are not specific to a month or year
+    # They just exist to define the client-solution connection via a price
+    global_client_solutions = [
+        _ for _ in all_client_solutions if _.month is None and _.year is None
+    ]
 
     # Returning the global solution for the client
     if not month and not year:
-        global_client_solutions
+        return global_client_solutions
 
-    existing_client_solutions = {
-        _.solution_id: _
-        for _ in client.client_solutions.filter(
-            year=year,
-            month=month,
-        )
-    }
+    client_solutions = [
+        _ for _ in all_client_solutions if _.month == month and _.year == year
+    ]
 
-    client_solutions = []
+    solution_id_to_client_solution = {_.solution_id: _ for _ in client_solutions}
+
+    result = []
     # Returning the solution for the client for the given month and year
     for global_client_solution in global_client_solutions:
-        client_solution = existing_client_solutions.get(
+        client_solution = solution_id_to_client_solution.get(
             global_client_solution.solution_id
         )
         if not client_solution:
@@ -131,5 +141,5 @@ def get_client_solutions(
             client_solution.month = month
             client_solution.save()
 
-        client_solutions.append(client_solution)
-    return client_solutions
+        result.append(client_solution)
+    return result

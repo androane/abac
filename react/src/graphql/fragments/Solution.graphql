@@ -1,9 +1,5 @@
 fragment Solution on SolutionType {
-  uuid
-  name
-  category {
-    ...Category
-  }
+  ...BaseSolution
   activities {
     uuid
     name

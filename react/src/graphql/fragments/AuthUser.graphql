@@ -1,9 +1,5 @@
 fragment AuthUser on UserType {
-  uuid
-  email
-  name
-  photoUrl
-  role
+  ...BaseUser
   organization {
     uuid
     name

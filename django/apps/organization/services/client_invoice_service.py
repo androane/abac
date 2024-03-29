@@ -4,10 +4,12 @@ from typing import Iterable
 
 import pendulum
 
-from organization.constants import CurrencyEnum, InvoiceStatusEnum, UnitCostTypeEnum
+from organization.constants import InvoiceStatusEnum, UnitCostTypeEnum
 from organization.models import Client, Invoice, Organization
 from organization.models.activity import Activity
-from organization.models.client import ClientActivity
+from organization.models.client import ClientActivity, ClientSolution
+from organization.models.organization import CategoryUserObjectPermission
+from user.models import User
 
 
 def get_client_invoice(
@@ -25,21 +27,48 @@ def get_client_invoice(
     return invoice
 
 
-def generate_invoice_items(invoice: Invoice) -> list[str]:
+def _get_client_activity_cost(client_activity: ClientActivity) -> int:
+    activity: Activity = client_activity.activity
+
+    if activity.unit_cost_type == UnitCostTypeEnum.FIXED.value:
+        return activity.unit_cost * client_activity.quantity
+
+    # HOURLY
+    cost = 0
+    if activity.unit_cost:
+        total_time = sum(
+            client_activity.logs.values_list("minutes_allocated", flat=True)
+        )
+        if total_time and activity.unit_cost:
+            cost = activity.unit_cost * total_time / 60
+
+    return cost
+
+
+def generate_invoice_items(user: User, invoice: Invoice) -> list[str]:
     client = invoice.client
+
+    category_ids = CategoryUserObjectPermission.objects.get_category_ids_for_user(user)
 
     items = []
 
-    client_solutions = client.client_solutions.filter(
-        year=invoice.year, month=invoice.month
-    ).all()
+    client_solutions: Iterable[ClientSolution] = (
+        client.client_solutions.filter(
+            year=invoice.year,
+            month=invoice.month,
+            solution__category_id__in=category_ids,
+        )
+        .select_related("solution")
+        .all()
+    )
     for client_solution in client_solutions:
         items.append(
             {
-                "name": client_solution.solution.name,
+                "solution_name": client_solution.solution.name,
                 "quantity": client_solution.quantity,
                 "cost": client_solution.unit_cost,
                 "currency": client_solution.unit_cost_currency,
+                "category": client_solution.solution.category,
             }
         )
 
@@ -48,42 +77,31 @@ def generate_invoice_items(invoice: Invoice) -> list[str]:
             is_executed=True,
             month=invoice.month,
             year=invoice.year,
+            activity__category_id__in=category_ids,
         )
         .select_related("activity", "activity__category")
-        .all()
-    )
+        .prefetch_related("logs")
+    ).all()
 
     activity_items = defaultdict(lambda: defaultdict(int))
     for client_activity in client_activities:
         activity: Activity = client_activity.activity
 
-        if activity.unit_cost_type == UnitCostTypeEnum.FIXED.value:
-            cost = activity.unit_cost * client_activity.quantity
-        elif activity.unit_cost_type == UnitCostTypeEnum.HOURLY.value:
-            cost = 0
-            if activity.unit_cost:
-                total_time = sum(
-                    client_activity.logs.values_list("minutes_allocated", flat=True)
-                )
-                if total_time and activity.unit_cost:
-                    cost = activity.unit_cost * total_time / 60
-
-        activity_items[activity.category][activity.unit_cost_currency] += cost
+        activity_items[activity.category][
+            activity.unit_cost_currency
+        ] += _get_client_activity_cost(client_activity)
 
     for category, data in activity_items.items():
         for currency, cost in data.items():
             items.append(
                 {
-                    "name": f"Servicii extra {category.get_translated_name()}",
+                    "solution_name": None,
+                    "category": category,
                     "quantity": 1,
                     "cost": cost,
                     "currency": currency,
                 }
             )
-
-    for item in items:
-        if item["currency"] != CurrencyEnum.RON.value:
-            item["name"] = item["name"] + f" ({item.currency})"
 
     return items
 

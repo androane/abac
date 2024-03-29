@@ -1,0 +1,7 @@
+fragment BaseSolution on SolutionType {
+  uuid
+  name
+  category {
+    ...Category
+  }
+}

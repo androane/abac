@@ -5,10 +5,13 @@ query ClientInvoice($clientUuid: String!, $year: Int!, $month: Int!) {
       uuid
       dateSent
       items {
-        name
+        solutionName
         quantity
         cost
         currency
+        category {
+          ...Category
+        }
       }
     }
   }

@@ -1,9 +1,5 @@
 fragment User on UserType {
-  uuid
-  name
-  email
-  photoUrl
-  role
+  ...BaseUser
   permissions
   clients {
     uuid

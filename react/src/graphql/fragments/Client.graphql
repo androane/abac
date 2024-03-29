@@ -1,25 +1,7 @@
 fragment Client on ClientType {
-  uuid
-  name
-  description
-  programManager {
-    uuid
-    name
-  }
-  cui
-  spvUsername
-  spvPassword
+  ...BaseClient
   solutions {
-    uuid
-    solution {
-      uuid
-      name
-      category {
-        ...Category
-      }
-    }
-    unitCost
-    unitCostCurrency
+    ...ClientSolution
   }
   softwares {
     uuid

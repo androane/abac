@@ -1,4 +1,4 @@
-fragment OrganizationUser on UserType {
+fragment BaseUser on UserType {
   uuid
   name
   email

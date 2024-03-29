@@ -1,13 +1,9 @@
 fragment ClientSolution on ClientSolutionType {
   uuid
-  solution {
-    uuid
-    name
-    category {
-      ...Category
-    }
-  }
   unitCost
   unitCostCurrency
   quantity
+  solution {
+    ...BaseSolution
+  }
 }

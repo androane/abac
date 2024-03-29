@@ -52,13 +52,6 @@ class OrganizationBusinessCategory(BaseModel):
     def __repr__(self):
         return self.name
 
-    def get_translated_name(self):
-        if self.code == "accounting":
-            return "Contabilitate"
-        elif self.code == "hr":
-            return "Resurse Umane"
-        return ""
-
 
 class Organization(BaseModel):
     class Meta:

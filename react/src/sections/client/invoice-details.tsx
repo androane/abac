@@ -89,7 +89,7 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({ invoice, date, 
                   table.page * table.rowsPerPage + table.rowsPerPage,
                 )
                 .map((row, index) => (
-                  <InvoiceTableRow key={row.name} index={index + 1} row={row} />
+                  <InvoiceTableRow key={index} index={index + 1} row={row} />
                 ))}
 
               <TableEmptyRows

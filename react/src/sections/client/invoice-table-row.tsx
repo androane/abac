@@ -21,7 +21,9 @@ const InvoiceTableRow: React.FC<Props> = ({ index, row }) => {
             },
           }}
         >
-          {row.name}
+          {row.solutionName
+            ? `${row.solutionName} ${row.category.name}`
+            : `Servicii suplimentare ${row.category.name}`}
         </Box>
       </TableCell>
       <TableCell>{row.quantity}</TableCell>

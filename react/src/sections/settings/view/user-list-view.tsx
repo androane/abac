@@ -22,7 +22,7 @@ import {
 import ResponseHandler from 'components/response-handler'
 import {
   useOrganizationUsersQuery,
-  OrganizationUserFragment,
+  BaseUserFragment,
   useDeleteOrganizationSolutionMutation,
   UserPermissionsEnum,
 } from 'generated/graphql'
@@ -37,7 +37,7 @@ const TABLE_HEAD = [
 ]
 
 type Props = {
-  users: OrganizationUserFragment[]
+  users: BaseUserFragment[]
 }
 
 const UsersList: React.FC<Props> = ({ users }) => {
