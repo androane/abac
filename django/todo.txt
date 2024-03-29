@@ -6,3 +6,5 @@ get subdomain name in jwt middleware
 animatie la snackbar cand a fost ok
 optimistic response activitati
 category enum pentru useri - Vio are access doar la HR. acest enum poate fi reflectat in FE. Nu e nevoie sa fie in DB
+
+tweak fragments a bit
