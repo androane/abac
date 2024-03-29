@@ -17,10 +17,10 @@ import {
 } from 'generated/graphql'
 import getErrorMessage from 'utils/api-codes'
 import ResponseHandler from 'components/response-handler'
-import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
 import { MenuItem } from '@mui/material'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 import DialogActions from 'components/dialog-actions'
+import { useAuthContext } from 'auth/hooks'
 
 type Props = {
   organizationUuid: string
@@ -29,10 +29,13 @@ type Props = {
 }
 
 const UpdateSolution: React.FC<Props> = ({ organizationUuid, solution, onClose }) => {
+  const { user } = useAuthContext()
+
+  const { enqueueSnackbar } = useSnackbar()
+
   const result = useOrganizationActivitiesQuery()
 
   const [updateOrganizationSolution, { loading }] = useUpdateOrganizationSolutionMutation()
-  const { enqueueSnackbar } = useSnackbar()
 
   const defaultValues = useMemo(
     () => ({
@@ -126,9 +129,9 @@ const UpdateSolution: React.FC<Props> = ({ organizationUuid, solution, onClose }
                 <MenuItem value="" sx={{ color: 'text.secondary' }}>
                   Alege
                 </MenuItem>
-                {CATEGORY_CODES.map(catetgoryCode => (
-                  <MenuItem key={catetgoryCode} value={catetgoryCode}>
-                    {getCategoryLabelFromCode(catetgoryCode)}
+                {user?.organization.categories.map(c => (
+                  <MenuItem key={c.code} value={c.code}>
+                    {c.name}
                   </MenuItem>
                 ))}
               </RHFSelect>

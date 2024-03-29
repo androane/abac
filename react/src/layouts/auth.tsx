@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { alpha, useTheme } from '@mui/material/styles'
-import Lottie from 'react-lottie'
+import Lottie from 'lottie-react'
 
 import { useResponsive } from 'hooks/use-responsive'
 
@@ -10,15 +10,6 @@ import { bgGradient } from 'theme/css'
 
 import Logo from 'components/logo'
 import loading from './accounting.json'
-
-const defaultOptions = {
-  loop: true,
-  autoplay: true,
-  animationData: loading,
-  rendererSettings: {
-    preserveAspectRatio: 'xMidYMid slice',
-  },
-}
 
 type Props = {
   title?: string
@@ -82,7 +73,7 @@ const AuthLayout: React.FC<Props> = ({ children, title }) => {
           justifyContent: 'center',
         }}
       >
-        <Lottie options={defaultOptions} height={400} width={900} />
+        <Lottie animationData={loading} loop autoplay />
       </Box>
     </Stack>
   )

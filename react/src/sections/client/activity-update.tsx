@@ -16,12 +16,13 @@ import {
   ClientActivityFragmentDoc,
 } from 'generated/graphql'
 import getErrorMessage from 'utils/api-codes'
-import { CATEGORY_CODES, getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
 import { MenuItem } from '@mui/material'
 import { GenericActivityType } from 'sections/client/types'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 import { useLocalStorageContext } from 'components/local-storage'
 import DialogActions from 'components/dialog-actions'
+import { useAuthContext } from 'auth/hooks'
+import { getUnitCostTypeLabel } from 'utils/constants'
 
 type Props = {
   activity: null | GenericActivityType
@@ -38,11 +39,13 @@ const UpdateClientActivity: React.FC<Props> = ({
   onClose,
   canSeeCosts,
 }) => {
-  const [updateClientActivity, { loading }] = useUpdateClientActivityMutation()
-
   const localStorage = useLocalStorageContext()
 
+  const { user } = useAuthContext()
+
   const { enqueueSnackbar } = useSnackbar()
+
+  const [updateClientActivity, { loading }] = useUpdateClientActivityMutation()
 
   const defaultValues = useMemo(
     () => ({
@@ -168,9 +171,9 @@ const UpdateClientActivity: React.FC<Props> = ({
               <MenuItem value="" sx={{ color: 'text.secondary' }}>
                 Alege
               </MenuItem>
-              {CATEGORY_CODES.map(catetgoryCode => (
-                <MenuItem key={catetgoryCode} value={catetgoryCode}>
-                  {getCategoryLabelFromCode(catetgoryCode)}
+              {user?.organization.categories.map(c => (
+                <MenuItem key={c.code} value={c.code}>
+                  {c.name}
                 </MenuItem>
               ))}
             </RHFSelect>

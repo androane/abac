@@ -1,16 +1,7 @@
 import { useEffect, useState } from 'react'
-import Lottie from 'react-lottie'
+import Lottie from 'lottie-react'
 import { Box, BoxProps } from '@mui/material'
 import loading from './cat.json'
-
-const defaultOptions = {
-  loop: true,
-  autoplay: true,
-  animationData: loading,
-  rendererSettings: {
-    preserveAspectRatio: 'xMidYMid slice',
-  },
-}
 
 const SplashScreen: React.FC<BoxProps> = ({ sx }) => {
   const [mounted, setMounted] = useState(false)
@@ -36,7 +27,7 @@ const SplashScreen: React.FC<BoxProps> = ({ sx }) => {
         ...sx,
       }}
     >
-      <Lottie options={defaultOptions} height={400} width={400} />
+      <Lottie animationData={loading} loop autoplay style={{ maxHeight: 400, maxWidth: 400 }} />
     </Box>
   )
 }

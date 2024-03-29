@@ -11,7 +11,6 @@ import { LANDING_PAGE } from 'routes/paths'
 
 import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 import Scrollbar from 'components/scrollbar'
-import { useSettingsContext } from 'components/settings'
 import {
   TableEmptyRows,
   TableHeadCustom,
@@ -157,11 +156,10 @@ const ClientGroupListCard: React.FC<Props> = ({ organizationUuid, groups }) => {
 }
 
 const ClientGroupListView = () => {
-  const settings = useSettingsContext()
   const result = useClientGroupsQuery()
 
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+    <Container maxWidth="lg">
       <CustomBreadcrumbs
         heading="Grupuri de Clienți"
         links={[{ name: 'Pagina Principală', href: LANDING_PAGE }, { name: 'Grupuri Clienți' }]}

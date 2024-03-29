@@ -1,15 +1,6 @@
 import Box, { BoxProps } from '@mui/material/Box'
-import Lottie from 'react-lottie'
+import Lottie from 'lottie-react'
 import loading from './loading.json'
-
-const defaultOptions = {
-  loop: true,
-  autoplay: true,
-  animationData: loading,
-  rendererSettings: {
-    preserveAspectRatio: 'xMidYMid slice',
-  },
-}
 
 const LoadingScreen: React.FC<BoxProps> = ({ sx, ...other }) => {
   return (
@@ -26,7 +17,7 @@ const LoadingScreen: React.FC<BoxProps> = ({ sx, ...other }) => {
       }}
       {...other}
     >
-      <Lottie options={defaultOptions} height={200} width={200} />
+      <Lottie animationData={loading} loop autoplay style={{ maxHeight: 400, maxWidth: 400 }} />
     </Box>
   )
 }

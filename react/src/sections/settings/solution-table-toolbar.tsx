@@ -11,8 +11,8 @@ import Iconify from 'components/iconify'
 import MenuItem from '@mui/material/MenuItem'
 import Checkbox from '@mui/material/Checkbox'
 import InputLabel from '@mui/material/InputLabel'
-import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
 import { SolutionTableFilters } from 'sections/settings/types'
+import { useAuthContext } from 'auth/hooks'
 
 type Props = {
   filters: SolutionTableFilters
@@ -20,6 +20,8 @@ type Props = {
 }
 
 const SolutionTableToolbar: React.FC<Props> = ({ filters, onFilters }) => {
+  const { user } = useAuthContext()
+
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       onFilters('name', event.target.value)
@@ -69,10 +71,10 @@ const SolutionTableToolbar: React.FC<Props> = ({ filters, onFilters }) => {
             <Checkbox disableRipple size="small" checked={!filters.category} />
             Toate
           </MenuItem>
-          {CATEGORY_CODES.map(category => (
-            <MenuItem key={category} value={category}>
-              <Checkbox disableRipple size="small" checked={filters.category === category} />
-              {getCategoryLabelFromCode(category)}
+          {user?.organization.categories.map(c => (
+            <MenuItem key={c.code} value={c.code}>
+              <Checkbox disableRipple size="small" checked={filters.category === c.code} />
+              {c.name}
             </MenuItem>
           ))}
         </Select>

@@ -15,31 +15,6 @@ def organization_logo_path(instance, filename):
     )
 
 
-class Organization(BaseModel):
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["name"],
-                condition=models.Q(deleted__isnull=True),
-                name="organization_organization_name_unique",
-            )
-        ]
-
-    name = models.CharField(max_length=128)
-    logo = models.FileField(
-        upload_to=organization_logo_path,
-        help_text="Organization logo",
-        null=True,
-        blank=True,
-    )
-
-    def __str__(self):
-        return self.name
-
-    def __repr__(self):
-        return self.name
-
-
 class OrganizationBusinessCategory(BaseModel):
     """e.g. Accounting, Human Resources etc."""
 
@@ -74,3 +49,31 @@ class OrganizationBusinessCategory(BaseModel):
         elif self.code == "hr":
             return "Resurse Umane"
         return ""
+
+
+class Organization(BaseModel):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name"],
+                condition=models.Q(deleted__isnull=True),
+                name="organization_organization_name_unique",
+            )
+        ]
+
+    categories = models.ManyToManyField(
+        OrganizationBusinessCategory, related_name="organizations"
+    )
+    name = models.CharField(max_length=128)
+    logo = models.FileField(
+        upload_to=organization_logo_path,
+        help_text="Organization logo",
+        null=True,
+        blank=True,
+    )
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name

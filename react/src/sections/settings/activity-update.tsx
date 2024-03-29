@@ -17,10 +17,11 @@ import {
   ActivityFragmentDoc,
 } from 'generated/graphql'
 import getErrorMessage from 'utils/api-codes'
-import { CATEGORY_CODES, getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
+import { getUnitCostTypeLabel } from 'utils/constants'
 import { MenuItem } from '@mui/material'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 import DialogActions from 'components/dialog-actions'
+import { useAuthContext } from 'auth/hooks'
 
 type Props = {
   organizationUuid: string
@@ -29,8 +30,11 @@ type Props = {
 }
 
 const UpdateActivity: React.FC<Props> = ({ organizationUuid, activity, onClose }) => {
-  const [updateOrganizationActivity, { loading }] = useUpdateOrganizationActivityMutation()
+  const { user } = useAuthContext()
+
   const { enqueueSnackbar } = useSnackbar()
+
+  const [updateOrganizationActivity, { loading }] = useUpdateOrganizationActivityMutation()
 
   const defaultValues = useMemo(
     () => ({
@@ -132,9 +136,9 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, activity, onClose }
               <MenuItem value="" sx={{ color: 'text.secondary' }}>
                 Alege
               </MenuItem>
-              {CATEGORY_CODES.map(catetgoryCode => (
-                <MenuItem key={catetgoryCode} value={catetgoryCode}>
-                  {getCategoryLabelFromCode(catetgoryCode)}
+              {user?.organization.categories.map(c => (
+                <MenuItem key={c.code} value={c.code}>
+                  {c.name}
                 </MenuItem>
               ))}
             </RHFSelect>

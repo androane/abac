@@ -12,7 +12,6 @@ import { LANDING_PAGE, paths } from 'routes/paths'
 
 import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 import Scrollbar from 'components/scrollbar'
-import { useSettingsContext } from 'components/settings'
 import {
   TableEmptyRows,
   TableHeadCustom,
@@ -200,12 +199,10 @@ const SolutionList: React.FC<Props> = ({ organizationUuid, solutions }) => {
 }
 
 const SolutionListView = () => {
-  const settings = useSettingsContext()
-
   const result = useOrganizationSolutionsQuery()
 
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+    <Container maxWidth="lg">
       <CustomBreadcrumbs
         heading="Pachete"
         links={[

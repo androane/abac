@@ -9,12 +9,13 @@ export interface LogoProps extends BoxProps {
   disabledLink?: boolean
 }
 
-const Logo = forwardRef<HTMLDivElement, LogoProps>(({ disabledLink = false, sx }) => {
+const Logo = forwardRef<HTMLDivElement, LogoProps>(({ disabledLink = false, sx }, ref) => {
   const logo = (
     <Box
+      ref={ref}
       component="img"
       src="/logo/logo.png"
-      sx={{ pb: 8, width: 150, cursor: 'pointer', ...sx }}
+      sx={{ width: 150, cursor: 'pointer', ...sx }}
     />
   )
 

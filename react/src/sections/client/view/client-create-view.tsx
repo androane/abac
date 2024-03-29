@@ -3,17 +3,14 @@ import Container from '@mui/material/Container'
 import { LANDING_PAGE, paths } from 'routes/paths'
 
 import CustomBreadcrumbs from 'components/custom-breadcrumbs'
-import { useSettingsContext } from 'components/settings'
 
 import { withUserPermission } from 'auth/hoc'
 import { UserPermissionsEnum } from 'generated/graphql'
 import { UpdateClient } from '../client-update'
 
 const ClientCreateView = () => {
-  const settings = useSettingsContext()
-
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+    <Container maxWidth="lg">
       <CustomBreadcrumbs
         heading="Adaugă un Client Nou"
         links={[

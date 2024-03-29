@@ -20,7 +20,7 @@ class OrganizationAdmin(SimpleHistoryAdmin):
     history_list_display = [
         "name",
     ]
-    fields = ("name", "logo")
+    fields = ("name", "logo", "categories")
     ordering = ("name",)
 
 

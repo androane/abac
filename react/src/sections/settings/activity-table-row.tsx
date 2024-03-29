@@ -13,7 +13,6 @@ import { ConfirmDialog } from 'components/custom-dialog'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
 import { ActivityFragment } from 'generated/graphql'
-import { getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
 
 type Props = {
   onEditRow: VoidFunction
@@ -48,7 +47,7 @@ const ActivityTableRow: React.FC<Props> = ({ row, onEditRow, onDeleteRow, loadin
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={getCategoryLabelFromCode(row.category.code)}
+            primary={row.category.name}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -81,7 +80,7 @@ const ActivityTableRow: React.FC<Props> = ({ row, onEditRow, onDeleteRow, loadin
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={getUnitCostTypeLabel(row.unitCostType)}
+            primary={row.unitCostType}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

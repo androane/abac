@@ -4,7 +4,6 @@ import Tabs from '@mui/material/Tabs'
 import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 import Iconify from 'components/iconify'
 import ResponseHandler from 'components/response-handler'
-import { useSettingsContext } from 'components/settings'
 import { UserPermissionsEnum, useOrganizationClientsQuery } from 'generated/graphql'
 import { useCallback, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
@@ -63,8 +62,6 @@ const ClientEditView = () => {
 
   const { uuid } = params
 
-  const settings = useSettingsContext()
-
   const result = useOrganizationClientsQuery()
 
   const tabs = TABS.filter(
@@ -80,7 +77,7 @@ const ClientEditView = () => {
   }, [])
 
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+    <Container maxWidth="lg">
       <ResponseHandler {...result}>
         {({ organization }) => {
           const client = organization.clients.find(_ => _.uuid === uuid)

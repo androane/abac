@@ -32,7 +32,6 @@ import {
 } from 'generated/graphql'
 import { useAuthContext } from 'auth/hooks'
 import getErrorMessage from 'utils/api-codes'
-import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 import Iconify from 'components/iconify'
 
@@ -53,6 +52,7 @@ const ClientInfo: React.FC<ClientInfoProps> = ({ client }) => {
           <List>
             {client.group.clients.map(c => (
               <Box
+                key={c.uuid}
                 onClick={() => router.push(paths.app.client.edit(c.uuid))}
                 sx={{
                   ml: 2,
@@ -77,7 +77,7 @@ const ClientInfo: React.FC<ClientInfoProps> = ({ client }) => {
 }
 
 const UpdateClientSolutions: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) => {
-  const { hasPermission } = useAuthContext()
+  const { user, hasPermission } = useAuthContext()
 
   const canSeeCosts = hasPermission(UserPermissionsEnum.HAS_CLIENT_ACTIVITY_COSTS_ACCESS)
   const canSeeInformation = hasPermission(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS)
@@ -103,19 +103,19 @@ const UpdateClientSolutions: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) 
           {({ organization }) => {
             return (
               <>
-                {CATEGORY_CODES.map((categoryCode, index) => {
+                {user?.organization.categories.map((category, index) => {
                   return (
-                    <React.Fragment key={categoryCode}>
+                    <React.Fragment key={category.code}>
                       <RHFSelect
                         disabled={!canUpdate}
                         name={`clientSolutions[${index}].solutionUuid`}
-                        label={`Pachet ${getCategoryLabelFromCode(categoryCode)}`}
+                        label={`Pachet ${category.name}`}
                       >
                         <MenuItem value="" sx={{ color: 'text.secondary' }}>
                           Alege
                         </MenuItem>
                         {organization.solutions
-                          .filter(s => s.category.code === categoryCode)
+                          .filter(s => s.category.code === category.code)
                           .map(s => (
                             <MenuItem key={s.uuid} value={s.uuid}>
                               {s.name}
@@ -221,7 +221,7 @@ const SoftwareEnumToLabel = {
 }
 
 const DEFAULT_SOFTWARE = {
-  uuid: undefined,
+  uuid: '',
   software: undefined,
   username: '',
   password: '',
@@ -321,11 +321,9 @@ type Props = {
 export const UpdateClient: React.FC<Props> = ({ client }) => {
   const router = useRouter()
 
-  const { hasPermission } = useAuthContext()
+  const { user, hasPermission } = useAuthContext()
 
   const canUpdate = hasPermission(UserPermissionsEnum.HAS_CLIENT_ADD_ACCESS)
-
-  const { user } = useAuthContext()
 
   const [updateClient, { loading }] = useUpdateClientMutation()
 
@@ -343,16 +341,14 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
       description: client?.description || '',
       imageUrl: null,
       programManagerUuid: client?.programManager?.uuid || user?.uuid,
-      spvUsername: client?.spvUsername,
-      spvPassword: client?.spvPassword,
-      cui: client?.cui,
-      clientSolutions: CATEGORY_CODES.map(categoryCode => {
-        const clientSolution = client?.solutions.find(
-          cs => cs.solution.category.code === categoryCode,
-        )
+      spvUsername: client?.spvUsername || '',
+      spvPassword: client?.spvPassword || '',
+      cui: client?.cui || '',
+      clientSolutions: user!.organization.categories.map(c => {
+        const clientSolution = client?.solutions.find(cs => cs.solution.category.code === c.code)
         return {
-          uuid: clientSolution?.uuid,
-          solutionUuid: clientSolution?.solution.uuid,
+          uuid: clientSolution?.uuid || '',
+          solutionUuid: clientSolution?.solution.uuid || '',
           unitCost: clientSolution?.unitCost,
           unitCostCurrency: clientSolution?.unitCostCurrency || CurrencyEnum.RON,
         }

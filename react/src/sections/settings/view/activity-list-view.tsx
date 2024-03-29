@@ -12,7 +12,6 @@ import { LANDING_PAGE, paths } from 'routes/paths'
 
 import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 import Scrollbar from 'components/scrollbar'
-import { useSettingsContext } from 'components/settings'
 import {
   TableEmptyRows,
   TableHeadCustom,
@@ -219,12 +218,10 @@ const ActivityList: React.FC<Props> = ({ organizationUuid, activities }) => {
 }
 
 const ActivityListView = () => {
-  const settings = useSettingsContext()
-
   const result = useOrganizationActivitiesQuery()
 
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+    <Container maxWidth="lg">
       <CustomBreadcrumbs
         heading="Servicii"
         links={[

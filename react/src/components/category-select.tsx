@@ -6,7 +6,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Checkbox from '@mui/material/Checkbox'
 import { APP_STORAGE_KEYS, useLocalStorageContext } from 'components/local-storage'
 
-import { CATEGORY_CODES, getCategoryLabelFromCode } from 'utils/constants'
+import { useAuthContext } from 'auth/hooks'
 
 type Props = {
   onChange(event: SelectChangeEvent<string>): void
@@ -14,6 +14,9 @@ type Props = {
 
 const CategorySelect: React.FC<Props> = ({ onChange }) => {
   const localStorage = useLocalStorageContext()
+
+  const { user } = useAuthContext()
+
   const { category } = localStorage
 
   const handleChange = (event: SelectChangeEvent<string>) => {
@@ -36,10 +39,10 @@ const CategorySelect: React.FC<Props> = ({ onChange }) => {
         <Checkbox disableRipple size="small" checked={!category} />
         Toate
       </MenuItem>
-      {CATEGORY_CODES.map(c => (
-        <MenuItem key={c} value={c}>
-          <Checkbox disableRipple size="small" checked={category === c} />
-          {getCategoryLabelFromCode(c)}
+      {user?.organization.categories.map(c => (
+        <MenuItem key={c.code} value={c.code}>
+          <Checkbox disableRipple size="small" checked={category === c.code} />
+          {c.name}
         </MenuItem>
       ))}
     </Select>

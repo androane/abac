@@ -29,6 +29,7 @@ class OrganizationType(DjangoObjectType):
         only_fields = (
             "uuid",
             "name",
+            "categories",
         )
 
     solutions = graphene.List(graphene.NonNull(SolutionType), required=True)
@@ -61,3 +62,6 @@ class OrganizationType(DjangoObjectType):
 
     def resolve_client_groups(self, info, **kwargs):
         return self.client_groups.all()
+
+    def resolve_categories(self, info, **kwargs):
+        return self.categories.all()

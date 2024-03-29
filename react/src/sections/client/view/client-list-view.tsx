@@ -12,7 +12,6 @@ import { LANDING_PAGE, paths } from 'routes/paths'
 
 import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 import Scrollbar from 'components/scrollbar'
-import { useSettingsContext } from 'components/settings'
 import {
   TableEmptyRows,
   TableHeadCustom,
@@ -194,11 +193,10 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
 }
 
 const ClientListView = () => {
-  const settings = useSettingsContext()
   const result = useOrganizationClientsQuery()
 
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+    <Container maxWidth="lg">
       <CustomBreadcrumbs
         heading="Listă Clienți"
         links={[

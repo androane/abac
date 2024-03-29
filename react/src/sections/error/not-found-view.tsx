@@ -1,5 +1,5 @@
 import { m } from 'framer-motion'
-import Lottie from 'react-lottie'
+import Lottie from 'lottie-react'
 
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -9,15 +9,6 @@ import { RouterLink } from 'routes/components'
 import { MotionContainer, varBounce } from 'components/animate'
 import { LANDING_PAGE } from 'routes/paths'
 import notfound from './notfound.json'
-
-const defaultOptions = {
-  loop: true,
-  autoplay: true,
-  animationData: notfound,
-  rendererSettings: {
-    preserveAspectRatio: 'xMidYMid slice',
-  },
-}
 
 const NotFoundView = () => {
   return (
@@ -35,7 +26,7 @@ const NotFoundView = () => {
       </m.div>
 
       <m.div variants={varBounce().in}>
-        <Lottie options={defaultOptions} height={400} width={400} />
+        <Lottie animationData={notfound} loop autoplay style={{ maxHeight: 400, maxWidth: 400 }} />
       </m.div>
 
       <Button

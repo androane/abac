@@ -15,7 +15,6 @@ import { typography } from './typography'
 import { customShadows } from './custom-shadows'
 import { createContrast } from './options/contrast'
 import { createPresets } from './options/presets'
-import RTL from './options/right-to-left'
 import { componentsOverrides } from './overrides'
 
 type Props = {
@@ -42,18 +41,11 @@ export default function ThemeProvider({ children }: Props) {
         ...customShadows(settings.themeMode),
         ...presets.customShadows,
       },
-      direction: settings.themeDirection,
       shadows: shadows(settings.themeMode),
       shape: { borderRadius: 8 },
       typography,
     }),
-    [
-      settings.themeMode,
-      settings.themeDirection,
-      presets.palette,
-      presets.customShadows,
-      contrast.palette,
-    ],
+    [settings.themeMode, presets.palette, presets.customShadows, contrast.palette],
   )
 
   const theme = createTheme(memoizedValue as ThemeOptions)
@@ -67,10 +59,8 @@ export default function ThemeProvider({ children }: Props) {
 
   return (
     <MuiThemeProvider theme={themeWithLocale}>
-      <RTL themeDirection={settings.themeDirection}>
-        <CssBaseline />
-        {children}
-      </RTL>
+      <CssBaseline />
+      {children}
     </MuiThemeProvider>
   )
 }
