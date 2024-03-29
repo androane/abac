@@ -3,8 +3,8 @@ import graphene
 from django.contrib.auth import get_user_model
 from graphene_django import DjangoObjectType
 
-from organization.services.user_category_permissions import get_user_category_permissions
-from organization.services.user_client_permissions import get_user_client_permissions
+from organization.services.user_category_permissions import get_user_categories
+from organization.services.user_client_permissions import get_user_clients
 from user.constants import UserRoleEnum
 from user.permissions import UserPermissionsEnum
 
@@ -36,10 +36,10 @@ class UserType(DjangoObjectType):
     permissions = graphene.List(
         graphene.NonNull(UserPermissionsEnumType), required=True
     )
-    clients_with_access = graphene.List(
+    clients = graphene.List(
         graphene.NonNull("organization.graphene.types.ClientType"), required=True
     )
-    categories_with_access = graphene.List(
+    categories = graphene.List(
         graphene.NonNull("organization.graphene.types.CategoryType"), required=True
     )
     role = UserRoleEnumType(required=True)
@@ -54,11 +54,11 @@ class UserType(DjangoObjectType):
     def resolve_permissions(self, info):
         return self.user_permissions.all().values_list("codename", flat=True)
 
-    def resolve_clients_with_access(self, info):
-        return get_user_client_permissions(self)
+    def resolve_clients(self, info):
+        return get_user_clients(self)
 
-    def resolve_categories_with_access(self, info):
-        return get_user_category_permissions(self)
+    def resolve_categories(self, info):
+        return get_user_categories(self)
 
     def resolve_role(self, info):
         return (

@@ -5,7 +5,7 @@ mutation OrganizationToggleUserClientPermission($userUuid: String!, $clientUuid:
     }
     user {
       uuid
-      clientsWithAccess {
+      clients {
         uuid
         name
       }

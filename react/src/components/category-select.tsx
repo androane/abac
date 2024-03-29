@@ -39,7 +39,7 @@ const CategorySelect: React.FC<Props> = ({ onChange }) => {
         <Checkbox disableRipple size="small" checked={!category} />
         Toate
       </MenuItem>
-      {user?.organization.categories.map(c => (
+      {user?.categories.map(c => (
         <MenuItem key={c.code} value={c.code}>
           <Checkbox disableRipple size="small" checked={category === c.code} />
           {c.name}

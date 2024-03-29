@@ -4,9 +4,10 @@ from typing import TYPE_CHECKING
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 
-from organization.models import Client, ClientSolution, Organization
+from organization.models import Client, ClientSolution
 from organization.models.activity import Solution
 from organization.models.client import ClientSoftware, ClientUserObjectPermission
+from organization.models.organization import CategoryUserObjectPermission
 from user.models import User
 from user.permissions import UserPermissionsEnum
 
@@ -39,10 +40,16 @@ def get_client(user: User, uuid: str) -> Client:
     return get_clients(user).get(uuid=uuid)
 
 
-def _set_client_solutions(client: Client, client_input: "ClientInput") -> None:
+def _set_client_solutions(
+    user: User, client: Client, client_input: "ClientInput"
+) -> None:
+    category_ids = CategoryUserObjectPermission.objects.get_category_ids_for_user(user)
+
     input_client_solution_uuids = set([_.uuid for _ in client_input.client_solutions])
     client.client_solutions.exclude(uuid__in=input_client_solution_uuids).filter(
-        month__isnull=True, year__isnull=True
+        month__isnull=True,
+        year__isnull=True,
+        category_id__in=category_ids,
     ).delete()
 
     for client_solution_input in client_input.client_solutions:
@@ -91,7 +98,9 @@ def _set_client_softwares(client: Client, client_input: "ClientInput") -> None:
             )
 
 
-def update_or_create_client(org: Organization, client_input: "ClientInput") -> Client:
+def update_or_create_client(user: User, client_input: "ClientInput") -> Client:
+    org = user.organization
+
     program_manager = None
     if client_input.program_manager_uuid:
         program_manager = get_user_model().objects.get(
@@ -118,7 +127,7 @@ def update_or_create_client(org: Organization, client_input: "ClientInput") -> C
 
     client.save()
 
-    _set_client_solutions(client, client_input)
+    _set_client_solutions(user, client, client_input)
     _set_client_softwares(client, client_input)
 
     return client

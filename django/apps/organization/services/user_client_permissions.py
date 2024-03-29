@@ -61,7 +61,7 @@ def toggle_user_client_permission(
     return user
 
 
-def get_user_client_permissions(user: User) -> Iterable[Client]:
+def get_user_clients(user: User) -> Iterable[Client]:
     permission = Permission.objects.get(codename=Client.VIEW_PERMISSION_CODENAME)
     client_ids = ClientUserObjectPermission.objects.filter(
         user=user, permission=permission

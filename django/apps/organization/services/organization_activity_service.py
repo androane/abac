@@ -8,9 +8,7 @@ from user.models import User
 
 
 def get_organization_activities(user: User) -> Iterable[Activity]:
-    category_ids = CategoryUserObjectPermission.objects.filter(
-        user=user,
-    ).values_list("content_object__id", flat=True)
+    category_ids = CategoryUserObjectPermission.objects.get_category_ids_for_user(user)
 
     return user.organization.activities.filter(
         client__isnull=True,
@@ -51,5 +49,5 @@ def update_organization_activity(
     return activity
 
 
-def delete_activity(organization: Organization, uuid: str) -> None:
+def delete_organization_activity(organization: Organization, uuid: str) -> None:
     organization.activities.get(uuid=uuid).delete()

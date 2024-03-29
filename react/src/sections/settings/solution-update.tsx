@@ -89,7 +89,7 @@ const UpdateSolution: React.FC<Props> = ({ organizationUuid, solution, onClose }
         },
       })
       form.reset()
-      enqueueSnackbar('Pachetutl a fost actualizat!')
+      enqueueSnackbar('Pachetul a fost actualizat!')
       onClose()
     } catch (error) {
       enqueueSnackbar(getErrorMessage((error as Error).message), {
@@ -109,7 +109,7 @@ const UpdateSolution: React.FC<Props> = ({ organizationUuid, solution, onClose }
       }}
     >
       <FormProvider methods={form} onSubmit={onSubmit}>
-        <DialogTitle>Pachet</DialogTitle>
+        <DialogTitle>{solution ? solution.name : 'Adaugă pachet'}</DialogTitle>
         <DialogContent>
           <br />
           <Box
@@ -129,7 +129,7 @@ const UpdateSolution: React.FC<Props> = ({ organizationUuid, solution, onClose }
                 <MenuItem value="" sx={{ color: 'text.secondary' }}>
                   Alege
                 </MenuItem>
-                {user?.organization.categories.map(c => (
+                {user?.categories.map(c => (
                   <MenuItem key={c.code} value={c.code}>
                     {c.name}
                   </MenuItem>

@@ -5,7 +5,7 @@ rapoarte
 get subdomain name in jwt middleware
 animatie la snackbar cand a fost ok
 optimistic response activitati
-
 tweak fragments a bit
 facturare functie de domeniu si sa nu mai intorc din backend nume traduse deja
 daca organizatia nu are toate categoriile
+activitate “Am primit documente”

@@ -8,9 +8,9 @@ fragment AuthUser on UserType {
     uuid
     name
     logoUrl
-    categories {
-      ...Category
-    }
+  }
+  categories {
+    ...Category
   }
   permissions
 }

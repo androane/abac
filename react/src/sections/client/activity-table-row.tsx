@@ -20,6 +20,7 @@ import { useBoolean } from 'hooks/use-boolean'
 import React from 'react'
 import { GenericActivityType } from 'sections/client/types'
 import { action, primary } from 'theme/palette'
+import { getUnitCostTypeLabel } from 'utils/constants'
 
 const SolutionTooltip: React.FC<{ solutionUuid: string }> = ({ solutionUuid }) => {
   const result = useOrganizationSolutionsQuery()
@@ -238,7 +239,7 @@ const ActivityTableRow: React.FC<Props> = ({
         )}
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={row.unitCostType}
+            primary={getUnitCostTypeLabel(row.unitCostType)}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

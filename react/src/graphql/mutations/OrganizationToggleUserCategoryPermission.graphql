@@ -5,7 +5,7 @@ mutation OrganizationToggleUserCategoryPermission($userUuid: String!, $categoryU
     }
     user {
       uuid
-      categoriesWithAccess {
+      categories {
         uuid
         name
       }

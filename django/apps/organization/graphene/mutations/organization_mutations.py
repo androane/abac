@@ -10,12 +10,12 @@ from organization.graphene.types import (
     SolutionType,
 )
 from organization.services.organization_activity_service import (
-    delete_activity,
+    delete_organization_activity,
     update_organization_activity,
 )
 from organization.services.organization_solution_service import (
-    delete_solution,
-    update_solution,
+    delete_organization_solution,
+    update_organization_solution,
 )
 from user.decorators import logged_in_user_required
 from user.models import User
@@ -45,7 +45,7 @@ class DeleteOrganizationActivity(BaseMutation):
     @logged_in_user_required
     @permission_required(UserPermissionsEnum.HAS_SETTINGS_ACCESS.value)
     def mutate(self, user: User, **kwargs):
-        delete_activity(user.organization, **kwargs)
+        delete_organization_activity(user.organization, **kwargs)
 
         return {}
 
@@ -59,7 +59,7 @@ class UpdateOrganizationSolution(BaseMutation):
     @logged_in_user_required
     @permission_required(UserPermissionsEnum.HAS_SETTINGS_ACCESS.value)
     def mutate(self, user: User, **kwargs):
-        solution = update_solution(user.organization, **kwargs)
+        solution = update_organization_solution(user.organization, **kwargs)
 
         return {
             "solution": solution,
@@ -73,6 +73,6 @@ class DeleteOrganizationSolution(BaseMutation):
     @logged_in_user_required
     @permission_required(UserPermissionsEnum.HAS_SETTINGS_ACCESS.value)
     def mutate(self, user: User, **kwargs):
-        delete_solution(user.organization, **kwargs)
+        delete_organization_solution(user.organization, **kwargs)
 
         return {}

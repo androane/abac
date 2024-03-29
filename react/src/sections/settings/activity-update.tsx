@@ -119,7 +119,7 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, activity, onClose }
       }}
     >
       <FormProvider methods={form} onSubmit={onSubmit}>
-        <DialogTitle>Serviciu</DialogTitle>
+        <DialogTitle>{activity ? activity.name : 'Adaugă Serviciu'}</DialogTitle>
         <DialogContent>
           <br />
           <Box
@@ -136,7 +136,7 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, activity, onClose }
               <MenuItem value="" sx={{ color: 'text.secondary' }}>
                 Alege
               </MenuItem>
-              {user?.organization.categories.map(c => (
+              {user?.categories.map(c => (
                 <MenuItem key={c.code} value={c.code}>
                   {c.name}
                 </MenuItem>

@@ -26,7 +26,7 @@ import {
   useDeleteOrganizationSolutionMutation,
   UserPermissionsEnum,
 } from 'generated/graphql'
-import UpdateUserPermissions from 'sections/settings/user-permissions-update'
+import UpdateUserPermissions from 'sections/settings/user-permissions-update/user-permissions-update'
 import { withUserPermission } from 'auth/hoc'
 import UserTableRow from 'sections/settings/user-table-row'
 

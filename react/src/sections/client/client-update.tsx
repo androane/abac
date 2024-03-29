@@ -103,7 +103,7 @@ const UpdateClientSolutions: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) 
           {({ organization }) => {
             return (
               <>
-                {user?.organization.categories.map((category, index) => {
+                {user?.categories.map((category, index) => {
                   return (
                     <React.Fragment key={category.code}>
                       <RHFSelect
@@ -344,7 +344,7 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
       spvUsername: client?.spvUsername || '',
       spvPassword: client?.spvPassword || '',
       cui: client?.cui || '',
-      clientSolutions: user!.organization.categories.map(c => {
+      clientSolutions: user!.categories.map(c => {
         const clientSolution = client?.solutions.find(cs => cs.solution.category.code === c.code)
         return {
           uuid: clientSolution?.uuid || '',

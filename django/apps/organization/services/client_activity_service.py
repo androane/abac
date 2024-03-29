@@ -89,9 +89,7 @@ def toggle_client_activity(
 def get_client_activities(
     user: User, client: Client, month: int, year: int
 ) -> Iterable[ClientActivity]:
-    category_ids = CategoryUserObjectPermission.objects.filter(
-        user=user,
-    ).values_list("content_object__id", flat=True)
+    category_ids = CategoryUserObjectPermission.objects.get_category_ids_for_user(user)
 
     return client.client_activities.filter(
         month=month,

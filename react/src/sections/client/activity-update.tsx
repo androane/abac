@@ -171,7 +171,7 @@ const UpdateClientActivity: React.FC<Props> = ({
               <MenuItem value="" sx={{ color: 'text.secondary' }}>
                 Alege
               </MenuItem>
-              {user?.organization.categories.map(c => (
+              {user?.categories.map(c => (
                 <MenuItem key={c.code} value={c.code}>
                   {c.name}
                 </MenuItem>

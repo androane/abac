@@ -55,7 +55,7 @@ class UpdateClient(BaseMutation):
     @logged_in_user_required
     @permission_required(UserPermissionsEnum.HAS_CLIENT_ADD_ACCESS.value)
     def mutate(self, user: User, **kwargs):
-        client = update_or_create_client(user.organization, **kwargs)
+        client = update_or_create_client(user, **kwargs)
 
         return {
             "client": client,

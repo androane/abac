@@ -71,7 +71,7 @@ const ActivityTableToolbar: React.FC<Props> = ({ filters, onFilters }) => {
             <Checkbox disableRipple size="small" checked={!filters.category} />
             Toate
           </MenuItem>
-          {user?.organization.categories.map(c => (
+          {user?.categories.map(c => (
             <MenuItem key={c.code} value={c.code}>
               <Checkbox disableRipple size="small" checked={filters.category === c.code} />
               {c.name}

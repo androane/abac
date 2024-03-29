@@ -53,9 +53,7 @@ const cache = new InMemoryCache({
     CategoryType: {
       fields: {
         name: {
-          read: name => {
-            return getCategoryLabelFromName(name)
-          },
+          read: name => getCategoryLabelFromName(name),
         },
       },
     },

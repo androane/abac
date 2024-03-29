@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import Iterable
 
-from django.contrib.auth.models import Permission
 from guardian.shortcuts import assign_perm, remove_perm
 
 from organization.models.organization import (
@@ -29,11 +28,11 @@ def toggle_user_category_permission(
     return user
 
 
-def get_user_category_permissions(user: User) -> Iterable[OrganizationBusinessCategory]:
-    permission = Permission.objects.get(
-        codename=OrganizationBusinessCategory.VIEW_PERMISSION_CODENAME
+def get_user_categories(user: User) -> Iterable[OrganizationBusinessCategory]:
+    permission_cdename = OrganizationBusinessCategory.VIEW_PERMISSION_CODENAME
+
+    client_ids = CategoryUserObjectPermission.objects.get_category_ids_for_user(
+        user, permission_cdename
     )
-    client_ids = CategoryUserObjectPermission.objects.filter(
-        user=user, permission=permission
-    ).values_list("content_object_id", flat=True)
+
     return OrganizationBusinessCategory.objects.filter(id__in=client_ids)

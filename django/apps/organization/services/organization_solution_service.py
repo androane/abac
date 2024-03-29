@@ -8,14 +8,14 @@ from user.models import User
 
 
 def get_organization_solutions(user: User) -> Iterable[Solution]:
-    category_ids = CategoryUserObjectPermission.objects.filter(
-        user=user,
-    ).values_list("content_object__id", flat=True)
+    category_ids = CategoryUserObjectPermission.objects.get_category_ids_for_user(
+        user,
+    )
 
     return user.organization.solutions.filter(category_id__in=category_ids)
 
 
-def update_solution(
+def update_organization_solution(
     organization: Organization, solution_input: SolutionInput
 ) -> Solution:
     if solution_input.uuid:
@@ -43,5 +43,5 @@ def update_solution(
     return solution
 
 
-def delete_solution(organization: Organization, uuid: str) -> None:
+def delete_organization_solution(organization: Organization, uuid: str) -> None:
     organization.solutions.get(uuid=uuid).delete()
