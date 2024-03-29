@@ -8,3 +8,4 @@ optimistic response activitati
 category enum pentru useri - Vio are access doar la HR. acest enum poate fi reflectat in FE. Nu e nevoie sa fie in DB
 
 tweak fragments a bit
+facturare functie de domeniu si sa nu mai intorc din backend nume traduse deja

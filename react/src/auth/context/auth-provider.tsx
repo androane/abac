@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useMemo, useReducer } from 'react'
 import { useApolloClient } from '@apollo/client'
 
-import { UserPermissionsEnum, useLoginMutation, useLogoutMutation } from 'generated/graphql'
+import {
+  CurrentUserDocument,
+  UserPermissionsEnum,
+  useLoginMutation,
+  useLogoutMutation,
+} from 'generated/graphql'
 import { ActionMapType, AuthStateType, AuthUserType } from '../types'
 import { AuthContext } from './auth-context'
 import { clearAuthData, getAuthData, setAuthData } from './utils'
@@ -55,21 +60,26 @@ type Props = {
   children: React.ReactNode
 }
 
-export function AuthProvider({ children }: Props) {
+export const AuthProvider: React.FC<Props> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState)
-  const [loginMutation] = useLoginMutation()
-  const [logoutMutation] = useLogoutMutation()
+
   const client = useApolloClient()
+
+  const [loginMutation] = useLoginMutation()
+
+  const [logoutMutation] = useLogoutMutation()
 
   const initialize = useCallback(async () => {
     try {
-      const { accessToken, user } = getAuthData()
+      const { accessToken } = getAuthData()
 
       if (accessToken) {
+        const result = await client.query({ query: CurrentUserDocument })
+
         dispatch({
           type: Types.INITIAL,
           payload: {
-            user,
+            user: result.data?.currentUser || null,
           },
         })
       } else {
@@ -108,7 +118,7 @@ export function AuthProvider({ children }: Props) {
         throw new Error(error?.message)
       }
 
-      setAuthData(token, user, rememberMe)
+      setAuthData(token, rememberMe)
 
       dispatch({
         type: Types.LOGIN,
