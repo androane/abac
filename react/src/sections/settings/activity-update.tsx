@@ -17,7 +17,7 @@ import {
   ActivityFragmentDoc,
 } from 'generated/graphql'
 import getErrorMessage from 'utils/api-codes'
-import { getUnitCostTypeLabel } from 'utils/constants'
+import { getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
 import { MenuItem } from '@mui/material'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 import DialogActions from 'components/dialog-actions'
@@ -138,7 +138,7 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, activity, onClose }
               </MenuItem>
               {user?.categories.map(c => (
                 <MenuItem key={c.code} value={c.code}>
-                  {c.name}
+                  {getCategoryLabelFromCode(c.code)}
                 </MenuItem>
               ))}
             </RHFSelect>

@@ -13,6 +13,7 @@ import Checkbox from '@mui/material/Checkbox'
 import InputLabel from '@mui/material/InputLabel'
 import { ActivityTableFilters } from 'sections/settings/types'
 import { useAuthContext } from 'auth/hooks'
+import { getCategoryLabelFromCode } from 'utils/constants'
 
 type Props = {
   filters: ActivityTableFilters
@@ -74,7 +75,7 @@ const ActivityTableToolbar: React.FC<Props> = ({ filters, onFilters }) => {
           {user?.categories.map(c => (
             <MenuItem key={c.code} value={c.code}>
               <Checkbox disableRipple size="small" checked={filters.category === c.code} />
-              {c.name}
+              {getCategoryLabelFromCode(c.code)}
             </MenuItem>
           ))}
         </Select>

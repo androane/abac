@@ -20,7 +20,7 @@ import { useBoolean } from 'hooks/use-boolean'
 import React from 'react'
 import { GenericActivityType } from 'sections/client/types'
 import { action, primary } from 'theme/palette'
-import { getUnitCostTypeLabel } from 'utils/constants'
+import { getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
 
 const SolutionTooltip: React.FC<{ solutionUuid: string }> = ({ solutionUuid }) => {
   const result = useOrganizationSolutionsQuery()
@@ -88,6 +88,20 @@ const ActivityTableRow: React.FC<Props> = ({
         clientUuid,
         clientActivityUuid,
       },
+      // optimisticResponse: {
+      //   __typename: 'Mutation',
+      //   toggleClientActivity: {
+      //     __typename: 'ToggleClientActivity',
+      //     error: null,
+      //     user: {
+      //       ...user,
+      //       permissions: user.permissions.includes(permission)
+      //         ? user.permissions.filter(p => p !== permission)
+      //         : [...user.permissions, permission],
+      //       __typename: 'UserType',
+      //     },
+      //   },
+      // },
       update(cache) {
         cache.modify({
           id: cache.identify({ uuid: clientActivityUuid, __typename: 'ClientActivityType' }),
@@ -215,7 +229,7 @@ const ActivityTableRow: React.FC<Props> = ({
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={row.category.name}
+            primary={getCategoryLabelFromCode(row.category.code)}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

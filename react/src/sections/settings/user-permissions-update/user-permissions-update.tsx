@@ -93,7 +93,7 @@ const UpdateUserPermissions: React.FC<Props> = ({ user, onClose }) => {
       maxWidth={false}
       onClose={onClose}
       PaperProps={{
-        sx: { maxWidth: 720, minHeight: 600 },
+        sx: { maxWidth: 720, height: 700 },
       }}
     >
       <DialogTitle>Permisiuni {user.name}</DialogTitle>

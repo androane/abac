@@ -14,14 +14,19 @@ if TYPE_CHECKING:
 
 
 def get_client_users(user: User, client: Client) -> list[User]:
+    users = client.users.all()
+    if client.group:
+        users |= user.organization.users.filter(
+            client_id__in=client.group.clients.values_list("id", flat=True),
+            client_profile__show_in_group=True,
+        )
+
     try:
         validate_has_permission(user, UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS)
     except PermissionException:
-        return client.users.exclude(
-            client_profile__role=ClientUserRoleEnum.ASSOCIATE.value
-        )
+        return users.exclude(client_profile__role=ClientUserRoleEnum.ASSOCIATE.value)
 
-    return client.users.all()
+    return users
 
 
 def update_client_user(
@@ -56,6 +61,7 @@ def update_client_user(
         "spv_username",
         "spv_password",
         "phone_number",
+        "show_in_group",
     ):
         value = client_user_input.get(field)
         if value:

@@ -1,10 +1,13 @@
 squash migrations
-ce utilizatori intorc pt grup (bifa pt user al grupului)
 documente per luna
 rapoarte
-get subdomain name in jwt middleware
-animatie la snackbar cand a fost ok
-optimistic response activitati
-daca organizatia nu are toate categoriile
+paginare clienti cu relay
+URL-uri pt taburi (activitate etc)
 activitate “Am primit documente”
 sentry
+
+
+
+Pt viitor, cand reusesc sa vand softul:
+ - get subdomain name in jwt middleware
+ - ce se intampla organizatia nu are toate categoriile

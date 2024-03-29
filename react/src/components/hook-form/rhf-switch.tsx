@@ -18,7 +18,10 @@ export default function RHFSwitch({ name, helperText, ...other }: Props) {
       control={control}
       render={({ field, fieldState: { error } }) => (
         <div>
-          <FormControlLabel control={<Switch {...field} checked={field.value} />} {...other} />
+          <FormControlLabel
+            control={<Switch {...field} color="success" checked={field.value} />}
+            {...other}
+          />
 
           {(!!error || helperText) && (
             <FormHelperText error={!!error}>{error ? error?.message : helperText}</FormHelperText>

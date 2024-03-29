@@ -152,6 +152,10 @@ class ClientUserProfile(BaseModel):
         null=True,
         help_text="Role in the organization",
     )
+    show_in_group = models.BooleanField(
+        default=False,
+        help_text="If true, the user will show for all clients in the same group",
+    )
 
     # Accounting Specific Fields
     spv_username = models.CharField(

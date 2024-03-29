@@ -9,8 +9,6 @@ import { withScope, captureMessage } from '@sentry/browser'
 import { GRAPHQL_ENDPOINT } from 'config/config-env'
 import { clearAuthData, getAuthData } from 'auth/context/utils'
 import { GENERIC_ERROR_MESSAGE } from 'utils/api-codes'
-import { getCategoryLabelFromName, getUnitCostTypeLabel } from 'utils/constants'
-import { UnitCostTypeEnum } from 'generated/graphql'
 
 enum GraphQLErrorsEnum {
   UNAUTHORIZED_ACCESS = 'UNAUTHORIZED_ACCESS',
@@ -48,23 +46,6 @@ const cache = new InMemoryCache({
       return `${object.__typename}-${object.uuid}`
     }
     return undefined
-  },
-  typePolicies: {
-    CategoryType: {
-      fields: {
-        name: {
-          read: name => getCategoryLabelFromName(name),
-        },
-      },
-    },
-    ActivityType: {
-      fields: {
-        unitCostType: {
-          read: (unitCostType: UnitCostTypeEnum) =>
-            unitCostType && getUnitCostTypeLabel(unitCostType),
-        },
-      },
-    },
   },
 })
 

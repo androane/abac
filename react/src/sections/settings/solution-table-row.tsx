@@ -13,6 +13,7 @@ import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
 import { SolutionFragment } from 'generated/graphql'
 import { ListItemText } from '@mui/material'
+import { getCategoryLabelFromCode } from 'utils/constants'
 
 type Props = {
   row: SolutionFragment
@@ -47,7 +48,7 @@ const SolutionTableRow: React.FC<Props> = ({ row, onEditRow, onDeleteRow, loadin
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={row.category.name}
+            primary={getCategoryLabelFromCode(row.category.code)}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

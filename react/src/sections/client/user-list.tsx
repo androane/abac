@@ -33,9 +33,10 @@ import UserTableRow from './user-table-row'
 type CardProps = {
   clientUuid: string
   users: APIClientUser[]
+  clientIsInGroup: boolean
 }
 
-const UserListCard: React.FC<CardProps> = ({ clientUuid, users }) => {
+const UserListCard: React.FC<CardProps> = ({ clientUuid, users, clientIsInGroup }) => {
   const [deleteUser, { loading }] = useDeleteClientUserMutation()
 
   const { hasPermission } = useAuthContext()
@@ -47,8 +48,13 @@ const UserListCard: React.FC<CardProps> = ({ clientUuid, users }) => {
     { id: 'role', label: 'Rol' },
     { id: 'spvUsername', label: 'Utilizator SPV' },
     { id: 'spvPassword', label: 'Parola SPV' },
+    { id: 'showInGroup', label: 'Este persoana de contact pentru grup?' },
     { id: '', width: 88 },
   ]
+
+  if (!clientIsInGroup) {
+    TABLE_HEAD = TABLE_HEAD.filter(_ => _.id !== 'showInGroup')
+  }
 
   const canSeeInformation = hasPermission(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS)
 
@@ -109,6 +115,7 @@ const UserListCard: React.FC<CardProps> = ({ clientUuid, users }) => {
       />
       {showCreateUser.value && (
         <UpdateUser
+          clientIsInGroup={clientIsInGroup}
           clientUuid={clientUuid}
           user={users.find(_ => _.uuid === userUuidToEdit)}
           onClose={showCreateUser.onFalse}
@@ -136,6 +143,7 @@ const UserListCard: React.FC<CardProps> = ({ clientUuid, users }) => {
                   )
                   .map(row => (
                     <UserTableRow
+                      clientIsInGroup={clientIsInGroup}
                       loading={loading}
                       key={row.uuid}
                       row={row}
@@ -183,7 +191,13 @@ const UserList: React.FC<Props> = ({ clientUuid }) => {
   return (
     <ResponseHandler {...result}>
       {({ client }) => {
-        return <UserListCard clientUuid={clientUuid} users={client.users} />
+        return (
+          <UserListCard
+            clientUuid={clientUuid}
+            clientIsInGroup={Boolean(client.group)}
+            users={client.users}
+          />
+        )
       }}
     </ResponseHandler>
   )

@@ -7,7 +7,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import Box from '@mui/material/Box'
 
-import FormProvider, { RHFSelect, RHFTextField } from 'components/hook-form'
+import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'components/hook-form'
 import { useSnackbar } from 'components/snackbar'
 import {
   useUpdateClientUserMutation,
@@ -22,13 +22,20 @@ import DialogActions from 'components/dialog-actions'
 import { MenuItem } from '@mui/material'
 
 type Props = {
+  clientIsInGroup: boolean
   clientUuid: string
   user?: APIClientUser
   onClose: () => void
   canSeeInformation: boolean
 }
 
-const UpdateUser: React.FC<Props> = ({ clientUuid, user, onClose, canSeeInformation }) => {
+const UpdateUser: React.FC<Props> = ({
+  clientIsInGroup,
+  clientUuid,
+  user,
+  onClose,
+  canSeeInformation,
+}) => {
   const [updateClientUser, { loading }] = useUpdateClientUserMutation()
 
   const { enqueueSnackbar } = useSnackbar()
@@ -43,6 +50,7 @@ const UpdateUser: React.FC<Props> = ({ clientUuid, user, onClose, canSeeInformat
       spvUsername: user?.clientProfile.spvUsername || '',
       spvPassword: user?.clientProfile.spvPassword || '',
       phoneNumber: user?.clientProfile.phoneNumber || '',
+      showInGroup: user?.clientProfile.showInGroup,
     }),
     [user],
   )
@@ -58,6 +66,7 @@ const UpdateUser: React.FC<Props> = ({ clientUuid, user, onClose, canSeeInformat
         spvUsername: Yup.string().nullable(),
         spvPassword: Yup.string().nullable(),
         phoneNumber: Yup.string().nullable(),
+        showInGroup: Yup.boolean().nullable(),
       }),
     ),
     defaultValues,
@@ -78,6 +87,7 @@ const UpdateUser: React.FC<Props> = ({ clientUuid, user, onClose, canSeeInformat
             spvUsername: data.spvUsername,
             spvPassword: data.spvPassword,
             phoneNumber: data.phoneNumber,
+            showInGroup: data.showInGroup,
           },
         },
         update(cache, { data: cacheData }) {
@@ -120,7 +130,9 @@ const UpdateUser: React.FC<Props> = ({ clientUuid, user, onClose, canSeeInformat
       }}
     >
       <FormProvider methods={form} onSubmit={onSubmit}>
-        <DialogTitle>Persoană de Contact</DialogTitle>
+        <DialogTitle>
+          {user ? `${user.lastName} ${user.firstName}` : 'Adaugă Persoană de Contact'}
+        </DialogTitle>
         <DialogContent>
           <br />
           <Box
@@ -171,6 +183,14 @@ const UpdateUser: React.FC<Props> = ({ clientUuid, user, onClose, canSeeInformat
           >
             <RHFTextField name="spvUsername" label="Utilizator SPV" />
             <RHFTextField name="spvPassword" label="Parolă SPV" />
+            {clientIsInGroup && (
+              <RHFSwitch
+                name="showInGroup"
+                labelPlacement="start"
+                label="Este personă de contact pentru întregul grup de firme?"
+                sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
+              />
+            )}
           </Box>
 
           <DialogActions label={user ? 'Salvează' : 'Adaugă'} onClose={onClose} loading={loading} />

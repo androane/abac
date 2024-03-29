@@ -15,6 +15,7 @@ import { APIClientUser } from 'sections/client/types'
 import LoadingButton from '@mui/lab/LoadingButton'
 
 type Props = {
+  clientIsInGroup: boolean
   loading: boolean
   canSeeInformation: boolean
   row: APIClientUser
@@ -25,6 +26,7 @@ type Props = {
 const UserTableRow: React.FC<Props> = ({
   canSeeInformation,
   loading,
+  clientIsInGroup,
   row,
   onEditRow,
   onDeleteRow,
@@ -106,6 +108,19 @@ const UserTableRow: React.FC<Props> = ({
             }}
           />
         </TableCell>
+        {clientIsInGroup && (
+          <TableCell sx={{ whiteSpace: 'nowrap' }}>
+            <ListItemText
+              primary={row.clientProfile.showInGroup ? 'Da' : 'Nu'}
+              secondary=""
+              primaryTypographyProps={{ typography: 'body2' }}
+              secondaryTypographyProps={{
+                component: 'span',
+                color: 'text.disabled',
+              }}
+            />
+          </TableCell>
+        )}
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />

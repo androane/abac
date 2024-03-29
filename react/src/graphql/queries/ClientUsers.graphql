@@ -1,6 +1,9 @@
 query ClientUsers($clientUuid: String!) {
   client(uuid: $clientUuid) {
     uuid
+    group {
+      uuid
+    }
     users {
       ...ClientUser
     }

@@ -21,6 +21,7 @@ import { MenuItem } from '@mui/material'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 import DialogActions from 'components/dialog-actions'
 import { useAuthContext } from 'auth/hooks'
+import { getCategoryLabelFromCode } from 'utils/constants'
 
 type Props = {
   organizationUuid: string
@@ -131,7 +132,7 @@ const UpdateSolution: React.FC<Props> = ({ organizationUuid, solution, onClose }
                 </MenuItem>
                 {user?.categories.map(c => (
                   <MenuItem key={c.code} value={c.code}>
-                    {c.name}
+                    {getCategoryLabelFromCode(c.code)}
                   </MenuItem>
                 ))}
               </RHFSelect>

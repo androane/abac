@@ -209,6 +209,7 @@ class ClientUserProfileType(DjangoObjectType):
             "spv_username",
             "spv_password",
             "phone_number",
+            "show_in_group",
         )
 
     role = ClientUserRoleEnumType()
@@ -294,6 +295,7 @@ class ClientUserInput(graphene.InputObjectType):
     spv_username = graphene.String()
     spv_password = graphene.String()
     phone_number = graphene.String()
+    show_in_group = graphene.Boolean()
 
 
 class ClientGroupInput(graphene.InputObjectType):

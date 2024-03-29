@@ -232,6 +232,7 @@ export type ClientUserInput = {
   ownershipPercentage?: InputMaybe<Scalars['Int']['input']>;
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
   role?: InputMaybe<ClientUserRoleEnum>;
+  showInGroup?: InputMaybe<Scalars['Boolean']['input']>;
   spvPassword?: InputMaybe<Scalars['String']['input']>;
   spvUsername?: InputMaybe<Scalars['String']['input']>;
   uuid?: InputMaybe<Scalars['String']['input']>;
@@ -243,6 +244,8 @@ export type ClientUserProfileType = {
   ownershipPercentage?: Maybe<Scalars['Int']['output']>;
   phoneNumber: Scalars['String']['output'];
   role?: Maybe<ClientUserRoleEnum>;
+  /** If true, the user will show for all clients in the same group */
+  showInGroup: Scalars['Boolean']['output'];
   /** SPV Password */
   spvPassword?: Maybe<Scalars['String']['output']>;
   /** SPV Username */
@@ -743,7 +746,7 @@ export type ClientSolutionFragment = { __typename?: 'ClientSolutionType', uuid: 
 
 export type ClientSolutionLogFragment = { __typename?: 'ClientSolutionLogType', uuid: string, date: DateString, minutesAllocated: number, description?: string | null };
 
-export type ClientUserFragment = { __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string } };
+export type ClientUserFragment = { __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string, showInGroup: boolean } };
 
 export type ErrorFragment = { __typename?: 'ErrorType', field?: string | null, message: string };
 
@@ -878,7 +881,7 @@ export type UpdateClientUserMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClientUserMutation = { __typename?: 'Mutation', updateClientUser?: { __typename?: 'UpdateClientUser', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientUser?: { __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string } } | null } | null };
+export type UpdateClientUserMutation = { __typename?: 'Mutation', updateClientUser?: { __typename?: 'UpdateClientUser', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientUser?: { __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string, showInGroup: boolean } } | null } | null };
 
 export type DeleteOrganizationActivityMutationVariables = Exact<{
   uuid: Scalars['String']['input'];
@@ -995,7 +998,7 @@ export type ClientUsersQueryVariables = Exact<{
 }>;
 
 
-export type ClientUsersQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, users: Array<{ __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string } }> } };
+export type ClientUsersQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, group?: { __typename?: 'ClientGroupType', uuid: string } | null, users: Array<{ __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string, showInGroup: boolean } }> } };
 
 export type OrganizationActivitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1167,6 +1170,7 @@ export const ClientUserFragmentDoc = gql`
     spvUsername
     spvPassword
     phoneNumber
+    showInGroup
   }
 }
     `;
@@ -2528,6 +2532,9 @@ export const ClientUsersDocument = gql`
     query ClientUsers($clientUuid: String!) {
   client(uuid: $clientUuid) {
     uuid
+    group {
+      uuid
+    }
     users {
       ...ClientUser
     }

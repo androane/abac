@@ -9,5 +9,6 @@ fragment ClientUser on UserType {
     spvUsername
     spvPassword
     phoneNumber
+    showInGroup
   }
 }
