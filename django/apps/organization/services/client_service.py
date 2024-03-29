@@ -7,7 +7,9 @@ from django.db.models import Q
 from organization.models import Client, ClientSolution
 from organization.models.activity import Solution
 from organization.models.client import ClientSoftware, ClientUserObjectPermission
-from organization.models.organization import CategoryUserObjectPermission
+from organization.services.category_permission_service import (
+    filter_objects_by_user_categories,
+)
 from user.models import User
 from user.permissions import UserPermissionsEnum
 
@@ -43,14 +45,12 @@ def get_client(user: User, uuid: str) -> Client:
 def _set_client_solutions(
     user: User, client: Client, client_input: "ClientInput"
 ) -> None:
-    category_ids = CategoryUserObjectPermission.objects.get_category_ids_for_user(user)
-
     input_client_solution_uuids = set([_.uuid for _ in client_input.client_solutions])
-    client.client_solutions.exclude(uuid__in=input_client_solution_uuids).filter(
+    qs = client.client_solutions.exclude(uuid__in=input_client_solution_uuids).filter(
         month__isnull=True,
         year__isnull=True,
-        solution__category_id__in=category_ids,
-    ).delete()
+    )
+    filter_objects_by_user_categories(qs, user, "solution__category_id").delete()
 
     for client_solution_input in client_input.client_solutions:
         # These are optional fields in the frontend for now

@@ -12,7 +12,9 @@ from organization.models import (
     OrganizationBusinessCategory,
 )
 from organization.models.client import Client, ClientSolution
-from organization.models.organization import CategoryUserObjectPermission
+from organization.services.category_permission_service import (
+    filter_objects_by_user_categories,
+)
 from user.models import User
 
 
@@ -89,13 +91,11 @@ def toggle_client_activity(
 def get_client_activities(
     user: User, client: Client, month: int, year: int
 ) -> Iterable[ClientActivity]:
-    category_ids = CategoryUserObjectPermission.objects.get_category_ids_for_user(user)
-
-    return client.client_activities.filter(
+    queryset = client.client_activities.filter(
         month=month,
         year=year,
-        activity__category__in=category_ids,
     )
+    return filter_objects_by_user_categories(queryset, user, "activity__category_id")
 
 
 def get_client_solutions(
@@ -103,13 +103,12 @@ def get_client_solutions(
 ) -> list[ClientSolution]:
     assert year and month or not year and not month
 
-    category_ids = CategoryUserObjectPermission.objects.get_category_ids_for_user(user)
-
     all_client_solutions = client.client_solutions.filter(
-        (Q(month=None) | Q(month=month))
-        & (Q(year=None) | Q(year=year))
-        & Q(solution__category_id__in=category_ids),
+        (Q(month=None) | Q(month=month)) & (Q(year=None) | Q(year=year))
     ).all()
+    all_client_solutions = filter_objects_by_user_categories(
+        all_client_solutions, user, "solution__category_id"
+    )
 
     # global_client_solutions are the solutions that are not specific to a month or year
     # They just exist to define the client-solution connection via a price

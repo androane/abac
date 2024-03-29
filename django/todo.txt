@@ -7,3 +7,4 @@ animatie la snackbar cand a fost ok
 optimistic response activitati
 daca organizatia nu are toate categoriile
 activitate “Am primit documente”
+sentry

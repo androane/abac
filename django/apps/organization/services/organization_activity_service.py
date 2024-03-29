@@ -3,17 +3,18 @@ from typing import Iterable
 
 from organization.graphene.types import ActivityInput
 from organization.models import Activity, Organization, OrganizationBusinessCategory
-from organization.models.organization import CategoryUserObjectPermission
+from organization.services.category_permission_service import (
+    filter_objects_by_user_categories,
+)
 from user.models import User
 
 
 def get_organization_activities(user: User) -> Iterable[Activity]:
-    category_ids = CategoryUserObjectPermission.objects.get_category_ids_for_user(user)
-
-    return user.organization.activities.filter(
+    qs = user.organization.activities.filter(
         client__isnull=True,
-        category__in=category_ids,
     )
+
+    return filter_objects_by_user_categories(qs, user, "category_id")
 
 
 def update_organization_activity(

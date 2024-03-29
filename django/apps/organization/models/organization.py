@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from functools import lru_cache
 from typing import TYPE_CHECKING, Optional
 
 from django.db import models
@@ -82,6 +83,7 @@ class Organization(BaseModel):
 
 
 class CategoryUserObjectPermissionManager(models.Manager):
+    @lru_cache
     def get_category_ids_for_user(
         self, user: "User", permission_codename: Optional[str] = None
     ):

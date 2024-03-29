@@ -8,7 +8,9 @@ from organization.constants import InvoiceStatusEnum, UnitCostTypeEnum
 from organization.models import Client, Invoice, Organization
 from organization.models.activity import Activity
 from organization.models.client import ClientActivity, ClientSolution
-from organization.models.organization import CategoryUserObjectPermission
+from organization.services.category_permission_service import (
+    filter_objects_by_user_categories,
+)
 from user.models import User
 
 
@@ -48,19 +50,20 @@ def _get_client_activity_cost(client_activity: ClientActivity) -> int:
 def generate_invoice_items(user: User, invoice: Invoice) -> list[str]:
     client = invoice.client
 
-    category_ids = CategoryUserObjectPermission.objects.get_category_ids_for_user(user)
-
     items = []
 
     client_solutions: Iterable[ClientSolution] = (
         client.client_solutions.filter(
             year=invoice.year,
             month=invoice.month,
-            solution__category_id__in=category_ids,
         )
         .select_related("solution")
         .all()
     )
+    client_solutions = filter_objects_by_user_categories(
+        client_solutions, user, "solution__category_id"
+    )
+
     for client_solution in client_solutions:
         items.append(
             {
@@ -77,11 +80,13 @@ def generate_invoice_items(user: User, invoice: Invoice) -> list[str]:
             is_executed=True,
             month=invoice.month,
             year=invoice.year,
-            activity__category_id__in=category_ids,
         )
         .select_related("activity", "activity__category")
         .prefetch_related("logs")
     ).all()
+    client_activities = filter_objects_by_user_categories(
+        client_activities, user, "activity__category_id"
+    )
 
     activity_items = defaultdict(lambda: defaultdict(int))
     for client_activity in client_activities:

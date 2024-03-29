@@ -3,16 +3,16 @@ from typing import Iterable
 
 from organization.graphene.types import SolutionInput
 from organization.models import Organization, OrganizationBusinessCategory, Solution
-from organization.models.organization import CategoryUserObjectPermission
+from organization.services.category_permission_service import (
+    filter_objects_by_user_categories,
+)
 from user.models import User
 
 
 def get_organization_solutions(user: User) -> Iterable[Solution]:
-    category_ids = CategoryUserObjectPermission.objects.get_category_ids_for_user(
-        user,
+    return filter_objects_by_user_categories(
+        user.organization.solutions, user, "category_id"
     )
-
-    return user.organization.solutions.filter(category_id__in=category_ids)
 
 
 def update_organization_solution(
