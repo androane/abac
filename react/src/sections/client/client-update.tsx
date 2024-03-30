@@ -26,7 +26,6 @@ import {
   CurrencyEnum,
   useOrganizationUsersQuery,
   UserPermissionsEnum,
-  ClientFragmentDoc,
   SoftwareEnum,
   ClientInput,
 } from 'generated/graphql'
@@ -409,26 +408,8 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
             softwares,
           },
         },
-        update(cache, { data: cacheData }) {
-          cache.modify({
-            id: cache.identify({ uuid: user?.organization.uuid, __typename: 'OrganizationType' }),
-            fields: {
-              clients(existingClients) {
-                if (client) {
-                  return existingClients
-                }
-                const newClient = cache.writeFragment({
-                  data: cacheData?.updateClient?.client,
-                  fragment: ClientFragmentDoc,
-                })
-                return [newClient, ...existingClients]
-              },
-            },
-          })
-        },
       })
       enqueueSnackbar(client ? 'Clientul a fost actualizat!' : 'Clientul a fost creat!')
-      // router.push(paths.app.client.list)
       if (!client) {
         router.push(paths.app.client.list)
       } else if (response.data?.updateClient?.client?.uuid) {
