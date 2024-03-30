@@ -62,7 +62,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "api.jwt_middleware.JWTAuthenticationMiddleware",
+    "api.middleware.JWTAuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -185,6 +185,7 @@ if SENTRY_DSN:
 # Graphene
 GRAPHENE = {
     "ATOMIC_MUTATIONS": True,
+    "MIDDLEWARE": ["api.middleware.SentryMiddleware"],
 }
 
 # django-guardian

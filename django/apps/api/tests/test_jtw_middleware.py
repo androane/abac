@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytest
 
-from api.jwt_middleware import JWTAuthenticationMiddleware
+from api.middleware import JWTAuthenticationMiddleware
 from api.services.auth_service import (
     AUTH_TOKEN_PREFIX,
     AUTHORIZATION_KEY,
@@ -14,7 +14,7 @@ from user.tests.factories import UserF
 def test_jwt_authetication_middlewre_valid_token(
     mocker, graphql_anonymous_user_request_factory
 ):
-    mocker.patch("api.jwt_middleware.patch_vary_headers")
+    mocker.patch("api.middleware.patch_vary_headers")
     request = graphql_anonymous_user_request_factory()
 
     user = UserF()
@@ -32,7 +32,7 @@ def test_jwt_authetication_middlewre_valid_token(
 def test_jwt_authetication_middlewre_invalid_token(
     mocker, graphql_anonymous_user_request_factory
 ):
-    mocker.patch("api.jwt_middleware.patch_vary_headers")
+    mocker.patch("api.middleware.patch_vary_headers")
     request = graphql_anonymous_user_request_factory()
 
     request.META = {
