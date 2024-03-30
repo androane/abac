@@ -5,6 +5,7 @@ import dj_database_url
 import environ
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.graphene import GrapheneIntegration
 
 root = environ.Path(__file__) - 2
 
@@ -171,6 +172,7 @@ if SENTRY_DSN:
         dsn=SENTRY_DSN,
         integrations=[
             DjangoIntegration(transaction_style="function_name"),
+            GrapheneIntegration(),
         ],
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
@@ -185,7 +187,6 @@ if SENTRY_DSN:
 # Graphene
 GRAPHENE = {
     "ATOMIC_MUTATIONS": True,
-    "MIDDLEWARE": ["api.middleware.SentryMiddleware"],
 }
 
 # django-guardian
