@@ -1,7 +1,6 @@
 squash migrations
 documente per luna
 rapoarte
-paginare clienti cu relay
 URL-uri pt taburi (activitate etc)
 activitate “Am primit documente”
 sentry

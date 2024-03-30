@@ -19,6 +19,7 @@ import {
 
 import ResponseHandler from 'components/response-handler'
 import {
+  ClientClientQuery,
   UserPermissionsEnum,
   useClientUsersQuery,
   useDeleteClientUserMutation,
@@ -28,7 +29,7 @@ import UpdateUser from 'sections/client/user-update'
 import AddButton from 'components/add-button'
 import { APIClientUser } from 'sections/client/types'
 import { useAuthContext } from 'auth/hooks'
-import UserTableRow from './user-table-row'
+import UserTableRow from '../user-table-row'
 
 type CardProps = {
   clientUuid: string
@@ -178,29 +179,25 @@ const UserListCard: React.FC<CardProps> = ({ clientUuid, users, clientIsInGroup 
 }
 
 type Props = {
-  clientUuid: string
+  client: ClientClientQuery['client']
 }
 
-const UserList: React.FC<Props> = ({ clientUuid }) => {
+const ClientUsersView: React.FC<Props> = ({ client }) => {
   const result = useClientUsersQuery({
     variables: {
-      clientUuid,
+      clientUuid: client.uuid,
     },
   })
 
   return (
     <ResponseHandler {...result}>
-      {({ client }) => {
+      {({ client: { users, group } }) => {
         return (
-          <UserListCard
-            clientUuid={clientUuid}
-            clientIsInGroup={Boolean(client.group)}
-            users={client.users}
-          />
+          <UserListCard clientUuid={client.uuid} clientIsInGroup={Boolean(group)} users={users} />
         )
       }}
     </ResponseHandler>
   )
 }
 
-export default UserList
+export default ClientUsersView

@@ -24,6 +24,7 @@ import {
   useDeleteClientActivityMutation,
   UnitCostTypeEnum,
   UserPermissionsEnum,
+  ClientClientQuery,
 } from 'generated/graphql'
 import ActivityTableFiltersResult from 'sections/client/activity-table-filters-result'
 import ActivityTableToolbar from 'sections/client/activity-table-toolbar'
@@ -258,15 +259,15 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
 }
 
 type Props = {
-  clientUuid: string
+  client: ClientClientQuery['client']
 }
 
-const ActivityListView: React.FC<Props> = ({ clientUuid }) => {
+const ClientActivityView: React.FC<Props> = ({ client }) => {
   const [date, setDate] = useState(startOfMonth(new Date()))
 
   const clientActivitiesResult = useClientActivitiesQuery({
     variables: {
-      clientUuid,
+      clientUuid: client.uuid,
       month: date.getMonth() + 1,
       year: date.getFullYear(),
     },
@@ -276,9 +277,9 @@ const ActivityListView: React.FC<Props> = ({ clientUuid }) => {
 
   return (
     <ResponseHandler {...clientActivitiesResult}>
-      {({ client }) => {
+      {({ client: { activities, solutions } }) => {
         // The main philosophy is that solution is an array of activities
-        const solutionActivities = client.solutions.map(cs => {
+        const solutionActivities = solutions.map(cs => {
           return {
             uuid: cs.uuid,
             name: cs.solution.name,
@@ -299,7 +300,7 @@ const ActivityListView: React.FC<Props> = ({ clientUuid }) => {
           <ResponseHandler {...activitiesResult}>
             {({ organization }) => {
               const organizationActivities = organization.activities.map(organizationActivity => {
-                const overwrittenOrganizationAcitivty = client.activities.find(
+                const overwrittenOrganizationAcitivty = activities.find(
                   ca => ca.activity.name === organizationActivity.name,
                 )
                 // Organization activities can be overwritten
@@ -322,7 +323,7 @@ const ActivityListView: React.FC<Props> = ({ clientUuid }) => {
                 }
               })
 
-              const customActivities = client.activities
+              const customActivities = activities
                 .filter(ca => {
                   // Overrwritten organization activities are not considered custom
                   const isCustomActivity = !organization.activities.some(
@@ -341,7 +342,7 @@ const ActivityListView: React.FC<Props> = ({ clientUuid }) => {
 
               return (
                 <ActivityListCard
-                  clientUuid={clientUuid}
+                  clientUuid={client.uuid}
                   activities={[
                     ...solutionActivities,
                     ...organizationActivities,
@@ -395,4 +396,4 @@ function applyFilter({
   return inputData
 }
 
-export default ActivityListView
+export default ClientActivityView

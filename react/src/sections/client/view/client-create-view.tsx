@@ -6,7 +6,7 @@ import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 
 import { withUserPermission } from 'auth/hoc'
 import { UserPermissionsEnum } from 'generated/graphql'
-import { UpdateClient } from '../client-update'
+import ClientUpdateView from './client-update-view'
 
 const ClientCreateView = () => {
   return (
@@ -29,7 +29,7 @@ const ClientCreateView = () => {
         }}
       />
 
-      <UpdateClient />
+      <ClientUpdateView />
     </Container>
   )
 }

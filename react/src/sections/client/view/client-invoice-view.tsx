@@ -14,12 +14,12 @@ import Scrollbar from 'components/scrollbar'
 import { TableEmptyRows, TableHeadCustom, TableNoData, emptyRows, useTable } from 'components/table'
 
 import ResponseHandler from 'components/response-handler'
-import { UserPermissionsEnum, useClientInvoiceQuery } from 'generated/graphql'
+import { ClientClientQuery, UserPermissionsEnum, useClientInvoiceQuery } from 'generated/graphql'
 import { ListItemText, TableCell, TableRow } from '@mui/material'
 import InvoiceTableRow from 'sections/client/invoice-table-row'
 import { withUserPermission } from 'auth/hoc'
-import InvoiceTableToolbar from './invoice-table-toolbar'
-import { APIClientInvoice } from './types'
+import InvoiceTableToolbar from '../invoice-table-toolbar'
+import { APIClientInvoice } from '../types'
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
@@ -122,15 +122,15 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({ invoice, date, 
 }
 
 type Props = {
-  clientUuid: string
+  client: ClientClientQuery['client']
 }
 
-const InvoiceDetails: React.FC<Props> = ({ clientUuid }) => {
+const ClientInvoiceView: React.FC<Props> = ({ client }) => {
   const [date, setDate] = useState(startOfMonth(new Date()))
 
   const result = useClientInvoiceQuery({
     variables: {
-      clientUuid,
+      clientUuid: client.uuid,
       month: date.getMonth() + 1,
       year: date.getFullYear(),
     },
@@ -138,11 +138,11 @@ const InvoiceDetails: React.FC<Props> = ({ clientUuid }) => {
 
   return (
     <ResponseHandler {...result}>
-      {({ client }) => {
-        return <InvoiceDetailsCard invoice={client.invoice} date={date} onChangeDate={setDate} />
+      {({ client: { invoice } }) => {
+        return <InvoiceDetailsCard invoice={invoice} date={date} onChangeDate={setDate} />
       }}
     </ResponseHandler>
   )
 }
 
-export default withUserPermission(UserPermissionsEnum.HAS_CLIENT_INVOICE_ACCESS)(InvoiceDetails)
+export default withUserPermission(UserPermissionsEnum.HAS_CLIENT_INVOICE_ACCESS)(ClientInvoiceView)

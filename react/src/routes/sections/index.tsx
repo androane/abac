@@ -5,7 +5,7 @@ import { mainRoutes } from 'routes/sections/main'
 import { authRoutes } from './auth'
 import { appRoutes } from './app'
 
-export default function Router() {
+const Router = () => {
   return useRoutes([
     {
       path: '/',
@@ -19,3 +19,5 @@ export default function Router() {
     { path: '*', element: <Navigate to="/404" replace /> },
   ])
 }
+
+export default Router

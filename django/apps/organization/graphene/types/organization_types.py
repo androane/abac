@@ -42,7 +42,7 @@ class OrganizationType(DjangoObjectType):
     solutions = graphene.List(graphene.NonNull(SolutionType), required=True)
     activities = graphene.List(graphene.NonNull(ActivityType), required=True)
     logo_url = graphene.NonNull(graphene.String)
-    clients = graphene.NonNull(graphene.List(graphene.NonNull(ClientType)))
+    clients = graphene.List(graphene.NonNull(ClientType), required=True)
     users = graphene.NonNull(graphene.List(graphene.NonNull(UserType)))
     user = graphene.NonNull(UserType, uuid=graphene.String(required=True))
     client_groups = graphene.List(graphene.NonNull(ClientGroupType), required=True)

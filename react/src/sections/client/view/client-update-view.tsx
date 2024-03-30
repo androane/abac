@@ -21,7 +21,6 @@ import { useSnackbar } from 'components/snackbar'
 import {
   useUpdateClientMutation,
   useOrganizationSolutionsQuery,
-  useClientClientQuery,
   ClientClientQuery,
   CurrencyEnum,
   useOrganizationUsersQuery,
@@ -34,6 +33,7 @@ import getErrorMessage from 'utils/api-codes'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 import Iconify from 'components/iconify'
 import { getCategoryLabelFromCode } from 'utils/constants'
+import { TABS_VALUES } from 'sections/client/constants'
 
 type ClientInfoProps = {
   client: ClientClientQuery['client']
@@ -53,7 +53,7 @@ const ClientInfo: React.FC<ClientInfoProps> = ({ client }) => {
             {client.group.clients.map(c => (
               <Box
                 key={c.uuid}
-                onClick={() => router.push(paths.app.client.edit(c.uuid))}
+                onClick={() => router.push(paths.app.client.detail(c.uuid, TABS_VALUES.GENERAL))}
                 sx={{
                   ml: 2,
                   mt: 1,
@@ -318,7 +318,7 @@ type Props = {
   client?: ClientClientQuery['client']
 }
 
-export const UpdateClient: React.FC<Props> = ({ client }) => {
+const ClientUpdateView: React.FC<Props> = ({ client }) => {
   const router = useRouter()
 
   const { user, hasPermission } = useAuthContext()
@@ -413,7 +413,9 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
       if (!client) {
         router.push(paths.app.client.list)
       } else if (response.data?.updateClient?.client?.uuid) {
-        router.push(paths.app.client.edit(response.data.updateClient.client.uuid))
+        router.push(
+          paths.app.client.detail(response.data.updateClient.client.uuid, TABS_VALUES.GENERAL),
+        )
       }
     } catch (error) {
       enqueueSnackbar(getErrorMessage((error as Error).message), {
@@ -446,16 +448,4 @@ export const UpdateClient: React.FC<Props> = ({ client }) => {
   )
 }
 
-const UpdateClientContainer: React.FC<{ clientUuid: string }> = ({ clientUuid }) => {
-  const result = useClientClientQuery({ variables: { uuid: clientUuid } })
-
-  return (
-    <ResponseHandler {...result}>
-      {({ client }) => {
-        return <UpdateClient client={client} />
-      }}
-    </ResponseHandler>
-  )
-}
-
-export default UpdateClientContainer
+export default ClientUpdateView

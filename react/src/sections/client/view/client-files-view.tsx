@@ -1,6 +1,10 @@
 import ResponseHandler from 'components/response-handler'
 import Box from '@mui/material/Box'
-import { useClientFilesQuery, useDeleteClientFileMutation } from 'generated/graphql'
+import {
+  ClientClientQuery,
+  useClientFilesQuery,
+  useDeleteClientFileMutation,
+} from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import EmptyContent from 'components/empty-content'
 import CreateFiles from 'sections/client/file-create'
@@ -9,17 +13,17 @@ import FileDetails from 'sections/client/file-details'
 import { enqueueSnackbar } from 'notistack'
 
 type Props = {
-  clientUuid: string
+  client: ClientClientQuery['client']
 }
 
-const FilesList: React.FC<Props> = ({ clientUuid }) => {
+const ClientFilesView: React.FC<Props> = ({ client }) => {
   const upload = useBoolean()
 
   const [deleteFile] = useDeleteClientFileMutation()
 
   const result = useClientFilesQuery({
     variables: {
-      clientUuid,
+      clientUuid: client.uuid,
     },
   })
 
@@ -57,7 +61,7 @@ const FilesList: React.FC<Props> = ({ clientUuid }) => {
                   <FileDetails
                     key={file.name}
                     onDeleteFile={() => handleDeleteFile(file.uuid)}
-                    clientUuid={clientUuid}
+                    clientUuid={client.uuid}
                     file={file}
                   />
                 ))}
@@ -71,7 +75,7 @@ const FilesList: React.FC<Props> = ({ clientUuid }) => {
                 }}
               />
             )}
-            <CreateFiles clientUuid={clientUuid} open={upload.value} onClose={upload.onFalse} />
+            <CreateFiles clientUuid={client.uuid} open={upload.value} onClose={upload.onFalse} />
           </>
         )
       }}
@@ -79,4 +83,4 @@ const FilesList: React.FC<Props> = ({ clientUuid }) => {
   )
 }
 
-export default FilesList
+export default ClientFilesView

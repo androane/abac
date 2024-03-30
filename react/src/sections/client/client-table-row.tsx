@@ -17,6 +17,7 @@ import { useAuthContext } from 'auth/hooks'
 import { UserPermissionsEnum } from 'generated/graphql'
 import { paths } from 'routes/paths'
 import { useRouter } from 'routes/hooks'
+import { TABS_VALUES } from 'sections/client/constants'
 
 type Props = {
   loading: boolean
@@ -33,7 +34,7 @@ const ClientTableRow: React.FC<Props> = ({ loading, row, onDeleteRow }) => {
 
   const { hasPermission } = useAuthContext()
 
-  const onGoToClient = () => router.push(paths.app.client.edit(row.uuid))
+  const onGoToClient = () => router.push(paths.app.client.detail(row.uuid, TABS_VALUES.GENERAL))
 
   return (
     <>

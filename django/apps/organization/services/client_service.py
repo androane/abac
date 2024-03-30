@@ -39,7 +39,10 @@ def get_clients(user: User):
 
 
 def get_client(user: User, uuid: str) -> Client:
-    return get_clients(user).get(uuid=uuid)
+    try:
+        return get_clients(user).get(uuid=uuid)
+    except Client.DoesNotExist:
+        raise Exception(f"Client does not exist")
 
 
 def _set_client_solutions(
