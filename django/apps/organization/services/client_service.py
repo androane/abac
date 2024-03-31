@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 
+from api.errors import CLIENT_ALREADY_EXISTS, APIException
 from organization.models import Client, ClientSolution
 from organization.models.activity import Solution
 from organization.models.client import ClientSoftware, ClientUserObjectPermission
@@ -113,6 +114,8 @@ def update_or_create_client(user: User, client_input: "ClientInput") -> Client:
     if client_input.uuid:
         client = org.clients.get(uuid=client_input.uuid)
     else:
+        if org.clients.filter(name=client_input.name.strip()).exists():
+            raise APIException(CLIENT_ALREADY_EXISTS)
         client = Client(organization=org)
 
     client.program_manager = program_manager
@@ -126,7 +129,7 @@ def update_or_create_client(user: User, client_input: "ClientInput") -> Client:
     for field in fields:
         value = client_input.get(field)
         if value:
-            setattr(client, field, value)
+            setattr(client, field, value.strip())
 
     client.save()
 

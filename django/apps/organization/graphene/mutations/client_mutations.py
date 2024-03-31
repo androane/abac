@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import graphene
 
+from api.errors import APIException
 from api.graphene.mutations import BaseMutation
 from api.permission_decorators import permission_required
 from organization.graphene.types import (
@@ -55,7 +56,10 @@ class UpdateClient(BaseMutation):
     @logged_in_user_required
     @permission_required(UserPermissionsEnum.HAS_CLIENT_ADD_ACCESS.value)
     def mutate(self, user: User, **kwargs):
-        client = update_or_create_client(user, **kwargs)
+        try:
+            client = update_or_create_client(user, **kwargs)
+        except APIException as error:
+            return {"error": {"message": str(error)}}
 
         return {
             "client": client,

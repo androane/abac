@@ -27,6 +27,7 @@ import {
   UserPermissionsEnum,
   SoftwareEnum,
   ClientInput,
+  BaseClientFragmentDoc,
 } from 'generated/graphql'
 import { useAuthContext } from 'auth/hooks'
 import getErrorMessage from 'utils/api-codes'
@@ -408,11 +409,33 @@ const ClientUpdateView: React.FC<Props> = ({ client }) => {
             softwares,
           },
         },
+        update(cache, { data: cacheData }) {
+          cache.modify({
+            id: cache.identify({ uuid: user?.organization.uuid, __typename: 'OrganizationType' }),
+            fields: {
+              clients(existingClients = []) {
+                if (client) {
+                  return existingClients
+                }
+                const newClient = cache.writeFragment({
+                  data: cacheData?.updateClient?.client,
+                  fragment: BaseClientFragmentDoc,
+                })
+                return [newClient, ...existingClients]
+              },
+            },
+          })
+        },
       })
-      enqueueSnackbar(client ? 'Clientul a fost actualizat!' : 'Clientul a fost creat!')
       if (!client) {
-        router.push(paths.app.client.list)
+        if (response.data?.updateClient?.error) {
+          throw new Error(response.data?.updateClient?.error.message)
+        } else {
+          enqueueSnackbar('Clientul a fost creat!')
+          router.push(paths.app.client.list)
+        }
       } else if (response.data?.updateClient?.client?.uuid) {
+        enqueueSnackbar('Clientul a fost actualizat!')
         router.push(
           paths.app.client.detail(response.data.updateClient.client.uuid, TABS_VALUES.GENERAL),
         )
