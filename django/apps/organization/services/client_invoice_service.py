@@ -32,17 +32,18 @@ def get_client_invoice(
 def _get_client_activity_cost(client_activity: ClientActivity) -> int:
     activity: Activity = client_activity.activity
 
+    if not activity.unit_cost:
+        return 0
+
+    # FIXED
     if activity.unit_cost_type == UnitCostTypeEnum.FIXED.value:
         return activity.unit_cost * client_activity.quantity
 
     # HOURLY
     cost = 0
-    if activity.unit_cost:
-        total_time = sum(
-            client_activity.logs.values_list("minutes_allocated", flat=True)
-        )
-        if total_time and activity.unit_cost:
-            cost = activity.unit_cost * total_time / 60
+    total_time = sum(client_activity.logs.values_list("minutes_allocated", flat=True))
+    if total_time and activity.unit_cost:
+        cost = activity.unit_cost * total_time / 60
 
     return cost
 
