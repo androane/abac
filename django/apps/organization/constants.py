@@ -29,9 +29,14 @@ class UnitCostTypeEnum(BaseEnum):
 
 class SoftwareEnum(BaseEnum):
     ONE_C = enum.auto()
+    ONE_C_ALIN = enum.auto()
     SAGA = enum.auto()
     NEXUS = enum.auto()
     TEAMAPP = enum.auto()
     NEXTUP = enum.auto()
     WIND = enum.auto()
     SMARTBILL = enum.auto()
+    SENIOR_ERP = enum.auto()
+    SENIOR_ERP_CLIENT = enum.auto()
+    SICO_FINANCIAR = enum.auto()
+    SICO_GESTIUNI = enum.auto()

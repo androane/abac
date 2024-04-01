@@ -110,7 +110,9 @@ const UpdateUser: React.FC<Props> = ({
       })
 
       form.reset()
-      enqueueSnackbar('Persoana de contact a fost actualizată!')
+      enqueueSnackbar(
+        user ? 'Persoana de contact a fost actualizată!' : 'Persoană de contact a fost adăugată!',
+      )
       onClose()
     } catch (error) {
       enqueueSnackbar(getErrorMessage((error as Error).message), {

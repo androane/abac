@@ -32,7 +32,6 @@ def update_organization_activity(
             organization=organization,
             category=category,
         )
-
     attrs = (
         "name",
         "description",

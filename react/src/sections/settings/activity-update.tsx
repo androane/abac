@@ -91,6 +91,7 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, activity, onClose }
                 const newActivity = cache.writeFragment({
                   data: cacheData?.updateOrganizationActivity?.activity,
                   fragment: ActivityFragmentDoc,
+                  fragmentName: 'Category',
                 })
                 return [newActivity, ...existingActivities]
               },
@@ -99,9 +100,10 @@ const UpdateActivity: React.FC<Props> = ({ organizationUuid, activity, onClose }
         },
       })
       form.reset()
-      enqueueSnackbar('Serviciul a fost actualizat!')
+      enqueueSnackbar(activity ? 'Serviciul a fost actualizat!' : 'Serviciul a fost adăugat!')
       onClose()
     } catch (error) {
+      console.log((error as Error).message)
       enqueueSnackbar(getErrorMessage((error as Error).message), {
         variant: 'error',
       })

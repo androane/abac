@@ -214,12 +214,17 @@ const UpdateClientGeneralInformation: React.FC<{ canUpdate: boolean }> = ({ canU
 
 const SoftwareEnumToLabel = {
   [SoftwareEnum.ONE_C]: '1C',
+  [SoftwareEnum.ONE_C_ALIN]: '1C Alin',
   [SoftwareEnum.SAGA]: 'SAGA',
   [SoftwareEnum.TEAMAPP]: 'Team App',
   [SoftwareEnum.NEXTUP]: 'NextUp',
   [SoftwareEnum.WIND]: 'Wind',
   [SoftwareEnum.NEXUS]: 'Nexus',
   [SoftwareEnum.SMARTBILL]: 'SmartBill',
+  [SoftwareEnum.SENIOR_ERP]: 'Senior ERP',
+  [SoftwareEnum.SENIOR_ERP_CLIENT]: 'Senior ERP Client',
+  [SoftwareEnum.SICO_GESTIUNI]: 'SICO Gestiuni',
+  [SoftwareEnum.SICO_FINANCIAR]: 'SICO Financiar',
 }
 
 const DEFAULT_SOFTWARE = {

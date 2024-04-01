@@ -121,7 +121,7 @@ const UpdateClientActivity: React.FC<Props> = ({
         },
       })
       form.reset()
-      enqueueSnackbar('Serviciul a fost actualizat!')
+      enqueueSnackbar(activity ? 'Serviciul a fost actualizat!' : 'Serviciul a fost adăugat!')
       onClose()
     } catch (error) {
       enqueueSnackbar(getErrorMessage((error as Error).message), {

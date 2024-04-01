@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "api.apps.ApiConfig",
     "core.apps.CoreConfig",
     "organization.apps.OrganizationConfig",
+    "report.apps.ReportConfig",
     "user.apps.UserConfig",
 ]
 
