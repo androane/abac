@@ -586,6 +586,7 @@ export enum SoftwareEnum {
   NEXUS = 'NEXUS',
   ONE_C = 'ONE_C',
   SAGA = 'SAGA',
+  SMARTBILL = 'SMARTBILL',
   TEAMAPP = 'TEAMAPP',
   WIND = 'WIND'
 }

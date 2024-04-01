@@ -219,6 +219,7 @@ const SoftwareEnumToLabel = {
   [SoftwareEnum.NEXTUP]: 'NextUp',
   [SoftwareEnum.WIND]: 'Wind',
   [SoftwareEnum.NEXUS]: 'Nexus',
+  [SoftwareEnum.SMARTBILL]: 'SmartBill',
 }
 
 const DEFAULT_SOFTWARE = {

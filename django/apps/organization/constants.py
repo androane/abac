@@ -34,3 +34,4 @@ class SoftwareEnum(BaseEnum):
     TEAMAPP = enum.auto()
     NEXTUP = enum.auto()
     WIND = enum.auto()
+    SMARTBILL = enum.auto()
