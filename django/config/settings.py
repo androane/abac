@@ -186,9 +186,10 @@ if SENTRY_DSN:
         with_locals=True,
     )
 
-# Graphene
+# django-graphene
 GRAPHENE = {
     "ATOMIC_MUTATIONS": True,
+    "MIDDLEWARE": ["api.middleware.SentryMiddleware"],
 }
 
 # django-guardian

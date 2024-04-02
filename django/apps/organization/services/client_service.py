@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable
 
 from django.contrib.auth import get_user_model
 from django.db.models import Q
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from organization.graphene.types import ClientInput
 
 
-def get_clients(user: User):
+def get_clients(user: User) -> Iterable[Client]:
     all_clients = user.organization.clients
 
     permissions = user.user_permissions.values_list("codename", flat=True)
