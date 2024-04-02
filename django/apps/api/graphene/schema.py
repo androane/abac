@@ -2,6 +2,7 @@
 import graphene
 
 from organization.graphene import schema as organization_schema
+from report.graphene import schema as report_schema
 from user.graphene import schema as user_schema
 
 
@@ -18,6 +19,7 @@ class Query(
 
 class Mutation(
     organization_schema.Mutation,
+    report_schema.Mutation,
     user_schema.Mutation,
     graphene.ObjectType,
 ):

@@ -315,6 +315,12 @@ export type ErrorType = {
   message: Scalars['String']['output'];
 };
 
+export type GenerateReport = {
+  __typename?: 'GenerateReport';
+  downloadUrl: Scalars['String']['output'];
+  error?: Maybe<ErrorType>;
+};
+
 export type InvoiceItemType = {
   __typename?: 'InvoiceItemType';
   category: CategoryType;
@@ -385,6 +391,8 @@ export type Mutation = {
   deleteOrganizationActivity?: Maybe<DeleteOrganizationActivity>;
   /** Delete an Organization Solution */
   deleteOrganizationSolution?: Maybe<DeleteOrganizationSolution>;
+  /** Generate an excel report and get a download link */
+  generateReport?: Maybe<GenerateReport>;
   /** Log the user in with email and password. */
   login?: Maybe<LoginUser>;
   /** Log out user. */
@@ -462,6 +470,12 @@ export type MutationDeleteOrganizationActivityArgs = {
 
 export type MutationDeleteOrganizationSolutionArgs = {
   uuid: Scalars['String']['input'];
+};
+
+
+export type MutationGenerateReportArgs = {
+  month: Scalars['Int']['input'];
+  year: Scalars['Int']['input'];
 };
 
 
@@ -940,6 +954,14 @@ export type UpdateOrganizationSolutionMutationVariables = Exact<{
 
 
 export type UpdateOrganizationSolutionMutation = { __typename?: 'Mutation', updateOrganizationSolution?: { __typename?: 'UpdateOrganizationSolution', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, solution?: { __typename?: 'SolutionType', uuid: string, name: string, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }>, category: { __typename?: 'CategoryType', uuid: string, name: string, code: string } } | null } | null };
+
+export type ReportGenerateUserReportMutationVariables = Exact<{
+  year: Scalars['Int']['input'];
+  month: Scalars['Int']['input'];
+}>;
+
+
+export type ReportGenerateUserReportMutation = { __typename?: 'Mutation', generateReport?: { __typename?: 'GenerateReport', downloadUrl: string } | null };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2160,6 +2182,40 @@ export function useUpdateOrganizationSolutionMutation(baseOptions?: Apollo.Mutat
 export type UpdateOrganizationSolutionMutationHookResult = ReturnType<typeof useUpdateOrganizationSolutionMutation>;
 export type UpdateOrganizationSolutionMutationResult = Apollo.MutationResult<UpdateOrganizationSolutionMutation>;
 export type UpdateOrganizationSolutionMutationOptions = Apollo.BaseMutationOptions<UpdateOrganizationSolutionMutation, UpdateOrganizationSolutionMutationVariables>;
+export const ReportGenerateUserReportDocument = gql`
+    mutation ReportGenerateUserReport($year: Int!, $month: Int!) {
+  generateReport(year: $year, month: $month) {
+    downloadUrl
+  }
+}
+    `;
+export type ReportGenerateUserReportMutationFn = Apollo.MutationFunction<ReportGenerateUserReportMutation, ReportGenerateUserReportMutationVariables>;
+
+/**
+ * __useReportGenerateUserReportMutation__
+ *
+ * To run a mutation, you first call `useReportGenerateUserReportMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useReportGenerateUserReportMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [reportGenerateUserReportMutation, { data, loading, error }] = useReportGenerateUserReportMutation({
+ *   variables: {
+ *      year: // value for 'year'
+ *      month: // value for 'month'
+ *   },
+ * });
+ */
+export function useReportGenerateUserReportMutation(baseOptions?: Apollo.MutationHookOptions<ReportGenerateUserReportMutation, ReportGenerateUserReportMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ReportGenerateUserReportMutation, ReportGenerateUserReportMutationVariables>(ReportGenerateUserReportDocument, options);
+      }
+export type ReportGenerateUserReportMutationHookResult = ReturnType<typeof useReportGenerateUserReportMutation>;
+export type ReportGenerateUserReportMutationResult = Apollo.MutationResult<ReportGenerateUserReportMutation>;
+export type ReportGenerateUserReportMutationOptions = Apollo.BaseMutationOptions<ReportGenerateUserReportMutation, ReportGenerateUserReportMutationVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {

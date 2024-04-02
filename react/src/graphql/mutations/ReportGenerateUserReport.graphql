@@ -1,0 +1,5 @@
+mutation ReportGenerateUserReport($year: Int!, $month: Int!) {
+  generateReport(year: $year, month: $month) {
+    downloadUrl
+  }
+}

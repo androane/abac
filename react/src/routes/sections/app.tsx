@@ -15,6 +15,7 @@ const ClientGroupListView = lazy(() => import('sections/client/view/client-group
 const SettingsActivityView = lazy(() => import('sections/settings/view/activity-list-view'))
 const SettingsSolutionView = lazy(() => import('sections/settings/view/solution-list-view'))
 const SettingsUsersView = lazy(() => import('sections/settings/view/user-list-view'))
+const ReportsView = lazy(() => import('sections/reports/view/reports-view'))
 
 const clients = {
   path: ROOTS.CLIENT,
@@ -48,6 +49,11 @@ const settings = {
   ],
 }
 
+const reports = {
+  path: ROOTS.REPORTS,
+  element: <ReportsView />,
+}
+
 export const appRoutes = [
   {
     path: '',
@@ -60,6 +66,6 @@ export const appRoutes = [
         </DashboardLayout>
       </AuthGuard>
     ),
-    children: [clients, settings],
+    children: [clients, settings, reports],
   },
 ]

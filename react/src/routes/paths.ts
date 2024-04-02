@@ -2,6 +2,7 @@ export const ROOTS = {
   AUTH: 'auth',
   CLIENT: 'client',
   SETTINGS: 'settings',
+  REPORTS: 'reports',
 }
 
 export const paths = {
@@ -22,6 +23,9 @@ export const paths = {
       activities: `/${ROOTS.SETTINGS}/activities`,
       solutions: `/${ROOTS.SETTINGS}/solutions`,
       users: `/${ROOTS.SETTINGS}/users`,
+    },
+    reports: {
+      root: `/${ROOTS.REPORTS}`,
     },
   },
 }

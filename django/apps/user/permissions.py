@@ -44,5 +44,7 @@ def validate_has_permission(user: "User", permission: UserPermissionsEnum):
     if not set(user.user_permissions.values_list("codename", flat=True)).intersection(
         permissions
     ):
-        message = f"Only users with {', '.join(permissions)} permissions are allowed to perform this query or mutation."
+        message = (
+            f"User needs one of the following permissions: {', '.join(permissions)}"
+        )
         raise PermissionException(message)
