@@ -58,6 +58,7 @@ def _generate_dataframe_report(
         [REPORT_COLUMNS.CLIENT, REPORT_COLUMNS.CATEGORY_NAME, REPORT_COLUMNS.DAY],
         inplace=True,
     )
+    df.drop(columns=[REPORT_COLUMNS.CATEGORY_CODE], inplace=True)
     df = _translate_dataframe_strings(df)
     return df
 

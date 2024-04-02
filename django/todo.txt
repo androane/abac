@@ -1,9 +1,6 @@
 squash migrations
 documente per luna
-rapoarte
-activitate “Am primit documente”
 sentry
-
 
 
 Pt viitor, cand reusesc sa vand softul:
