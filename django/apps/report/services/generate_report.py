@@ -5,24 +5,13 @@ import pandas as pd
 from django.core.files.base import ContentFile
 from django.utils.text import slugify
 
+from organization.locales import CATEGORY_TRANSLATIONS, REPORT_COLUMNS_TRANSLATIONS
 from report.models import UserReport
 from report.services.denormalize_models_service import (
     REPORT_COLUMNS,
     get_flattened_report_data,
 )
 from user.models import User
-
-REPORT_COLUMNS_TO_LABELS = {
-    REPORT_COLUMNS.CLIENT: "Client",
-    REPORT_COLUMNS.PROGRAM_MANAGER: "Responsabil",
-    REPORT_COLUMNS.ACTIVITY_NAME: "Serviciu",
-    REPORT_COLUMNS.CATEGORY: "Domeniu",
-    REPORT_COLUMNS.QUANTITY: "Cantitate",
-    REPORT_COLUMNS.UNIT_COST: "Cost",
-    REPORT_COLUMNS.UNIT_COST_CURRENCY: "Moneda",
-    REPORT_COLUMNS.DAY: "Ziua",
-    REPORT_COLUMNS.MINUTES_ALLOCATED: "Minute alocate",
-}
 
 
 def _get_excel_file_data_from_dataframe(df: pd.DataFrame):
@@ -32,10 +21,25 @@ def _get_excel_file_data_from_dataframe(df: pd.DataFrame):
     return ContentFile(excel_data)
 
 
-def generate_report(user: User, year: int, month: int) -> UserReport:
+def _translate_dataframe_strings(df: pd.DataFrame) -> pd.DataFrame:
+    df[REPORT_COLUMNS.CATEGORY_NAME] = df[REPORT_COLUMNS.CATEGORY_NAME].map(
+        CATEGORY_TRANSLATIONS
+    )
+    df.rename(columns=REPORT_COLUMNS_TRANSLATIONS, inplace=True)
+    return df
+
+
+def generate_report(
+    user: User, year: int, month: int, category_codes: list[str]
+) -> UserReport:
     org = user.organization
     df = get_flattened_report_data(org, year, month)
-    df.rename(columns=REPORT_COLUMNS_TO_LABELS)
+    df = df[df[REPORT_COLUMNS.CATEGORY_CODE].isin(category_codes)]
+    df.sort_values(
+        [REPORT_COLUMNS.CLIENT, REPORT_COLUMNS.CATEGORY_NAME, REPORT_COLUMNS.DAY],
+        inplace=True,
+    )
+    df = _translate_dataframe_strings(df)
     filename = slugify(f"raport-{org.name}-{year}-{month}")
 
     try:

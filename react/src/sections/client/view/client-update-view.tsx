@@ -33,7 +33,7 @@ import { useAuthContext } from 'auth/hooks'
 import getErrorMessage from 'utils/api-codes'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 import Iconify from 'components/iconify'
-import { getCategoryLabelFromCode } from 'utils/constants'
+import { CATEGORY_CODE_TO_LABEL } from 'utils/constants'
 import { TABS_VALUES } from 'sections/client/constants'
 
 type ClientInfoProps = {
@@ -110,7 +110,7 @@ const UpdateClientSolutions: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) 
                       <RHFSelect
                         disabled={!canUpdate}
                         name={`clientSolutions[${index}].solutionUuid`}
-                        label={`Pachet ${getCategoryLabelFromCode(category.code)}`}
+                        label={`Pachet ${CATEGORY_CODE_TO_LABEL[category.code as keyof typeof CATEGORY_CODE_TO_LABEL]}`}
                       >
                         <MenuItem value="" sx={{ color: 'text.secondary' }}>
                           Alege

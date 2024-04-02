@@ -11,7 +11,12 @@ type Props = {
 const ExternalNavLink: React.FC<Props> = ({ to, label, className }) => {
   return (
     <a target="_blank" rel="noopener noreferrer" href={to}>
-      <Typography component="span" color="secondary" className={className}>
+      <Typography
+        component="span"
+        color="secondary"
+        className={className}
+        sx={{ decoration: 'none', pointer: 'cursor' }}
+      >
         {label}
       </Typography>
     </a>

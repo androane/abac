@@ -13,7 +13,7 @@ import { ConfirmDialog } from 'components/custom-dialog'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
 import { ActivityFragment } from 'generated/graphql'
-import { getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
+import { CATEGORY_CODE_TO_LABEL, getUnitCostTypeLabel } from 'utils/constants'
 
 type Props = {
   onEditRow: VoidFunction
@@ -48,7 +48,9 @@ const ActivityTableRow: React.FC<Props> = ({ row, onEditRow, onDeleteRow, loadin
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={getCategoryLabelFromCode(row.category.code)}
+            primary={
+              CATEGORY_CODE_TO_LABEL[row.category.code as keyof typeof CATEGORY_CODE_TO_LABEL]
+            }
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

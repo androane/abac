@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
 import { InvoiceItemType } from 'generated/graphql'
-import { getCategoryLabelFromCode } from 'utils/constants'
+import { CATEGORY_CODE_TO_LABEL } from 'utils/constants'
 
 type Props = {
   index: number
@@ -10,7 +10,7 @@ type Props = {
 }
 
 const InvoiceTableRow: React.FC<Props> = ({ index, row }) => {
-  const suffix = getCategoryLabelFromCode(row.category.code)
+  const suffix = CATEGORY_CODE_TO_LABEL[row.category.code as keyof typeof CATEGORY_CODE_TO_LABEL]
 
   return (
     <TableRow hover>

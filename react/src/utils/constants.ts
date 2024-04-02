@@ -7,9 +7,7 @@ export const getUnitCostTypeLabel = (unitCostType: UnitCostTypeEnum) => {
   }[unitCostType]
 }
 
-export const getCategoryLabelFromCode = (code: string) => {
-  return {
-    hr: 'Resurse Umane',
-    accounting: 'Contabilitate',
-  }[code]
+export const CATEGORY_CODE_TO_LABEL = {
+  hr: 'Resurse Umane',
+  accounting: 'Contabilitate',
 }

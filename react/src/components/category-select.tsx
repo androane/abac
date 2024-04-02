@@ -7,7 +7,7 @@ import Checkbox from '@mui/material/Checkbox'
 import { APP_STORAGE_KEYS, useLocalStorageContext } from 'components/local-storage'
 
 import { useAuthContext } from 'auth/hooks'
-import { getCategoryLabelFromCode } from 'utils/constants'
+import { CATEGORY_CODE_TO_LABEL } from 'utils/constants'
 
 type Props = {
   onChange(event: SelectChangeEvent<string>): void
@@ -43,7 +43,7 @@ const CategorySelect: React.FC<Props> = ({ onChange }) => {
       {user?.categories.map(c => (
         <MenuItem key={c.code} value={c.code}>
           <Checkbox disableRipple size="small" checked={category === c.code} />
-          {getCategoryLabelFromCode(c.code)}
+          {CATEGORY_CODE_TO_LABEL[c.code as keyof typeof CATEGORY_CODE_TO_LABEL]}
         </MenuItem>
       ))}
     </Select>

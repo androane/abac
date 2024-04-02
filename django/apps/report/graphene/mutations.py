@@ -13,6 +13,7 @@ class GenerateReport(BaseMutation):
     class Arguments:
         year = graphene.Int(required=True)
         month = graphene.Int(required=True)
+        category_codes = graphene.List(graphene.NonNull(graphene.String), required=True)
 
     download_url = graphene.String(required=True)
 

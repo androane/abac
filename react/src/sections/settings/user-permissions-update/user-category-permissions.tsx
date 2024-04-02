@@ -8,7 +8,7 @@ import getErrorMessage from 'utils/api-codes'
 import ResponseHandler from 'components/response-handler'
 import { Box, Checkbox, FormControlLabel } from '@mui/material'
 import React from 'react'
-import { getCategoryLabelFromCode } from 'utils/constants'
+import { CATEGORY_CODE_TO_LABEL } from 'utils/constants'
 
 type Props = {
   user: OrganizationUserQuery['organization']['user']
@@ -81,7 +81,9 @@ const CategoryPermissionsTab: React.FC<Props> = ({ user, loading }) => {
                 return (
                   <FormControlLabel
                     key={category.uuid}
-                    label={getCategoryLabelFromCode(category.code)}
+                    label={
+                      CATEGORY_CODE_TO_LABEL[category.code as keyof typeof CATEGORY_CODE_TO_LABEL]
+                    }
                     control={
                       <Checkbox
                         size="medium"

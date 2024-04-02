@@ -22,7 +22,7 @@ import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 import { useLocalStorageContext } from 'components/local-storage'
 import DialogActions from 'components/dialog-actions'
 import { useAuthContext } from 'auth/hooks'
-import { getCategoryLabelFromCode, getUnitCostTypeLabel } from 'utils/constants'
+import { CATEGORY_CODE_TO_LABEL, getUnitCostTypeLabel } from 'utils/constants'
 
 type Props = {
   activity: null | GenericActivityType
@@ -173,7 +173,7 @@ const UpdateClientActivity: React.FC<Props> = ({
               </MenuItem>
               {user?.categories.map(c => (
                 <MenuItem key={c.code} value={c.code}>
-                  {getCategoryLabelFromCode(c.code)}
+                  {CATEGORY_CODE_TO_LABEL[c.code as keyof typeof CATEGORY_CODE_TO_LABEL]}
                 </MenuItem>
               ))}
             </RHFSelect>
