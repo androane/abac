@@ -14,7 +14,7 @@ def update_client_activity_logs(
     )
 
     input_log_uuids = set([_.uuid for _ in logs_input])
-    ClientActivityLog.objects.exclude(uuid__in=input_log_uuids).delete()
+    client_activity.logs.exclude(uuid__in=input_log_uuids).delete()
 
     for log_input in logs_input:
         if not log_input.minutes_allocated and not log_input.description:
@@ -49,7 +49,7 @@ def update_client_solution_logs(
     )
 
     input_log_uuids = set([_.uuid for _ in logs_input])
-    ClientSolutionLog.objects.exclude(uuid__in=input_log_uuids).delete()
+    client_solution.logs.exclude(uuid__in=input_log_uuids).delete()
 
     for log_input in logs_input:
         if log_input.uuid:
