@@ -53,7 +53,8 @@ def _generate_dataframe_report(
     org = user.organization
 
     df = get_flattened_report_data(org, year, month)
-    df = df[df[REPORT_COLUMNS.CATEGORY_CODE].isin(category_codes)]
+    if category_codes:
+        df = df[df[REPORT_COLUMNS.CATEGORY_CODE].isin(category_codes)]
     df.sort_values(
         [REPORT_COLUMNS.CLIENT, REPORT_COLUMNS.CATEGORY_NAME, REPORT_COLUMNS.DAY],
         inplace=True,
