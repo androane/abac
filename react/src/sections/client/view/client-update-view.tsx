@@ -220,6 +220,7 @@ const SoftwareEnumToLabel = {
   [SoftwareEnum.NEXTUP]: 'NextUp',
   [SoftwareEnum.WIND]: 'Wind',
   [SoftwareEnum.NEXUS]: 'Nexus',
+  [SoftwareEnum.REGES]: 'REGES',
   [SoftwareEnum.SMARTBILL]: 'SmartBill',
   [SoftwareEnum.SENIOR_ERP]: 'Senior ERP',
   [SoftwareEnum.SENIOR_ERP_CLIENT]: 'Senior ERP Client',
