@@ -9,12 +9,17 @@ from organization.services.category_permission_service import (
 from user.models import User
 
 
-def get_organization_activities(user: User) -> Iterable[Activity]:
-    qs = user.organization.activities.filter(
+def get_organization_activities(
+    user: User, exclude_solution_activities: bool = False
+) -> Iterable[Activity]:
+    activities = user.organization.activities.filter(
         client__isnull=True,
     )
 
-    return filter_objects_by_user_categories(qs, user, "category_id")
+    activities = filter_objects_by_user_categories(activities, user, "category_id")
+    if exclude_solution_activities:
+        activities = activities.filter(solutions__isnull=True)
+    return activities
 
 
 def update_organization_activity(

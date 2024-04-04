@@ -91,11 +91,13 @@ def toggle_client_activity(
 def get_client_activities(
     user: User, client: Client, month: int, year: int
 ) -> Iterable[ClientActivity]:
-    queryset = client.client_activities.filter(
+    client_activities = client.client_activities.filter(
         month=month,
         year=year,
     )
-    return filter_objects_by_user_categories(queryset, user, "activity__category_id")
+    return filter_objects_by_user_categories(
+        client_activities, user, "activity__category_id"
+    )
 
 
 def get_client_solutions(

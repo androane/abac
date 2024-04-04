@@ -273,13 +273,17 @@ const ClientActivityView: React.FC<Props> = ({ client }) => {
     },
   })
 
-  const activitiesResult = useOrganizationActivitiesQuery()
+  const activitiesResult = useOrganizationActivitiesQuery({
+    variables: {
+      excludeSolutionActivities: true,
+    },
+  })
 
   return (
     <ResponseHandler {...clientActivitiesResult}>
       {({ client: { activities, solutions } }) => {
         // The main philosophy is that solution is an array of activities
-        const solutionActivities = solutions.map(cs => {
+        const solutionsAsActivities = solutions.map(cs => {
           return {
             uuid: cs.uuid,
             name: cs.solution.name,
@@ -344,7 +348,7 @@ const ClientActivityView: React.FC<Props> = ({ client }) => {
                 <ActivityListCard
                   clientUuid={client.uuid}
                   activities={[
-                    ...solutionActivities,
+                    ...solutionsAsActivities,
                     ...organizationActivities,
                     ...customActivities,
                   ]}

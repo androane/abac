@@ -1,7 +1,7 @@
-query OrganizationActivities {
+query OrganizationActivities($excludeSolutionActivities: Boolean) {
   organization {
     uuid
-    activities {
+    activities(excludeSolutionActivities: $excludeSolutionActivities) {
       ...Activity
     }
   }

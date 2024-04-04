@@ -40,7 +40,11 @@ class OrganizationType(DjangoObjectType):
         )
 
     solutions = graphene.List(graphene.NonNull(SolutionType), required=True)
-    activities = graphene.List(graphene.NonNull(ActivityType), required=True)
+    activities = graphene.List(
+        graphene.NonNull(ActivityType),
+        exclude_solution_activities=graphene.Boolean(default_value=False),
+        required=True,
+    )
     logo_url = graphene.NonNull(graphene.String)
     clients = graphene.List(graphene.NonNull(ClientType), required=True)
     users = graphene.NonNull(graphene.List(graphene.NonNull(UserType)))
@@ -64,7 +68,7 @@ class OrganizationType(DjangoObjectType):
         return get_organization_solutions(info.context.user)
 
     def resolve_activities(self, info, **kwargs):
-        return get_organization_activities(info.context.user)
+        return get_organization_activities(info.context.user, **kwargs)
 
     def resolve_client_groups(self, info, **kwargs):
         return self.client_groups.all()

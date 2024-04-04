@@ -575,6 +575,11 @@ export type OrganizationType = {
 };
 
 
+export type OrganizationTypeActivitiesArgs = {
+  excludeSolutionActivities?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
 export type OrganizationTypeUserArgs = {
   uuid: Scalars['String']['input'];
 };
@@ -1030,7 +1035,9 @@ export type ClientUsersQueryVariables = Exact<{
 
 export type ClientUsersQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, group?: { __typename?: 'ClientGroupType', uuid: string } | null, users: Array<{ __typename?: 'UserType', uuid: string, email: string, firstName: string, lastName: string, clientProfile: { __typename?: 'ClientUserProfileType', ownershipPercentage?: number | null, role?: ClientUserRoleEnum | null, spvUsername?: string | null, spvPassword?: string | null, phoneNumber: string, showInGroup: boolean } }> } };
 
-export type OrganizationActivitiesQueryVariables = Exact<{ [key: string]: never; }>;
+export type OrganizationActivitiesQueryVariables = Exact<{
+  excludeSolutionActivities?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
 
 
 export type OrganizationActivitiesQuery = { __typename?: 'Query', organization: { __typename?: 'OrganizationType', uuid: string, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, name: string, code: string } }> } };
@@ -2640,10 +2647,10 @@ export type ClientUsersLazyQueryHookResult = ReturnType<typeof useClientUsersLaz
 export type ClientUsersSuspenseQueryHookResult = ReturnType<typeof useClientUsersSuspenseQuery>;
 export type ClientUsersQueryResult = Apollo.QueryResult<ClientUsersQuery, ClientUsersQueryVariables>;
 export const OrganizationActivitiesDocument = gql`
-    query OrganizationActivities {
+    query OrganizationActivities($excludeSolutionActivities: Boolean) {
   organization {
     uuid
-    activities {
+    activities(excludeSolutionActivities: $excludeSolutionActivities) {
       ...Activity
     }
   }
@@ -2662,6 +2669,7 @@ export const OrganizationActivitiesDocument = gql`
  * @example
  * const { data, loading, error } = useOrganizationActivitiesQuery({
  *   variables: {
+ *      excludeSolutionActivities: // value for 'excludeSolutionActivities'
  *   },
  * });
  */
