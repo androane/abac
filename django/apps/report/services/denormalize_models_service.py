@@ -38,7 +38,7 @@ def get_flattened_report_data(
             month=month,
             client__organization=org,
             is_executed=True,
-            solutions__isnull=True,
+            activity__solutions__isnull=True,
         )
         .select_related("client", "activity")
         .prefetch_related("logs")
