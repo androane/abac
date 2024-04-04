@@ -606,6 +606,7 @@ export enum SoftwareEnum {
   NEXUS = 'NEXUS',
   ONE_C = 'ONE_C',
   ONE_C_ALIN = 'ONE_C_ALIN',
+  REGES = 'REGES',
   SAGA = 'SAGA',
   SENIOR_ERP = 'SENIOR_ERP',
   SENIOR_ERP_CLIENT = 'SENIOR_ERP_CLIENT',

@@ -75,7 +75,7 @@ def _set_client_solutions(
             ClientSolution.objects.create(
                 client=client,
                 solution=solution,
-                unit_cost=client_solution_input.unit_cost,
+                unit_cost=client_solution_input.unit_cost or 0,
                 unit_cost_currency=client_solution_input.unit_cost_currency,
             )
 
