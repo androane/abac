@@ -36,7 +36,8 @@ from organization.services.client_logs_service import (
     update_client_activity_logs,
     update_client_solution_logs,
 )
-from organization.services.client_service import delete_client, update_or_create_client
+from organization.services.client_service import delete_client
+from organization.services.client_update_service import update_or_create_client
 from organization.services.client_users_service import (
     delete_client_user,
     update_client_user,
@@ -54,7 +55,6 @@ class UpdateClient(BaseMutation):
     client = graphene.Field(ClientType)
 
     @logged_in_user_required
-    @permission_required(UserPermissionsEnum.HAS_CLIENT_ADD_ACCESS.value)
     def mutate(self, user: User, **kwargs):
         try:
             client = update_or_create_client(user, **kwargs)

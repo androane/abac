@@ -602,8 +602,11 @@ export type QueryClientArgs = {
 
 /** An enumeration. */
 export enum SoftwareEnum {
+  FGO = 'FGO',
+  NEOMANAGER = 'NEOMANAGER',
   NEXTUP = 'NEXTUP',
   NEXUS = 'NEXUS',
+  OBLIO = 'OBLIO',
   ONE_C = 'ONE_C',
   ONE_C_ALIN = 'ONE_C_ALIN',
   REGES = 'REGES',

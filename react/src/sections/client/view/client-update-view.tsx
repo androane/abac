@@ -77,6 +77,56 @@ const ClientInfo: React.FC<ClientInfoProps> = ({ client }) => {
   )
 }
 
+const UpdateClientGeneralInformation: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) => {
+  const result = useOrganizationUsersQuery()
+
+  return (
+    <>
+      <Box
+        rowGap={3}
+        columnGap={2}
+        display="grid"
+        gridTemplateColumns={{
+          xs: 'repeat(1, 1fr)',
+          sm: 'repeat(2, 1fr)',
+        }}
+      >
+        <RHFTextField disabled={!canUpdate} name="name" label="Nume firmă" />
+        <ResponseHandler {...result}>
+          {({ organization }) => {
+            return (
+              <RHFSelect disabled={!canUpdate} name="programManagerUuid" label="Responsabil">
+                <MenuItem value="" sx={{ color: 'text.secondary' }}>
+                  Alege
+                </MenuItem>
+                {organization.users.map(u => (
+                  <MenuItem key={u.uuid} value={u.uuid}>
+                    {u.name}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+            )
+          }}
+        </ResponseHandler>
+        <RHFTextField disabled={!canUpdate} name="cui" label="Cod Unic de Identificare (CUI)" />
+        <div />
+      </Box>
+
+      <Box sx={{ pt: 3 }}>
+        <RHFTextField
+          disabled={!canUpdate}
+          name="description"
+          label="Descriere (opțional)"
+          multiline
+          rows={5}
+        />
+      </Box>
+
+      <Divider sx={{ borderStyle: 'dashed', mt: 6, mb: 4 }} />
+    </>
+  )
+}
+
 const UpdateClientSolutions: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) => {
   const { user, hasPermission } = useAuthContext()
 
@@ -162,70 +212,23 @@ const UpdateClientSolutions: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) 
   )
 }
 
-const UpdateClientGeneralInformation: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) => {
-  const result = useOrganizationUsersQuery()
-
-  return (
-    <>
-      <Box
-        rowGap={3}
-        columnGap={2}
-        display="grid"
-        gridTemplateColumns={{
-          xs: 'repeat(1, 1fr)',
-          sm: 'repeat(2, 1fr)',
-        }}
-      >
-        <RHFTextField disabled={!canUpdate} name="name" label="Nume firmă" />
-        <ResponseHandler {...result}>
-          {({ organization }) => {
-            return (
-              <RHFSelect disabled={!canUpdate} name="programManagerUuid" label="Responsabil">
-                <MenuItem value="" sx={{ color: 'text.secondary' }}>
-                  Alege
-                </MenuItem>
-                {organization.users.map(u => (
-                  <MenuItem key={u.uuid} value={u.uuid}>
-                    {u.name}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
-            )
-          }}
-        </ResponseHandler>
-        <RHFTextField disabled={!canUpdate} name="cui" label="Cod Unic de Identificare (CUI)" />
-        <div />
-      </Box>
-
-      <Box sx={{ pt: 3 }}>
-        <RHFTextField
-          disabled={!canUpdate}
-          name="description"
-          label="Descriere (opțional)"
-          multiline
-          rows={5}
-        />
-      </Box>
-
-      <Divider sx={{ borderStyle: 'dashed', mt: 6, mb: 4 }} />
-    </>
-  )
-}
-
 const SoftwareEnumToLabel = {
+  [SoftwareEnum.FGO]: 'FGO',
+  [SoftwareEnum.NEOMANAGER]: 'NeoManager',
+  [SoftwareEnum.NEXTUP]: 'NextUp',
+  [SoftwareEnum.NEXUS]: 'Nexus',
+  [SoftwareEnum.OBLIO]: 'Oblio',
   [SoftwareEnum.ONE_C]: '1C',
   [SoftwareEnum.ONE_C_ALIN]: '1C Alin',
-  [SoftwareEnum.SAGA]: 'SAGA',
-  [SoftwareEnum.TEAMAPP]: 'Team App',
-  [SoftwareEnum.NEXTUP]: 'NextUp',
-  [SoftwareEnum.WIND]: 'Wind',
-  [SoftwareEnum.NEXUS]: 'Nexus',
   [SoftwareEnum.REGES]: 'REGES',
-  [SoftwareEnum.SMARTBILL]: 'SmartBill',
+  [SoftwareEnum.SAGA]: 'SAGA',
   [SoftwareEnum.SENIOR_ERP]: 'Senior ERP',
   [SoftwareEnum.SENIOR_ERP_CLIENT]: 'Senior ERP Client',
-  [SoftwareEnum.SICO_GESTIUNI]: 'SICO Gestiuni',
   [SoftwareEnum.SICO_FINANCIAR]: 'SICO Financiar',
+  [SoftwareEnum.SICO_GESTIUNI]: 'SICO Gestiuni',
+  [SoftwareEnum.SMARTBILL]: 'SmartBill',
+  [SoftwareEnum.TEAMAPP]: 'Team App',
+  [SoftwareEnum.WIND]: 'Wind',
 }
 
 const DEFAULT_SOFTWARE = {
@@ -279,11 +282,7 @@ const UpdateClientSoftware: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) =
                 sm: 'repeat(4, 1fr)',
               }}
             >
-              <RHFSelect
-                disabled={!canUpdate}
-                name={`softwares[${index}].software`}
-                label="Software"
-              >
+              <RHFSelect name={`softwares[${index}].software`} label="Software">
                 <MenuItem value="" sx={{ color: 'text.secondary' }}>
                   Alege
                 </MenuItem>
@@ -464,13 +463,11 @@ const ClientUpdateView: React.FC<Props> = ({ client }) => {
             <UpdateClientSolutions canUpdate={canUpdate} />
             <UpdateClientSoftware canUpdate={canUpdate} />
 
-            {canUpdate && (
-              <Stack alignItems="flex-end" sx={{ mt: 3 }}>
-                <LoadingButton type="submit" variant="contained" loading={loading} color="success">
-                  {client ? 'Salvează' : 'Adaugă Client'}
-                </LoadingButton>
-              </Stack>
-            )}
+            <Stack alignItems="flex-end" sx={{ mt: 3 }}>
+              <LoadingButton type="submit" variant="contained" loading={loading} color="success">
+                {client ? 'Salvează' : 'Adaugă Client'}
+              </LoadingButton>
+            </Stack>
           </Card>
         </Grid>
       </Grid>
