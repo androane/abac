@@ -187,7 +187,6 @@ class ClientType(DjangoObjectType):
 
         return get_client_solutions(info.context.user, self, **kwargs)
 
-    @permission_required(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS.value)
     def resolve_solution(self, info, **kwargs):
         return self.client_solutions.get(uuid=kwargs.get("uuid"))
 

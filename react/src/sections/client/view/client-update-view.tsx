@@ -51,24 +51,37 @@ const ClientInfo: React.FC<ClientInfoProps> = ({ client }) => {
             Acest client face parte din grupul de firme <strong>{client.group.name}</strong>:
           </Typography>
           <List>
-            {client.group.clients.map(c => (
-              <Box
-                key={c.uuid}
-                onClick={() => router.push(paths.app.client.detail(c.uuid, TABS_VALUES.GENERAL))}
-                sx={{
-                  ml: 2,
-                  mt: 1,
-                  cursor: 'pointer',
-                  '&:hover': {
-                    textDecoration: 'underline',
-                  },
-                }}
-              >
-                <ListItemText primaryTypographyProps={{ typography: 'body2' }}>
-                  &rarr;&nbsp;&nbsp;{c.name}
-                </ListItemText>
-              </Box>
-            ))}
+            {client.group.clients.map(c => {
+              const sx =
+                c.uuid === client.uuid
+                  ? {}
+                  : {
+                      cursor: 'pointer',
+                      '&:hover': {
+                        textDecoration: 'underline',
+                      },
+                    }
+              return (
+                <Box
+                  key={c.uuid}
+                  onClick={() => router.push(paths.app.client.detail(c.uuid, TABS_VALUES.GENERAL))}
+                  sx={{
+                    ml: 2,
+                    mt: 1,
+                    ...sx,
+                  }}
+                >
+                  <ListItemText
+                    primaryTypographyProps={{
+                      typography: c.uuid === client.uuid ? 'subtitle2' : 'body2',
+                      color: c.uuid === client.uuid ? 'primary' : 'inherit',
+                    }}
+                  >
+                    &rarr;&nbsp;&nbsp;{c.name}
+                  </ListItemText>
+                </Box>
+              )
+            })}
           </List>
           <Divider sx={{ borderStyle: 'dashed', mt: 2, mb: 6 }} />
         </div>
