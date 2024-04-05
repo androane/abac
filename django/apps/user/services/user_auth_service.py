@@ -36,9 +36,9 @@ def change_user_password(user: User, current_password: str, new_password: str) -
 
     if not user:
         raise errors.APIException(errors.USER_WRONG_PASSWORD)
-    else:
-        user.set_password(new_password)
-        user.save()
-        token = generate_token_from_user(user)
+
+    user.set_password(new_password)
+    user.save()
+    token = generate_token_from_user(user)
 
     return token

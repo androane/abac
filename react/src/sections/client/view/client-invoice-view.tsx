@@ -134,6 +134,7 @@ const ClientInvoiceView: React.FC<Props> = ({ client }) => {
       month: date.getMonth() + 1,
       year: date.getFullYear(),
     },
+    fetchPolicy: 'network-only',
   })
 
   return (

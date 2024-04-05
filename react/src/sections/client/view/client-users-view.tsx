@@ -187,6 +187,7 @@ const ClientUsersView: React.FC<Props> = ({ client }) => {
     variables: {
       clientUuid: client.uuid,
     },
+    fetchPolicy: 'network-only',
   })
 
   return (

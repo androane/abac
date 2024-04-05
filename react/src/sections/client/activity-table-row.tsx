@@ -205,8 +205,9 @@ const ActivityTableRow: React.FC<Props> = ({
                         }
                   }
                 >
-                  {row.name}&nbsp;&nbsp;&nbsp;
+                  {row.name}
                 </Typography>
+                &nbsp;&nbsp;&nbsp;
                 {isSolutionRow && <SolutionTooltip solutionUuid={row.activityUuid!} />}
                 {isCustomActivityRow && (
                   <Tooltip
