@@ -415,6 +415,8 @@ export type Mutation = {
   updateClientGroup?: Maybe<UpdateClientGroup>;
   /** Update Client Invoice Status */
   updateClientInvoiceStatus?: Maybe<UpdateClientInvoiceStatus>;
+  /** Update an existing Client Solution */
+  updateClientSolution?: Maybe<UpdateClientSolution>;
   /** Update Client Solution Logs */
   updateClientSolutionLogs?: Maybe<UpdateClientSolutionLogs>;
   /** Update or Create a New Client User */
@@ -536,6 +538,12 @@ export type MutationUpdateClientGroupArgs = {
 export type MutationUpdateClientInvoiceStatusArgs = {
   invoiceUuid: Scalars['String']['input'];
   status: InvoiceStatusEnum;
+};
+
+
+export type MutationUpdateClientSolutionArgs = {
+  clientSolutionInput: ClientSolutionInput;
+  clientUuid: Scalars['String']['input'];
 };
 
 
@@ -692,6 +700,12 @@ export type UpdateClientInvoiceStatus = {
   __typename?: 'UpdateClientInvoiceStatus';
   error?: Maybe<ErrorType>;
   invoice?: Maybe<InvoiceType>;
+};
+
+export type UpdateClientSolution = {
+  __typename?: 'UpdateClientSolution';
+  clientSolution?: Maybe<ClientSolutionType>;
+  error?: Maybe<ErrorType>;
 };
 
 export type UpdateClientSolutionLogs = {
@@ -896,6 +910,14 @@ export type UpdateClientInvoiceStatusMutationVariables = Exact<{
 
 
 export type UpdateClientInvoiceStatusMutation = { __typename?: 'Mutation', updateClientInvoiceStatus?: { __typename?: 'UpdateClientInvoiceStatus', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, invoice?: { __typename?: 'InvoiceType', uuid: string, dateSent?: DateString | null } | null } | null };
+
+export type UpdateClientSolutionMutationVariables = Exact<{
+  clientUuid: Scalars['String']['input'];
+  clientSolutionInput: ClientSolutionInput;
+}>;
+
+
+export type UpdateClientSolutionMutation = { __typename?: 'Mutation', updateClientSolution?: { __typename?: 'UpdateClientSolution', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, clientSolution?: { __typename?: 'ClientSolutionType', uuid: string, quantity: number } | null } | null };
 
 export type UpdateClientSolutionLogsMutationVariables = Exact<{
   clientSolutionUuid: Scalars['String']['input'];
@@ -1835,6 +1857,49 @@ export function useUpdateClientInvoiceStatusMutation(baseOptions?: Apollo.Mutati
 export type UpdateClientInvoiceStatusMutationHookResult = ReturnType<typeof useUpdateClientInvoiceStatusMutation>;
 export type UpdateClientInvoiceStatusMutationResult = Apollo.MutationResult<UpdateClientInvoiceStatusMutation>;
 export type UpdateClientInvoiceStatusMutationOptions = Apollo.BaseMutationOptions<UpdateClientInvoiceStatusMutation, UpdateClientInvoiceStatusMutationVariables>;
+export const UpdateClientSolutionDocument = gql`
+    mutation UpdateClientSolution($clientUuid: String!, $clientSolutionInput: ClientSolutionInput!) {
+  updateClientSolution(
+    clientUuid: $clientUuid
+    clientSolutionInput: $clientSolutionInput
+  ) {
+    error {
+      ...Error
+    }
+    clientSolution {
+      uuid
+      quantity
+    }
+  }
+}
+    ${ErrorFragmentDoc}`;
+export type UpdateClientSolutionMutationFn = Apollo.MutationFunction<UpdateClientSolutionMutation, UpdateClientSolutionMutationVariables>;
+
+/**
+ * __useUpdateClientSolutionMutation__
+ *
+ * To run a mutation, you first call `useUpdateClientSolutionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateClientSolutionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateClientSolutionMutation, { data, loading, error }] = useUpdateClientSolutionMutation({
+ *   variables: {
+ *      clientUuid: // value for 'clientUuid'
+ *      clientSolutionInput: // value for 'clientSolutionInput'
+ *   },
+ * });
+ */
+export function useUpdateClientSolutionMutation(baseOptions?: Apollo.MutationHookOptions<UpdateClientSolutionMutation, UpdateClientSolutionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateClientSolutionMutation, UpdateClientSolutionMutationVariables>(UpdateClientSolutionDocument, options);
+      }
+export type UpdateClientSolutionMutationHookResult = ReturnType<typeof useUpdateClientSolutionMutation>;
+export type UpdateClientSolutionMutationResult = Apollo.MutationResult<UpdateClientSolutionMutation>;
+export type UpdateClientSolutionMutationOptions = Apollo.BaseMutationOptions<UpdateClientSolutionMutation, UpdateClientSolutionMutationVariables>;
 export const UpdateClientSolutionLogsDocument = gql`
     mutation UpdateClientSolutionLogs($clientSolutionUuid: String!, $logsInput: [LogInput!]!) {
   updateClientSolutionLogs(

@@ -17,7 +17,7 @@ import {
 } from 'generated/graphql'
 import getErrorMessage from 'utils/api-codes'
 import { MenuItem } from '@mui/material'
-import { GenericActivityType } from 'sections/client/types'
+import { CombinedActivityType } from 'sections/client/types'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 import { useLocalStorageContext } from 'components/local-storage'
 import DialogActions from 'components/dialog-actions'
@@ -25,7 +25,7 @@ import { useAuthContext } from 'auth/hooks'
 import { CATEGORY_CODE_TO_LABEL, getUnitCostTypeLabel } from 'utils/constants'
 
 type Props = {
-  activity: null | GenericActivityType
+  activity: null | CombinedActivityType
   clientUuid: string
   date: Date
   onClose: () => void
@@ -39,6 +39,8 @@ const UpdateClientActivity: React.FC<Props> = ({
   onClose,
   canSeeCosts,
 }) => {
+  const isDisabledField = Boolean(activity && !activity.isCustom)
+
   const localStorage = useLocalStorageContext()
 
   const { user } = useAuthContext()
@@ -52,7 +54,7 @@ const UpdateClientActivity: React.FC<Props> = ({
       name: activity?.name || '',
       description: activity?.description || '',
       categoryCode: activity?.category.code || localStorage.category,
-      unitCost: activity?.unitCost || undefined,
+      unitCost: activity?.unitCost || 0,
       unitCostCurrency: activity?.unitCostCurrency || CurrencyEnum.RON,
       unitCostType: activity?.unitCostType || UnitCostTypeEnum.HOURLY,
       quantity: activity?.quantity || 1,
@@ -87,7 +89,7 @@ const UpdateClientActivity: React.FC<Props> = ({
         variables: {
           clientUuid,
           activityInput: {
-            uuid: activity?.activityUuid,
+            uuid: activity?.uuid,
             name: data.name,
             description: data.description,
             categoryCode: data.categoryCode,
@@ -107,7 +109,7 @@ const UpdateClientActivity: React.FC<Props> = ({
             id: cache.identify({ uuid: clientUuid, __typename: 'ClientType' }),
             fields: {
               activities(existingActivities = []) {
-                if (activity) {
+                if (activity?.clientActivityUuid) {
                   return existingActivities
                 }
                 const newActivity = cache.writeFragment({
@@ -129,8 +131,6 @@ const UpdateClientActivity: React.FC<Props> = ({
       })
     }
   })
-
-  const disabled = Boolean(activity)
 
   return (
     <Dialog
@@ -155,19 +155,9 @@ const UpdateClientActivity: React.FC<Props> = ({
               sm: 'repeat(2, 1fr)',
             }}
           >
-            <RHFTextField
-              name="name"
-              label="Nume"
-              disabled={activity ? !activity.isCustom : false}
-              variant={disabled ? 'filled' : 'outlined'}
-            />
+            <RHFTextField name="name" label="Nume" disabled={isDisabledField} />
 
-            <RHFSelect
-              name="categoryCode"
-              label="Domeniu"
-              disabled={disabled}
-              variant={disabled ? 'filled' : 'outlined'}
-            >
+            <RHFSelect name="categoryCode" label="Domeniu">
               <MenuItem value="" sx={{ color: 'text.secondary' }}>
                 Alege
               </MenuItem>
@@ -180,12 +170,7 @@ const UpdateClientActivity: React.FC<Props> = ({
             {canSeeCosts && (
               <>
                 <RHFTextField name="unitCost" label="Cost" type="number" />
-                <RHFSelect
-                  name="unitCostCurrency"
-                  label="Moneda"
-                  variant={disabled ? 'filled' : 'outlined'}
-                  disabled={disabled ? !activity?.isCustom : false}
-                >
+                <RHFSelect name="unitCostCurrency" label="Moneda">
                   {Object.keys(CurrencyEnum).map(currency => (
                     <MenuItem key={currency} value={currency}>
                       {currency}
@@ -194,12 +179,7 @@ const UpdateClientActivity: React.FC<Props> = ({
                 </RHFSelect>
               </>
             )}
-            <RHFSelect
-              name="unitCostType"
-              label="Tip Cost"
-              variant={disabled ? 'filled' : 'outlined'}
-              disabled={disabled ? !activity?.isCustom : false}
-            >
+            <RHFSelect name="unitCostType" label="Tip Cost">
               {Object.keys(UnitCostTypeEnum).map(type => (
                 <MenuItem key={type} value={type}>
                   {getUnitCostTypeLabel(type as UnitCostTypeEnum)}

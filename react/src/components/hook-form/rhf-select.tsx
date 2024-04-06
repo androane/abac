@@ -26,6 +26,8 @@ export function RHFSelect({
   helperText,
   children,
   PaperPropsSx,
+  disabled,
+  variant,
   ...other
 }: RHFSelectProps) {
   const { control } = useFormContext()
@@ -56,6 +58,8 @@ export function RHFSelect({
           error={!!error}
           helperText={error ? error?.message : helperText}
           InputLabelProps={{ shrink: true }}
+          disabled={disabled}
+          variant={disabled ? 'filled' : variant}
           {...other}
         >
           {children}

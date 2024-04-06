@@ -6,7 +6,14 @@ type Props = TextFieldProps & {
   name: string
 }
 
-export default function RHFTextField({ name, helperText, type, ...other }: Props) {
+export default function RHFTextField({
+  name,
+  helperText,
+  type,
+  disabled,
+  variant,
+  ...other
+}: Props) {
   const { control } = useFormContext()
 
   return (
@@ -29,6 +36,8 @@ export default function RHFTextField({ name, helperText, type, ...other }: Props
           error={!!error}
           helperText={error ? error?.message : helperText}
           InputLabelProps={{ shrink: true }}
+          disabled={disabled}
+          variant={disabled ? 'filled' : variant}
           {...other}
         />
       )}

@@ -9,56 +9,21 @@ import { ConfirmDialog } from 'components/custom-dialog'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
 import Label from 'components/label'
-import ResponseHandler from 'components/response-handler'
 import {
   ClientActivityFragmentDoc,
-  useOrganizationSolutionsQuery,
   useToggleClientActivityMutation,
   useUpdateClientActivityMutation,
 } from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import React from 'react'
-import { GenericActivityType } from 'sections/client/types'
-import { action, primary } from 'theme/palette'
+import { CombinedActivityType } from 'sections/client/types'
 import { CATEGORY_CODE_TO_LABEL, getUnitCostTypeLabel } from 'utils/constants'
-
-const SolutionTooltip: React.FC<{ solutionUuid: string }> = ({ solutionUuid }) => {
-  const result = useOrganizationSolutionsQuery()
-
-  return (
-    <Tooltip
-      arrow
-      title={
-        <ResponseHandler {...result}>
-          {({ organization }) => {
-            const solution = organization.solutions.find(s => s.uuid === solutionUuid)!
-            return (
-              <Box sx={{ p: 1 }}>
-                <Typography variant="subtitle2">
-                  Acesta este un pachet si include mai multe servicii:
-                  <br />
-                </Typography>
-                {solution.activities.map(a => (
-                  <Typography variant="body2" key={a.uuid}>
-                    &nbsp;-&nbsp;{a.name}
-                  </Typography>
-                ))}
-              </Box>
-            )
-          }}
-        </ResponseHandler>
-      }
-    >
-      <Iconify width={24} icon="eva:info-outline" color={primary.main} />
-    </Tooltip>
-  )
-}
 
 type Props = {
   clientUuid: string
   date: Date
   loadingDelete: boolean
-  row: GenericActivityType
+  row: CombinedActivityType
   onEditRow(clientActivityUuid?: string): void
   onDeleteRow: VoidFunction
   onEditLogs: VoidFunction
@@ -120,7 +85,7 @@ const ActivityTableRow: React.FC<Props> = ({
       variables: {
         clientUuid,
         activityInput: {
-          uuid: row.activityUuid,
+          uuid: row.uuid,
           name: row.name,
           description: row.description,
           categoryCode: row.category.code,
@@ -152,17 +117,13 @@ const ActivityTableRow: React.FC<Props> = ({
     })
   }
 
-  const isSolutionRow = Boolean(row.clientSolutionUuid)
-  const isCustomActivityRow = !isSolutionRow && row.isCustom
-
   return (
     <>
-      <TableRow sx={{ backgroundColor: isSolutionRow ? action.selected : '' }}>
+      <TableRow>
         <TableCell style={{ width: 150 }}>
           <Switch
             checked={row.isExecuted}
             onChange={() => {
-              if (isSolutionRow) return
               if (row.clientActivityUuid) {
                 handleToggleClientActivity(row.clientActivityUuid)
               } else {
@@ -172,7 +133,7 @@ const ActivityTableRow: React.FC<Props> = ({
             disabled={loadingToggle || loadingAdd}
             color="success"
           />
-          {(row.clientActivityUuid || isSolutionRow) && row.isExecuted && (
+          {row.isExecuted && (
             <IconButton size="small" onClick={onEditLogs} color="warning">
               <Iconify icon="solar:clock-circle-outline" width={24} />
             </IconButton>
@@ -184,32 +145,23 @@ const ActivityTableRow: React.FC<Props> = ({
           }}
         >
           <ListItemText
-            onClick={() => {
-              if (!isSolutionRow) {
-                onEditRow(row.activityUuid)
-              }
-            }}
+            onClick={() => onEditRow(row.uuid)}
             primary={
               <Box display="flex" alignItems="center">
                 <Typography
                   component="div"
                   variant="body2"
-                  sx={
-                    isSolutionRow
-                      ? {}
-                      : {
-                          cursor: 'pointer',
-                          '&:hover': {
-                            textDecoration: 'underline',
-                          },
-                        }
-                  }
+                  sx={{
+                    cursor: 'pointer',
+                    '&:hover': {
+                      textDecoration: 'underline',
+                    },
+                  }}
                 >
                   {row.name}
                 </Typography>
                 &nbsp;&nbsp;&nbsp;
-                {isSolutionRow && <SolutionTooltip solutionUuid={row.activityUuid!} />}
-                {isCustomActivityRow && (
+                {row.isCustom && (
                   <Tooltip
                     arrow
                     title={

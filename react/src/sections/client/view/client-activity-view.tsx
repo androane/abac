@@ -22,14 +22,17 @@ import {
   useOrganizationActivitiesQuery,
   useClientActivitiesQuery,
   useDeleteClientActivityMutation,
-  UnitCostTypeEnum,
   UserPermissionsEnum,
   ClientClientQuery,
 } from 'generated/graphql'
 import ActivityTableFiltersResult from 'sections/client/activity-table-filters-result'
 import ActivityTableToolbar from 'sections/client/activity-table-toolbar'
 import ActivityTableRow from 'sections/client/activity-table-row'
-import { ClientActivityTableFilters, GenericActivityType } from 'sections/client/types'
+import {
+  APIClientSolution,
+  ClientActivityTableFilters,
+  CombinedActivityType,
+} from 'sections/client/types'
 import UpdateClientActivity from 'sections/client/activity-update'
 import { UpdateClientActivityLogs, UpdateClientSolutionLogs } from 'sections/client/logs-update'
 import { useAuthContext } from 'auth/hooks'
@@ -38,6 +41,9 @@ import {
   DEFAULT_APP_STORAGE,
   useLocalStorageContext,
 } from 'components/local-storage'
+import SolutionTableRow from 'sections/client/solution-table-row'
+import UpdateClientSolution from 'sections/client/solution-update'
+import { useBoolean } from 'hooks/use-boolean'
 
 const defaultFilters = {
   name: '',
@@ -47,13 +53,15 @@ const defaultFilters = {
 
 type ActivityListCardProps = {
   clientUuid: string
-  activities: GenericActivityType[]
+  clientSolutions: APIClientSolution[]
+  activities: CombinedActivityType[]
   date: Date
   onChangeDate: (newDate: Date) => void
 }
 
 const ActivityListCard: React.FC<ActivityListCardProps> = ({
   clientUuid,
+  clientSolutions,
   activities,
   date,
   onChangeDate,
@@ -67,6 +75,8 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
     { id: 'quantity', label: 'Cantitate' },
   ]
 
+  const showCreateActivity = useBoolean()
+
   const { hasPermission } = useAuthContext()
 
   const [deleteActivity, { loading }] = useDeleteClientActivityMutation()
@@ -78,6 +88,7 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
   }
 
   const [activityUuidToEdit, setActivityUuidToEdit] = useState<undefined | string>()
+  const [solutionUuidToEdit, setSolutionUuidToEdit] = useState<undefined | string>()
   const [clientActivityUuidLogsToEdit, setClientActivityUuidLogsToEdit] = useState<
     undefined | string
   >()
@@ -143,29 +154,29 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
       },
     })
 
-    enqueueSnackbar('Activitatea a fost ștersă!')
+    enqueueSnackbar('Activitatea a fost ștearsă!')
 
     setActivityUuidToEdit(undefined)
 
     table.onUpdatePageDeleteRow(dataInPage.length)
   }
 
-  const handleEditRow = useCallback(
-    (uuid?: string) => {
-      setActivityUuidToEdit(uuid)
-    },
-    [setActivityUuidToEdit],
-  )
-
   return (
     <Card>
-      {activityUuidToEdit && (
+      {showCreateActivity.value && (
         <UpdateClientActivity
           date={date}
           clientUuid={clientUuid}
-          activity={activities.find(_ => _.activityUuid === activityUuidToEdit)!}
-          onClose={() => setActivityUuidToEdit(undefined)}
+          activity={activities.find(_ => _.uuid === activityUuidToEdit)!}
+          onClose={showCreateActivity.onFalse}
           canSeeCosts={canSeeCosts}
+        />
+      )}
+      {solutionUuidToEdit && (
+        <UpdateClientSolution
+          clientUuid={clientUuid}
+          clientSolution={clientSolutions.find(_ => _.uuid === solutionUuidToEdit)!}
+          onClose={() => setSolutionUuidToEdit(undefined)}
         />
       )}
       {clientActivityUuidLogsToEdit && (
@@ -184,14 +195,17 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
           clientUuid={clientUuid}
           date={date}
           activityName={
-            activities.find(_ => _.clientSolutionUuid === clientSolutionUuidLogsToEdit)!.name
+            clientSolutions.find(_ => _.uuid === clientSolutionUuidLogsToEdit)!.solution.name
           }
           clientSolutionUuid={clientSolutionUuidLogsToEdit}
           onClose={() => setClientSolutionUuidLogsToEdit(undefined)}
         />
       )}
       <ActivityTableToolbar
-        onAddActivity={handleEditRow}
+        onAddActivity={() => {
+          showCreateActivity.onTrue()
+          setActivityUuidToEdit(undefined)
+        }}
         date={date}
         onChangeDate={onChangeDate}
         filters={filters}
@@ -221,6 +235,15 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
             />
 
             <TableBody>
+              {clientSolutions.map(clientSolution => (
+                <SolutionTableRow
+                  key={clientSolution.uuid}
+                  row={clientSolution}
+                  onEditRow={uuid => setSolutionUuidToEdit(uuid)}
+                  onEditLogs={() => setClientSolutionUuidLogsToEdit(clientSolution.uuid)}
+                  canSeeCosts={canSeeCosts}
+                />
+              ))}
               {dataFiltered
                 .slice(
                   table.page * table.rowsPerPage,
@@ -233,14 +256,14 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
                     date={date}
                     row={row}
                     onDeleteRow={() => handleDeleteRow(row.uuid)}
-                    onEditRow={handleEditRow}
-                    onEditLogs={() => {
-                      if (row.clientSolutionUuid) {
-                        setClientSolutionUuidLogsToEdit(row.clientSolutionUuid)
-                      } else {
-                        setClientActivityUuidLogsToEdit(row.clientActivityUuid)
-                      }
+                    onEditRow={uuid => {
+                      showCreateActivity.onTrue()
+                      setActivityUuidToEdit(uuid)
                     }}
+                    onEditLogs={() =>
+                      row.clientActivityUuid &&
+                      setClientActivityUuidLogsToEdit(row.clientActivityUuid)
+                    }
                     loadingDelete={loading}
                     canSeeCosts={canSeeCosts}
                   />
@@ -282,49 +305,29 @@ const ClientActivityView: React.FC<Props> = ({ client }) => {
   return (
     <ResponseHandler {...clientActivitiesResult}>
       {({ client: { activities, solutions } }) => {
-        // The main philosophy is that solution is an array of activities
-        const solutionsAsActivities = solutions.map(cs => {
-          return {
-            uuid: cs.uuid,
-            name: cs.solution.name,
-            clientSolutionUuid: cs.uuid,
-            activityUuid: cs.solution.uuid,
-            category: cs.solution.category,
-            description: '',
-            unitCost: cs.unitCost,
-            unitCostCurrency: cs.unitCostCurrency,
-            quantity: cs.quantity,
-            unitCostType: UnitCostTypeEnum.FIXED,
-            isCustom: true,
-            isExecuted: true,
-          }
-        })
-
         return (
           <ResponseHandler {...activitiesResult}>
             {({ organization }) => {
               const organizationActivities = organization.activities.map(organizationActivity => {
-                const overwrittenOrganizationAcitivty = activities.find(
+                const overwrittenOrganizationActivity = activities.find(
                   ca => ca.activity.name === organizationActivity.name,
                 )
                 // Organization activities can be overwritten
-                const activity = overwrittenOrganizationAcitivty
+                return overwrittenOrganizationActivity
                   ? {
-                      ...overwrittenOrganizationAcitivty.activity,
-                      clientActivityUuid: overwrittenOrganizationAcitivty.uuid,
-                      quantity: overwrittenOrganizationAcitivty.quantity,
-                      isExecuted: overwrittenOrganizationAcitivty.isExecuted,
+                      ...overwrittenOrganizationActivity.activity,
+                      clientActivityUuid: overwrittenOrganizationActivity.uuid,
+                      quantity: overwrittenOrganizationActivity.quantity,
+                      isExecuted: overwrittenOrganizationActivity.isExecuted,
+                      isCustom: false,
                     }
                   : {
                       ...organizationActivity,
+                      clientActivityUuid: null,
                       quantity: 1,
                       isExecuted: false,
+                      isCustom: false,
                     }
-                return {
-                  ...activity,
-                  activityUuid: organizationActivity.uuid,
-                  isCustom: false,
-                }
               })
 
               const customActivities = activities
@@ -337,21 +340,17 @@ const ClientActivityView: React.FC<Props> = ({ client }) => {
                 })
                 .map(clientActivity => ({
                   ...clientActivity.activity,
-                  activityUuid: clientActivity.activity.uuid,
                   clientActivityUuid: clientActivity.uuid,
-                  isExecuted: clientActivity.isExecuted,
                   quantity: clientActivity.quantity,
+                  isExecuted: clientActivity.isExecuted,
                   isCustom: true,
                 }))
 
               return (
                 <ActivityListCard
                   clientUuid={client.uuid}
-                  activities={[
-                    ...solutionsAsActivities,
-                    ...organizationActivities,
-                    ...customActivities,
-                  ]}
+                  clientSolutions={solutions}
+                  activities={[...organizationActivities, ...customActivities]}
                   date={date}
                   onChangeDate={setDate}
                 />
@@ -369,17 +368,13 @@ function applyFilter({
   comparator,
   filters,
 }: {
-  inputData: GenericActivityType[]
+  inputData: CombinedActivityType[]
   comparator: (a: any, b: any) => number
   filters: ClientActivityTableFilters
 }) {
   const stabilizedThis = inputData.map((el, index) => [el, index] as const)
 
   stabilizedThis.sort((a, b) => {
-    // Make the solution activities appear first
-    if (!a[0].clientSolutionUuid && b[0].clientSolutionUuid) {
-      return 1
-    }
     const order = comparator(a[0], b[0])
     if (order !== 0) return order
     return a[1] - b[1]

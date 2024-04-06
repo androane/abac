@@ -24,6 +24,7 @@ from organization.graphene.mutations import (
 from organization.graphene.mutations.client_mutations import (
     DeleteClientGroup,
     UpdateClientGroup,
+    UpdateClientSolution,
 )
 from organization.graphene.mutations.user_mutations import ToggleUserCategoryPermission
 from organization.graphene.types import ClientType, OrganizationType
@@ -110,6 +111,9 @@ class Mutation(graphene.ObjectType):
     )
     update_client_activity_logs = UpdateClientActivityLogs.Field(
         description="Update Client Activity Logs"
+    )
+    update_client_solution = UpdateClientSolution.Field(
+        description="Update an existing Client Solution"
     )
     update_client_solution_logs = UpdateClientSolutionLogs.Field(
         description="Update Client Solution Logs"

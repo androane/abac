@@ -61,7 +61,7 @@ def update_client_activity(
         activity.save()
 
         client_activity = ClientActivity.objects.create(
-            is_executed=True,
+            is_executed=False,
             client=client,
             activity=activity,
             year=client_activity_input.year,

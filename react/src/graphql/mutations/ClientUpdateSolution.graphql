@@ -1,0 +1,11 @@
+mutation UpdateClientSolution($clientUuid: String!, $clientSolutionInput: ClientSolutionInput!) {
+  updateClientSolution(clientUuid: $clientUuid, clientSolutionInput: $clientSolutionInput) {
+    error {
+      ...Error
+    }
+    clientSolution {
+      uuid
+      quantity
+    }
+  }
+}
