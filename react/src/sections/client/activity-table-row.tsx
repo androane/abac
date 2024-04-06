@@ -8,7 +8,6 @@ import { ConfirmDialog } from 'components/custom-dialog'
 
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
-import Label from 'components/label'
 import {
   ClientActivityFragmentDoc,
   useToggleClientActivityMutation,
@@ -17,6 +16,7 @@ import {
 import { useBoolean } from 'hooks/use-boolean'
 import React from 'react'
 import { CombinedActivityType } from 'sections/client/types'
+import { primary } from 'theme/palette'
 import { CATEGORY_CODE_TO_LABEL, getUnitCostTypeLabel } from 'utils/constants'
 
 type Props = {
@@ -145,12 +145,12 @@ const ActivityTableRow: React.FC<Props> = ({
           }}
         >
           <ListItemText
-            onClick={() => onEditRow(row.uuid)}
             primary={
               <Box display="flex" alignItems="center">
                 <Typography
                   component="div"
                   variant="body2"
+                  onClick={() => onEditRow(row.uuid)}
                   sx={{
                     cursor: 'pointer',
                     '&:hover': {
@@ -166,14 +166,24 @@ const ActivityTableRow: React.FC<Props> = ({
                     arrow
                     title={
                       <Typography sx={{ p: 1 }} variant="subtitle2">
-                        Această activitate a fost creată special pentru acest client și nu se află
-                        in lista de servicii standard oferite.
+                        Această activitate a fost creată special pentru acest client
                       </Typography>
                     }
                   >
-                    <Label color="info" startIcon={<Iconify icon="solar:bill-outline" />}>
-                      special
-                    </Label>
+                    <Iconify width={24} icon="solar:bill-outline" color={primary.main} />
+                  </Tooltip>
+                )}
+                {row.isRecurrent && (
+                  <Tooltip
+                    arrow
+                    title={
+                      <Typography sx={{ p: 1 }} variant="subtitle2">
+                        Această activitate este recurentă și va fi transferată automat și în luna
+                        următoare
+                      </Typography>
+                    }
+                  >
+                    <Iconify width={24} icon="solar:repeat-outline" color={primary.main} />
                   </Tooltip>
                 )}
               </Box>

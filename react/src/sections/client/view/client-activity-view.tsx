@@ -23,12 +23,12 @@ import {
   useClientActivitiesQuery,
   useDeleteClientActivityMutation,
   UserPermissionsEnum,
-  ClientClientQuery,
 } from 'generated/graphql'
 import ActivityTableFiltersResult from 'sections/client/activity-table-filters-result'
 import ActivityTableToolbar from 'sections/client/activity-table-toolbar'
 import ActivityTableRow from 'sections/client/activity-table-row'
 import {
+  APIClient,
   APIClientSolution,
   ClientActivityTableFilters,
   CombinedActivityType,
@@ -282,7 +282,7 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
 }
 
 type Props = {
-  client: ClientClientQuery['client']
+  client: APIClient
 }
 
 const ClientActivityView: React.FC<Props> = ({ client }) => {
@@ -319,6 +319,7 @@ const ClientActivityView: React.FC<Props> = ({ client }) => {
                       clientActivityUuid: overwrittenOrganizationActivity.uuid,
                       quantity: overwrittenOrganizationActivity.quantity,
                       isExecuted: overwrittenOrganizationActivity.isExecuted,
+                      isRecurrent: overwrittenOrganizationActivity.isRecurrent,
                       isCustom: false,
                     }
                   : {
@@ -326,6 +327,7 @@ const ClientActivityView: React.FC<Props> = ({ client }) => {
                       clientActivityUuid: null,
                       quantity: 1,
                       isExecuted: false,
+                      isRecurrent: false,
                       isCustom: false,
                     }
               })
@@ -343,6 +345,7 @@ const ClientActivityView: React.FC<Props> = ({ client }) => {
                   clientActivityUuid: clientActivity.uuid,
                   quantity: clientActivity.quantity,
                   isExecuted: clientActivity.isExecuted,
+                  isRecurrent: clientActivity.isRecurrent,
                   isCustom: true,
                 }))
 

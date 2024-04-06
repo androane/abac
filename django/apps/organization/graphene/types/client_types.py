@@ -44,9 +44,10 @@ class ClientActivityType(DjangoObjectType):
             "uuid",
             "month",
             "year",
-            "is_executed",
             "activity",
             "quantity",
+            "is_executed",
+            "is_recurrent",
         )
 
     logs = graphene.List(graphene.NonNull(ClientActivityLogType), required=True)
@@ -251,6 +252,7 @@ class ClientActivityInput(graphene.InputObjectType):
     month = graphene.Int(required=True)
     year = graphene.Int(required=True)
     quantity = graphene.Int(required=True)
+    is_recurrent = graphene.Boolean()
 
 
 class ClientSolutionInput(graphene.InputObjectType):

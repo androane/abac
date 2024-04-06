@@ -189,6 +189,9 @@ class ClientActivity(BaseModel):
     is_executed = models.BooleanField(
         default=True, help_text="Is the activity executed?"
     )
+    is_recurrent = models.BooleanField(
+        default=False, help_text="Is the activity recurrent?"
+    )
 
     client = models.ForeignKey(
         Client, on_delete=models.CASCADE, related_name="client_activities"

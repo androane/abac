@@ -31,7 +31,7 @@ import {
 import ClientTableFiltersResult from '../client-table-filters-result'
 import ClientTableRow from '../client-table-row'
 import ClientTableToolbar from '../client-table-toolbar'
-import { APIClient, ClientTableFilters } from '../types'
+import { APIOrganizationClient, ClientTableFilters } from '../types'
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Nume' },
@@ -40,7 +40,7 @@ const TABLE_HEAD = [
 ]
 
 type Props = {
-  clients: APIClient[]
+  clients: APIOrganizationClient[]
 }
 
 const ClientListCard: React.FC<Props> = ({ clients }) => {
@@ -223,7 +223,7 @@ function applyFilter({
   comparator,
   filters,
 }: {
-  inputData: APIClient[]
+  inputData: APIOrganizationClient[]
   comparator: (a: any, b: any) => number
   filters: ClientTableFilters
 }) {

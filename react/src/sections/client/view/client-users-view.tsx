@@ -19,7 +19,6 @@ import {
 
 import ResponseHandler from 'components/response-handler'
 import {
-  ClientClientQuery,
   UserPermissionsEnum,
   useClientUsersQuery,
   useDeleteClientUserMutation,
@@ -27,7 +26,7 @@ import {
 import { useBoolean } from 'hooks/use-boolean'
 import UpdateUser from 'sections/client/user-update'
 import AddButton from 'components/add-button'
-import { APIClientUser } from 'sections/client/types'
+import { APIClient, APIClientUser } from 'sections/client/types'
 import { useAuthContext } from 'auth/hooks'
 import UserTableRow from '../user-table-row'
 
@@ -179,7 +178,7 @@ const UserListCard: React.FC<CardProps> = ({ clientUuid, users, clientIsInGroup 
 }
 
 type Props = {
-  client: ClientClientQuery['client']
+  client: APIClient
 }
 
 const ClientUsersView: React.FC<Props> = ({ client }) => {

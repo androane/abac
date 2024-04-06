@@ -7,7 +7,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import Box from '@mui/material/Box'
 
-import FormProvider, { RHFSelect, RHFTextField } from 'components/hook-form'
+import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'components/hook-form'
 import { useSnackbar } from 'components/snackbar'
 import {
   useUpdateClientActivityMutation,
@@ -57,6 +57,7 @@ const UpdateClientActivity: React.FC<Props> = ({
       unitCost: activity?.unitCost || 0,
       unitCostCurrency: activity?.unitCostCurrency || CurrencyEnum.RON,
       unitCostType: activity?.unitCostType || UnitCostTypeEnum.HOURLY,
+      isRecurrent: activity?.isRecurrent || false,
       quantity: activity?.quantity || 1,
     }),
     [activity, localStorage.category],
@@ -75,6 +76,7 @@ const UpdateClientActivity: React.FC<Props> = ({
         unitCostType: Yup.mixed<UnitCostTypeEnum>()
           .oneOf(Object.values(UnitCostTypeEnum))
           .required(REQUIRED_FIELD_ERROR),
+        isRecurrent: Yup.boolean(),
         quantity: Yup.number()
           .required(REQUIRED_FIELD_ERROR)
           .min(1, 'Cantitatea trebuie să fie mai mare de 0'),
@@ -102,6 +104,7 @@ const UpdateClientActivity: React.FC<Props> = ({
             month: date.getMonth() + 1,
             year: date.getFullYear(),
             quantity: data.quantity,
+            isRecurrent: data.isRecurrent,
           },
         },
         update(cache, { data: cacheData }) {
@@ -123,7 +126,7 @@ const UpdateClientActivity: React.FC<Props> = ({
         },
       })
       form.reset()
-      enqueueSnackbar(activity ? 'Serviciul a fost actualizat!' : 'Serviciul a fost adăugat!')
+      enqueueSnackbar(activity ? 'Activitatea a fost actualizată!' : 'Activitatea a fost adăugată!')
       onClose()
     } catch (error) {
       enqueueSnackbar(getErrorMessage((error as Error).message), {
@@ -192,6 +195,12 @@ const UpdateClientActivity: React.FC<Props> = ({
               <div />
             )}
             <RHFTextField multiline rows={5} name="description" label="Descriere" />
+            <RHFSwitch
+              name="isRecurrent"
+              labelPlacement="start"
+              label="Este activitate recurentă care se transferă automat în luna următoare?"
+              sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
+            />
           </Box>
           <DialogActions
             label={activity ? 'Salvează' : 'Adaugă Activitate'}

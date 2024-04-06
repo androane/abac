@@ -11,7 +11,7 @@ import { useBoolean } from 'hooks/use-boolean'
 import { ConfirmDialog } from 'components/custom-dialog'
 import CustomPopover, { usePopover } from 'components/custom-popover'
 import Iconify from 'components/iconify'
-import { APIClient } from 'sections/client/types'
+import { APIOrganizationClient } from 'sections/client/types'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { useAuthContext } from 'auth/hooks'
 import { UserPermissionsEnum } from 'generated/graphql'
@@ -21,7 +21,7 @@ import { TABS_VALUES } from 'sections/client/constants'
 
 type Props = {
   loading: boolean
-  row: APIClient
+  row: APIOrganizationClient
   onDeleteRow: VoidFunction
 }
 

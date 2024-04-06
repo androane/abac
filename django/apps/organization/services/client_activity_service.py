@@ -50,6 +50,7 @@ def update_client_activity(
             month=client_activity_input.month,
         )
         client_activity.quantity = client_activity_input.quantity
+        client_activity.is_recurrent = client_activity_input.is_recurrent
         client_activity.save()
 
         activity = client_activity.activity
@@ -118,7 +119,7 @@ def get_client_solutions(
         _ for _ in all_client_solutions if _.month is None and _.year is None
     ]
 
-    # Returning the global solution for the client
+    # Returning the global solutions for the client
     if not month and not year:
         return global_client_solutions
 
@@ -129,11 +130,13 @@ def get_client_solutions(
     solution_id_to_client_solution = {_.solution_id: _ for _ in client_solutions}
 
     result = []
-    # Returning the solution for the client for the given month and year
+    # Returning the solutions for the client for the given month and year
     for global_client_solution in global_client_solutions:
         client_solution = solution_id_to_client_solution.get(
             global_client_solution.solution_id
         )
+
+        # Create the ClientSolution for this month if it doesn't exist
         if not client_solution:
             client_solution = global_client_solution
             client_solution.pk = None

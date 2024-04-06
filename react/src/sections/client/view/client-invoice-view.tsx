@@ -14,12 +14,12 @@ import Scrollbar from 'components/scrollbar'
 import { TableEmptyRows, TableHeadCustom, TableNoData, emptyRows, useTable } from 'components/table'
 
 import ResponseHandler from 'components/response-handler'
-import { ClientClientQuery, UserPermissionsEnum, useClientInvoiceQuery } from 'generated/graphql'
+import { UserPermissionsEnum, useClientInvoiceQuery } from 'generated/graphql'
 import { ListItemText, TableCell, TableRow } from '@mui/material'
 import InvoiceTableRow from 'sections/client/invoice-table-row'
 import { withUserPermission } from 'auth/hoc'
 import InvoiceTableToolbar from '../invoice-table-toolbar'
-import { APIClientInvoice } from '../types'
+import { APIClient, APIClientInvoice } from '../types'
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
@@ -122,7 +122,7 @@ const InvoiceDetailsCard: React.FC<InvoiceDetailsCardProps> = ({ invoice, date, 
 }
 
 type Props = {
-  client: ClientClientQuery['client']
+  client: APIClient
 }
 
 const ClientInvoiceView: React.FC<Props> = ({ client }) => {

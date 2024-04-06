@@ -21,7 +21,6 @@ import { useSnackbar } from 'components/snackbar'
 import {
   useUpdateClientMutation,
   useOrganizationSolutionsQuery,
-  ClientClientQuery,
   CurrencyEnum,
   useOrganizationUsersQuery,
   UserPermissionsEnum,
@@ -35,9 +34,10 @@ import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 import Iconify from 'components/iconify'
 import { CATEGORY_CODE_TO_LABEL } from 'utils/constants'
 import { TABS_VALUES } from 'sections/client/constants'
+import { APIClient } from 'sections/client/types'
 
 type ClientInfoProps = {
-  client: ClientClientQuery['client']
+  client: APIClient
 }
 
 const ClientInfo: React.FC<ClientInfoProps> = ({ client }) => {
@@ -335,7 +335,7 @@ const UpdateClientSoftware: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) =
 }
 
 type Props = {
-  client?: ClientClientQuery['client']
+  client?: APIClient
 }
 
 const ClientUpdateView: React.FC<Props> = ({ client }) => {
