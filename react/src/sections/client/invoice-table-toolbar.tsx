@@ -12,6 +12,7 @@ import getErrorMessage from 'utils/api-codes'
 import React from 'react'
 import { getAuthorizationHeader } from 'config/config-apollo'
 import { BACKEND_HOST } from 'config/config-env'
+import { Button } from '@mui/material'
 
 type Props = {
   invoiceId: string
@@ -105,10 +106,10 @@ const InvoiceTableToolbar: React.FC<Props> = ({
       >
         {statusToLabel[status]}
       </LoadingButton>
-      {/* <Button onClick={onDownloadDetails}>
+      <Button onClick={onDownloadDetails}>
         <Iconify icon="eva:download-fill" />
         Descarcă detalii
-      </Button> */}
+      </Button>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
