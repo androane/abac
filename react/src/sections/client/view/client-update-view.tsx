@@ -227,6 +227,7 @@ const UpdateClientSolutions: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) 
 
 const SoftwareEnumToLabel = {
   [SoftwareEnum.FGO]: 'FGO',
+  [SoftwareEnum.GESTSEL]: 'GetSel',
   [SoftwareEnum.NEOMANAGER]: 'NeoManager',
   [SoftwareEnum.NEXTUP]: 'NextUp',
   [SoftwareEnum.NEXUS]: 'Nexus',

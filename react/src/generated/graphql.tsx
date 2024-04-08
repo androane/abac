@@ -327,7 +327,7 @@ export type GenerateReport = {
 export type InvoiceItemType = {
   __typename?: 'InvoiceItemType';
   category: CategoryType;
-  cost: Scalars['Int']['output'];
+  cost: Scalars['Float']['output'];
   currency: CurrencyEnum;
   quantity: Scalars['Int']['output'];
   solutionName?: Maybe<Scalars['String']['output']>;
@@ -614,6 +614,7 @@ export type QueryClientArgs = {
 /** An enumeration. */
 export enum SoftwareEnum {
   FGO = 'FGO',
+  GESTSEL = 'GESTSEL',
   NEOMANAGER = 'NEOMANAGER',
   NEXTUP = 'NEXTUP',
   NEXUS = 'NEXUS',
