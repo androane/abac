@@ -28,7 +28,7 @@ from organization.graphene.mutations.client_mutations import (
 )
 from organization.graphene.mutations.user_mutations import ToggleUserCategoryPermission
 from organization.graphene.types import ClientType, OrganizationType
-from organization.services.client_service import get_client
+from organization.services.client.client_service import get_client
 from user.decorators import logged_in_user_required
 from user.models import User
 

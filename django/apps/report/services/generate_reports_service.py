@@ -47,27 +47,17 @@ def _save_user_report(
     return user_report
 
 
-def _generate_dataframe_report(
+def generate_report(
     user: User, year: int, month: int, category_codes: list[str]
-) -> pd.DataFrame:
+) -> UserReport:
     org = user.organization
 
-    df = get_flattened_report_data(org, year, month)
-    if category_codes:
-        df = df[df[REPORT_COLUMNS.CATEGORY_CODE].isin(category_codes)]
+    df = get_flattened_report_data(org, year, month, category_codes=category_codes)
     df.sort_values(
         [REPORT_COLUMNS.CLIENT, REPORT_COLUMNS.CATEGORY_NAME, REPORT_COLUMNS.DAY],
         inplace=True,
     )
-    df.drop(columns=[REPORT_COLUMNS.CATEGORY_CODE], inplace=True)
     df = _translate_dataframe_strings(df)
-    return df
-
-
-def generate_report(
-    user: User, year: int, month: int, category_codes: list[str]
-) -> UserReport:
-    df = _generate_dataframe_report(user, year, month, category_codes)
 
     excel_bytes_data = _get_excel_bytes_data_from_dataframe(df)
 

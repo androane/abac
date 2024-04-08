@@ -29,6 +29,7 @@ class UnitCostTypeEnum(BaseEnum):
 
 class SoftwareEnum(BaseEnum):
     FGO = enum.auto()
+    GESTSEL = enum.auto()
     NEOMANAGER = enum.auto()
     NEXTUP = enum.auto()
     NEXUS = enum.auto()
@@ -44,3 +45,7 @@ class SoftwareEnum(BaseEnum):
     SMARTBILL = enum.auto()
     TEAMAPP = enum.auto()
     WIND = enum.auto()
+
+
+class UserDownloadEnum(BaseEnum):
+    INVOICE_DETAILS = enum.auto()

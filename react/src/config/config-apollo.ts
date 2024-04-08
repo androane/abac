@@ -6,7 +6,7 @@ import { setContext } from '@apollo/link-context'
 import DebounceLink from 'apollo-link-debounce'
 import { withScope, captureMessage } from '@sentry/browser'
 
-import { GRAPHQL_ENDPOINT } from 'config/config-env'
+import { BACKEND_HOST } from 'config/config-env'
 import { clearAuthData, getAuthData } from 'auth/context/utils'
 import { GENERIC_ERROR_MESSAGE } from 'utils/api-codes'
 
@@ -15,8 +15,13 @@ enum GraphQLErrorsEnum {
   FORBIDDEN = 'FORBIDDEN',
 }
 
-// const httpLink = createHttpLink({ uri: GRAPHQL_ENDPOINT })
-const httpLink = createUploadLink({ uri: GRAPHQL_ENDPOINT })
+export const getAuthorizationHeader = () => {
+  const token = getAuthData().accessToken
+  return `Bearer ${token}`
+}
+
+// createUploadLink replaces createHttpLink and it is needed for file uploads
+const httpLink = createUploadLink({ uri: `${BACKEND_HOST}/graphql` })
 
 const logoutAfterware = onError(({ networkError }) => {
   if (
@@ -31,11 +36,10 @@ const logoutAfterware = onError(({ networkError }) => {
 // eslint-disable-next-line no-unused-vars
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from storage if it exists
-  const token = getAuthData().accessToken
-  if (token) {
+  const authorizationHeader = getAuthorizationHeader()
+  if (authorizationHeader) {
     // return the headers to the context so httpLink can read them
-    const Authorization = `Bearer ${token}`
-    return { headers: { ...headers, Authorization } }
+    return { headers: { ...headers, Authorization: authorizationHeader } }
   }
   return { headers }
 })

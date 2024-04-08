@@ -3,7 +3,7 @@ import graphene
 
 from api.graphene.mutations import BaseMutation
 from api.permission_decorators import permission_required
-from report.services.generate_report import generate_report
+from report.services.generate_reports_service import generate_report
 from user.decorators import logged_in_user_required
 from user.models import User
 from user.permissions import UserPermissionsEnum

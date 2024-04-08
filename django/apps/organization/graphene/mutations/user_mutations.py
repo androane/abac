@@ -3,14 +3,14 @@ import graphene
 
 from api.graphene.mutations import BaseMutation
 from api.permission_decorators import permission_required
-from organization.services.user_category_permissions import (
+from organization.services.user.user_category_permissions import (
     toggle_user_category_permission,
 )
-from organization.services.user_client_permissions import (
+from organization.services.user.user_client_permissions import (
     toggle_user_client_permission,
     update_user_client_permissions,
 )
-from organization.services.user_generic_permissions import toggle_user_permission
+from organization.services.user.user_generic_permissions import toggle_user_permission
 from user.decorators import logged_in_user_required
 from user.graphene.types import UserPermissionsEnumType, UserType
 from user.models import User

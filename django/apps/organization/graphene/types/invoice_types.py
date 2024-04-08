@@ -4,14 +4,14 @@ from graphene_django import DjangoObjectType
 
 from organization.graphene.types.enums import CurrencyEnumType
 from organization.models import Invoice
-from organization.services.client_invoice_service import generate_invoice_items
+from organization.services.client.client_invoice_service import generate_invoice_items
 
 
 class InvoiceItemType(graphene.ObjectType):
     solution_name = graphene.String()
     category = graphene.NonNull("organization.graphene.types.CategoryType")
     quantity = graphene.Int(required=True)
-    cost = graphene.Int(required=True)
+    cost = graphene.Float(required=True)
     currency = CurrencyEnumType(required=True)
 
 

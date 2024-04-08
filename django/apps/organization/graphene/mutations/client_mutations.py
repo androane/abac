@@ -22,28 +22,30 @@ from organization.graphene.types.client_types import (
     ClientGroupType,
     ClientSolutionInput,
 )
-from organization.services.client_activity_service import (
+from organization.services.client.client_activity_service import (
     delete_client_activity,
     toggle_client_activity,
     update_client_activity,
 )
-from organization.services.client_files_service import (
+from organization.services.client.client_files_service import (
     create_client_files,
     delete_client_file,
 )
-from organization.services.client_group_service import (
+from organization.services.client.client_group_service import (
     delete_client_group,
     update_client_group,
 )
-from organization.services.client_invoice_service import update_client_invoice_status
-from organization.services.client_logs_service import (
+from organization.services.client.client_invoice_service import (
+    update_client_invoice_status,
+)
+from organization.services.client.client_logs_service import (
     update_client_activity_logs,
     update_client_solution_logs,
 )
-from organization.services.client_service import delete_client
-from organization.services.client_solution_service import update_client_solution
-from organization.services.client_update_service import update_or_create_client
-from organization.services.client_users_service import (
+from organization.services.client.client_service import delete_client
+from organization.services.client.client_solution_service import update_client_solution
+from organization.services.client.client_update_service import update_or_create_client
+from organization.services.client.client_users_service import (
     delete_client_user,
     update_client_user,
 )

@@ -9,11 +9,11 @@ from organization.graphene.types import (
     SolutionInput,
     SolutionType,
 )
-from organization.services.organization_activity_service import (
+from organization.services.organization.organization_activity_service import (
     delete_organization_activity,
     update_organization_activity,
 )
-from organization.services.organization_solution_service import (
+from organization.services.organization.organization_solution_service import (
     delete_organization_solution,
     update_organization_solution,
 )

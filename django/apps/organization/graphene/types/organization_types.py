@@ -5,15 +5,17 @@ from graphene_django import DjangoObjectType
 from organization.graphene.types.activity_types import ActivityType, SolutionType
 from organization.graphene.types.client_types import ClientGroupType, ClientType
 from organization.models.organization import Organization, OrganizationBusinessCategory
-from organization.services.client_service import get_clients
-from organization.services.organization_activity_service import (
+from organization.services.client.client_service import get_clients
+from organization.services.organization.organization_activity_service import (
     get_organization_activities,
 )
-from organization.services.organization_categories_service import (
+from organization.services.organization.organization_categories_service import (
     get_organization_categories,
 )
-from organization.services.organization_solution_service import get_organization_solutions
-from organization.services.organization_user_service import (
+from organization.services.organization.organization_solution_service import (
+    get_organization_solutions,
+)
+from organization.services.organization.organization_user_service import (
     get_organization_users,
     get_organzation_user,
 )

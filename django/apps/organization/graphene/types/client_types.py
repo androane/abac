@@ -20,8 +20,8 @@ from organization.models.client import (
     ClientSolutionLog,
     ClientUserProfile,
 )
-from organization.services.client_invoice_service import get_client_invoice
-from organization.services.client_users_service import get_client_users
+from organization.services.client.client_invoice_service import get_client_invoice
+from organization.services.client.client_users_service import get_client_users
 from user.graphene.types import UserType
 from user.permissions import UserPermissionsEnum
 
@@ -176,7 +176,9 @@ class ClientType(DjangoObjectType):
         return get_client_users(info.context.user, self)
 
     def resolve_activities(self, info, **kwargs):
-        from organization.services.client_activity_service import get_client_activities
+        from organization.services.client.client_activity_service import (
+            get_client_activities,
+        )
 
         return get_client_activities(info.context.user, self, **kwargs)
 
@@ -184,7 +186,9 @@ class ClientType(DjangoObjectType):
         return self.client_activities.get(uuid=kwargs.get("uuid"))
 
     def resolve_solutions(self, info, **kwargs):
-        from organization.services.client_activity_service import get_client_solutions
+        from organization.services.client.client_activity_service import (
+            get_client_solutions,
+        )
 
         return get_client_solutions(info.context.user, self, **kwargs)
 

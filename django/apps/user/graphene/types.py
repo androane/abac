@@ -3,8 +3,8 @@ import graphene
 from django.contrib.auth import get_user_model
 from graphene_django import DjangoObjectType
 
-from organization.services.user_category_permissions import get_user_categories
-from organization.services.user_client_permissions import get_user_clients
+from organization.services.user.user_category_permissions import get_user_categories
+from organization.services.user.user_client_permissions import get_user_clients
 from user.constants import UserRoleEnum
 from user.permissions import UserPermissionsEnum
 

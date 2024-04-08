@@ -11,7 +11,6 @@ class REPORT_COLUMNS(BaseEnum):
     CLIENT = "client"
     PROGRAM_MANAGER = "program_manager"
     ACTIVITY_NAME = "activity_name"
-    CATEGORY_CODE = "category_code"
     CATEGORY_NAME = "category_name"
     QUANTITY = "quantity"
     UNIT_COST = "unit_cost"
@@ -63,7 +62,6 @@ def get_flattened_report_data(
             obj.client.name,
             obj.client.program_manager.name,
             obj.solution.name,
-            obj.solution.category.code,
             obj.solution.category.name,
             obj.quantity,
             obj.unit_cost,
@@ -92,7 +90,6 @@ def get_flattened_report_data(
             obj.client.name,
             obj.client.program_manager.name,
             obj.activity.name,
-            obj.activity.category.code,
             obj.activity.category.name,
             obj.quantity,
             obj.activity.unit_cost,
@@ -122,7 +119,6 @@ def get_flattened_report_data(
             REPORT_COLUMNS.CLIENT.value,
             REPORT_COLUMNS.PROGRAM_MANAGER.value,
             REPORT_COLUMNS.ACTIVITY_NAME.value,
-            REPORT_COLUMNS.CATEGORY_CODE.value,
             REPORT_COLUMNS.CATEGORY_NAME.value,
             REPORT_COLUMNS.QUANTITY.value,
             REPORT_COLUMNS.UNIT_COST.value,
