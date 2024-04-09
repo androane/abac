@@ -108,7 +108,7 @@ const InvoiceTableToolbar: React.FC<Props> = ({
       </LoadingButton>
       <Button onClick={onDownloadDetails}>
         <Iconify icon="eva:download-fill" />
-        Descarcă detalii
+        Descarcă Anexa
       </Button>
       <CustomPopover
         open={popover.open}

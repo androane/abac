@@ -54,6 +54,9 @@
               <div class="activity">
                 <div class="activity-name"><span class="counter">{{ forloop.counter }}.</span> {{ client_solution.solution.name }} {{ CATEGORY_TRANSLATIONS|get_item:client_solution.solution.category.name }}</div>
                 <div class="activity-details">
+                  <div>
+                    {{ client_solution.unit_cost }} {{ client_solution.unit_cost_currency }}
+                  </div>
                   <ul>
                     {% for log in client_solution.logs.all %}
                       <li>
