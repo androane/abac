@@ -1,1 +1,93 @@
-Se lucreaza...
+{% load custom_filters %}
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Anexa Factura {{ month }} {{ year }}</title>
+        <style type="text/css">
+            body {
+                font-weight: 200;
+                font-size: 14px;
+            }
+            .header {
+                font-size: 20px;
+                font-weight: 100;
+                text-align: center;
+                color: #00B8D9;
+            }
+            .title {
+                font-size: 22px;
+                font-weight: 100;
+                padding: 10px 20px 0px 20px;
+            }
+            .title span {
+                color: #00B8D9;
+            }
+            .details {
+                padding: 10px 20px 0px 20px;
+                text-align: left !important;
+            }
+            .hrItem {
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+            .activity-name {
+              font-size: 16px;
+              font-weight: 100;
+            }
+            .activity-details {
+              padding-left: 50px;
+            }
+            .counter {
+              color: #00B8D9;
+            }
+        </style>
+    </head>
+    <body>
+        <div class='wrapper'>
+            <div class='header'>
+                <p class='title'>Anexa Factura {{ month }} {{ year }}</p>
+            </div>
+        <div>
+        <div class='details'>
+            {% for client_solution in client_solutions %}
+              <div class="activity">
+                <div class="activity-name"><span class="counter">{{ forloop.counter }}.</span> {{ client_solution.solution.name }} {{ CATEGORY_TRANSLATIONS|get_item:client_solution.solution.category.name }}</div>
+                <div class="activity-details">
+                  <ul>
+                    {% for log in client_solution.logs.all %}
+                      <li>
+                        {{ log.date.day }} {{ month }}: {{ log.minutes_allocated }} minute{% if log.description %} - {{ log.description }}{% endif %}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            {% endfor %}
+
+            <hr class='hrItem' />
+
+            {% for client_activity in client_activities %}
+              <div class="activity">
+                <div class="activity-name"><span class="counter">{{ forloop.counter }}.</span> {{ client_activity.activity.name }}</div>
+                <div class="activity-details">
+                  <div>
+                    {{ client_activity.activity.unit_cost }} {{ client_activity.activity.unit_cost_currency }}
+                  </div>
+                  <div>
+                    {{ client_activity.activity.description }}
+                  </div>
+                  <ul>
+                    {% for log in client_activity.logs.all %}
+                      <li>
+                        {{ log.date.day }} {{ month }}: {{ log.minutes_allocated }} minute{% if log.description %} - {{ log.description }}{% endif %}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            {% endfor %}
+        </div>
+    </div>
+    </body>
+</html>
