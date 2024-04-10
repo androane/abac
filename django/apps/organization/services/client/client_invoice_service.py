@@ -70,7 +70,7 @@ def generate_invoice_items(user: User, invoice: Invoice) -> list[str]:
             {
                 "solution_name": client_solution.solution.name,
                 "quantity": client_solution.quantity,
-                "cost": client_solution.unit_cost,
+                "cost": client_solution.unit_cost * client_solution.quantity,
                 "currency": client_solution.unit_cost_currency,
                 "category": client_solution.solution.category,
             }
