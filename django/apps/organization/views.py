@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied
 from core.exceptions import PermissionException
 from core.renderers import render_to_pdf
 from organization.locales import CATEGORY_TRANSLATIONS, MONTH_TRANSLATIONS
+from organization.models.client import Client
 from organization.models.invoice import Invoice
 from organization.services.client.client_activity_service import (
     get_client_activities,
@@ -33,20 +34,26 @@ def download_invoice_details(request) -> HTTPResponse:
         uuid=request.GET.get("invoice_uuid"), client__organization=org
     )
 
-    client = invoice.client
+    client: Client = invoice.client
 
     client_solutions = get_client_solutions(user, client, invoice.month, invoice.year)
-    client_activities = get_client_activities(
-        user, client, invoice.month, invoice.year
-    ).filter(is_executed=True)
+    client_activities = (
+        get_client_activities(user, client, invoice.month, invoice.year)
+        .filter(is_executed=True)
+        .select_related("activity", "activity__category")
+        .prefetch_related("logs")
+    )
 
     context = {
         "month": MONTH_TRANSLATIONS[invoice.month],
         "year": invoice.year,
         "CATEGORY_TRANSLATIONS": CATEGORY_TRANSLATIONS,
+        "client_name": client.name,
         "client_solutions": client_solutions,
         "client_activities": client_activities,
     }
+
+    print(context)
 
     response = render_to_pdf("invoice_details_template.html", context)
 

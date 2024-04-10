@@ -10,15 +10,15 @@
                 font-size: 14px;
             }
             .header {
-                font-size: 20px;
-                font-weight: 100;
-                text-align: center;
-                color: #00B8D9;
-            }
-            .title {
                 font-size: 22px;
                 font-weight: 100;
-                padding: 10px 20px 0px 20px;
+                text-align: center;
+            }
+            .title {
+                color: #EB753A;
+            }
+            .client-name {
+                color: #00B8D9;
             }
             .title span {
                 color: #00B8D9;
@@ -31,65 +31,99 @@
                 margin-top: 20px;
                 margin-bottom: 20px;
             }
+            .activity-title {
+              font-size: 18px;
+              font-weight: 100;
+            }
             .activity-name {
               font-size: 16px;
               font-weight: 100;
+              color: #00B8D9;
+            }
+            .cost {
+              color: #000;
             }
             .activity-details {
               padding-left: 50px;
-            }
-            .counter {
-              color: #00B8D9;
             }
         </style>
     </head>
     <body>
         <div class='wrapper'>
-            <div class='header'>
-                <p class='title'>Anexa Factura {{ month }} {{ year }}</p>
-            </div>
+          <div class='header'>
+            <p class='client-name'>{{ client_name }}</p>
+            <p class='title'>Anexa Factura {{ month }} {{ year }}</p>
+          </div>
         <div>
         <div class='details'>
-            {% for client_solution in client_solutions %}
-              <div class="activity">
-                <div class="activity-name"><span class="counter">{{ forloop.counter }}.</span> {{ client_solution.solution.name }} {{ CATEGORY_TRANSLATIONS|get_item:client_solution.solution.category.name }}</div>
-                <div class="activity-details">
-                  <div>
-                    {{ client_solution.unit_cost }} {{ client_solution.unit_cost_currency }}
-                  </div>
-                  <ul>
-                    {% for log in client_solution.logs.all %}
-                      <li>
-                        {{ log.date.day }} {{ month }}: {{ log.minutes_allocated }} minute{% if log.description %} - {{ log.description }}{% endif %}
-                      </li>
-                    {% endfor %}
-                  </ul>
-                </div>
+          {% for client_solution in client_solutions %}
+            <div>
+              <div class="activity-name">
+                {{ forloop.counter }}. {{ client_solution.solution.name }} {{ CATEGORY_TRANSLATIONS|get_item:client_solution.solution.category.name }}
+                {% if client_solution.total_cost %}
+                  <span class="cost">
+                    &nbsp;&nbsp;{{ client_solution.total_cost }} {{ client_solution.unit_cost_currency }}
+                  </span>
+                {% endif %}
               </div>
-            {% endfor %}
+              <div class="activity-details">
+                <b>Include:</b>
+                {% for activity in client_solution.solution.activities.all %}
+                  {{ activity.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                <ul>
+                  {% for log in client_solution.logs.all %}
+                    <li>
+                      {{ log.date.day }} {{ month }}
+                      {% if log.minutes_allocated %}
+                        : {{ log.minutes_allocated }} minute
+                      {% endif %}
+                      {% if log.description %} - {{ log.description }}{% endif %}
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+            <br/>
+          {% endfor %}
 
+          {% if client_activities %}
             <hr class='hrItem' />
 
+            <div class="activity-title">Servicii Suplimentare</div>
+
             {% for client_activity in client_activities %}
-              <div class="activity">
-                <div class="activity-name"><span class="counter">{{ forloop.counter }}.</span> {{ client_activity.activity.name }}</div>
+              <div>
+                <div class="activity-name">
+                  {{ forloop.counter }}.</span> {{ client_activity.activity.name }}
+                  {% if client_activity.total_cost %}
+                    <span class="cost">
+                      &nbsp;&nbsp;{{ client_activity.total_cost }} {{ client_activity.activity.unit_cost_currency }}
+                    </span>
+                  {% endif %}
+                </div>
                 <div class="activity-details">
-                  <div>
-                    {{ client_activity.activity.unit_cost }} {{ client_activity.activity.unit_cost_currency }}
-                  </div>
-                  <div>
-                    {{ client_activity.activity.description }}
-                  </div>
+                  {% if client_activity.activity.description %}
+                    <div>
+                      {{ client_activity.activity.description }}
+                    </div>
+                  {% endif %}
                   <ul>
                     {% for log in client_activity.logs.all %}
                       <li>
-                        {{ log.date.day }} {{ month }}: {{ log.minutes_allocated }} minute{% if log.description %} - {{ log.description }}{% endif %}
+                        {{ log.date.day }} {{ month }}
+                        {% if log.minutes_allocated %}
+                          : {{ log.minutes_allocated }} minute
+                        {% endif %}
+                        {% if log.description %} - {{ log.description }}{% endif %}
                       </li>
                     {% endfor %}
                   </ul>
                 </div>
               </div>
+              <br/>
             {% endfor %}
+          {% endif %}
         </div>
     </div>
     </body>

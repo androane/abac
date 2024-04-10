@@ -4,7 +4,7 @@ from typing import Iterable
 
 import pendulum
 
-from organization.constants import InvoiceStatusEnum, UnitCostTypeEnum
+from organization.constants import InvoiceStatusEnum
 from organization.models import Client, Invoice, Organization
 from organization.models.activity import Activity
 from organization.models.client import ClientActivity, ClientSolution
@@ -29,25 +29,6 @@ def get_client_invoice(
     return invoice
 
 
-def _get_client_activity_cost(client_activity: ClientActivity) -> int:
-    activity: Activity = client_activity.activity
-
-    if not activity.unit_cost:
-        return 0
-
-    # FIXED
-    if activity.unit_cost_type == UnitCostTypeEnum.FIXED.value:
-        return activity.unit_cost * client_activity.quantity
-
-    # HOURLY
-    cost = 0
-    total_time = sum(client_activity.logs.values_list("minutes_allocated", flat=True))
-    if total_time and activity.unit_cost:
-        cost = activity.unit_cost * total_time / 60
-
-    return cost
-
-
 def generate_invoice_items(user: User, invoice: Invoice) -> list[str]:
     client = invoice.client
 
@@ -70,7 +51,7 @@ def generate_invoice_items(user: User, invoice: Invoice) -> list[str]:
             {
                 "solution_name": client_solution.solution.name,
                 "quantity": client_solution.quantity,
-                "cost": client_solution.unit_cost * client_solution.quantity,
+                "cost": client_solution.total_cost,
                 "currency": client_solution.unit_cost_currency,
                 "category": client_solution.solution.category,
             }
@@ -95,7 +76,7 @@ def generate_invoice_items(user: User, invoice: Invoice) -> list[str]:
 
         activity_items[activity.category][
             activity.unit_cost_currency
-        ] += _get_client_activity_cost(client_activity)
+        ] += client_activity.total_cost
 
     for category, data in activity_items.items():
         for currency, cost in data.items():

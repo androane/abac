@@ -3,7 +3,12 @@ from django.db import models
 from guardian.models import UserObjectPermissionBase
 
 from core.models import BaseModel
-from organization.constants import ClientUserRoleEnum, CurrencyEnum, SoftwareEnum
+from organization.constants import (
+    ClientUserRoleEnum,
+    CurrencyEnum,
+    SoftwareEnum,
+    UnitCostTypeEnum,
+)
 from organization.models.activity import Activity, ActivityLog, Solution
 from organization.models.organization import Organization
 
@@ -203,6 +208,25 @@ class ClientActivity(BaseModel):
     def __str__(self):
         return f"{self.month}.{self.year} : {self.client.name} - {self.activity.name}"
 
+    @property
+    def total_cost(self) -> float:
+        activity: Activity = self.activity
+
+        if not activity.unit_cost:
+            return 0
+
+        # FIXED
+        if activity.unit_cost_type == UnitCostTypeEnum.FIXED.value:
+            return activity.unit_cost * self.quantity
+
+        # HOURLY
+        cost = 0
+        total_time = sum(self.logs.values_list("minutes_allocated", flat=True))
+        if total_time and activity.unit_cost:
+            cost = activity.unit_cost * total_time / 60
+
+        return cost
+
 
 class ClientSolution(BaseModel):
     class Meta:
@@ -236,6 +260,10 @@ class ClientSolution(BaseModel):
             suffix = f" - {self.month}.{self.year}"
 
         return f"{self.client.name} - {self.solution.name} {suffix}"
+
+    @property
+    def total_cost(self):
+        return self.unit_cost * self.quantity
 
 
 class ClientActivityLog(ActivityLog):
