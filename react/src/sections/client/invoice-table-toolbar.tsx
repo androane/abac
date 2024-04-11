@@ -50,7 +50,6 @@ const InvoiceTableToolbar: React.FC<Props> = ({
 
   const onDownloadDetails = () => {
     const url = `${BACKEND_HOST}/download/invoice-details?invoice_uuid=${invoiceId}`
-    console.log(url)
 
     const headers = new Headers()
     headers.append('Authorization', getAuthorizationHeader())

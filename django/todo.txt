@@ -1,7 +1,7 @@
 squash migrations
 documente per luna
 sentry
-
+cronjob o data pe luna sa creeze activitatile recurente
 
 Pt viitor, cand reusesc sa vand softul:
  - get subdomain name in jwt middleware

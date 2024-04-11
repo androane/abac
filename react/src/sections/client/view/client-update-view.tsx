@@ -27,6 +27,7 @@ import {
   SoftwareEnum,
   ClientInput,
   BaseClientFragmentDoc,
+  ClientActivitiesDocument,
 } from 'generated/graphql'
 import { useAuthContext } from 'auth/hooks'
 import getErrorMessage from 'utils/api-codes'
@@ -446,6 +447,19 @@ const ClientUpdateView: React.FC<Props> = ({ client }) => {
             },
           })
         },
+        refetchQueries: client
+          ? [
+              {
+                // Refetching this because we need to reflect cost changes on the Client Solution for the first month
+                query: ClientActivitiesDocument,
+                variables: {
+                  clientUuid: client.uuid,
+                  month: new Date().getMonth() + 1,
+                  year: new Date().getFullYear(),
+                },
+              },
+            ]
+          : [],
       })
       if (!client) {
         if (response.data?.updateClient?.error) {

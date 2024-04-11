@@ -76,4 +76,6 @@ class OrganizationType(DjangoObjectType):
         return self.client_groups.all()
 
     def resolve_categories(self, info, **kwargs):
+        # return info.context.categories_from_organization.load(self.id)
+
         return get_organization_categories(info.context.user)

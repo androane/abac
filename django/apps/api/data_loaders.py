@@ -11,8 +11,8 @@ from graphql_sync_dataloaders import SyncDataLoader
 
 from organization.models import Activity, ClientActivityLog
 from organization.models.activity import Solution
-from organization.models.client import ClientSolutionLog
-from organization.models.organization import OrganizationBusinessCategory
+from organization.models.client import ClientSolutionLog, ClientUserProfile
+from organization.models.organization import Organization, OrganizationBusinessCategory
 from user.models import User
 
 
@@ -82,6 +82,7 @@ def many_to_many_loader_builder(
 
 LOADERS = {
     # Children Key Loaders
+    "client_profile_from_user": children_loader_builder(ClientUserProfile, "user"),
     "logs_from_client_activity": children_loader_builder(
         ClientActivityLog, "client_activity"
     ),
@@ -99,5 +100,10 @@ LOADERS = {
         Solution.activities.through,
         "solution",
         "activity",
+    ),
+    "categories_from_organization": many_to_many_loader_builder(
+        Organization.categories.through,
+        "organization",
+        "category",
     ),
 }

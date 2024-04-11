@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from typing import TYPE_CHECKING
 
+import pendulum
 from django.contrib.auth import get_user_model
 
 from api.errors import CLIENT_ALREADY_EXISTS, APIException
@@ -70,6 +71,16 @@ def _set_client_solutions(
         if client_solution_input.uuid:
             client.client_solutions.filter(
                 solution=solution, uuid=client_solution_input.uuid
+            ).update(
+                unit_cost=client_solution_input.unit_cost,
+                unit_cost_currency=client_solution_input.unit_cost_currency,
+            )
+
+            # The ClientSolution update should reflect on the current month too
+            client.client_solutions.filter(
+                solution=solution,
+                year=pendulum.now().year,
+                month=pendulum.now().month,
             ).update(
                 unit_cost=client_solution_input.unit_cost,
                 unit_cost_currency=client_solution_input.unit_cost_currency,

@@ -60,6 +60,9 @@ class UserType(DjangoObjectType):
     def resolve_categories(self, info):
         return get_user_categories(self)
 
+    def resolve_client_profile(self, info):
+        return info.context.client_profile_from_user.load(self.id)
+
     def resolve_role(self, info):
         return (
             UserRoleEnum.CLIENT if hasattr(self, "client_profile") else UserRoleEnum.PM
