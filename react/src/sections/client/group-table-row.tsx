@@ -33,20 +33,22 @@ const ClientGroupTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDelet
   return (
     <>
       <TableRow hover>
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={row.name} sx={{ mr: 2 }}>
-            {row.name.charAt(0).toUpperCase()}
-          </Avatar>
-          <Box
-            onClick={onEditRow}
-            sx={{
-              cursor: 'pointer',
-              '&:hover': {
-                textDecoration: 'underline',
-              },
-            }}
-          >
-            {row.name}
+        <TableCell>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Avatar alt={row.name} sx={{ mr: 2 }}>
+              {row.name.charAt(0).toUpperCase()}
+            </Avatar>
+            <Box
+              onClick={onEditRow}
+              sx={{
+                cursor: 'pointer',
+                '&:hover': {
+                  textDecoration: 'underline',
+                },
+              }}
+            >
+              {row.name}
+            </Box>
           </Box>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
