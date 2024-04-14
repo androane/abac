@@ -50,15 +50,18 @@ const ClientGroupTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDelet
           </Box>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          <ListItemText
-            primary={row.clients.map(c => c.name).join(', ')}
-            secondary=""
-            primaryTypographyProps={{ typography: 'body2' }}
-            secondaryTypographyProps={{
-              component: 'span',
-              color: 'text.disabled',
-            }}
-          />
+          {row.clients.map(c => (
+            <ListItemText
+              key={c.uuid}
+              primary={c.name}
+              secondary=""
+              primaryTypographyProps={{ typography: 'body2' }}
+              secondaryTypographyProps={{
+                component: 'span',
+                color: 'text.disabled',
+              }}
+            />
+          ))}
         </TableCell>
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>

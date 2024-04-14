@@ -18,7 +18,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
     objects = UserManager()
 
-    email = models.EmailField("email address", db_collation="case_insensitive")
+    email = models.EmailField("email address")
     first_name = models.CharField("first name", max_length=64, blank=True)
     last_name = models.CharField("last name", max_length=64, blank=True)
     title = models.CharField("job title", max_length=128, blank=True, null=True)
