@@ -136,6 +136,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = str(root.path("staticfiles"))
 
+
 # AWS
 
 MEDIA_BUCKET = "abac-media"
