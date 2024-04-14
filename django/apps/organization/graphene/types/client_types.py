@@ -53,7 +53,7 @@ class ClientActivityType(DjangoObjectType):
     logs = graphene.List(graphene.NonNull(ClientActivityLogType), required=True)
 
     def resolve_activity(self, info, **kwargs):
-        return info.context.activity_loader.load(self.activity_id)
+        return info.context.activity_fk_loader.load(self.activity_id)
 
     def resolve_logs(self, info, **kwargs):
         return info.context.logs_from_client_activity.load(self.id)
@@ -86,7 +86,7 @@ class ClientSolutionType(DjangoObjectType):
     logs = graphene.List(graphene.NonNull(ClientSolutionLogType), required=True)
 
     def resolve_solution(self, info, **kwargs):
-        return info.context.solution_loader.load(self.solution_id)
+        return info.context.solution_fk_loader.load(self.solution_id)
 
     def resolve_logs(self, info, **kwargs):
         return info.context.logs_from_client_solution.load(self.id)
@@ -170,7 +170,7 @@ class ClientType(DjangoObjectType):
         return self.files.order_by("-created").all()
 
     def resolve_program_manager(self, info, **kwargs):
-        return info.context.program_manager_loader.load(self.program_manager_id)
+        return info.context.program_manager_fk_loader.load(self.program_manager_id)
 
     def resolve_users(self, info, **kwargs):
         return get_client_users(info.context.user, self)
@@ -247,7 +247,7 @@ class ClientGroupType(DjangoObjectType):
     clients = graphene.NonNull(graphene.List(graphene.NonNull(ClientType)))
 
     def resolve_clients(self, info, **kwargs):
-        return self.clients.all()
+        return info.context.clients_from_client_group.load(self.id)
 
 
 # INPUTS

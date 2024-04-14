@@ -26,7 +26,7 @@ class ActivityType(DjangoObjectType):
     unit_cost_type = UnitCostTypeEnumType(required=True)
 
     def resolve_category(self, info):
-        return info.context.category_loader.load(self.category_id)
+        return info.context.category_fk_loader.load(self.category_id)
 
     @field_permission_required(
         UserPermissionsEnum.HAS_CLIENT_ACTIVITY_COSTS_ACCESS.value
@@ -51,7 +51,7 @@ class SolutionType(DjangoObjectType):
         )
 
     def resolve_category(self, info, **kwargs):
-        return info.context.category_loader.load(self.category_id)
+        return info.context.category_fk_loader.load(self.category_id)
 
     def resolve_activities(self, info, **kwargs):
         return info.context.activities_from_solution.load(self.id)

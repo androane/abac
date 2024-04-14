@@ -28,7 +28,7 @@ def get_flattened_report_data(
             month=month,
             client__organization=org,
         )
-        .select_related("client", "solution")
+        .select_related("client", "solution", "solution__category")
         .prefetch_related("logs")
     )
     qs2: Iterable[ClientActivity] = (
@@ -39,7 +39,7 @@ def get_flattened_report_data(
             is_executed=True,
             activity__solutions__isnull=True,
         )
-        .select_related("client", "activity")
+        .select_related("client", "activity", "activity__category")
         .prefetch_related("logs")
     )
 
