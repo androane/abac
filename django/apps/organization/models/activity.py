@@ -74,3 +74,9 @@ class ActivityLog(BaseModel):
     description = models.TextField(
         help_text="Optional explanation for the log", null=True, blank=True
     )
+
+    def __str__(self):
+        return f"{self.minutes_allocated} minutes"
+
+    def __repr__(self):
+        return f"{self.minutes_allocated} minutes"

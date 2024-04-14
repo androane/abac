@@ -56,10 +56,6 @@ const ClientGroupTableRow: React.FC<Props> = ({ loading, row, onEditRow, onDelet
               primary={c.name}
               secondary=""
               primaryTypographyProps={{ typography: 'body2' }}
-              secondaryTypographyProps={{
-                component: 'span',
-                color: 'text.disabled',
-              }}
             />
           ))}
         </TableCell>

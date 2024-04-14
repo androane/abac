@@ -25,7 +25,7 @@ import { useClientGroupsQuery, useDeleteClientGroupMutation } from 'generated/gr
 import AddButton from 'components/add-button'
 import { useBoolean } from 'hooks/use-boolean'
 import UpdateGroup from 'sections/client/group-update'
-import ClientGroupTableRow from '../client-group-table-row'
+import ClientGroupTableRow from '../group-table-row'
 import { APIClientGroup } from '../types'
 
 const TABLE_HEAD = [

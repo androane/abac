@@ -121,6 +121,7 @@ const UpdateGroup: React.FC<Props> = ({ organizationUuid, group, onClose }) => {
               {({ organization }) => {
                 return (
                   <RHFMultiSelect
+                    chip
                     checkbox
                     name="clientUuids"
                     label="Clienți"
