@@ -58,6 +58,8 @@ class GraphQLView(FileUploadGraphQLView):
 
         if result and result.errors:
             for error in result.errors:
+                logger.warning(error)
+
                 try:
                     raise error.original_error
                 except Exception as e:

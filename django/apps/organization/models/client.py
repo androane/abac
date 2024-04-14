@@ -171,10 +171,10 @@ class ClientUserProfile(BaseModel):
     )
 
     def __str__(self):
-        return f"{self.client.name} - {self.user.name}"
+        return f"ClientUserProfile: {self.user.name}"
 
     def __repr__(self):
-        return f"{self.client.name} - {self.user.name}"
+        return f"ClientUserProfile: {self.user.name}"
 
 
 class ClientActivity(BaseModel):

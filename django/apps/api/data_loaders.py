@@ -11,21 +11,22 @@ from graphql_sync_dataloaders import SyncDataLoader
 
 from organization.models import Activity, ClientActivityLog
 from organization.models.activity import Solution
-from organization.models.client import Client, ClientSolutionLog, ClientUserProfile
+from organization.models.client import Client, ClientSolutionLog
 from organization.models.organization import Organization, OrganizationBusinessCategory
 from user.models import User
 
 
-def foreign_key_loader_builder(model):
-    """
-    Resolves foreign key relationships
-    """
-
+def child_loader_builder(model, field, select_related_fields=None):
     def _builder():
         def batch_load_fn(keys):
-            qs = model.objects.filter(id__in=keys)
-            objects = {obj.id: obj for obj in qs}
-            return [objects.get(obj_id, None) for obj_id in keys]
+            d = {}
+            query = model.objects.filter(id__in=keys).select_related(field)
+            if select_related_fields:
+                query = query.select_related(*select_related_fields)
+            for obj in query.iterator():
+                d[obj.id] = getattr(obj, field)
+
+            return [d.get(key, None) for key in keys]
 
         return SyncDataLoader(batch_load_fn)
 
@@ -34,9 +35,7 @@ def foreign_key_loader_builder(model):
 
 def children_loader_builder(model, field, select_related_fields=None):
     """
-    Resolves M2M model relationships (e.g. apps each have many categories)
-    When we resolve an instance of the parent model (app), the data loader bulk fetches
-    the child model (category) based on the ids of the *parent* (app_ids).
+    Resolves reverse FK
     """
 
     def _builder():
@@ -48,7 +47,24 @@ def children_loader_builder(model, field, select_related_fields=None):
                 query = query.select_related(*select_related_fields)
             for obj in query.iterator():
                 d[getattr(obj, field + "_id")].append(obj)
+
             return [d.get(key, []) for key in keys]
+
+        return SyncDataLoader(batch_load_fn)
+
+    return _builder
+
+
+def foreign_key_loader_builder(model):
+    """
+    Resolves FK relationships
+    """
+
+    def _builder():
+        def batch_load_fn(keys):
+            qs = model.objects.filter(id__in=keys)
+            objects = {obj.id: obj for obj in qs}
+            return [objects.get(obj_id, None) for obj_id in keys]
 
         return SyncDataLoader(batch_load_fn)
 
@@ -81,8 +97,9 @@ def many_to_many_loader_builder(
 
 
 LOADERS = {
-    # Children Key Loaders
-    "client_profile_from_user": children_loader_builder(ClientUserProfile, "user"),
+    # Child Loaders
+    "client_profile_from_user": child_loader_builder(User, "client_profile"),
+    # Children Loaders
     "logs_from_client_activity": children_loader_builder(
         ClientActivityLog, "client_activity"
     ),
