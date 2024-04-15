@@ -481,6 +481,7 @@ export type MutationDeleteOrganizationSolutionArgs = {
 export type MutationGenerateReportArgs = {
   categoryCodes: Array<Scalars['String']['input']>;
   month: Scalars['Int']['input'];
+  userUuids: Array<Scalars['String']['input']>;
   year: Scalars['Int']['input'];
 };
 
@@ -995,6 +996,7 @@ export type ReportGenerateUserReportMutationVariables = Exact<{
   year: Scalars['Int']['input'];
   month: Scalars['Int']['input'];
   categoryCodes: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  userUuids: Array<Scalars['String']['input']> | Scalars['String']['input'];
 }>;
 
 
@@ -2266,8 +2268,13 @@ export type UpdateOrganizationSolutionMutationHookResult = ReturnType<typeof use
 export type UpdateOrganizationSolutionMutationResult = Apollo.MutationResult<UpdateOrganizationSolutionMutation>;
 export type UpdateOrganizationSolutionMutationOptions = Apollo.BaseMutationOptions<UpdateOrganizationSolutionMutation, UpdateOrganizationSolutionMutationVariables>;
 export const ReportGenerateUserReportDocument = gql`
-    mutation ReportGenerateUserReport($year: Int!, $month: Int!, $categoryCodes: [String!]!) {
-  generateReport(year: $year, month: $month, categoryCodes: $categoryCodes) {
+    mutation ReportGenerateUserReport($year: Int!, $month: Int!, $categoryCodes: [String!]!, $userUuids: [String!]!) {
+  generateReport(
+    year: $year
+    month: $month
+    categoryCodes: $categoryCodes
+    userUuids: $userUuids
+  ) {
     downloadUrl
   }
 }
@@ -2290,6 +2297,7 @@ export type ReportGenerateUserReportMutationFn = Apollo.MutationFunction<ReportG
  *      year: // value for 'year'
  *      month: // value for 'month'
  *      categoryCodes: // value for 'categoryCodes'
+ *      userUuids: // value for 'userUuids'
  *   },
  * });
  */

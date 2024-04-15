@@ -1,4 +1,4 @@
-import { useReportGenerateUserReportMutation } from 'generated/graphql'
+import { useOrganizationUsersQuery, useReportGenerateUserReportMutation } from 'generated/graphql'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { useState } from 'react'
 import {
@@ -18,9 +18,12 @@ import { useSnackbar } from 'notistack'
 import getErrorMessage from 'utils/api-codes'
 import { useAuthContext } from 'auth/hooks'
 import { CATEGORY_CODE_TO_LABEL } from 'utils/constants'
+import ResponseHandler from 'components/response-handler'
 
 const ReportsView = () => {
   const { user } = useAuthContext()
+
+  const result = useOrganizationUsersQuery()
 
   const [generateReport, { loading }] = useReportGenerateUserReportMutation()
 
@@ -28,6 +31,7 @@ const ReportsView = () => {
 
   const [date, setDate] = useState(new Date())
   const [categoryCodes, setCategoryCodes] = useState<string[]>([])
+  const [userUuids, setUserUuids] = useState<string[]>([])
 
   const handleChangeCategory = (event: SelectChangeEvent<typeof categoryCodes>) => {
     const {
@@ -44,11 +48,26 @@ const ReportsView = () => {
     }
   }
 
-  const renderValues = (selectedIds: string[]) => {
+  const renderCategories = (selectedIds: string[]) => {
     const selectedItems = user!.categories.filter(c => selectedIds.includes(c.code))
     return selectedItems
       .map(item => CATEGORY_CODE_TO_LABEL[item.code as keyof typeof CATEGORY_CODE_TO_LABEL])
       .join(', ')
+  }
+
+  const handleChangeUsers = (event: SelectChangeEvent<string[]>) => {
+    const {
+      target: { value },
+    } = event
+
+    if (value.includes('')) {
+      setUserUuids([])
+    } else {
+      setUserUuids(
+        // On autofill we get a stringified value.
+        typeof value === 'string' ? value.split(',') : value,
+      )
+    }
   }
 
   const onGenerateReport = async () => {
@@ -58,6 +77,7 @@ const ReportsView = () => {
           month: date.getMonth() + 1,
           year: date.getFullYear(),
           categoryCodes,
+          userUuids,
         },
       })
       window.open(response.data?.generateReport?.downloadUrl, '_blank')
@@ -99,8 +119,8 @@ const ReportsView = () => {
             labelId="report-categories"
             value={categoryCodes}
             onChange={handleChangeCategory}
-            renderValue={renderValues}
-            input={<OutlinedInput label="DOmeniu" />}
+            renderValue={renderCategories}
+            input={<OutlinedInput label="Domeniu" />}
             MenuProps={{
               PaperProps: {
                 sx: { maxHeight: 240 },
@@ -118,6 +138,44 @@ const ReportsView = () => {
               </MenuItem>
             ))}
           </Select>
+        </FormControl>
+        <FormControl sx={{ m: 1, width: 200 }}>
+          <InputLabel id="report-pms">Responsabili</InputLabel>
+          <ResponseHandler {...result}>
+            {({ organization: { users } }) => {
+              return (
+                <Select
+                  multiple
+                  labelId="report-pms"
+                  value={userUuids}
+                  onChange={handleChangeUsers}
+                  renderValue={(selectedUuids: string[]) =>
+                    users
+                      .filter(u => selectedUuids.includes(u.uuid))
+                      .map(u => u.name)
+                      .join(', ')
+                  }
+                  input={<OutlinedInput label="Responsabili" />}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: { maxHeight: 240 },
+                    },
+                  }}
+                >
+                  <MenuItem value="">
+                    <Checkbox disableRipple size="small" checked={!userUuids.length} />
+                    Toți
+                  </MenuItem>
+                  {users.map(u => (
+                    <MenuItem key={u.uuid} value={u.uuid}>
+                      <Checkbox disableRipple size="small" checked={userUuids.includes(u.uuid)} />
+                      {u.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )
+            }}
+          </ResponseHandler>
         </FormControl>
       </Stack>
       <br />

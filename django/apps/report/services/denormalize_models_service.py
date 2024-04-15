@@ -20,7 +20,7 @@ class REPORT_COLUMNS(BaseEnum):
 
 
 def get_flattened_report_data(
-    org, year, month, client_uuids=None, category_codes=None, program_manager_uuids=None
+    org, year, month, client_uuids=None, category_codes=None, user_uuids=None
 ):
     qs1: Iterable[ClientSolution] = (
         ClientSolution.objects.filter(
@@ -51,9 +51,9 @@ def get_flattened_report_data(
         qs1 = qs1.filter(solution__category__code__in=category_codes)
         qs2 = qs2.filter(activity__category__code__in=category_codes)
 
-    if program_manager_uuids:
-        qs1 = qs1.filter(client__program_manager__uuid__in=program_manager_uuids)
-        qs2 = qs2.filter(client__program_manager__uuid__in=program_manager_uuids)
+    if user_uuids:
+        qs1 = qs1.filter(client__program_manager__uuid__in=user_uuids)
+        qs2 = qs2.filter(client__program_manager__uuid__in=user_uuids)
 
     data = []
 
