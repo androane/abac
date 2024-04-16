@@ -64,9 +64,7 @@ class UserType(DjangoObjectType):
         return info.context.client_profile_from_user.load(self.id)
 
     def resolve_role(self, info):
-        return (
-            UserRoleEnum.CLIENT if hasattr(self, "client_profile") else UserRoleEnum.PM
-        )
+        return info.context.role_from_user.load(self.id)
 
     # START OF UNUSED FIELDS, BUT NEEDED ON THE FRONTEND
     photo_url = graphene.String(required=True)
