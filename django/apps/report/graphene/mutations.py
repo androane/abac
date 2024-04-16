@@ -15,6 +15,8 @@ class GenerateReport(BaseMutation):
         month = graphene.Int(required=True)
         category_codes = graphene.List(graphene.NonNull(graphene.String), required=True)
         user_uuids = graphene.List(graphene.NonNull(graphene.String), required=True)
+        solution_uuids = graphene.List(graphene.NonNull(graphene.String), required=True)
+        activity_uuids = graphene.List(graphene.NonNull(graphene.String), required=True)
 
     download_url = graphene.String(required=True)
 

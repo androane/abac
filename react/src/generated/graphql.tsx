@@ -479,8 +479,10 @@ export type MutationDeleteOrganizationSolutionArgs = {
 
 
 export type MutationGenerateReportArgs = {
+  activityUuids: Array<Scalars['String']['input']>;
   categoryCodes: Array<Scalars['String']['input']>;
   month: Scalars['Int']['input'];
+  solutionUuids: Array<Scalars['String']['input']>;
   userUuids: Array<Scalars['String']['input']>;
   year: Scalars['Int']['input'];
 };
@@ -997,6 +999,8 @@ export type ReportGenerateUserReportMutationVariables = Exact<{
   month: Scalars['Int']['input'];
   categoryCodes: Array<Scalars['String']['input']> | Scalars['String']['input'];
   userUuids: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  solutionUuids: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  activityUuids: Array<Scalars['String']['input']> | Scalars['String']['input'];
 }>;
 
 
@@ -2268,12 +2272,14 @@ export type UpdateOrganizationSolutionMutationHookResult = ReturnType<typeof use
 export type UpdateOrganizationSolutionMutationResult = Apollo.MutationResult<UpdateOrganizationSolutionMutation>;
 export type UpdateOrganizationSolutionMutationOptions = Apollo.BaseMutationOptions<UpdateOrganizationSolutionMutation, UpdateOrganizationSolutionMutationVariables>;
 export const ReportGenerateUserReportDocument = gql`
-    mutation ReportGenerateUserReport($year: Int!, $month: Int!, $categoryCodes: [String!]!, $userUuids: [String!]!) {
+    mutation ReportGenerateUserReport($year: Int!, $month: Int!, $categoryCodes: [String!]!, $userUuids: [String!]!, $solutionUuids: [String!]!, $activityUuids: [String!]!) {
   generateReport(
     year: $year
     month: $month
     categoryCodes: $categoryCodes
     userUuids: $userUuids
+    solutionUuids: $solutionUuids
+    activityUuids: $activityUuids
   ) {
     downloadUrl
   }
@@ -2298,6 +2304,8 @@ export type ReportGenerateUserReportMutationFn = Apollo.MutationFunction<ReportG
  *      month: // value for 'month'
  *      categoryCodes: // value for 'categoryCodes'
  *      userUuids: // value for 'userUuids'
+ *      solutionUuids: // value for 'solutionUuids'
+ *      activityUuids: // value for 'activityUuids'
  *   },
  * });
  */

@@ -1,4 +1,9 @@
-import { useOrganizationUsersQuery, useReportGenerateUserReportMutation } from 'generated/graphql'
+import {
+  useOrganizationSolutionsQuery,
+  useOrganizationUsersQuery,
+  useReportGenerateUserReportMutation,
+} from 'generated/graphql'
+import groupBy from 'lodash/groupBy'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { useState } from 'react'
 import {
@@ -6,6 +11,7 @@ import {
   Container,
   FormControl,
   InputLabel,
+  ListSubheader,
   MenuItem,
   OutlinedInput,
   Select,
@@ -19,11 +25,13 @@ import getErrorMessage from 'utils/api-codes'
 import { useAuthContext } from 'auth/hooks'
 import { CATEGORY_CODE_TO_LABEL } from 'utils/constants'
 import ResponseHandler from 'components/response-handler'
+import React from 'react'
 
 const ReportsView = () => {
   const { user } = useAuthContext()
 
-  const result = useOrganizationUsersQuery()
+  const usersResult = useOrganizationUsersQuery()
+  const orgSolutionsResult = useOrganizationSolutionsQuery()
 
   const [generateReport, { loading }] = useReportGenerateUserReportMutation()
 
@@ -32,6 +40,8 @@ const ReportsView = () => {
   const [date, setDate] = useState(new Date())
   const [categoryCodes, setCategoryCodes] = useState<string[]>([])
   const [userUuids, setUserUuids] = useState<string[]>([])
+  const [solutionUuids, setSolutionUuids] = useState<string[]>([])
+  const [activityUuids, setActivityUuids] = useState<string[]>([])
 
   const handleChangeCategory = (event: SelectChangeEvent<typeof categoryCodes>) => {
     const {
@@ -70,6 +80,21 @@ const ReportsView = () => {
     }
   }
 
+  const handleChangeActivities = (event: SelectChangeEvent<string[]>) => {
+    const {
+      target: { value },
+    } = event
+
+    if (value.includes('')) {
+      setSolutionUuids([])
+    } else {
+      setSolutionUuids(
+        // On autofill we get a stringified value.
+        typeof value === 'string' ? value.split(',') : value,
+      )
+    }
+  }
+
   const onGenerateReport = async () => {
     try {
       const response = await generateReport({
@@ -78,6 +103,8 @@ const ReportsView = () => {
           year: date.getFullYear(),
           categoryCodes,
           userUuids,
+          solutionUuids,
+          activityUuids,
         },
       })
       window.open(response.data?.generateReport?.downloadUrl, '_blank')
@@ -121,11 +148,6 @@ const ReportsView = () => {
             onChange={handleChangeCategory}
             renderValue={renderCategories}
             input={<OutlinedInput label="Domeniu" />}
-            MenuProps={{
-              PaperProps: {
-                sx: { maxHeight: 240 },
-              },
-            }}
           >
             <MenuItem value="">
               <Checkbox disableRipple size="small" checked={!categoryCodes.length} />
@@ -140,13 +162,13 @@ const ReportsView = () => {
           </Select>
         </FormControl>
         <FormControl sx={{ m: 1, width: 200 }}>
-          <InputLabel id="report-pms">Responsabili</InputLabel>
-          <ResponseHandler {...result}>
+          <InputLabel id="report-users">Responsabili</InputLabel>
+          <ResponseHandler {...usersResult}>
             {({ organization: { users } }) => {
               return (
                 <Select
                   multiple
-                  labelId="report-pms"
+                  labelId="report-users"
                   value={userUuids}
                   onChange={handleChangeUsers}
                   renderValue={(selectedUuids: string[]) =>
@@ -156,11 +178,6 @@ const ReportsView = () => {
                       .join(', ')
                   }
                   input={<OutlinedInput label="Responsabili" />}
-                  MenuProps={{
-                    PaperProps: {
-                      sx: { maxHeight: 240 },
-                    },
-                  }}
                 >
                   <MenuItem value="">
                     <Checkbox disableRipple size="small" checked={!userUuids.length} />
@@ -172,6 +189,56 @@ const ReportsView = () => {
                       {u.name}
                     </MenuItem>
                   ))}
+                </Select>
+              )
+            }}
+          </ResponseHandler>
+        </FormControl>
+        <FormControl sx={{ m: 1, width: 200 }}>
+          <InputLabel id="report-activities">Servicii</InputLabel>
+          <ResponseHandler {...orgSolutionsResult}>
+            {({ organization: { solutions: orgSolutions } }) => {
+              const grouped = groupBy(orgSolutions, 'category.code')
+              return (
+                <Select
+                  multiple
+                  labelId="report-activities"
+                  value={solutionUuids}
+                  onChange={handleChangeActivities}
+                  renderValue={(selectedUuids: string[]) =>
+                    orgSolutions
+                      .filter(s => selectedUuids.includes(s.uuid))
+                      .map(s => s.name)
+                      .join(', ')
+                  }
+                  input={<OutlinedInput label="Servicii" />}
+                >
+                  <MenuItem value="">
+                    <Checkbox disableRipple size="small" checked={!solutionUuids.length} />
+                    Toate
+                  </MenuItem>
+                  {Object.entries(grouped).map(([categoryCode, solutions]) => {
+                    return [
+                      <ListSubheader>
+                        Pachete{' '}
+                        {
+                          CATEGORY_CODE_TO_LABEL[
+                            categoryCode as keyof typeof CATEGORY_CODE_TO_LABEL
+                          ]
+                        }
+                      </ListSubheader>,
+                      ...solutions.map(s => (
+                        <MenuItem key={s.uuid} value={s.uuid}>
+                          <Checkbox
+                            disableRipple
+                            size="small"
+                            checked={solutionUuids.includes(s.uuid)}
+                          />
+                          {s.name}
+                        </MenuItem>
+                      )),
+                    ]
+                  })}
                 </Select>
               )
             }}

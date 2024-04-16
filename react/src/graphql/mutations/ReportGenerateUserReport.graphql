@@ -3,8 +3,17 @@ mutation ReportGenerateUserReport(
   $month: Int!
   $categoryCodes: [String!]!
   $userUuids: [String!]!
+  $solutionUuids: [String!]!
+  $activityUuids: [String!]!
 ) {
-  generateReport(year: $year, month: $month, categoryCodes: $categoryCodes, userUuids: $userUuids) {
+  generateReport(
+    year: $year
+    month: $month
+    categoryCodes: $categoryCodes
+    userUuids: $userUuids
+    solutionUuids: $solutionUuids
+    activityUuids: $activityUuids
+  ) {
     downloadUrl
   }
 }

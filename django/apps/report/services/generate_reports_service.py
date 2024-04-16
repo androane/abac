@@ -48,12 +48,24 @@ def _save_user_report(
 
 
 def generate_report(
-    user: User, year: int, month: int, category_codes: list[str], user_uuids: list[str]
+    user: User,
+    year: int,
+    month: int,
+    category_codes: list[str],
+    user_uuids: list[str],
+    solution_uuids: list[str],
+    activity_uuids: list[str],
 ) -> UserReport:
     org = user.organization
 
     df = get_flattened_report_data(
-        org, year, month, category_codes=category_codes, user_uuids=user_uuids
+        org,
+        year,
+        month,
+        category_codes=category_codes,
+        user_uuids=user_uuids,
+        solution_uuids=solution_uuids,
+        activity_uuids=activity_uuids,
     )
     df.sort_values(
         [REPORT_COLUMNS.CLIENT, REPORT_COLUMNS.CATEGORY_NAME, REPORT_COLUMNS.DAY],
