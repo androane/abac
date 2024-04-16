@@ -25,7 +25,6 @@ import getErrorMessage from 'utils/api-codes'
 import { useAuthContext } from 'auth/hooks'
 import { CATEGORY_CODE_TO_LABEL } from 'utils/constants'
 import ResponseHandler from 'components/response-handler'
-import React from 'react'
 
 const ReportsView = () => {
   const { user } = useAuthContext()
@@ -42,6 +41,8 @@ const ReportsView = () => {
   const [userUuids, setUserUuids] = useState<string[]>([])
   const [solutionUuids, setSolutionUuids] = useState<string[]>([])
   const [activityUuids, setActivityUuids] = useState<string[]>([])
+
+  console.log(setActivityUuids)
 
   const handleChangeCategory = (event: SelectChangeEvent<typeof categoryCodes>) => {
     const {
