@@ -4,9 +4,7 @@ from typing import Iterable
 from guardian.shortcuts import assign_perm, remove_perm
 
 from organization.models.organization import Organization, OrganizationBusinessCategory
-from organization.services.category_permission_service import (
-    filter_objects_by_user_categories,
-)
+from organization.services.category_permission_service import get_category_ids_for_user
 from user.models import User
 
 
@@ -29,9 +27,6 @@ def toggle_user_category_permission(
 
 def get_user_categories(user: User) -> Iterable[OrganizationBusinessCategory]:
     permission_codename = OrganizationBusinessCategory.VIEW_PERMISSION_CODENAME
-    return filter_objects_by_user_categories(
-        OrganizationBusinessCategory.objects,
-        user,
-        "id",
-        permission_codename=permission_codename,
+    return OrganizationBusinessCategory.objects.filter(
+        id__in=get_category_ids_for_user(user, permission_codename)
     )

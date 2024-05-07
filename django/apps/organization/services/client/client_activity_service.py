@@ -12,9 +12,7 @@ from organization.models import (
     OrganizationBusinessCategory,
 )
 from organization.models.client import Client, ClientSolution
-from organization.services.category_permission_service import (
-    filter_objects_by_user_categories,
-)
+from organization.services.category_permission_service import get_category_ids_for_user
 from user.models import User
 
 
@@ -96,8 +94,8 @@ def get_client_activities(
         month=month,
         year=year,
     )
-    return filter_objects_by_user_categories(
-        client_activities, user, "activity__category_id"
+    return client_activities.filter(
+        activity__category_id__in=get_category_ids_for_user(user)
     )
 
 
@@ -106,11 +104,12 @@ def get_client_solutions(
 ) -> list[ClientSolution]:
     assert year and month or not year and not month
 
-    all_client_solutions = client.client_solutions.filter(
-        (Q(month=None) | Q(month=month)) & (Q(year=None) | Q(year=year))
-    ).all()
-    all_client_solutions = filter_objects_by_user_categories(
-        all_client_solutions, user, "solution__category_id"
+    all_client_solutions = (
+        client.client_solutions.filter(
+            (Q(month=None) | Q(month=month)) & (Q(year=None) | Q(year=year))
+        )
+        .filter(solution__category_id__in=get_category_ids_for_user(user))
+        .all()
     )
 
     # global_client_solutions are the solutions that are not specific to a month or year

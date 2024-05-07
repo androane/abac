@@ -9,9 +9,7 @@ from core.exceptions import PermissionException
 from organization.models import Client, ClientSolution
 from organization.models.activity import Solution
 from organization.models.client import ClientSoftware
-from organization.services.category_permission_service import (
-    filter_objects_by_user_categories,
-)
+from organization.services.category_permission_service import get_category_ids_for_user
 from user.models import User
 from user.permissions import UserPermissionsEnum, validate_has_permission
 
@@ -56,8 +54,8 @@ def _set_client_solutions(
         month__isnull=True,
         year__isnull=True,
     )
-    filter_objects_by_user_categories(
-        client_solutions, user, "solution__category_id"
+    client_solutions.filter(
+        solution__category_id__in=get_category_ids_for_user(user)
     ).delete()
 
     for client_solution_input in client_input.client_solutions:

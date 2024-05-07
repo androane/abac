@@ -3,15 +3,13 @@ from typing import Iterable
 
 from organization.graphene.types import SolutionInput
 from organization.models import Organization, OrganizationBusinessCategory, Solution
-from organization.services.category_permission_service import (
-    filter_objects_by_user_categories,
-)
+from organization.services.category_permission_service import get_category_ids_for_user
 from user.models import User
 
 
 def get_organization_solutions(user: User) -> Iterable[Solution]:
-    return filter_objects_by_user_categories(
-        user.organization.solutions, user, "category_id"
+    return user.organization.solutions.filter(
+        category_id__in=get_category_ids_for_user(user)
     )
 
 

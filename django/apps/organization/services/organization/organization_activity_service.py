@@ -3,9 +3,7 @@ from typing import Iterable
 
 from organization.graphene.types import ActivityInput
 from organization.models import Activity, Organization, OrganizationBusinessCategory
-from organization.services.category_permission_service import (
-    filter_objects_by_user_categories,
-)
+from organization.services.category_permission_service import get_category_ids_for_user
 from user.models import User
 
 
@@ -14,9 +12,9 @@ def get_organization_activities(
 ) -> Iterable[Activity]:
     activities = user.organization.activities.filter(
         client__isnull=True,
+        category_id__in=get_category_ids_for_user(user),
     )
 
-    activities = filter_objects_by_user_categories(activities, user, "category_id")
     if exclude_solution_activities:
         activities = activities.filter(solutions__isnull=True)
     return activities
