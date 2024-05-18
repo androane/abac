@@ -140,8 +140,7 @@ const ActivityListCard: React.FC<ActivityListCardProps> = ({
   )
 
   const handleResetFilters = useCallback(() => {
-    localStorage.onUpdate(APP_STORAGE_KEYS.CATEGORY, DEFAULT_APP_STORAGE.category)
-    setFilters(defaultFilters)
+    localStorage.onResetKey(APP_STORAGE_KEYS.CATEGORY)
   }, [localStorage])
 
   const handleDeleteRow = async (uuid: string) => {

@@ -28,6 +28,8 @@ import {
   useOrganizationClientsQuery,
   useDeleteClientMutation,
 } from 'generated/graphql'
+import { APP_STORAGE_KEYS } from 'components/local-storage'
+import { useLocalStorageContext } from 'components/local-storage'
 import ClientTableFiltersResult from '../client-table-filters-result'
 import ClientTableRow from '../client-table-row'
 import ClientTableToolbar from '../client-table-toolbar'
@@ -44,6 +46,8 @@ type Props = {
 }
 
 const ClientListCard: React.FC<Props> = ({ clients }) => {
+  const localStorage = useLocalStorageContext()
+
   const [deleteClient, { loading }] = useDeleteClientMutation()
   const result = useOrganizationUsersQuery()
 
@@ -94,8 +98,8 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
   )
 
   const handleResetFilters = useCallback(() => {
-    setFilters(defaultFilters)
-  }, [defaultFilters])
+    localStorage.onResetKey(APP_STORAGE_KEYS.PROGRAM_MANAGER)
+  }, [localStorage])
 
   const handleDeleteRow = async (uuid: string) => {
     await deleteClient({
@@ -119,10 +123,7 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
           return (
             <ClientTableToolbar
               filters={filters}
-              users={organization.users.map(user => ({
-                id: user.uuid,
-                label: user.name,
-              }))}
+              users={organization.users}
               onFilters={handleFilters}
             />
           )
@@ -133,9 +134,7 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
         <ClientTableFiltersResult
           filters={filters}
           onFilters={handleFilters}
-          //
           onResetFilters={handleResetFilters}
-          //
           results={dataFiltered.length}
           sx={{ p: 2.5, pt: 0 }}
         />

@@ -7,6 +7,7 @@ import {
   ClientGroupsQuery,
   ClientActivitiesQuery,
   ClientClientQuery,
+  OrganizationUsersQuery,
 } from 'generated/graphql'
 
 export type ClientTableFilters = {
@@ -32,8 +33,9 @@ export type CombinedActivityType = ActivityType & {
   quantity: number
 }
 
-export type APIClient = ClientClientQuery['client']
+export type APIOrganizationUsers = OrganizationUsersQuery['organization']['users']
 export type APIOrganizationClient = OrganizationClientsQuery['organization']['clients'][0]
+export type APIClient = ClientClientQuery['client']
 export type APIClientGroup = ClientGroupsQuery['organization']['clientGroups'][0]
 export type APIClientUser = ClientUsersQuery['client']['users'][0]
 export type APIClientInvoice = ClientInvoiceQuery['client']['invoice']

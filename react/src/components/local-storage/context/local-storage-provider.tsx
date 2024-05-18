@@ -9,10 +9,12 @@ const STORAGE_KEY = 'app'
 
 export enum APP_STORAGE_KEYS {
   CATEGORY = 'category',
+  PROGRAM_MANAGER = 'pmUuid',
 }
 
 export const DEFAULT_APP_STORAGE = {
   [APP_STORAGE_KEYS.CATEGORY]: '',
+  [APP_STORAGE_KEYS.PROGRAM_MANAGER]: '',
 }
 
 type LocalStorageProviderProps = {
@@ -27,8 +29,10 @@ export function LocalStorageProvider({ children, defaultLocalStorage }: LocalSto
     () => ({
       ...state,
       onUpdate: update,
-      // Reset
       onReset: reset,
+      onResetKey: (key: APP_STORAGE_KEYS) => {
+        update(key, DEFAULT_APP_STORAGE[key])
+      },
     }),
     [reset, update, state],
   )

@@ -1,36 +1,38 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
+import { useLocalStorageContext } from 'components/local-storage'
 
 import FormControl from '@mui/material/FormControl'
-import OutlinedInput from '@mui/material/OutlinedInput'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
+import { SelectChangeEvent } from '@mui/material/Select'
 import Iconify from 'components/iconify'
-import MenuItem from '@mui/material/MenuItem'
-import Checkbox from '@mui/material/Checkbox'
 import InputLabel from '@mui/material/InputLabel'
-import { ClientTableFilters } from './types'
-
-type User = {
-  id: string
-  label: string
-}
+import ProgramManagerSelect from 'components/program-manager-select'
+import { APIOrganizationUsers, ClientTableFilters } from './types'
 
 type Props = {
-  users: User[]
+  users: APIOrganizationUsers
   filters: ClientTableFilters
   onFilters: (name: string, value: string) => void
 }
 
 const ClientTableToolbar: React.FC<Props> = ({ users, filters, onFilters }) => {
+  const localStorage = useLocalStorageContext()
+
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       onFilters('name', event.target.value)
     },
     [onFilters],
   )
+
+  const { pmUuid } = localStorage
+
+  useEffect(() => {
+    onFilters('programManagerId', pmUuid)
+  }, [pmUuid, onFilters])
 
   const handleFilterProgramManager = useCallback(
     (event: SelectChangeEvent<string>) => {
@@ -59,28 +61,7 @@ const ClientTableToolbar: React.FC<Props> = ({ users, filters, onFilters }) => {
         }}
       >
         <InputLabel>Responsabil</InputLabel>
-
-        <Select
-          value={filters.programManagerId}
-          onChange={handleFilterProgramManager}
-          input={<OutlinedInput label="Responsabil" />}
-          MenuProps={{
-            PaperProps: {
-              sx: { maxHeight: 240 },
-            },
-          }}
-        >
-          <MenuItem key="all" value="">
-            <Checkbox disableRipple size="small" checked={!filters.programManagerId} />
-            Toti
-          </MenuItem>
-          {users.map(user => (
-            <MenuItem key={user.id} value={user.id}>
-              <Checkbox disableRipple size="small" checked={filters.programManagerId === user.id} />
-              {user.label}
-            </MenuItem>
-          ))}
-        </Select>
+        <ProgramManagerSelect users={users} onChange={handleFilterProgramManager} />
       </FormControl>
       <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
         <TextField
