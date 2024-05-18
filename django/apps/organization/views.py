@@ -15,8 +15,10 @@ from organization.services.client.client_activity_service import (
 from user.permissions import UserPermissionsEnum, validate_has_permission
 
 
-def download_invoice_details(request) -> HTTPResponse:
+def download_invoice_enclosure(request) -> HTTPResponse:
     user = request.user
+
+    include_logs_times = request.GET.get("include_logs_times", False)
 
     if not user.is_authenticated:
         raise PermissionDenied
@@ -51,11 +53,10 @@ def download_invoice_details(request) -> HTTPResponse:
         "client_name": client.name,
         "client_solutions": client_solutions,
         "client_activities": client_activities,
+        "include_logs_times": include_logs_times,
     }
 
-    print(context)
-
-    response = render_to_pdf("invoice_details_template.html", context)
+    response = render_to_pdf("invoice_enclosure_template.html", context)
 
     filename = f"detalii_factura_{invoice.month}_{invoice.year}.pdf"
 

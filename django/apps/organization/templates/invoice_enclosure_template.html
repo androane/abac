@@ -75,7 +75,7 @@
                   {% for log in client_solution.logs.all %}
                     <li>
                       {{ log.date.day }} {{ month }}
-                      {% if log.minutes_allocated %}
+                      {% if include_logs_times and log.minutes_allocated %}
                         : {{ log.minutes_allocated }} minute
                       {% endif %}
                       {% if log.description %} - {{ log.description }}{% endif %}
@@ -112,7 +112,7 @@
                     {% for log in client_activity.logs.all %}
                       <li>
                         {{ log.date.day }} {{ month }}
-                        {% if log.minutes_allocated %}
+                        {% if include_logs_times and log.minutes_allocated %}
                           : {{ log.minutes_allocated }} minute
                         {% endif %}
                         {% if log.description %} - {{ log.description }}{% endif %}

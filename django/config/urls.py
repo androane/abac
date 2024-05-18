@@ -8,14 +8,14 @@ from graphql_sync_dataloaders import DeferredExecutionContext
 from api.graphene.schema import schema
 from api.graphql_views import GraphQLView
 from api.introspection_middleware import DisableIntrospectionMiddleware
-from organization.views import download_invoice_details
+from organization.views import download_invoice_enclosure
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path(
         "download/invoice-details",
-        csrf_exempt(download_invoice_details),
-        name="download_invoice_details",
+        csrf_exempt(download_invoice_enclosure),
+        name="download_invoice_enclosure",
     ),
     path(
         "graphql",

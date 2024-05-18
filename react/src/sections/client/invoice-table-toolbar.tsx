@@ -10,9 +10,9 @@ import { InvoiceStatusEnum, useUpdateClientInvoiceStatusMutation } from 'generat
 import { enqueueSnackbar } from 'components/snackbar'
 import getErrorMessage from 'utils/api-codes'
 import React from 'react'
-import { getAuthorizationHeader } from 'config/config-apollo'
-import { BACKEND_HOST } from 'config/config-env'
 import { Button } from '@mui/material'
+import { useBoolean } from 'hooks/use-boolean'
+import InvoiceEnclosureDialog from 'sections/client/invoice-enclosure-dialog'
 
 type Props = {
   invoiceId: string
@@ -28,6 +28,7 @@ const InvoiceTableToolbar: React.FC<Props> = ({
   onChangeDate,
 }) => {
   const [updateInvoiceStatus, { loading }] = useUpdateClientInvoiceStatusMutation()
+  const showInvoiceEnclosureDialog = useBoolean()
   const popover = usePopover()
 
   const status = invoiceDateSent ? InvoiceStatusEnum.SENT : InvoiceStatusEnum.DRAFT
@@ -46,21 +47,6 @@ const InvoiceTableToolbar: React.FC<Props> = ({
         variant: 'error',
       })
     }
-  }
-
-  const onDownloadDetails = () => {
-    const url = `${BACKEND_HOST}/download/invoice-details?invoice_uuid=${invoiceId}`
-
-    const headers = new Headers()
-    headers.append('Authorization', getAuthorizationHeader())
-
-    fetch(url, { method: 'GET', headers })
-      .then(response => response.blob())
-      .then(blob => {
-        const _url = window.URL.createObjectURL(blob)
-        window.open(_url, '_blank')?.focus()
-      })
-      .catch(error => console.error('Error:', error))
   }
 
   const statusToLabel = {
@@ -105,10 +91,16 @@ const InvoiceTableToolbar: React.FC<Props> = ({
       >
         {statusToLabel[status]}
       </LoadingButton>
-      <Button onClick={onDownloadDetails}>
+      <Button onClick={showInvoiceEnclosureDialog.onTrue}>
         <Iconify icon="eva:download-fill" />
         Descarcă Anexa
       </Button>
+      {showInvoiceEnclosureDialog.value && (
+        <InvoiceEnclosureDialog
+          invoiceId={invoiceId}
+          onClose={showInvoiceEnclosureDialog.onFalse}
+        />
+      )}
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
