@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback } from 'react'
 
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import { useLocalStorageContext } from 'components/local-storage'
 
 import FormControl from '@mui/material/FormControl'
 import { SelectChangeEvent } from '@mui/material/Select'
@@ -19,20 +18,12 @@ type Props = {
 }
 
 const ClientTableToolbar: React.FC<Props> = ({ users, filters, onFilters }) => {
-  const localStorage = useLocalStorageContext()
-
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       onFilters('name', event.target.value)
     },
     [onFilters],
   )
-
-  const { pmUuid } = localStorage
-
-  useEffect(() => {
-    onFilters('programManagerId', pmUuid)
-  }, [pmUuid, onFilters])
 
   const handleFilterProgramManager = useCallback(
     (event: SelectChangeEvent<string>) => {
