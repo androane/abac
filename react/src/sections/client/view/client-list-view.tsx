@@ -69,7 +69,10 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
     }),
     [],
   )
-  const [filters, setFilters] = useState(defaultFilters)
+  const [filters, setFilters] = useState({
+    ...defaultFilters,
+    programManagerId: localStorage.pmUuid,
+  })
 
   const dataFiltered = applyFilter({
     inputData: tableData,

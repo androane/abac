@@ -73,7 +73,7 @@ class OrganizationType(DjangoObjectType):
         return get_organization_activities(info.context.user, **kwargs)
 
     def resolve_client_groups(self, info, **kwargs):
-        return self.client_groups.all()
+        return self.client_groups.order_by("name").all()
 
     def resolve_categories(self, info, **kwargs):
         # return info.context.categories_from_organization.load(self.id)

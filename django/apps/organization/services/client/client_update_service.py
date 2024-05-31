@@ -73,7 +73,6 @@ def _set_client_solutions(
                 unit_cost=client_solution_input.unit_cost,
                 unit_cost_currency=client_solution_input.unit_cost_currency,
             )
-
             # The ClientSolution update should reflect on the current month too
             client.client_solutions.filter(
                 solution=solution,
