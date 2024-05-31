@@ -101,8 +101,9 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
   )
 
   const handleResetFilters = useCallback(() => {
+    setFilters(defaultFilters)
     localStorage.onResetKey(APP_STORAGE_KEYS.PROGRAM_MANAGER)
-  }, [localStorage])
+  }, [defaultFilters, localStorage])
 
   const handleDeleteRow = async (uuid: string) => {
     await deleteClient({
