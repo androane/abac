@@ -371,7 +371,7 @@ const ClientUpdateView: React.FC<Props> = ({ client }) => {
         return {
           uuid: clientSolution?.uuid || '',
           solutionUuid: clientSolution?.solution.uuid || '',
-          unitCost: clientSolution?.unitCost,
+          unitCost: clientSolution?.unitCost || 0,
           unitCostCurrency: clientSolution?.unitCostCurrency || CurrencyEnum.RON,
         }
       }),
@@ -394,7 +394,7 @@ const ClientUpdateView: React.FC<Props> = ({ client }) => {
             Yup.object({
               uuid: Yup.string(),
               solutionUuid: Yup.string(),
-              unitCost: Yup.number().nullable(),
+              unitCost: Yup.number(),
               unitCostCurrency: Yup.mixed<CurrencyEnum>().oneOf(Object.values(CurrencyEnum)),
             }),
           )
