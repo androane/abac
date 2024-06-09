@@ -252,7 +252,7 @@ class ClientSolution(BaseModel):
     )
     quantity = models.SmallIntegerField(help_text="Quantity of the Activity", default=1)
 
-    unit_cost = models.IntegerField(help_text="Cost/Price of the Solution", null=True)
+    unit_cost = models.IntegerField(help_text="Cost/Price of the Solution")
     unit_cost_currency = models.CharField(max_length=3, choices=CurrencyEnum.choices)
 
     def __str__(self):
