@@ -105,8 +105,9 @@ def get_client_solutions(
     assert year and month or not year and not month
 
     all_client_solutions = (
-        client.client_solutions.filter(Q(month=None) | Q(month=month))
-        & (Q(year=None) | Q(year=year))
+        client.client_solutions.filter(
+            (Q(month=None) | Q(month=month)) & (Q(year=None) | Q(year=year))
+        )
         .filter(solution__category_id__in=get_category_ids_for_user(user))
         .all()
     )
