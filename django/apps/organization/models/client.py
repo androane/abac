@@ -243,6 +243,7 @@ class ClientSolution(BaseModel):
     )
     solution = models.ForeignKey(Solution, on_delete=models.CASCADE)
 
+    # When month and year are null, it means it's the default solution for the company, not specific to a date
     month = models.SmallIntegerField(
         help_text="Month of the Solution", null=True, blank=True
     )
@@ -259,7 +260,7 @@ class ClientSolution(BaseModel):
         if self.month:
             suffix = f" - {self.month}.{self.year}"
 
-        return f"{self.client.name} - {self.solution.name} {suffix}"
+        return f"{self.client.name} - {self.solution} {suffix}"
 
     @property
     def total_cost(self):

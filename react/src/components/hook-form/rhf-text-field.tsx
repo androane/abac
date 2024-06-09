@@ -4,6 +4,7 @@ import TextField, { TextFieldProps } from '@mui/material/TextField'
 
 type Props = TextFieldProps & {
   name: string
+  isNullableNumber?: boolean
 }
 
 export default function RHFTextField({
@@ -12,6 +13,7 @@ export default function RHFTextField({
   type,
   disabled,
   variant,
+  isNullableNumber = false,
   ...other
 }: Props) {
   const { control } = useFormContext()
@@ -25,9 +27,9 @@ export default function RHFTextField({
           {...field}
           fullWidth
           type={type}
-          value={type === 'number' && field.value === 0 ? '' : field.value}
+          value={!isNullableNumber && type === 'number' && field.value === 0 ? '' : field.value}
           onChange={event => {
-            if (type === 'number') {
+            if (!isNullableNumber && type === 'number') {
               field.onChange(Number(event.target.value))
             } else {
               field.onChange(event.target.value)
