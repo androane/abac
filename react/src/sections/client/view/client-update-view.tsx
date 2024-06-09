@@ -143,7 +143,7 @@ const UpdateClientGeneralInformation: React.FC<{ canUpdate: boolean }> = ({ canU
 
 const DEFAULT_SOLUTION = {
   uuid: undefined,
-  solutionUuid: null,
+  solutionUuid: '',
   unitCost: '',
   unitCostCurrency: '',
 }
@@ -229,26 +229,30 @@ const UpdateClientSolutions: React.FC<{
                         <div />
                       </>
                     )}
-                    <Button
-                      size="small"
-                      color="error"
-                      startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-                      onClick={() => remove(index)}
-                    >
-                      Șterge
-                    </Button>
+                    {canUpdate && (
+                      <Button
+                        size="small"
+                        color="error"
+                        startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+                        onClick={() => remove(index)}
+                      >
+                        Șterge
+                      </Button>
+                    )}
                   </Stack>
                 )
               })}
 
-              <Button
-                color="primary"
-                startIcon={<Iconify icon="mingcute:add-line" />}
-                onClick={() => append(DEFAULT_SOLUTION)}
-                sx={{ flexShrink: 0 }}
-              >
-                Adaugă
-              </Button>
+              {canUpdate && organization.solutions.length > fields.length && (
+                <Button
+                  color="primary"
+                  startIcon={<Iconify icon="mingcute:add-line" />}
+                  onClick={() => append(DEFAULT_SOLUTION)}
+                  sx={{ flexShrink: 0 }}
+                >
+                  Adaugă
+                </Button>
+              )}
             </Box>
           )
         }}
