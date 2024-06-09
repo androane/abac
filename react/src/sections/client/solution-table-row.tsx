@@ -51,6 +51,7 @@ type Props = {
 }
 
 const SolutionTableRow: React.FC<Props> = ({ row, onEditRow, onEditLogs, canSeeCosts }) => {
+  console.log(row)
   return (
     <TableRow sx={{ backgroundColor: action.selected }}>
       <TableCell style={{ width: 150 }}>
@@ -104,7 +105,7 @@ const SolutionTableRow: React.FC<Props> = ({ row, onEditRow, onEditLogs, canSeeC
       {canSeeCosts && (
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={row.unitCost ? `${row.unitCost} ${row.unitCostCurrency}` : ''}
+            primary={`${row.unitCost} ${row.unitCostCurrency}`}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

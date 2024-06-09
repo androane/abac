@@ -243,6 +243,7 @@ class ClientSolution(BaseModel):
     )
     solution = models.ForeignKey(Solution, on_delete=models.CASCADE)
 
+    # When month and year are null, it means it's the default solution for the company, not specific to a date
     month = models.SmallIntegerField(
         help_text="Month of the Solution", null=True, blank=True
     )
@@ -251,7 +252,7 @@ class ClientSolution(BaseModel):
     )
     quantity = models.SmallIntegerField(help_text="Quantity of the Activity", default=1)
 
-    unit_cost = models.IntegerField(help_text="Cost/Price of the Solution")
+    unit_cost = models.IntegerField(help_text="Cost/Price of the Solution", null=True)
     unit_cost_currency = models.CharField(max_length=3, choices=CurrencyEnum.choices)
 
     def __str__(self):
@@ -259,7 +260,7 @@ class ClientSolution(BaseModel):
         if self.month:
             suffix = f" - {self.month}.{self.year}"
 
-        return f"{self.client.name} - {self.solution.name} {suffix}"
+        return f"{self.client.name} - {self.solution} {suffix}"
 
     @property
     def total_cost(self):

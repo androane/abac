@@ -47,13 +47,14 @@ def _set_client_solutions(
 ) -> None:
     input_client_solution_uuids = set([_.uuid for _ in client_input.client_solutions])
 
-    # Delete objects that were no longer passed in
+    # Select client global solutions that were not passed it
     client_solutions = client.client_solutions.exclude(
         uuid__in=input_client_solution_uuids
     ).filter(
         month__isnull=True,
         year__isnull=True,
     )
+
     client_solutions.filter(
         solution__category_id__in=get_category_ids_for_user(user)
     ).delete()

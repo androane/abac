@@ -60,11 +60,9 @@
             <div>
               <div class="activity-name">
                 {{ forloop.counter }}. {{ client_solution.solution.name }} {{ CATEGORY_TRANSLATIONS|get_item:client_solution.solution.category.name }}
-                {% if client_solution.total_cost %}
-                  <span class="cost">
-                    &nbsp;&nbsp;{{ client_solution.total_cost }} {{ client_solution.unit_cost_currency }}
-                  </span>
-                {% endif %}
+                <span class="cost">
+                  &nbsp;&nbsp;{{ client_solution.total_cost }} {{ client_solution.unit_cost_currency }}
+                </span>
               </div>
               <div class="activity-details">
                 <b>Include:</b>

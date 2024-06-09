@@ -33,9 +33,9 @@ import { useAuthContext } from 'auth/hooks'
 import getErrorMessage from 'utils/api-codes'
 import { REQUIRED_FIELD_ERROR } from 'utils/forms'
 import Iconify from 'components/iconify'
-import { CATEGORY_CODE_TO_LABEL } from 'utils/constants'
 import { TABS_VALUES } from 'sections/client/constants'
 import { APIClient } from 'sections/client/types'
+import { CATEGORY_CODE_TO_LABEL } from 'utils/constants'
 
 type ClientInfoProps = {
   client: APIClient
@@ -141,12 +141,28 @@ const UpdateClientGeneralInformation: React.FC<{ canUpdate: boolean }> = ({ canU
   )
 }
 
-const UpdateClientSolutions: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) => {
-  const { user, hasPermission } = useAuthContext()
+const DEFAULT_SOLUTION = {
+  uuid: undefined,
+  solutionUuid: null,
+  unitCost: '',
+  unitCostCurrency: '',
+}
+
+const UpdateClientSolutions: React.FC<{
+  canUpdate: boolean
+}> = ({ canUpdate }) => {
+  const { hasPermission } = useAuthContext()
 
   const canSeeCosts = hasPermission(UserPermissionsEnum.HAS_CLIENT_ACTIVITY_COSTS_ACCESS)
   const canSeeInformation = hasPermission(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS)
   const resultSolutions = useOrganizationSolutionsQuery()
+
+  const { control } = useFormContext()
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'clientSolutions',
+  })
 
   return (
     <>
@@ -154,73 +170,89 @@ const UpdateClientSolutions: React.FC<{ canUpdate: boolean }> = ({ canUpdate }) 
         Pachete de servicii
       </Typography>
 
-      <Box
-        sx={{ pt: 3 }}
-        rowGap={3}
-        columnGap={2}
-        display="grid"
-        gridTemplateColumns={{
-          xs: 'repeat(1, 1fr)',
-          sm: 'repeat(3, 1fr)',
-        }}
-      >
-        <ResponseHandler {...resultSolutions}>
-          {({ organization }) => {
-            return (
-              <>
-                {user?.categories.map((category, index) => {
-                  return (
-                    <React.Fragment key={category.code}>
-                      <RHFSelect
-                        disabled={!canUpdate}
-                        name={`clientSolutions[${index}].solutionUuid`}
-                        label={`Pachet ${CATEGORY_CODE_TO_LABEL[category.code as keyof typeof CATEGORY_CODE_TO_LABEL]}`}
-                      >
-                        <MenuItem value="" sx={{ color: 'text.secondary' }}>
-                          Alege
+      <ResponseHandler {...resultSolutions}>
+        {({ organization }) => {
+          return (
+            <Box sx={{ p: 3 }}>
+              {fields.map((item, index) => {
+                return (
+                  <Stack
+                    key={item.id}
+                    direction={{ xs: 'column', md: 'row' }}
+                    spacing={2}
+                    sx={{ mb: 5 }}
+                    alignItems="center"
+                  >
+                    <RHFSelect
+                      disabled={!canUpdate}
+                      name={`clientSolutions[${index}].solutionUuid`}
+                      label="Pachet"
+                    >
+                      <MenuItem value="" sx={{ color: 'text.secondary' }}>
+                        Alege
+                      </MenuItem>
+                      {organization.solutions.map(s => (
+                        <MenuItem key={s.uuid} value={s.uuid}>
+                          {
+                            CATEGORY_CODE_TO_LABEL[
+                              s.category.code as keyof typeof CATEGORY_CODE_TO_LABEL
+                            ]
+                          }{' '}
+                          | {s.name}
                         </MenuItem>
-                        {organization.solutions
-                          .filter(s => s.category.code === category.code)
-                          .map(s => (
-                            <MenuItem key={s.uuid} value={s.uuid}>
-                              {s.name}
+                      ))}
+                    </RHFSelect>
+                    {canSeeInformation && canSeeCosts ? (
+                      <>
+                        <RHFTextField
+                          disabled={!canUpdate}
+                          name={`clientSolutions[${index}].unitCost`}
+                          label="Cost"
+                          type="number"
+                          isNullableNumber
+                        />
+                        <RHFSelect
+                          disabled={!canUpdate}
+                          name={`clientSolutions[${index}].unitCostCurrency`}
+                          label="Moneda"
+                        >
+                          {Object.keys(CurrencyEnum).map(currency => (
+                            <MenuItem key={currency} value={currency}>
+                              {currency}
                             </MenuItem>
                           ))}
-                      </RHFSelect>
-                      {canSeeInformation && canSeeCosts ? (
-                        <>
-                          <RHFTextField
-                            disabled={!canUpdate}
-                            name={`clientSolutions[${index}].unitCost`}
-                            label="Cost"
-                            type="number"
-                          />
-                          <RHFSelect
-                            disabled={!canUpdate}
-                            name={`clientSolutions[${index}].unitCostCurrency`}
-                            label="Moneda"
-                          >
-                            {Object.keys(CurrencyEnum).map(currency => (
-                              <MenuItem key={currency} value={currency}>
-                                {currency}
-                              </MenuItem>
-                            ))}
-                          </RHFSelect>
-                        </>
-                      ) : (
-                        <>
-                          <div />
-                          <div />
-                        </>
-                      )}
-                    </React.Fragment>
-                  )
-                })}
-              </>
-            )
-          }}
-        </ResponseHandler>
-      </Box>
+                        </RHFSelect>
+                      </>
+                    ) : (
+                      <>
+                        <div />
+                        <div />
+                      </>
+                    )}
+                    <Button
+                      size="small"
+                      color="error"
+                      startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+                      onClick={() => remove(index)}
+                    >
+                      Șterge
+                    </Button>
+                  </Stack>
+                )
+              })}
+
+              <Button
+                color="primary"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+                onClick={() => append(DEFAULT_SOLUTION)}
+                sx={{ flexShrink: 0 }}
+              >
+                Adaugă
+              </Button>
+            </Box>
+          )
+        }}
+      </ResponseHandler>
       <Divider sx={{ borderStyle: 'dashed', mt: 6, mb: 6 }} />
     </>
   )
@@ -366,15 +398,13 @@ const ClientUpdateView: React.FC<Props> = ({ client }) => {
       spvUsername: client?.spvUsername || '',
       spvPassword: client?.spvPassword || '',
       cui: client?.cui || '',
-      clientSolutions: user!.categories.map(c => {
-        const clientSolution = client?.solutions.find(cs => cs.solution.category.code === c.code)
-        return {
-          uuid: clientSolution?.uuid || '',
-          solutionUuid: clientSolution?.solution.uuid || '',
-          unitCost: clientSolution?.unitCost,
-          unitCostCurrency: clientSolution?.unitCostCurrency || CurrencyEnum.RON,
-        }
-      }),
+      clientSolutions:
+        client?.solutions.map(cs => ({
+          uuid: cs?.uuid || '',
+          solutionUuid: cs?.solution.uuid || '',
+          unitCost: cs?.unitCost || 0,
+          unitCostCurrency: cs?.unitCostCurrency || CurrencyEnum.RON,
+        })) || [],
       softwares: softwares?.length ? softwares : [DEFAULT_SOFTWARE],
     }
   }, [client, user])
@@ -393,8 +423,8 @@ const ClientUpdateView: React.FC<Props> = ({ client }) => {
           .of(
             Yup.object({
               uuid: Yup.string(),
-              solutionUuid: Yup.string(),
-              unitCost: Yup.number().nullable(),
+              solutionUuid: Yup.string().required('Pachetul este obligatoriu'),
+              unitCost: Yup.lazy(value => (value === '' ? Yup.string() : Yup.number())),
               unitCostCurrency: Yup.mixed<CurrencyEnum>().oneOf(Object.values(CurrencyEnum)),
             }),
           )
@@ -426,7 +456,10 @@ const ClientUpdateView: React.FC<Props> = ({ client }) => {
             spvUsername: data.spvUsername,
             spvPassword: data.spvPassword,
             cui: data.cui,
-            clientSolutions: data.clientSolutions,
+            clientSolutions: data.clientSolutions.map(cs => ({
+              ...cs,
+              unitCost: Number(cs.unitCost) || 0,
+            })),
             softwares,
           },
         },
