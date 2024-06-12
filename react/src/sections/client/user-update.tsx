@@ -49,6 +49,7 @@ const UpdateUser: React.FC<Props> = ({
       role: user?.clientProfile.role || undefined,
       spvUsername: user?.clientProfile.spvUsername || '',
       spvPassword: user?.clientProfile.spvPassword || '',
+      spvEmail: user?.clientProfile.spvEmail || '',
       phoneNumber: user?.clientProfile.phoneNumber || '',
       showInGroup: user?.clientProfile.showInGroup,
     }),
@@ -65,6 +66,7 @@ const UpdateUser: React.FC<Props> = ({
         role: Yup.mixed<ClientUserRoleEnum>().oneOf(Object.values(ClientUserRoleEnum)).nullable(),
         spvUsername: Yup.string().nullable(),
         spvPassword: Yup.string().nullable(),
+        spvEmail: Yup.string().email('Adresa de email nu este validă').nullable(),
         phoneNumber: Yup.string().nullable(),
         showInGroup: Yup.boolean().nullable(),
       }),
@@ -86,6 +88,7 @@ const UpdateUser: React.FC<Props> = ({
             ownershipPercentage: data.ownershipPercentage,
             spvUsername: data.spvUsername,
             spvPassword: data.spvPassword,
+            spvEmail: data.spvEmail,
             phoneNumber: data.phoneNumber,
             showInGroup: data.showInGroup,
           },
@@ -185,6 +188,8 @@ const UpdateUser: React.FC<Props> = ({
           >
             <RHFTextField name="spvUsername" label="Utilizator SPV" />
             <RHFTextField name="spvPassword" label="Parolă SPV" />
+            <RHFTextField name="spvEmail" label="Email SPV" />
+            <div />
             {clientIsInGroup && (
               <RHFSwitch
                 name="showInGroup"

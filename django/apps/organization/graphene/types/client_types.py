@@ -212,6 +212,7 @@ class ClientUserProfileType(DjangoObjectType):
             "role",
             "spv_username",
             "spv_password",
+            "spv_email",
             "phone_number",
             "show_in_group",
         )
@@ -229,6 +230,10 @@ class ClientUserProfileType(DjangoObjectType):
     @field_permission_required(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS.value)
     def resolve_spv_password(self, info, **kwargs):
         return self.spv_password
+
+    @field_permission_required(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS.value)
+    def resolve_spv_email(self, info, **kwargs):
+        return self.spv_email
 
     @field_permission_required(UserPermissionsEnum.HAS_CLIENT_INFORMATION_ACCESS.value)
     def resolve_ownership_percentage(self, info, **kwargs):
@@ -299,6 +304,7 @@ class ClientUserInput(graphene.InputObjectType):
     ownership_percentage = graphene.Int()
     spv_username = graphene.String()
     spv_password = graphene.String()
+    spv_email = graphene.String()
     phone_number = graphene.String()
     show_in_group = graphene.Boolean()
 

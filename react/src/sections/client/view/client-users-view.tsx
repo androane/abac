@@ -46,8 +46,6 @@ const UserListCard: React.FC<CardProps> = ({ clientUuid, users, clientIsInGroup 
     { id: 'email', label: 'Email' },
     { id: 'phoneNumber', label: 'Telefon' },
     { id: 'role', label: 'Rol' },
-    { id: 'spvUsername', label: 'Utilizator SPV' },
-    { id: 'spvPassword', label: 'Parola SPV' },
     { id: 'showInGroup', label: 'Este persoana de contact pentru grup?' },
     { id: '', width: 88 },
   ]

@@ -86,28 +86,6 @@ const UserTableRow: React.FC<Props> = ({
             />
           </TableCell>
         )}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          <ListItemText
-            primary={row.clientProfile.spvUsername}
-            secondary=""
-            primaryTypographyProps={{ typography: 'body2' }}
-            secondaryTypographyProps={{
-              component: 'span',
-              color: 'text.disabled',
-            }}
-          />
-        </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          <ListItemText
-            primary={row.clientProfile.spvPassword}
-            secondary=""
-            primaryTypographyProps={{ typography: 'body2' }}
-            secondaryTypographyProps={{
-              component: 'span',
-              color: 'text.disabled',
-            }}
-          />
-        </TableCell>
         {clientIsInGroup && (
           <TableCell sx={{ whiteSpace: 'nowrap' }}>
             <ListItemText

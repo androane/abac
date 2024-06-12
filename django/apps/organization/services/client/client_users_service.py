@@ -37,8 +37,13 @@ def update_client_user(
         organization=org,
     )
     if client_user_input.uuid:
-        client_user: User = client.users.get(
-            organization=org, uuid=client_user_input.uuid
+        client_user: User = User.objects.get(
+            uuid=client_user_input.uuid,
+            organization=org,
+        )
+        assert (
+            client_user.client == client
+            or client_user.client.group_id == client.group_id
         )
         client_user_profile = client_user.client_profile
     else:
@@ -60,6 +65,7 @@ def update_client_user(
         "role",
         "spv_username",
         "spv_password",
+        "spv_email",
         "phone_number",
         "show_in_group",
     ):

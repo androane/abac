@@ -169,6 +169,7 @@ class ClientUserProfile(BaseModel):
     spv_password = models.CharField(
         max_length=64, blank=True, null=True, help_text="SPV Password"
     )
+    spv_email = models.EmailField(blank=True, null=True, help_text="SPV Email")
 
     def __str__(self):
         return f"ClientUserProfile: {self.user.name}"
