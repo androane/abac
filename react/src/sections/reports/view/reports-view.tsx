@@ -17,6 +17,7 @@ import {
   Select,
   SelectChangeEvent,
   Stack,
+  TextField,
 } from '@mui/material'
 import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 import LoadingButton from '@mui/lab/LoadingButton'
@@ -41,6 +42,8 @@ const ReportsView = () => {
   const [userUuids, setUserUuids] = useState<string[]>([])
   const [solutionUuids, setSolutionUuids] = useState<string[]>([])
   const [activityUuids, setActivityUuids] = useState<string[]>([])
+  const [costMin, setCostMin] = useState<number | undefined>()
+  const [costMax, setCostMax] = useState<number | undefined>()
 
   console.log(setActivityUuids)
 
@@ -106,6 +109,8 @@ const ReportsView = () => {
           userUuids,
           solutionUuids,
           activityUuids,
+          costMin,
+          costMax,
         },
       })
       window.open(response.data?.generateReport?.downloadUrl, '_blank')
@@ -244,6 +249,30 @@ const ReportsView = () => {
               )
             }}
           </ResponseHandler>
+        </FormControl>
+        <FormControl sx={{ m: 1, width: 100 }}>
+          <TextField
+            id="cost-min"
+            label="Cost Minim"
+            type="number"
+            value={costMin}
+            onChange={e => setCostMin(Number(e.target.value))}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </FormControl>
+        <FormControl sx={{ m: 1, width: 100 }}>
+          <TextField
+            id="cost-max"
+            label="Cost Maxim"
+            type="number"
+            value={costMax}
+            onChange={e => setCostMax(Number(e.target.value))}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
         </FormControl>
       </Stack>
       <br />

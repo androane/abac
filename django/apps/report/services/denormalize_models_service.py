@@ -28,6 +28,8 @@ def get_flattened_report_data(
     user_uuids=None,
     solution_uuids=None,
     activity_uuids=None,
+    cost_min=None,
+    cost_max=None,
 ):
     qs1: Iterable[ClientSolution] = (
         ClientSolution.objects.filter(
@@ -38,17 +40,31 @@ def get_flattened_report_data(
         .select_related("client", "solution", "solution__category")
         .prefetch_related("logs")
     )
+    if cost_min is not None:
+        print("AAA")
+        qs1 = qs1.filter(unit_cost__gte=cost_min)
+    if cost_max is not None:
+        print("BBB")
+        qs1 = qs1.filter(unit_cost__lte=cost_max)
+
     qs2: Iterable[ClientActivity] = (
         ClientActivity.objects.filter(
             year=year,
             month=month,
             client__organization=org,
             is_executed=True,
+            # Choosing activities that are not part of a package
             activity__solutions__isnull=True,
         )
         .select_related("client", "activity", "activity__category")
         .prefetch_related("logs")
     )
+    if cost_min is not None:
+        print("CCC")
+        qs2 = qs2.filter(activity__unit_cost__gte=cost_min)
+    if cost_max is not None:
+        print("DDD")
+        qs2 = qs2.filter(activity__unit_cost__lte=cost_max)
 
     if client_uuids:
         qs1 = qs1.filter(client__uuid__in=client_uuids)

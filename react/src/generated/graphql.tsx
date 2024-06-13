@@ -484,6 +484,8 @@ export type MutationDeleteOrganizationSolutionArgs = {
 export type MutationGenerateReportArgs = {
   activityUuids: Array<Scalars['String']['input']>;
   categoryCodes: Array<Scalars['String']['input']>;
+  costMax?: InputMaybe<Scalars['Int']['input']>;
+  costMin?: InputMaybe<Scalars['Int']['input']>;
   month: Scalars['Int']['input'];
   solutionUuids: Array<Scalars['String']['input']>;
   userUuids: Array<Scalars['String']['input']>;
@@ -1004,6 +1006,8 @@ export type ReportGenerateUserReportMutationVariables = Exact<{
   userUuids: Array<Scalars['String']['input']> | Scalars['String']['input'];
   solutionUuids: Array<Scalars['String']['input']> | Scalars['String']['input'];
   activityUuids: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  costMin?: InputMaybe<Scalars['Int']['input']>;
+  costMax?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
@@ -2276,7 +2280,7 @@ export type UpdateOrganizationSolutionMutationHookResult = ReturnType<typeof use
 export type UpdateOrganizationSolutionMutationResult = Apollo.MutationResult<UpdateOrganizationSolutionMutation>;
 export type UpdateOrganizationSolutionMutationOptions = Apollo.BaseMutationOptions<UpdateOrganizationSolutionMutation, UpdateOrganizationSolutionMutationVariables>;
 export const ReportGenerateUserReportDocument = gql`
-    mutation ReportGenerateUserReport($year: Int!, $month: Int!, $categoryCodes: [String!]!, $userUuids: [String!]!, $solutionUuids: [String!]!, $activityUuids: [String!]!) {
+    mutation ReportGenerateUserReport($year: Int!, $month: Int!, $categoryCodes: [String!]!, $userUuids: [String!]!, $solutionUuids: [String!]!, $activityUuids: [String!]!, $costMin: Int, $costMax: Int) {
   generateReport(
     year: $year
     month: $month
@@ -2284,6 +2288,8 @@ export const ReportGenerateUserReportDocument = gql`
     userUuids: $userUuids
     solutionUuids: $solutionUuids
     activityUuids: $activityUuids
+    costMin: $costMin
+    costMax: $costMax
   ) {
     downloadUrl
   }
@@ -2310,6 +2316,8 @@ export type ReportGenerateUserReportMutationFn = Apollo.MutationFunction<ReportG
  *      userUuids: // value for 'userUuids'
  *      solutionUuids: // value for 'solutionUuids'
  *      activityUuids: // value for 'activityUuids'
+ *      costMin: // value for 'costMin'
+ *      costMax: // value for 'costMax'
  *   },
  * });
  */

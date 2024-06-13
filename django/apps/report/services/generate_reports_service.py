@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import io
+from typing import Optional
 
 import pandas as pd
 from django.core.files.base import ContentFile
@@ -55,6 +56,8 @@ def generate_report(
     user_uuids: list[str],
     solution_uuids: list[str],
     activity_uuids: list[str],
+    cost_min: Optional[int] = None,
+    cost_max: Optional[int] = None,
 ) -> UserReport:
     org = user.organization
 
@@ -66,6 +69,8 @@ def generate_report(
         user_uuids=user_uuids,
         solution_uuids=solution_uuids,
         activity_uuids=activity_uuids,
+        cost_min=cost_min,
+        cost_max=cost_max,
     )
     df.sort_values(
         [REPORT_COLUMNS.CLIENT, REPORT_COLUMNS.CATEGORY_NAME, REPORT_COLUMNS.DAY],

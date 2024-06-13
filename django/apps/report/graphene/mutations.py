@@ -17,6 +17,8 @@ class GenerateReport(BaseMutation):
         user_uuids = graphene.List(graphene.NonNull(graphene.String), required=True)
         solution_uuids = graphene.List(graphene.NonNull(graphene.String), required=True)
         activity_uuids = graphene.List(graphene.NonNull(graphene.String), required=True)
+        cost_min = graphene.Int()
+        cost_max = graphene.Int()
 
     download_url = graphene.String(required=True)
 
