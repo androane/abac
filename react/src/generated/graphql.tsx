@@ -487,6 +487,7 @@ export type MutationGenerateReportArgs = {
   costMax?: InputMaybe<Scalars['Int']['input']>;
   costMin?: InputMaybe<Scalars['Int']['input']>;
   month: Scalars['Int']['input'];
+  reportType: ReportTypeEnum;
   solutionUuids: Array<Scalars['String']['input']>;
   userUuids: Array<Scalars['String']['input']>;
   year: Scalars['Int']['input'];
@@ -618,6 +619,13 @@ export type Query = {
 export type QueryClientArgs = {
   uuid: Scalars['String']['input'];
 };
+
+/** An enumeration. */
+export enum ReportTypeEnum {
+  SOLUTIONS_AND_ACTIVITIES_INCLUDING_LOGS = 'SOLUTIONS_AND_ACTIVITIES_INCLUDING_LOGS',
+  SOLUTIONS_AND_ACTIVITIES_WITHOUT_LOGS = 'SOLUTIONS_AND_ACTIVITIES_WITHOUT_LOGS',
+  SUM_LOGGED_TIMES = 'SUM_LOGGED_TIMES'
+}
 
 /** An enumeration. */
 export enum SoftwareEnum {
@@ -1008,6 +1016,7 @@ export type ReportGenerateUserReportMutationVariables = Exact<{
   activityUuids: Array<Scalars['String']['input']> | Scalars['String']['input'];
   costMin?: InputMaybe<Scalars['Int']['input']>;
   costMax?: InputMaybe<Scalars['Int']['input']>;
+  reportType: ReportTypeEnum;
 }>;
 
 
@@ -2280,7 +2289,7 @@ export type UpdateOrganizationSolutionMutationHookResult = ReturnType<typeof use
 export type UpdateOrganizationSolutionMutationResult = Apollo.MutationResult<UpdateOrganizationSolutionMutation>;
 export type UpdateOrganizationSolutionMutationOptions = Apollo.BaseMutationOptions<UpdateOrganizationSolutionMutation, UpdateOrganizationSolutionMutationVariables>;
 export const ReportGenerateUserReportDocument = gql`
-    mutation ReportGenerateUserReport($year: Int!, $month: Int!, $categoryCodes: [String!]!, $userUuids: [String!]!, $solutionUuids: [String!]!, $activityUuids: [String!]!, $costMin: Int, $costMax: Int) {
+    mutation ReportGenerateUserReport($year: Int!, $month: Int!, $categoryCodes: [String!]!, $userUuids: [String!]!, $solutionUuids: [String!]!, $activityUuids: [String!]!, $costMin: Int, $costMax: Int, $reportType: ReportTypeEnum!) {
   generateReport(
     year: $year
     month: $month
@@ -2290,6 +2299,7 @@ export const ReportGenerateUserReportDocument = gql`
     activityUuids: $activityUuids
     costMin: $costMin
     costMax: $costMax
+    reportType: $reportType
   ) {
     downloadUrl
   }
@@ -2318,6 +2328,7 @@ export type ReportGenerateUserReportMutationFn = Apollo.MutationFunction<ReportG
  *      activityUuids: // value for 'activityUuids'
  *      costMin: // value for 'costMin'
  *      costMax: // value for 'costMax'
+ *      reportType: // value for 'reportType'
  *   },
  * });
  */

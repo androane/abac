@@ -15,8 +15,8 @@ class REPORT_COLUMNS(BaseEnum):
     QUANTITY = "quantity"
     UNIT_COST = "unit_cost"
     UNIT_COST_CURRENCY = "unit_cost_currency"
-    DAY = "day"
-    MINUTES_ALLOCATED = "minutes_allocated alocate"
+    LOG_DAY = "log_day"
+    LOG_MINUTES_ALLOCATED = "log_minutes_allocated alocate"
 
 
 def get_flattened_report_data(
@@ -41,10 +41,8 @@ def get_flattened_report_data(
         .prefetch_related("logs")
     )
     if cost_min is not None:
-        print("AAA")
         qs1 = qs1.filter(unit_cost__gte=cost_min)
     if cost_max is not None:
-        print("BBB")
         qs1 = qs1.filter(unit_cost__lte=cost_max)
 
     qs2: Iterable[ClientActivity] = (
@@ -60,10 +58,8 @@ def get_flattened_report_data(
         .prefetch_related("logs")
     )
     if cost_min is not None:
-        print("CCC")
         qs2 = qs2.filter(activity__unit_cost__gte=cost_min)
     if cost_max is not None:
-        print("DDD")
         qs2 = qs2.filter(activity__unit_cost__lte=cost_max)
 
     if client_uuids:
@@ -100,21 +96,13 @@ def get_flattened_report_data(
             obj.unit_cost,
             obj.unit_cost_currency,
         ]
-        if obj.logs.all():
-            for log in obj.logs.all():
-                data.append(
-                    [
-                        *row,
-                        log.date.day,
-                        log.minutes_allocated,
-                    ]
-                )
-        else:
+        logs = list(obj.logs.all()) or [None]
+        for log in logs:
             data.append(
                 [
                     *row,
-                    None,
-                    None,
+                    log.date.day if log else None,
+                    log.minutes_allocated if log else None,
                 ]
             )
 
@@ -128,21 +116,13 @@ def get_flattened_report_data(
             obj.activity.unit_cost,
             obj.activity.unit_cost_currency,
         ]
-        if obj.logs.all():
-            for log in obj.logs.all():
-                data.append(
-                    [
-                        *row,
-                        log.date.day,
-                        log.minutes_allocated,
-                    ]
-                )
-        else:
+        logs = list(obj.logs.all()) or [None]
+        for log in logs:
             data.append(
                 [
                     *row,
-                    None,
-                    None,
+                    log.date.day if log else None,
+                    log.minutes_allocated if log else None,
                 ]
             )
 
@@ -156,7 +136,7 @@ def get_flattened_report_data(
             REPORT_COLUMNS.QUANTITY.value,
             REPORT_COLUMNS.UNIT_COST.value,
             REPORT_COLUMNS.UNIT_COST_CURRENCY.value,
-            REPORT_COLUMNS.DAY.value,
-            REPORT_COLUMNS.MINUTES_ALLOCATED.value,
+            REPORT_COLUMNS.LOG_DAY.value,
+            REPORT_COLUMNS.LOG_MINUTES_ALLOCATED.value,
         ],
     )

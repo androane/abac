@@ -7,6 +7,7 @@ from django.core.files.base import ContentFile
 from django.utils.text import slugify
 
 from organization.locales import CATEGORY_TRANSLATIONS, REPORT_COLUMNS_TRANSLATIONS
+from report.constants import ReportTypeEnum
 from report.models import UserReport
 from report.services.denormalize_models_service import (
     REPORT_COLUMNS,
@@ -21,7 +22,7 @@ def _get_excel_bytes_data_from_dataframe(df: pd.DataFrame) -> bytes:
     return excel_file.getvalue()
 
 
-def _translate_dataframe_strings(df: pd.DataFrame) -> pd.DataFrame:
+def _translate_dataframe_values(df: pd.DataFrame) -> pd.DataFrame:
     df[REPORT_COLUMNS.CATEGORY_NAME] = df[REPORT_COLUMNS.CATEGORY_NAME].map(
         CATEGORY_TRANSLATIONS
     )
@@ -30,11 +31,11 @@ def _translate_dataframe_strings(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _save_user_report(
-    user: User, year: int, month: int, excel_bytes_data
+    user: User, year: int, month: int, report_type: ReportTypeEnum, excel_bytes_data
 ) -> UserReport:
     org = user.organization
 
-    filename = slugify(f"raport-{org.name}-{year}-{month}")
+    filename = slugify(f"raport-{org.name}-{year}-{month}-{report_type}")
 
     try:
         user_report = UserReport.objects.get(user=user)
@@ -50,6 +51,7 @@ def _save_user_report(
 
 def generate_report(
     user: User,
+    report_type: ReportTypeEnum,
     year: int,
     month: int,
     category_codes: list[str],
@@ -72,12 +74,25 @@ def generate_report(
         cost_min=cost_min,
         cost_max=cost_max,
     )
-    df.sort_values(
-        [REPORT_COLUMNS.CLIENT, REPORT_COLUMNS.CATEGORY_NAME, REPORT_COLUMNS.DAY],
-        inplace=True,
-    )
-    df = _translate_dataframe_strings(df)
+    sort_columns = [
+        REPORT_COLUMNS.CLIENT,
+        REPORT_COLUMNS.CATEGORY_NAME,
+        REPORT_COLUMNS.LOG_DAY,
+    ]
+
+    if report_type == ReportTypeEnum.SOLUTIONS_AND_ACTIVITIES_INCLUDING_LOGS.value:
+        pass
+    elif report_type == ReportTypeEnum.SOLUTIONS_AND_ACTIVITIES_WITHOUT_LOGS.value:
+        df = df.drop(
+            columns=[REPORT_COLUMNS.LOG_DAY, REPORT_COLUMNS.LOG_MINUTES_ALLOCATED]
+        ).drop_duplicates()
+        sort_columns.remove(REPORT_COLUMNS.LOG_DAY)
+    elif report_type == ReportTypeEnum.SUM_LOGGED_TIMES.value:
+        pass
+
+    df.sort_values(sort_columns, inplace=True)
+    df = _translate_dataframe_values(df)
 
     excel_bytes_data = _get_excel_bytes_data_from_dataframe(df)
 
-    return _save_user_report(user, year, month, excel_bytes_data)
+    return _save_user_report(user, year, month, report_type, excel_bytes_data)

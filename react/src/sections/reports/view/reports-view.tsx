@@ -1,4 +1,5 @@
 import {
+  ReportTypeEnum,
   useOrganizationSolutionsQuery,
   useOrganizationUsersQuery,
   useReportGenerateUserReportMutation,
@@ -18,6 +19,7 @@ import {
   SelectChangeEvent,
   Stack,
   TextField,
+  Typography,
 } from '@mui/material'
 import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 import LoadingButton from '@mui/lab/LoadingButton'
@@ -44,6 +46,7 @@ const ReportsView = () => {
   const [activityUuids, setActivityUuids] = useState<string[]>([])
   const [costMin, setCostMin] = useState<number | undefined>()
   const [costMax, setCostMax] = useState<number | undefined>()
+  const [reportType, setReportType] = useState<ReportTypeEnum | undefined>()
 
   console.log(setActivityUuids)
 
@@ -100,6 +103,7 @@ const ReportsView = () => {
   }
 
   const onGenerateReport = async () => {
+    if (!reportType) return
     try {
       const response = await generateReport({
         variables: {
@@ -111,6 +115,7 @@ const ReportsView = () => {
           activityUuids,
           costMin,
           costMax,
+          reportType,
         },
       })
       window.open(response.data?.generateReport?.downloadUrl, '_blank')
@@ -133,6 +138,36 @@ const ReportsView = () => {
         }}
       />
       <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
+        <Typography variant="subtitle2">Alege Tipul de Raport:</Typography>
+        <FormControl sx={{ m: 1, width: 200 }}>
+          <InputLabel id="report-type">Tipul de Raport</InputLabel>
+          <Select
+            displayEmpty
+            labelId="report-type"
+            value={reportType}
+            onChange={e => setReportType(e.target.value as ReportTypeEnum)}
+            input={<OutlinedInput label="Tipul de Raport" />}
+            MenuProps={{
+              PaperProps: {
+                sx: { maxHeight: 240 },
+              },
+            }}
+          >
+            <MenuItem value={ReportTypeEnum.SOLUTIONS_AND_ACTIVITIES_INCLUDING_LOGS}>
+              Toate activitățile, împărțite după timpii înregistrați
+            </MenuItem>
+            <MenuItem value={ReportTypeEnum.SOLUTIONS_AND_ACTIVITIES_WITHOUT_LOGS}>
+              Toate activitățile, fără timpii înregistrați
+            </MenuItem>
+            <MenuItem value={ReportTypeEnum.SUM_LOGGED_TIMES}>
+              Suma timpilor înregistrați pe activități
+            </MenuItem>
+          </Select>
+        </FormControl>
+      </Stack>
+      <br />
+      <Stack direction="row" alignItems="center" spacing={1} flexGrow={1} sx={{ width: 1 }}>
+        <Typography variant="subtitle2">Aplică filtre:</Typography>
         <DatePicker
           label="Data"
           minDate={new Date('2024-01-01')}
@@ -276,11 +311,13 @@ const ReportsView = () => {
         </FormControl>
       </Stack>
       <br />
+      <br />
       <LoadingButton
         type="submit"
         variant="contained"
         color="success"
         loading={loading}
+        disabled={!reportType}
         onClick={onGenerateReport}
       >
         Generează

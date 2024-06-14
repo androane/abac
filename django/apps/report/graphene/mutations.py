@@ -3,6 +3,7 @@ import graphene
 
 from api.graphene.mutations import BaseMutation
 from api.permission_decorators import permission_required
+from report.graphene.enums import ReportTypeEnumType
 from report.services.generate_reports_service import generate_report
 from user.decorators import logged_in_user_required
 from user.models import User
@@ -19,6 +20,7 @@ class GenerateReport(BaseMutation):
         activity_uuids = graphene.List(graphene.NonNull(graphene.String), required=True)
         cost_min = graphene.Int()
         cost_max = graphene.Int()
+        report_type = ReportTypeEnumType(required=True)
 
     download_url = graphene.String(required=True)
 

@@ -18,14 +18,15 @@ import { UserPermissionsEnum } from 'generated/graphql'
 import { paths } from 'routes/paths'
 import { useRouter } from 'routes/hooks'
 import { TABS_VALUES } from 'sections/client/constants'
+import { Typography } from '@mui/material'
 
 type Props = {
   loading: boolean
-  row: APIOrganizationClient
+  client: APIOrganizationClient
   onDeleteRow: VoidFunction
 }
 
-const ClientTableRow: React.FC<Props> = ({ loading, row, onDeleteRow }) => {
+const ClientTableRow: React.FC<Props> = ({ loading, client, onDeleteRow }) => {
   const confirm = useBoolean()
 
   const popover = usePopover()
@@ -34,14 +35,14 @@ const ClientTableRow: React.FC<Props> = ({ loading, row, onDeleteRow }) => {
 
   const { hasPermission } = useAuthContext()
 
-  const onGoToClient = () => router.push(paths.app.client.detail(row.uuid, TABS_VALUES.GENERAL))
+  const onGoToClient = () => router.push(paths.app.client.detail(client.uuid, TABS_VALUES.GENERAL))
 
   return (
     <>
       <TableRow hover>
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={row.name} sx={{ mr: 2 }}>
-            {row.name.charAt(0).toUpperCase()}
+          <Avatar alt={client.name} sx={{ mr: 2 }}>
+            {client.name.charAt(0).toUpperCase()}
           </Avatar>
           <Box
             onClick={onGoToClient}
@@ -52,12 +53,12 @@ const ClientTableRow: React.FC<Props> = ({ loading, row, onDeleteRow }) => {
               },
             }}
           >
-            {row.name}
+            <Typography variant="subtitle2">{client.name}</Typography>
           </Box>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={row.programManager?.name}
+            primary={client.programManager?.name}
             secondary=""
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

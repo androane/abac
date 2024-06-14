@@ -166,7 +166,7 @@ const ClientListCard: React.FC<Props> = ({ clients }) => {
                   <ClientTableRow
                     loading={loading}
                     key={row.uuid}
-                    row={row}
+                    client={row}
                     onDeleteRow={() => handleDeleteRow(row.uuid)}
                   />
                 ))}
