@@ -1,14 +1,19 @@
+import { getAuthData } from 'auth/context/utils'
+import { UserRoleEnum } from 'generated/graphql'
+
 export const ROOTS = {
   AUTH: 'auth',
   CLIENT: 'client',
   SETTINGS: 'settings',
   REPORTS: 'reports',
+  CLIENT_APP: 'c',
+  DOCUMENTS: 'documents',
 }
 
 export const paths = {
   page404: '/404',
   auth: {
-    login: `${ROOTS.AUTH}/login`,
+    login: `/${ROOTS.AUTH}/login`,
   },
   app: {
     client: {
@@ -28,6 +33,17 @@ export const paths = {
       root: `/${ROOTS.REPORTS}`,
     },
   },
+  clientApp: {
+    dashboard: {
+      documents: `/${ROOTS.CLIENT_APP}/${ROOTS.DOCUMENTS}`,
+    },
+  },
 }
 
-export const LANDING_PAGE = paths.app.client.list
+export const getLandingPage = () => {
+  const { userRole } = getAuthData()
+  if (userRole === UserRoleEnum.PM) {
+    return paths.app.client.list
+  }
+  return paths.clientApp.dashboard.documents
+}

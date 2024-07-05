@@ -9,7 +9,13 @@ from user.models import User
 from user.permissions import UserPermissionsEnum
 
 
-def get_clients(user: User) -> Iterable[Client]:
+def _get_clients_for_client_user(user: User) -> Iterable[Client]:
+    if user.client.group:
+        return user.client.group.clients.all()
+    return Client.objects.filter(id=user.client_id)
+
+
+def _get_clients_for_pm_user(user: User) -> Iterable[Client]:
     all_clients = user.organization.clients
 
     permissions = user.user_permissions.values_list("codename", flat=True)
@@ -28,6 +34,13 @@ def get_clients(user: User) -> Iterable[Client]:
         condition |= Q(program_manager=user)
 
     return all_clients.filter(condition)
+
+
+def get_clients(user: User) -> Iterable[Client]:
+    if user.client:
+        return _get_clients_for_client_user(user)
+    else:
+        return _get_clients_for_pm_user(user)
 
 
 def get_client(user: User, uuid: str) -> Client:

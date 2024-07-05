@@ -13,7 +13,6 @@ from organization.models import Activity, ClientActivityLog
 from organization.models.activity import Solution
 from organization.models.client import Client, ClientSolutionLog
 from organization.models.organization import Organization, OrganizationBusinessCategory
-from user.constants import UserRoleEnum
 from user.models import User
 
 
@@ -26,25 +25,6 @@ def child_loader_builder(model, field, select_related_fields=None):
                 query = query.select_related(*select_related_fields)
             for obj in query.iterator():
                 d[obj.id] = getattr(obj, field)
-
-            return [d.get(key, None) for key in keys]
-
-        return SyncDataLoader(batch_load_fn)
-
-    return _builder
-
-
-def role_from_user_loader_builder():
-    def _builder():
-        def batch_load_fn(keys):
-            d = {}
-            users = User.objects.filter(id__in=keys).select_related("client_profile")
-            for user in users.all():
-                d[user.id] = (
-                    UserRoleEnum.CLIENT
-                    if hasattr(user, "client_profile")
-                    else UserRoleEnum.PM
-                )
 
             return [d.get(key, None) for key in keys]
 
@@ -119,7 +99,6 @@ def many_to_many_loader_builder(
 LOADERS = {
     # Child Loaders
     "client_profile_from_user": child_loader_builder(User, "client_profile"),
-    "role_from_user": role_from_user_loader_builder(),
     # Children Loaders
     "logs_from_client_activity": children_loader_builder(
         ClientActivityLog, "client_activity"

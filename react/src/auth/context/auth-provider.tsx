@@ -98,7 +98,7 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
         },
       })
     }
-  }, [])
+  }, [client])
 
   useEffect(() => {
     initialize()
@@ -114,11 +114,11 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
       }
       const { token, user, error } = response.data.login
 
-      if (!token) {
+      if (!token || !user) {
         throw new Error(error?.message)
       }
 
-      setAuthData(token, rememberMe)
+      setAuthData(token, rememberMe, user.role)
 
       dispatch({
         type: Types.LOGIN,

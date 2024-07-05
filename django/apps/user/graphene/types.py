@@ -19,6 +19,7 @@ class UserType(DjangoObjectType):
         model = UserModel
         only_fields = (
             "uuid",
+            "client",
             "email",
             "first_name",
             "last_name",
@@ -64,7 +65,7 @@ class UserType(DjangoObjectType):
         return info.context.client_profile_from_user.load(self.id)
 
     def resolve_role(self, info):
-        return info.context.role_from_user.load(self.id)
+        return self.role
 
     # START OF UNUSED FIELDS, BUT NEEDED ON THE FRONTEND
     photo_url = graphene.String(required=True)

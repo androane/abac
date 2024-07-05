@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react'
 
 import { useRouter, useSearchParams } from 'routes/hooks'
-import { LANDING_PAGE } from 'routes/paths'
+import { getLandingPage } from 'routes/paths'
 
 import { SplashScreen } from 'components/loading-screen'
 
@@ -22,15 +22,19 @@ const Container: React.FC<Props> = ({ children }) => {
 
   const searchParams = useSearchParams()
 
-  const returnTo = searchParams.get('returnTo') || LANDING_PAGE
-
   const { authenticated } = useAuthContext()
 
   const check = useCallback(() => {
     if (authenticated) {
-      router.replace(returnTo)
+      const returnTo = searchParams.get('returnTo')
+
+      if (returnTo) {
+        router.replace(returnTo)
+      } else {
+        router.replace(getLandingPage())
+      }
     }
-  }, [authenticated, returnTo, router])
+  }, [authenticated, searchParams, router])
 
   useEffect(() => {
     check()

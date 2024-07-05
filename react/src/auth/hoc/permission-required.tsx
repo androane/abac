@@ -1,6 +1,6 @@
 import { useAuthContext } from 'auth/hooks'
 import { UserPermissionsEnum } from 'generated/graphql'
-import { LANDING_PAGE } from 'routes/paths'
+import { getLandingPage } from 'routes/paths'
 import { Navigate } from 'react-router-dom'
 
 const withUserPermission =
@@ -8,7 +8,7 @@ const withUserPermission =
     const { hasPermission } = useAuthContext()
 
     if (!hasPermission(requiredPermission)) {
-      return <Navigate to={LANDING_PAGE} />
+      return <Navigate to={getLandingPage()} />
     }
 
     return <Component {...props} />

@@ -7,7 +7,7 @@ import TableBody from '@mui/material/TableBody'
 import TableContainer from '@mui/material/TableContainer'
 
 import { useSnackbar } from 'components/snackbar'
-import { LANDING_PAGE } from 'routes/paths'
+import { getLandingPage } from 'routes/paths'
 
 import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 import Scrollbar from 'components/scrollbar'
@@ -162,7 +162,7 @@ const ClientGroupListView = () => {
     <Container maxWidth="lg">
       <CustomBreadcrumbs
         heading="Grupuri de Clienți"
-        links={[{ name: 'Pagina Principală', href: LANDING_PAGE }, { name: 'Grupuri Clienți' }]}
+        links={[{ name: 'Pagina Principală', href: getLandingPage() }, { name: 'Grupuri Clienți' }]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}

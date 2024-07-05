@@ -7,6 +7,7 @@ from django.db import models
 from guardian.mixins import GuardianUserMixin
 
 from core.models import BaseModel
+from user.constants import UserRoleEnum
 from user.managers import UserManager
 from user.permissions import USER_MODEL_PERMISSIONS
 
@@ -70,6 +71,10 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     @property
     def name(self):
         return f"{self.first_name} {self.last_name}"
+
+    @property
+    def role(self):
+        return UserRoleEnum.CLIENT.value if self.client_id else UserRoleEnum.PM.value
 
     def generate_client_user_email(self):
         # We fake generate an email so that the email is not mandatory when adding a client user

@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import { RouterLink } from 'routes/components'
 
 import { MotionContainer, varBounce } from 'components/animate'
-import { LANDING_PAGE } from 'routes/paths'
+import { getLandingPage } from 'routes/paths'
 import notfound from './notfound.json'
 
 const NotFoundView = () => {
@@ -32,7 +32,7 @@ const NotFoundView = () => {
       <Button
         sx={{ mt: 4 }}
         component={RouterLink}
-        href={LANDING_PAGE}
+        href={getLandingPage()}
         size="large"
         variant="contained"
       >

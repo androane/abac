@@ -9,4 +9,7 @@ fragment AuthUser on UserType {
     ...Category
   }
   permissions
+  client {
+    uuid
+  }
 }

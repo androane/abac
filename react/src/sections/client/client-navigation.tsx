@@ -6,7 +6,7 @@ import Iconify from 'components/iconify'
 import ResponseHandler from 'components/response-handler'
 import { UserPermissionsEnum, useClientClientQuery } from 'generated/graphql'
 import { Link, Navigate, useParams } from 'react-router-dom'
-import { LANDING_PAGE, paths } from 'routes/paths'
+import { getLandingPage, paths } from 'routes/paths'
 import { primary } from 'theme/palette'
 import { useAuthContext } from 'auth/hooks'
 import ClientUpdateView from 'sections/client/view/client-update-view'
@@ -97,7 +97,7 @@ const ClientNavigation = () => {
                 links={[
                   {
                     name: 'Pagina Principală',
-                    href: LANDING_PAGE,
+                    href: getLandingPage(),
                   },
                   {
                     name: 'Clienți',

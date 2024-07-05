@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
-
+import { useNavigate } from 'react-router-dom'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Alert from '@mui/material/Alert'
 import IconButton from '@mui/material/IconButton'
@@ -13,21 +13,15 @@ import Stack from '@mui/material/Stack'
 import { useAuthContext } from 'auth/hooks'
 import FormProvider, { RHFCheckbox, RHFTextField } from 'components/hook-form'
 import Iconify from 'components/iconify'
-import { PATH_AFTER_LOGIN } from 'config/config-global'
 import { useBoolean } from 'hooks/use-boolean'
-import { useRouter, useSearchParams } from 'routes/hooks'
 import getErrorMessage from 'utils/api-codes'
 
 const Login = () => {
   const { login } = useAuthContext()
 
-  const router = useRouter()
+  const navigate = useNavigate()
 
   const [errorMsg, setErrorMsg] = useState('')
-
-  const searchParams = useSearchParams()
-
-  const returnTo = searchParams.get('returnTo')
 
   const password = useBoolean()
 
@@ -61,7 +55,8 @@ const Login = () => {
     try {
       await login?.(data.email, data.password, data.rememberMe)
 
-      router.push(returnTo || PATH_AFTER_LOGIN)
+      // refresh
+      navigate(0)
     } catch (error) {
       reset({
         email: '',

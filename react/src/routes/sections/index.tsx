@@ -1,17 +1,19 @@
 import { Navigate, useRoutes } from 'react-router-dom'
 
-import { PATH_AFTER_LOGIN } from 'config/config-global'
-import { mainRoutes } from 'routes/sections/main'
-import { authRoutes } from './auth'
+import { getLandingPage } from 'routes/paths'
+import { mainRoutes } from './main'
 import { appRoutes } from './app'
+import { authRoutes } from './auth'
+import { clientAppRoutes } from './client-app'
 
 const Router = () => {
   return useRoutes([
     {
       path: '/',
-      element: <Navigate to={PATH_AFTER_LOGIN} replace />,
+      element: <Navigate to={getLandingPage()} replace />,
     },
     ...authRoutes,
+    ...clientAppRoutes,
     ...appRoutes,
     ...mainRoutes,
 

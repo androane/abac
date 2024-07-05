@@ -773,6 +773,7 @@ export enum UserRoleEnum {
 export type UserType = {
   __typename?: 'UserType';
   categories: Array<CategoryType>;
+  client?: Maybe<ClientType>;
   clientProfile: ClientUserProfileType;
   clients: Array<ClientType>;
   email: Scalars['String']['output'];
@@ -788,7 +789,7 @@ export type UserType = {
 
 export type ActivityFragment = { __typename?: 'ActivityType', uuid: string, name: string, description?: string | null, unitCost?: number | null, unitCostCurrency: CurrencyEnum, unitCostType: UnitCostTypeEnum, category: { __typename?: 'CategoryType', uuid: string, name: string, code: string } };
 
-export type AuthUserFragment = { __typename?: 'UserType', permissions: Array<UserPermissionsEnum>, uuid: string, name: string, email: string, photoUrl: string, role: UserRoleEnum, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string }, categories: Array<{ __typename?: 'CategoryType', uuid: string, name: string, code: string }> };
+export type AuthUserFragment = { __typename?: 'UserType', permissions: Array<UserPermissionsEnum>, uuid: string, name: string, email: string, photoUrl: string, role: UserRoleEnum, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string }, categories: Array<{ __typename?: 'CategoryType', uuid: string, name: string, code: string }>, client?: { __typename?: 'ClientType', uuid: string } | null };
 
 export type BaseClientFragment = { __typename?: 'ClientType', uuid: string, name: string, description?: string | null, cui?: string | null, spvUsername?: string | null, spvPassword?: string | null, programManager?: { __typename?: 'UserType', uuid: string, name: string } | null };
 
@@ -834,7 +835,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginUser', token?: string | null, error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'UserType', permissions: Array<UserPermissionsEnum>, uuid: string, name: string, email: string, photoUrl: string, role: UserRoleEnum, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string }, categories: Array<{ __typename?: 'CategoryType', uuid: string, name: string, code: string }> } | null } | null };
+export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginUser', token?: string | null, error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'UserType', permissions: Array<UserPermissionsEnum>, uuid: string, name: string, email: string, photoUrl: string, role: UserRoleEnum, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string }, categories: Array<{ __typename?: 'CategoryType', uuid: string, name: string, code: string }>, client?: { __typename?: 'ClientType', uuid: string } | null } | null } | null };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -1025,7 +1026,7 @@ export type ReportGenerateUserReportMutation = { __typename?: 'Mutation', genera
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'UserType', permissions: Array<UserPermissionsEnum>, uuid: string, name: string, email: string, photoUrl: string, role: UserRoleEnum, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string }, categories: Array<{ __typename?: 'CategoryType', uuid: string, name: string, code: string }> } };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'UserType', permissions: Array<UserPermissionsEnum>, uuid: string, name: string, email: string, photoUrl: string, role: UserRoleEnum, organization: { __typename?: 'OrganizationType', uuid: string, name: string, logoUrl: string }, categories: Array<{ __typename?: 'CategoryType', uuid: string, name: string, code: string }>, client?: { __typename?: 'ClientType', uuid: string } | null } };
 
 export type ClientActivitiesQueryVariables = Exact<{
   clientUuid: Scalars['String']['input'];
@@ -1162,6 +1163,9 @@ export const AuthUserFragmentDoc = gql`
     ...Category
   }
   permissions
+  client {
+    uuid
+  }
 }
     ${BaseUserFragmentDoc}
 ${CategoryFragmentDoc}`;

@@ -1,6 +1,6 @@
 import Container from '@mui/material/Container'
 
-import { LANDING_PAGE, paths } from 'routes/paths'
+import { getLandingPage, paths } from 'routes/paths'
 
 import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 
@@ -16,7 +16,7 @@ const ClientCreateView = () => {
         links={[
           {
             name: 'Pagina Principală',
-            href: LANDING_PAGE,
+            href: getLandingPage(),
           },
           {
             name: 'Clienți',

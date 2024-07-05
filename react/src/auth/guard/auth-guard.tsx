@@ -28,6 +28,8 @@ const Container: React.FC<Props> = ({ role, children }) => {
 
   const check = useCallback(() => {
     if (authenticated && role && user?.role !== role) {
+      console.log('AuthGuard role value is ', role)
+      console.log('AuthGuard user value is ', user)
       logout()
       router.replace(paths.auth.login)
     }
@@ -36,15 +38,12 @@ const Container: React.FC<Props> = ({ role, children }) => {
         returnTo: window.location.pathname,
       }).toString()
 
-      const loginPath = paths.auth.login
-
-      const href = `${loginPath}?${searchParams}`
-
+      const href = `${paths.auth.login}?${searchParams}`
       router.replace(href)
     } else {
       setChecked(true)
     }
-  }, [authenticated, router, role, user?.role, logout])
+  }, [authenticated, router, role, logout, user])
 
   useEffect(() => {
     check()

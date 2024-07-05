@@ -7,7 +7,7 @@ import TableBody from '@mui/material/TableBody'
 import TableContainer from '@mui/material/TableContainer'
 
 import { useSnackbar } from 'components/snackbar'
-import { LANDING_PAGE, paths } from 'routes/paths'
+import { getLandingPage, paths } from 'routes/paths'
 
 import CustomBreadcrumbs from 'components/custom-breadcrumbs'
 import Scrollbar from 'components/scrollbar'
@@ -163,7 +163,7 @@ const UserListView = () => {
       <CustomBreadcrumbs
         heading="Pachete"
         links={[
-          { name: 'Pagina Principală', href: LANDING_PAGE },
+          { name: 'Pagina Principală', href: getLandingPage() },
           { name: 'Utilizatori', href: paths.app.settings.users },
         ]}
         sx={{

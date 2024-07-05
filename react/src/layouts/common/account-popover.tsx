@@ -19,6 +19,7 @@ import { useBoolean } from 'hooks/use-boolean'
 import ChangePassword from 'sections/auth/change-password'
 import getErrorMessage from 'utils/api-codes'
 import { clearAuthData } from 'auth/context/utils'
+import { paths } from 'routes/paths'
 
 const AccountPopover = () => {
   const router = useRouter()
@@ -38,7 +39,7 @@ const AccountPopover = () => {
       await logout()
       clearAuthData()
       popover.onClose()
-      router.replace('/')
+      router.replace(paths.auth.login)
     } catch (error) {
       enqueueSnackbar(getErrorMessage((error as Error).message), {
         variant: 'error',
