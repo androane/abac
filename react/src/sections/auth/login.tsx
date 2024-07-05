@@ -2,7 +2,6 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
-import { useNavigate } from 'react-router-dom'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Alert from '@mui/material/Alert'
 import IconButton from '@mui/material/IconButton'
@@ -15,11 +14,13 @@ import FormProvider, { RHFCheckbox, RHFTextField } from 'components/hook-form'
 import Iconify from 'components/iconify'
 import { useBoolean } from 'hooks/use-boolean'
 import getErrorMessage from 'utils/api-codes'
+import { getLandingPage } from 'routes/paths'
+import { useRouter } from 'routes/hooks'
 
 const Login = () => {
   const { login } = useAuthContext()
 
-  const navigate = useNavigate()
+  const router = useRouter()
 
   const [errorMsg, setErrorMsg] = useState('')
 
@@ -55,8 +56,7 @@ const Login = () => {
     try {
       await login?.(data.email, data.password, data.rememberMe)
 
-      // refresh
-      navigate(0)
+      router.replace(getLandingPage())
     } catch (error) {
       reset({
         email: '',

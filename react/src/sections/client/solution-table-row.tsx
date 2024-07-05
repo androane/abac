@@ -51,7 +51,6 @@ type Props = {
 }
 
 const SolutionTableRow: React.FC<Props> = ({ row, onEditRow, onEditLogs, canSeeCosts }) => {
-  console.log(row)
   return (
     <TableRow sx={{ backgroundColor: action.selected }}>
       <TableCell style={{ width: 150 }}>

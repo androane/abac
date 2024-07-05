@@ -28,8 +28,6 @@ const Container: React.FC<Props> = ({ role, children }) => {
 
   const check = useCallback(() => {
     if (authenticated && role && user?.role !== role) {
-      console.log('AuthGuard role value is ', role)
-      console.log('AuthGuard user value is ', user)
       logout()
       router.replace(paths.auth.login)
     }

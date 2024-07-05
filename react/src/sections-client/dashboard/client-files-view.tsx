@@ -14,9 +14,6 @@ const ClientFilesView = () => {
 
   const client = user?.client!
 
-  console.log('ClientFilesView user value is', user)
-  console.log('ClientFilesView client value is', client)
-
   const upload = useBoolean()
 
   const [deleteFile] = useDeleteClientFileMutation()
