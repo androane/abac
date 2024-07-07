@@ -1,6 +1,5 @@
 import ResponseHandler from 'components/response-handler'
 import Box from '@mui/material/Box'
-import { useAuthContext } from 'auth/hooks'
 import { useClientFilesQuery, useDeleteClientFileMutation } from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import EmptyContent from 'components/empty-content'
@@ -8,12 +7,13 @@ import CreateFiles from 'sections/client/file-create'
 import AddButton from 'components/add-button'
 import FileDetails from 'sections/client/file-details'
 import { enqueueSnackbar } from 'notistack'
+import { APIClient } from 'sections/client/types'
 
-const ClientFilesView = () => {
-  const { user } = useAuthContext()
+type Props = {
+  client: APIClient
+}
 
-  const client = user?.client!
-
+const ClientFilesView: React.FC<Props> = ({ client }) => {
   const upload = useBoolean()
 
   const [deleteFile] = useDeleteClientFileMutation()

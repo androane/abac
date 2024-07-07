@@ -19,26 +19,24 @@ import { TABS_VALUES } from 'sections/client/constants'
 const getIcon = (icon: string) => <Iconify icon={icon} width={24} color={primary.main} />
 
 const getTabs = (clientUuid: string) => {
-  const getTabPath = (tab: string) => `/client/${clientUuid}/${tab}`
-
-  const tabs = [
+  return [
     {
       value: TABS_VALUES.GENERAL,
-      path: getTabPath(TABS_VALUES.GENERAL),
+      path: paths.app.client.detail(clientUuid, TABS_VALUES.GENERAL),
       component: ClientUpdateView,
       name: 'Informații Generale',
       icon: 'solar:user-id-outline',
     },
     {
       value: TABS_VALUES.ACTIVITY,
-      path: getTabPath(TABS_VALUES.ACTIVITY),
+      path: paths.app.client.detail(clientUuid, TABS_VALUES.ACTIVITY),
       component: ClientActivityView,
       name: 'Activitate',
       icon: 'solar:bill-list-outline',
     },
     {
       value: TABS_VALUES.INVOICE,
-      path: getTabPath(TABS_VALUES.INVOICE),
+      path: paths.app.client.detail(clientUuid, TABS_VALUES.INVOICE),
       component: ClientInvoiceView,
       name: 'Facturare',
       icon: 'solar:dollar-outline',
@@ -46,20 +44,19 @@ const getTabs = (clientUuid: string) => {
     },
     {
       value: TABS_VALUES.FILES,
-      path: getTabPath(TABS_VALUES.FILES),
+      path: paths.app.client.detail(clientUuid, TABS_VALUES.FILES),
       component: ClientFilesView,
       name: 'Documente',
       icon: 'solar:gallery-wide-outline',
     },
     {
       value: TABS_VALUES.USERS,
-      path: getTabPath(TABS_VALUES.USERS),
+      path: paths.app.client.detail(clientUuid, TABS_VALUES.USERS),
       component: ClientUsersView,
       name: 'Persoane de Contact',
       icon: 'solar:users-group-rounded-outline',
     },
   ]
-  return tabs
 }
 
 const ClientNavigation = () => {

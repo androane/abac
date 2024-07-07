@@ -4,7 +4,8 @@ import { useAuthContext } from 'auth/hooks'
 import SvgColor from 'components/svg-color'
 import SettingsIcon from '@mui/icons-material/Settings'
 import BarchartIcon from '@mui/icons-material/BarChart'
-import { UserPermissionsEnum } from 'generated/graphql'
+import { UserPermissionsEnum, UserRoleEnum, useOrganizationClientsQuery } from 'generated/graphql'
+import { defaultTab } from 'sections-client/constants'
 
 const icon = (name: string) => (
   <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
@@ -12,10 +13,30 @@ const icon = (name: string) => (
 
 const useNavData = () => {
   const { hasPermission, user } = useAuthContext()
+  const result = useOrganizationClientsQuery()
+  const subheader = user?.organization.name || ''
+
+  if (user?.role === UserRoleEnum.CLIENT) {
+    const { loading, data } = result
+    if (!data || loading) {
+      return []
+    }
+    return [
+      {
+        subheader,
+        items: data.organization.clients.map(client => {
+          return {
+            title: client.name,
+            path: paths.clientApp.detail(client.uuid, defaultTab),
+          }
+        }),
+      },
+    ]
+  }
 
   const data = [
     {
-      subheader: user?.organization.name || '',
+      subheader,
       items: [
         {
           title: 'Clienți',

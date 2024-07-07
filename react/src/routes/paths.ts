@@ -34,9 +34,8 @@ export const paths = {
     },
   },
   clientApp: {
-    dashboard: {
-      documents: `/${ROOTS.CLIENT_APP}/${ROOTS.DOCUMENTS}`,
-    },
+    root: `/${ROOTS.CLIENT_APP}`,
+    detail: (id: string, tab: string) => `/${ROOTS.CLIENT_APP}/${id}/${tab}`,
   },
 }
 
@@ -45,5 +44,5 @@ export const getLandingPage = () => {
   if (userRole === UserRoleEnum.PM) {
     return paths.app.client.list
   }
-  return paths.clientApp.dashboard.documents
+  return paths.clientApp.root
 }

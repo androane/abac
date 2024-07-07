@@ -8,11 +8,15 @@ import { LoadingScreen } from 'components/loading-screen'
 import { ROOTS } from 'routes/paths'
 import { UserRoleEnum } from 'generated/graphql'
 
-const ClientFilesView = lazy(() => import('sections-client/dashboard/client-files-view'))
+const ClientNavigation = lazy(() => import('sections-client/client-navigation'))
+const ClientRedirect = lazy(() => import('sections-client/client-redirect'))
 
-const dashboard = {
-  path: ROOTS.DOCUMENTS,
-  children: [{ element: <ClientFilesView />, index: true }],
+const clients = {
+  path: '',
+  children: [
+    { path: '', element: <ClientRedirect /> },
+    { path: ':uuid/:tab', element: <ClientNavigation /> },
+  ],
 }
 
 export const clientAppRoutes = [
@@ -27,6 +31,6 @@ export const clientAppRoutes = [
         </DashboardLayout>
       </AuthGuard>
     ),
-    children: [dashboard],
+    children: [clients],
   },
 ]
