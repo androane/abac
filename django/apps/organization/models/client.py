@@ -4,6 +4,7 @@ from guardian.models import UserObjectPermissionBase
 
 from core.models import BaseModel
 from organization.constants import (
+    ClientFileTypeEnum,
     ClientUserRoleEnum,
     CurrencyEnum,
     SoftwareEnum,
@@ -118,6 +119,13 @@ class ClientFile(BaseModel):
     description = models.TextField(blank=True, null=True)
     file = models.FileField(
         upload_to=client_file_path, help_text="File resource", null=True, blank=True
+    )
+    type = models.CharField(
+        max_length=64,
+        choices=ClientFileTypeEnum.choices,
+        blank=True,
+        null=True,
+        help_text="FIle Type. If not specified, it's a general file",
     )
 
     def __str__(self):

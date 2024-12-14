@@ -7,6 +7,7 @@ from graphene_file_upload.scalars import Upload
 
 from api.permission_decorators import field_permission_required, permission_required
 from organization.graphene.types.enums import (
+    ClientFileTypeEnumType,
     ClientUserRoleEnumType,
     CurrencyEnumType,
     SoftwareEnumType,
@@ -104,6 +105,7 @@ class ClientFileType(DjangoObjectType):
         only_fields = (
             "uuid",
             "updated",
+            "type",
         )
 
     # Model properties
@@ -293,6 +295,7 @@ class ClientInput(graphene.InputObjectType):
 
 class ClientFileInput(graphene.InputObjectType):
     file = Upload(required=True)
+    type = ClientFileTypeEnumType()
 
 
 class ClientUserInput(graphene.InputObjectType):

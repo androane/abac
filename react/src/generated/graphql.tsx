@@ -95,16 +95,24 @@ export type ClientActivityType = {
 
 export type ClientFileInput = {
   file: Scalars['Upload']['input'];
+  type?: InputMaybe<ClientFileTypeEnum>;
 };
 
 export type ClientFileType = {
   __typename?: 'ClientFileType';
   name: Scalars['String']['output'];
   size: Scalars['Int']['output'];
+  /** FIle Type. If not specified, it's a general file */
+  type?: Maybe<OrganizationClientFileTypeChoices>;
   updated: Scalars['DateTime']['output'];
   url: Scalars['String']['output'];
   uuid: Scalars['String']['output'];
 };
+
+/** An enumeration. */
+export enum ClientFileTypeEnum {
+  OPCSB = 'OPCSB'
+}
 
 export type ClientGroupInput = {
   clientUuids: Array<InputMaybe<Scalars['String']['input']>>;
@@ -580,6 +588,12 @@ export type MutationUpdateOrganizationSolutionArgs = {
   solutionInput: SolutionInput;
 };
 
+/** An enumeration. */
+export enum OrganizationClientFileTypeChoices {
+  /** Opcsb */
+  OPCSB = 'OPCSB'
+}
+
 export type OrganizationType = {
   __typename?: 'OrganizationType';
   activities: Array<ActivityType>;
@@ -815,7 +829,7 @@ export type ClientUserFragment = { __typename?: 'UserType', uuid: string, email:
 
 export type ErrorFragment = { __typename?: 'ErrorType', field?: string | null, message: string };
 
-export type FileFragment = { __typename?: 'ClientFileType', uuid: string, name: string, updated: DateTimeString, url: string, size: number };
+export type FileFragment = { __typename?: 'ClientFileType', uuid: string, name: string, updated: DateTimeString, url: string, size: number, type?: OrganizationClientFileTypeChoices | null };
 
 export type SolutionFragment = { __typename?: 'SolutionType', uuid: string, name: string, activities: Array<{ __typename?: 'ActivityType', uuid: string, name: string }>, category: { __typename?: 'CategoryType', uuid: string, name: string, code: string } };
 
@@ -848,7 +862,7 @@ export type CreateClientFilesMutationVariables = Exact<{
 }>;
 
 
-export type CreateClientFilesMutation = { __typename?: 'Mutation', createClientFiles?: { __typename?: 'CreateClientFiles', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, files: Array<{ __typename?: 'ClientFileType', uuid: string, name: string, updated: DateTimeString, url: string, size: number }> } | null } | null };
+export type CreateClientFilesMutation = { __typename?: 'Mutation', createClientFiles?: { __typename?: 'CreateClientFiles', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, client?: { __typename?: 'ClientType', uuid: string, files: Array<{ __typename?: 'ClientFileType', uuid: string, name: string, updated: DateTimeString, url: string, size: number, type?: OrganizationClientFileTypeChoices | null }> } | null } | null };
 
 export type DeleteClientMutationVariables = Exact<{
   uuid: Scalars['String']['input'];
@@ -1057,7 +1071,7 @@ export type ClientFilesQueryVariables = Exact<{
 }>;
 
 
-export type ClientFilesQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, files: Array<{ __typename?: 'ClientFileType', uuid: string, name: string, updated: DateTimeString, url: string, size: number }> } };
+export type ClientFilesQuery = { __typename?: 'Query', client: { __typename?: 'ClientType', uuid: string, files: Array<{ __typename?: 'ClientFileType', uuid: string, name: string, updated: DateTimeString, url: string, size: number, type?: OrganizationClientFileTypeChoices | null }> } };
 
 export type ClientGroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1282,6 +1296,7 @@ export const FileFragmentDoc = gql`
   updated
   url
   size
+  type
 }
     `;
 export const SolutionFragmentDoc = gql`

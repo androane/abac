@@ -49,3 +49,7 @@ class SoftwareEnum(BaseEnum):
 
 class UserDownloadEnum(BaseEnum):
     INVOICE_DETAILS = enum.auto()
+
+
+class ClientFileTypeEnum(BaseEnum):
+    OPCSB = "OPCSB"

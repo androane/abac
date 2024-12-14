@@ -2,6 +2,7 @@
 import graphene
 
 from organization.constants import (
+    ClientFileTypeEnum,
     ClientUserRoleEnum,
     CurrencyEnum,
     InvoiceStatusEnum,
@@ -16,3 +17,4 @@ InvoiceStatusEnumType = graphene.Enum.from_enum(InvoiceStatusEnum)
 ClientUserRoleEnumType = graphene.Enum.from_enum(ClientUserRoleEnum)
 UserPermissionsEnumType = graphene.Enum.from_enum(UserPermissionsEnum)
 SoftwareEnumType = graphene.Enum.from_enum(SoftwareEnum)
+ClientFileTypeEnumType = graphene.Enum.from_enum(ClientFileTypeEnum)

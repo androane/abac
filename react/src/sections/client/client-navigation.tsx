@@ -13,6 +13,7 @@ import ClientUpdateView from 'sections/client/view/client-update-view'
 import ClientActivityView from 'sections/client/view/client-activity-view'
 import ClientInvoiceView from 'sections/client/view/client-invoice-view'
 import ClientFilesView from 'sections/client/view/client-files-view'
+import ClientOPCSBFilesView from 'sections/client/view/client-opcsb-files-view'
 import ClientUsersView from 'sections/client/view/client-users-view'
 import { TABS_VALUES } from 'sections/client/constants'
 
@@ -47,6 +48,13 @@ const getTabs = (clientUuid: string) => {
       path: paths.app.client.detail(clientUuid, TABS_VALUES.FILES),
       component: ClientFilesView,
       name: 'Documente',
+      icon: 'solar:gallery-wide-outline',
+    },
+    {
+      value: TABS_VALUES.OPCSB,
+      path: paths.app.client.detail(clientUuid, TABS_VALUES.OPCSB),
+      component: ClientOPCSBFilesView,
+      name: 'OPCSB',
       icon: 'solar:gallery-wide-outline',
     },
     {

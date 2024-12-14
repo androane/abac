@@ -1,11 +1,15 @@
 import ResponseHandler from 'components/response-handler'
 import Box from '@mui/material/Box'
-import { useClientFilesQuery, useDeleteClientFileMutation } from 'generated/graphql'
+import {
+  OrganizationClientFileTypeChoices,
+  useClientFilesQuery,
+  useDeleteClientFileMutation,
+} from 'generated/graphql'
 import { useBoolean } from 'hooks/use-boolean'
 import EmptyContent from 'components/empty-content'
-import CreateFiles from 'sections/client/file-create'
+import CreateOPCSBFiles from 'sections/client/opcsb-file-create'
 import AddButton from 'components/add-button'
-import FileDetails from 'sections/client/file-details'
+import OPCSBFileDetails from 'sections/client/opcsb-file-details'
 import { enqueueSnackbar } from 'notistack'
 import { APIClient } from 'sections/client/types'
 
@@ -13,7 +17,7 @@ type Props = {
   client: APIClient
 }
 
-const ClientFilesView: React.FC<Props> = ({ client }) => {
+const ClientOPCSBFilesView: React.FC<Props> = ({ client }) => {
   const upload = useBoolean()
 
   const [deleteFile] = useDeleteClientFileMutation()
@@ -40,7 +44,7 @@ const ClientFilesView: React.FC<Props> = ({ client }) => {
   return (
     <ResponseHandler {...result}>
       {({ client: { files: allFiles } }) => {
-        const files = allFiles.filter(file => !file.type)
+        const files = allFiles.filter(file => file.type === OrganizationClientFileTypeChoices.OPCSB)
         return (
           <>
             <AddButton count={files.length} label="Documente" onClick={upload.onTrue} />
@@ -56,7 +60,7 @@ const ClientFilesView: React.FC<Props> = ({ client }) => {
                 gap={3}
               >
                 {files.map(file => (
-                  <FileDetails
+                  <OPCSBFileDetails
                     key={file.name}
                     onDeleteFile={() => handleDeleteFile(file.uuid)}
                     clientUuid={client.uuid}
@@ -73,7 +77,11 @@ const ClientFilesView: React.FC<Props> = ({ client }) => {
                 }}
               />
             )}
-            <CreateFiles clientUuid={client.uuid} open={upload.value} onClose={upload.onFalse} />
+            <CreateOPCSBFiles
+              clientUuid={client.uuid}
+              open={upload.value}
+              onClose={upload.onFalse}
+            />
           </>
         )
       }}
@@ -81,4 +89,4 @@ const ClientFilesView: React.FC<Props> = ({ client }) => {
   )
 }
 
-export default ClientFilesView
+export default ClientOPCSBFilesView

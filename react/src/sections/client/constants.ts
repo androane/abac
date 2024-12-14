@@ -12,5 +12,6 @@ export enum TABS_VALUES {
   ACTIVITY = 'a',
   INVOICE = 'i',
   FILES = 'f',
+  OPCSB = 'o',
   USERS = 'u',
 }

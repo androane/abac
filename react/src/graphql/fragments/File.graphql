@@ -4,4 +4,5 @@ fragment File on ClientFileType {
   updated
   url
   size
+  type
 }
